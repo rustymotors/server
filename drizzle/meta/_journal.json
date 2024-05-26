@@ -1,1 +1,13 @@
-{"version":"5","dialect":"pg","entries":[]}
+{
+  "version": "6",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1716559573094,
+      "tag": "0000_secret_lady_mastermind",
+      "breakpoints": true
+    }
+  ]
+}

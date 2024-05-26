@@ -10,11 +10,15 @@
   "license": "AGPL-3.0",
   "private": true,
   "scripts": {
-    "preinstall": "npx only-allow pnpm", 
-    "start": "node --openssl-legacy-provider ./src/server/dist/server.mjs"
+    "preinstall": "npx only-allow pnpm",
+    "start": "node --openssl-legacy-provider --env-file .env ./src/server/dist/server.mjs"
   },
   "type": "module",
-  "devDependencies": {},
-  "dependencies": {},
+  "devDependencies": {
+    "@types/pg": "^8.11.6",
+    "dotenv": "^16.4.5",
+    "drizzle-kit": "^0.21.4",
+    "pg": "^8.11.5"
+  },
   "packageManager": "pnpm@9.1.1+sha256.9551e803dcb7a1839fdf5416153a844060c7bce013218ce823410532504ac10b"
 }

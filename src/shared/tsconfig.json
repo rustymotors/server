@@ -4,8 +4,8 @@
     "rootDir": ".",
     "outDir": "./dist"
   },
-  "include": ["./index.ts", "./src/**/*.ts", "./test**/*.ts", "./structs.ts"],
-  "exclude": ["node_modules/*", "dist/*", "coverage/*"],
+  "include": ["./index.ts", "./src/**/*.ts", "./structs.ts"],
+  "exclude": ["node_modules/*", "dist/*", "coverage/*", "./test/**/*.ts", "test/index.ts"],
 
   "references": []
 }

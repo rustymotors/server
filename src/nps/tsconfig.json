@@ -7,7 +7,6 @@
   "include": [
     "./index.ts",
     "./src/**/*.ts",
-    "./test**/*.ts",
     "./messageStructs/**/*.ts",
     "./gameMessageProcessors/**/*.ts",
     "./services/**/*.ts",

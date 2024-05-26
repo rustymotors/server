@@ -4,9 +4,8 @@
     "rootDir": ".",
     "outDir": "./dist"
   },
-  "include": ["./index.ts", "./src/**/*.ts", "./test**/*.ts"],
+  "include": ["./index.ts", "./src/**/*.ts"],
   "exclude": ["node_modules/*", "dist/*", "coverage/*"],
-
 
   "references": [
     { "path": "../shared" },

@@ -2,13 +2,16 @@ import { now32 } from "@rustymotors/shared";
 import {
   boolean,
   integer,
-  pgTable,
   smallint,
   uniqueIndex,
   varchar,
 } from "drizzle-orm/pg-core";
 
-export const profile = pgTable(
+import { pgSchema } from "drizzle-orm/pg-core";
+
+export const mySchema = pgSchema("mcos");
+
+export const profile = mySchema.table(
   "profile",
   {
     customerId: integer("customer_id").notNull(),

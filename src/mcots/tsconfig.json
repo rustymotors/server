@@ -7,7 +7,6 @@
   "include": [
     "./index.ts",
     "./src/**/*.ts",
-    "./test**/*.ts",
     "./messageProcessors/**/*.ts",
     "./payloads/**/*.ts",
     "./errors/**/*.ts",

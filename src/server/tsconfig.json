@@ -5,7 +5,7 @@
     "outDir": "./dist",
 
   },
-  "files": ["./server.mts", "./instrument.mts", "./test/index.test.ts"],
+  "files": ["./server.mts", "./instrument.mts"],
   "exclude": ["node_modules/*", "dist/*", "coverage/*"],
 
 

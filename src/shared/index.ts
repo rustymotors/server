@@ -30,5 +30,3 @@ export {
   createDataEncryptionPair,
   verifyLegacyCipherSupport,
 } from "./src/encryption.js";
-
-export { mockLogger } from "./test/index.js";

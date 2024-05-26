@@ -1,12 +1,22 @@
-import { mockLogger } from "@rustymotors/shared";
 import type { IncomingMessage, ServerResponse } from "http";
 import { describe, expect, it, vi } from "vitest";
 import { CastanetResponse, PatchServer } from "../src/PatchServer.js";
+import { TServerLogger } from "@rustymotors/shared";
 
 describe("PatchServer", () => {
   it("should return the hard-coded value that tells the client there are no updates or patches", () => {
     // Arrange
-    const log = mockLogger();
+    const log: TServerLogger = {
+      error: vi.fn(),
+      warn: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+      trace: vi.fn(),
+      fatal: vi.fn(),
+      getName: vi.fn(),
+      resetName: vi.fn(),
+      setName: vi.fn(),
+    };
     const patchServer = PatchServer.getInstance(log);
     const request = {
       socket: {

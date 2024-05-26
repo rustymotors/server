@@ -1,0 +1,3055 @@
+{
+  "id": "43b7a73a-8f30-4e91-8512-8db02f26dde9",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "6",
+  "dialect": "postgresql",
+  "tables": {
+    "mcos.abstract_part_type": {
+      "name": "abstract_part_type",
+      "schema": "mcos",
+      "columns": {
+        "abstract_part_type_id": {
+          "name": "abstract_part_type_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "parent_abstract_part_type_id": {
+          "name": "parent_abstract_part_type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "depends_on": {
+          "name": "depends_on",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "part_filename": {
+          "name": "part_filename",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "e_apt": {
+          "name": "e_apt",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "g_apt": {
+          "name": "g_apt",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "f_apt": {
+          "name": "f_apt",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "s_apt": {
+          "name": "s_apt",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "i_apt": {
+          "name": "i_apt",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "j_apt": {
+          "name": "j_apt",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "sw_apt": {
+          "name": "sw_apt",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "b_apt": {
+          "name": "b_apt",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "modified_rule": {
+          "name": "modified_rule",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "e_ut": {
+          "name": "e_ut",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "g_ut": {
+          "name": "g_ut",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "f_ut": {
+          "name": "f_ut",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "s_ut": {
+          "name": "s_ut",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "i_ut": {
+          "name": "i_ut",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "j_ut": {
+          "name": "j_ut",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "sw_ut": {
+          "name": "sw_ut",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "b_ut": {
+          "name": "b_ut",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "part_paired": {
+          "name": "part_paired",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "schematic_picname1": {
+          "name": "schematic_picname1",
+          "type": "varchar(9)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "schematic_picname2": {
+          "name": "schematic_picname2",
+          "type": "varchar(9)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'VEH%d'"
+        },
+        "block_family_compatibility": {
+          "name": "block_family_compatibility",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "repair_cost_modifier": {
+          "name": "repair_cost_modifier",
+          "type": "numeric(100, 7)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'1.0'"
+        },
+        "scrap_cost_modifier": {
+          "name": "scrap_cost_modifier",
+          "type": "numeric(100, 7)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'1.0'"
+        },
+        "garage_category": {
+          "name": "garage_category",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "abstract_part_type_id_idx": {
+          "name": "abstract_part_type_id_idx",
+          "columns": [
+            "abstract_part_type_id"
+          ],
+          "isUnique": true
+        },
+        "parent_abstract_part_type_id_idx": {
+          "name": "parent_abstract_part_type_id_idx",
+          "columns": [
+            "parent_abstract_part_type_id"
+          ],
+          "isUnique": true
+        },
+        "depends_on_idx": {
+          "name": "depends_on_idx",
+          "columns": [
+            "depends_on"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "abstract_part_type_parent_abstract_part_type_id_abstract_part_type_abstract_part_type_id_fk": {
+          "name": "abstract_part_type_parent_abstract_part_type_id_abstract_part_type_abstract_part_type_id_fk",
+          "tableFrom": "abstract_part_type",
+          "tableTo": "abstract_part_type",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "parent_abstract_part_type_id"
+          ],
+          "columnsTo": [
+            "abstract_part_type_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "abstract_part_type_depends_on_abstract_part_type_abstract_part_type_id_fk": {
+          "name": "abstract_part_type_depends_on_abstract_part_type_abstract_part_type_id_fk",
+          "tableFrom": "abstract_part_type",
+          "tableTo": "abstract_part_type",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "depends_on"
+          ],
+          "columnsTo": [
+            "abstract_part_type_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.attachment_point": {
+      "name": "attachment_point",
+      "schema": "mcos",
+      "columns": {
+        "attachment_point_id": {
+          "name": "attachment_point_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "attachment_point": {
+          "name": "attachment_point",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "attachment_point_id_idx": {
+          "name": "attachment_point_id_idx",
+          "columns": [
+            "attachment_point_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.brand": {
+      "name": "brand",
+      "schema": "mcos",
+      "columns": {
+        "brand_id": {
+          "name": "brand_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "brand": {
+          "name": "brand",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pic_name": {
+          "name": "pic_name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_stock": {
+          "name": "is_stock",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "brand_id_idx": {
+          "name": "brand_id_idx",
+          "columns": [
+            "brand_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.branded_part": {
+      "name": "branded_part",
+      "schema": "mcos",
+      "columns": {
+        "branded_part_id": {
+          "name": "branded_part_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "part_type_id": {
+          "name": "part_type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "model_id": {
+          "name": "model_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mfg_date": {
+          "name": "mfg_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'1970-01-01 00:00:00.000'"
+        },
+        "qty_avail": {
+          "name": "qty_avail",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "retail_price": {
+          "name": "retail_price",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "max_item_wear": {
+          "name": "max_item_wear",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "engine_block_family_id": {
+          "name": "engine_block_family_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "branded_part_part_id_idx": {
+          "name": "branded_part_part_id_idx",
+          "columns": [
+            "part_type_id"
+          ],
+          "isUnique": false
+        },
+        "branded_part_engine_block_family_id_idx": {
+          "name": "branded_part_engine_block_family_id_idx",
+          "columns": [
+            "engine_block_family_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "branded_part_part_type_id_part_type_part_type_id_fk": {
+          "name": "branded_part_part_type_id_part_type_part_type_id_fk",
+          "tableFrom": "branded_part",
+          "tableTo": "part_type",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "part_type_id"
+          ],
+          "columnsTo": [
+            "part_type_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "branded_part_model_id_model_model_id_fk": {
+          "name": "branded_part_model_id_model_model_id_fk",
+          "tableFrom": "branded_part",
+          "tableTo": "model",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "model_id"
+          ],
+          "columnsTo": [
+            "model_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.driver_class": {
+      "name": "driver_class",
+      "schema": "mcos",
+      "columns": {
+        "driver_class_id": {
+          "name": "driver_class_id",
+          "type": "smallint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "driver_class": {
+          "name": "driver_class",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "driver_class_id_idx": {
+          "name": "driver_class_id_idx",
+          "columns": [
+            "driver_class_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.model": {
+      "name": "model",
+      "schema": "mcos",
+      "columns": {
+        "model_id": {
+          "name": "model_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "brand_id": {
+          "name": "brand_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "e_model": {
+          "name": "e_model",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "g_model": {
+          "name": "g_model",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "f_model": {
+          "name": "f_model",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "s_model": {
+          "name": "s_model",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "i_model": {
+          "name": "i_model",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "j_model": {
+          "name": "j_model",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sw_model": {
+          "name": "sw_model",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "b_model": {
+          "name": "b_model",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "e_extra_info": {
+          "name": "e_extra_info",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "g_extra_info": {
+          "name": "g_extra_info",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "f_extra_info": {
+          "name": "f_extra_info",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "s_extra_info": {
+          "name": "s_extra_info",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "i_extra_info": {
+          "name": "i_extra_info",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "j_extra_info": {
+          "name": "j_extra_info",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sw_extra_info": {
+          "name": "sw_extra_info",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "b_extra_info": {
+          "name": "b_extra_info",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "e_short_model": {
+          "name": "e_short_model",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "g_short_model": {
+          "name": "g_short_model",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "f_short_model": {
+          "name": "f_short_model",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "s_short_model": {
+          "name": "s_short_model",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "i_short_model": {
+          "name": "i_short_model",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "j_short_model": {
+          "name": "j_short_model",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sw_short_model": {
+          "name": "sw_short_model",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "b_short_model": {
+          "name": "b_short_model",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "debug_string": {
+          "name": "debug_string",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "debug_sort_string": {
+          "name": "debug_sort_string",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "model_brand_id_brand_brand_id_fk": {
+          "name": "model_brand_id_brand_brand_id_fk",
+          "tableFrom": "model",
+          "tableTo": "brand",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "brand_id"
+          ],
+          "columnsTo": [
+            "brand_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.part": {
+      "name": "part",
+      "schema": "mcos",
+      "columns": {
+        "part_id": {
+          "name": "part_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "parent_part_id": {
+          "name": "parent_part_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "branded_part_id": {
+          "name": "branded_part_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "percent_damage": {
+          "name": "percent_damage",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "item_wear": {
+          "name": "item_wear",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attachment_point_id": {
+          "name": "attachment_point_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "owner_id": {
+          "name": "owner_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "part_name": {
+          "name": "part_name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "repair_cost": {
+          "name": "repair_cost",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "scrap_value": {
+          "name": "scrap_value",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "part_id_idx": {
+          "name": "part_id_idx",
+          "columns": [
+            "part_id"
+          ],
+          "isUnique": true
+        },
+        "part_parent_part_id_idx": {
+          "name": "part_parent_part_id_idx",
+          "columns": [
+            "parent_part_id"
+          ],
+          "isUnique": false
+        },
+        "part_branded_part_id_idx": {
+          "name": "part_branded_part_id_idx",
+          "columns": [
+            "branded_part_id"
+          ],
+          "isUnique": false
+        },
+        "part_attachment_point_id_idx": {
+          "name": "part_attachment_point_id_idx",
+          "columns": [
+            "attachment_point_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "part_parent_part_id_part_part_id_fk": {
+          "name": "part_parent_part_id_part_part_id_fk",
+          "tableFrom": "part",
+          "tableTo": "part",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "parent_part_id"
+          ],
+          "columnsTo": [
+            "part_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "part_branded_part_id_branded_part_branded_part_id_fk": {
+          "name": "part_branded_part_id_branded_part_branded_part_id_fk",
+          "tableFrom": "part",
+          "tableTo": "branded_part",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "branded_part_id"
+          ],
+          "columnsTo": [
+            "branded_part_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "part_attachment_point_id_attachment_point_attachment_point_id_fk": {
+          "name": "part_attachment_point_id_attachment_point_attachment_point_id_fk",
+          "tableFrom": "part",
+          "tableTo": "attachment_point",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "attachment_point_id"
+          ],
+          "columnsTo": [
+            "attachment_point_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.part_grade": {
+      "name": "part_grade",
+      "schema": "mcos",
+      "columns": {
+        "part_grade_id": {
+          "name": "part_grade_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "e_text": {
+          "name": "e_text",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "g_text": {
+          "name": "g_text",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "f_text": {
+          "name": "f_text",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "part_grade": {
+          "name": "part_grade",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "part_grade_id_idx": {
+          "name": "part_grade_id_idx",
+          "columns": [
+            "part_grade_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.part_type": {
+      "name": "part_type",
+      "schema": "mcos",
+      "columns": {
+        "part_type_id": {
+          "name": "part_type_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "abstract_part_type_id": {
+          "name": "abstract_part_type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "part_type": {
+          "name": "part_type",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "part_filename": {
+          "name": "part_filename",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "part_grade_id": {
+          "name": "part_grade_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "part_type_id_idx": {
+          "name": "part_type_id_idx",
+          "columns": [
+            "part_type_id"
+          ],
+          "isUnique": true
+        },
+        "part_type_abstract_part_type_id_idx": {
+          "name": "part_type_abstract_part_type_id_idx",
+          "columns": [
+            "abstract_part_type_id"
+          ],
+          "isUnique": false
+        },
+        "part_type_part_grade_id_idx": {
+          "name": "part_type_part_grade_id_idx",
+          "columns": [
+            "part_grade_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "part_type_abstract_part_type_id_abstract_part_type_abstract_part_type_id_fk": {
+          "name": "part_type_abstract_part_type_id_abstract_part_type_abstract_part_type_id_fk",
+          "tableFrom": "part_type",
+          "tableTo": "abstract_part_type",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "abstract_part_type_id"
+          ],
+          "columnsTo": [
+            "abstract_part_type_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "part_type_part_grade_id_part_grade_part_grade_id_fk": {
+          "name": "part_type_part_grade_id_part_grade_part_grade_id_fk",
+          "tableFrom": "part_type",
+          "tableTo": "part_grade",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "part_grade_id"
+          ],
+          "columnsTo": [
+            "part_grade_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.player": {
+      "name": "player",
+      "schema": "mcos",
+      "columns": {
+        "player_id": {
+          "name": "player_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "customer_id": {
+          "name": "customer_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "player_type_id": {
+          "name": "player_type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sanctioned_score": {
+          "name": "sanctioned_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "challenge_score": {
+          "name": "challenge_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_logged_in": {
+          "name": "last_logged_in",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "times_logged_in": {
+          "name": "times_logged_in",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bank_balance": {
+          "name": "bank_balance",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "num_cars_owned": {
+          "name": "num_cars_owned",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_logged_in": {
+          "name": "is_logged_in",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "driver_style": {
+          "name": "driver_style",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lp_code": {
+          "name": "lp_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lp_text": {
+          "name": "lp_text",
+          "type": "varchar(9)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "car_num_1": {
+          "name": "car_num_1",
+          "type": "varchar(2)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "car_num_2": {
+          "name": "car_num_2",
+          "type": "varchar(2)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "car_num_3": {
+          "name": "car_num_3",
+          "type": "varchar(2)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "car_num_4": {
+          "name": "car_num_4",
+          "type": "varchar(2)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "car_num_5": {
+          "name": "car_num_5",
+          "type": "varchar(2)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "car_num_6": {
+          "name": "car_num_6",
+          "type": "varchar(2)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "dl_number": {
+          "name": "dl_number",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "persona": {
+          "name": "persona",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "address": {
+          "name": "address",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "residence": {
+          "name": "residence",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vehicle_id": {
+          "name": "vehicle_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "current_race_id": {
+          "name": "current_race_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "offline_driver_skill": {
+          "name": "offline_driver_skill",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "offline_grudge": {
+          "name": "offline_grudge",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "offline_reputation": {
+          "name": "offline_reputation",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_time_played": {
+          "name": "total_time_played",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "car_info_setting": {
+          "name": "car_info_setting",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "stock_classic_class": {
+          "name": "stock_classic_class",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stock_muscle_class": {
+          "name": "stock_muscle_class",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "modified_classic_class": {
+          "name": "modified_classic_class",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "modified_muscle_class": {
+          "name": "modified_muscle_class",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "outlaw_class": {
+          "name": "outlaw_class",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "drag_class": {
+          "name": "drag_class",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "challenge_rung": {
+          "name": "challenge_rung",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "offline_ai_car_class": {
+          "name": "offline_ai_car_class",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "offline_ai_skin_id": {
+          "name": "offline_ai_skin_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "offline_ai_car_bpt_id": {
+          "name": "offline_ai_car_bpt_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "offline_ai_state": {
+          "name": "offline_ai_state",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "bodytype": {
+          "name": "bodytype",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "skin_color": {
+          "name": "skin_color",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "hair_color": {
+          "name": "hair_color",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "shirt_color": {
+          "name": "shirt_color",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "pants_color": {
+          "name": "pants_color",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "offline_driver_style": {
+          "name": "offline_driver_style",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "offline_driver_attitude": {
+          "name": "offline_driver_attitude",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "evaded_fuzz": {
+          "name": "evaded_fuzz",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "pinks_won": {
+          "name": "pinks_won",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "num_unread_mail": {
+          "name": "num_unread_mail",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_races_run": {
+          "name": "total_races_run",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_races_won": {
+          "name": "total_races_won",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_races_completed": {
+          "name": "total_races_completed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_winnings": {
+          "name": "total_winnings",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "insurance_risk_points": {
+          "name": "insurance_risk_points",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "insurance_rating": {
+          "name": "insurance_rating",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "challenge_races_run": {
+          "name": "challenge_races_run",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "challenge_races_won": {
+          "name": "challenge_races_won",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "challenge_races_completed": {
+          "name": "challenge_races_completed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "cars_lost": {
+          "name": "cars_lost",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "cars_won": {
+          "name": "cars_won",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "player_num_unread_mail_idx": {
+          "name": "player_num_unread_mail_idx",
+          "columns": [
+            "num_unread_mail"
+          ],
+          "isUnique": false
+        },
+        "player_offline_ai_car_bpt_id_idx": {
+          "name": "player_offline_ai_car_bpt_id_idx",
+          "columns": [
+            "offline_ai_car_bpt_id"
+          ],
+          "isUnique": false
+        },
+        "player_stock_muscle_class_idx": {
+          "name": "player_stock_muscle_class_idx",
+          "columns": [
+            "stock_muscle_class"
+          ],
+          "isUnique": false
+        },
+        "player_modified_classic_class_idx": {
+          "name": "player_modified_classic_class_idx",
+          "columns": [
+            "modified_classic_class"
+          ],
+          "isUnique": false
+        },
+        "player_modified_muscle_class_idx": {
+          "name": "player_modified_muscle_class_idx",
+          "columns": [
+            "modified_muscle_class"
+          ],
+          "isUnique": false
+        },
+        "player_outlaw_class_idx": {
+          "name": "player_outlaw_class_idx",
+          "columns": [
+            "outlaw_class"
+          ],
+          "isUnique": false
+        },
+        "player_drag_class_idx": {
+          "name": "player_drag_class_idx",
+          "columns": [
+            "drag_class"
+          ],
+          "isUnique": false
+        },
+        "player_player_type_id_idx": {
+          "name": "player_player_type_id_idx",
+          "columns": [
+            "player_type_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "player_player_type_id_player_type_player_type_id_fk": {
+          "name": "player_player_type_id_player_type_player_type_id_fk",
+          "tableFrom": "player",
+          "tableTo": "player_type",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "player_type_id"
+          ],
+          "columnsTo": [
+            "player_type_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "player_stock_muscle_class_driver_class_driver_class_id_fk": {
+          "name": "player_stock_muscle_class_driver_class_driver_class_id_fk",
+          "tableFrom": "player",
+          "tableTo": "driver_class",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "stock_muscle_class"
+          ],
+          "columnsTo": [
+            "driver_class_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "player_modified_classic_class_driver_class_driver_class_id_fk": {
+          "name": "player_modified_classic_class_driver_class_driver_class_id_fk",
+          "tableFrom": "player",
+          "tableTo": "driver_class",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "modified_classic_class"
+          ],
+          "columnsTo": [
+            "driver_class_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "player_modified_muscle_class_driver_class_driver_class_id_fk": {
+          "name": "player_modified_muscle_class_driver_class_driver_class_id_fk",
+          "tableFrom": "player",
+          "tableTo": "driver_class",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "modified_muscle_class"
+          ],
+          "columnsTo": [
+            "driver_class_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "player_outlaw_class_driver_class_driver_class_id_fk": {
+          "name": "player_outlaw_class_driver_class_driver_class_id_fk",
+          "tableFrom": "player",
+          "tableTo": "driver_class",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "outlaw_class"
+          ],
+          "columnsTo": [
+            "driver_class_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "player_drag_class_driver_class_driver_class_id_fk": {
+          "name": "player_drag_class_driver_class_driver_class_id_fk",
+          "tableFrom": "player",
+          "tableTo": "driver_class",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "drag_class"
+          ],
+          "columnsTo": [
+            "driver_class_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.player_type": {
+      "name": "player_type",
+      "schema": "mcos",
+      "columns": {
+        "player_type_id": {
+          "name": "player_type_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "player_type": {
+          "name": "player_type",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "player_type_id_idx": {
+          "name": "player_type_id_idx",
+          "columns": [
+            "player_type_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.profile": {
+      "name": "profile",
+      "schema": "mcos",
+      "columns": {
+        "customer_id": {
+          "name": "customer_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "profile_name": {
+          "name": "profile_name",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "server_id": {
+          "name": "server_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "create_stamp": {
+          "name": "create_stamp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1716559573
+        },
+        "last_login_stamp": {
+          "name": "last_login_stamp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1716559573
+        },
+        "number_games": {
+          "name": "number_games",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "profile_id": {
+          "name": "profile_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "is_online": {
+          "name": "is_online",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "game_purchase_stamp": {
+          "name": "game_purchase_stamp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1716559573
+        },
+        "game_serial_number": {
+          "name": "game_serial_number",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "time_online": {
+          "name": "time_online",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "time_in_game": {
+          "name": "time_in_game",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "game_blob": {
+          "name": "game_blob",
+          "type": "varchar(512)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "personal_blob": {
+          "name": "personal_blob",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "picture_blob": {
+          "name": "picture_blob",
+          "type": "varchar(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dnd": {
+          "name": "dnd",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "game_start_stamp": {
+          "name": "game_start_stamp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1716559573
+        },
+        "current_key": {
+          "name": "current_key",
+          "type": "varchar(400)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "profile_level": {
+          "name": "profile_level",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "shard_id": {
+          "name": "shard_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "profile_id_idx": {
+          "name": "profile_id_idx",
+          "columns": [
+            "profile_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.race_type": {
+      "name": "race_type",
+      "schema": "mcos",
+      "columns": {
+        "race_type_id": {
+          "name": "race_type_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "race_type": {
+          "name": "race_type",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.skin": {
+      "name": "skin",
+      "schema": "mcos",
+      "columns": {
+        "skin_id": {
+          "name": "skin_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "creator_id": {
+          "name": "creator_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "skin_type_id": {
+          "name": "skin_type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "part_type_id": {
+          "name": "part_type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "default_flag": {
+          "name": "default_flag",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "e_skin": {
+          "name": "e_skin",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "g_skin": {
+          "name": "g_skin",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "f_skin": {
+          "name": "f_skin",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "s_skin": {
+          "name": "s_skin",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "i_skin": {
+          "name": "i_skin",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "j_skin": {
+          "name": "j_skin",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sw_skin": {
+          "name": "sw_skin",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "b_skin": {
+          "name": "b_skin",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "price": {
+          "name": "price",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "part_filename": {
+          "name": "part_filename",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "h0": {
+          "name": "h0",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "s0": {
+          "name": "s0",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "v0": {
+          "name": "v0",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "c0": {
+          "name": "c0",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "x0": {
+          "name": "x0",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "y0": {
+          "name": "y0",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "h1": {
+          "name": "h1",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "s1": {
+          "name": "s1",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "v1": {
+          "name": "v1",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "c1": {
+          "name": "c1",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "x1": {
+          "name": "x1",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "y1": {
+          "name": "y1",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "h2": {
+          "name": "h2",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "s2": {
+          "name": "s2",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "v2": {
+          "name": "v2",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "c2": {
+          "name": "c2",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "x2": {
+          "name": "x2",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "y2": {
+          "name": "y2",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "h3": {
+          "name": "h3",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "s3": {
+          "name": "s3",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "v3": {
+          "name": "v3",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "c3": {
+          "name": "c3",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "x3": {
+          "name": "x3",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "y3": {
+          "name": "y3",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "h4": {
+          "name": "h4",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "s4": {
+          "name": "s4",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "v4": {
+          "name": "v4",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "c4": {
+          "name": "c4",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "x4": {
+          "name": "x4",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "y4": {
+          "name": "y4",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "h5": {
+          "name": "h5",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "s5": {
+          "name": "s5",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "v5": {
+          "name": "v5",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "c5": {
+          "name": "c5",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "x5": {
+          "name": "x5",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "y5": {
+          "name": "y5",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "h6": {
+          "name": "h6",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "s6": {
+          "name": "s6",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "v6": {
+          "name": "v6",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "c6": {
+          "name": "c6",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "x6": {
+          "name": "x6",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "y6": {
+          "name": "y6",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "h7": {
+          "name": "h7",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "s7": {
+          "name": "s7",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "v7": {
+          "name": "v7",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "c7": {
+          "name": "c7",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "x7": {
+          "name": "x7",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "y7": {
+          "name": "y7",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creator_name": {
+          "name": "creator_name",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "comment_text": {
+          "name": "comment_text",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "skin_id_idx": {
+          "name": "skin_id_idx",
+          "columns": [
+            "skin_id"
+          ],
+          "isUnique": true
+        },
+        "skin_creator_id_idx": {
+          "name": "skin_creator_id_idx",
+          "columns": [
+            "creator_id"
+          ],
+          "isUnique": false
+        },
+        "skin_skin_type_id_idx": {
+          "name": "skin_skin_type_id_idx",
+          "columns": [
+            "skin_type_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "skin_creator_id_player_player_id_fk": {
+          "name": "skin_creator_id_player_player_id_fk",
+          "tableFrom": "skin",
+          "tableTo": "player",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "creator_id"
+          ],
+          "columnsTo": [
+            "player_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "skin_skin_type_id_skin_type_skin_type_id_fk": {
+          "name": "skin_skin_type_id_skin_type_skin_type_id_fk",
+          "tableFrom": "skin",
+          "tableTo": "skin_type",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "skin_type_id"
+          ],
+          "columnsTo": [
+            "skin_type_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "skin_part_type_id_part_type_part_type_id_fk": {
+          "name": "skin_part_type_id_part_type_part_type_id_fk",
+          "tableFrom": "skin",
+          "tableTo": "part_type",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "part_type_id"
+          ],
+          "columnsTo": [
+            "part_type_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.skin_type": {
+      "name": "skin_type",
+      "schema": "mcos",
+      "columns": {
+        "skin_type_id": {
+          "name": "skin_type_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "skin_type": {
+          "name": "skin_type",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.stock_assembly": {
+      "name": "stock_assembly",
+      "schema": "mcos",
+      "columns": {
+        "parent_branded_part_id": {
+          "name": "parent_branded_part_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "child_branded_part_id": {
+          "name": "child_branded_part_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attachment_point_id": {
+          "name": "attachment_point_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "config_default": {
+          "name": "config_default",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "physics_default": {
+          "name": "physics_default",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "stock_assembly_id_idx": {
+          "name": "stock_assembly_id_idx",
+          "columns": [
+            "parent_branded_part_id",
+            "child_branded_part_id",
+            "attachment_point_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "stock_assembly_parent_branded_part_id_branded_part_branded_part_id_fk": {
+          "name": "stock_assembly_parent_branded_part_id_branded_part_branded_part_id_fk",
+          "tableFrom": "stock_assembly",
+          "tableTo": "branded_part",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "parent_branded_part_id"
+          ],
+          "columnsTo": [
+            "branded_part_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "stock_assembly_child_branded_part_id_branded_part_branded_part_id_fk": {
+          "name": "stock_assembly_child_branded_part_id_branded_part_branded_part_id_fk",
+          "tableFrom": "stock_assembly",
+          "tableTo": "branded_part",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "child_branded_part_id"
+          ],
+          "columnsTo": [
+            "branded_part_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "stock_assembly_attachment_point_id_attachment_point_attachment_point_id_fk": {
+          "name": "stock_assembly_attachment_point_id_attachment_point_attachment_point_id_fk",
+          "tableFrom": "stock_assembly",
+          "tableTo": "attachment_point",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "attachment_point_id"
+          ],
+          "columnsTo": [
+            "attachment_point_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.stock_vehicle_attributes": {
+      "name": "stock_vehicle_attributes",
+      "schema": "mcos",
+      "columns": {
+        "branded_part_id": {
+          "name": "branded_part_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "car_class": {
+          "name": "car_class",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ai_restriction_class": {
+          "name": "ai_restriction_class",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mode_restriction": {
+          "name": "mode_restriction",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sponsor": {
+          "name": "sponsor",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vin_branded_part_id": {
+          "name": "vin_branded_part_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "track_id": {
+          "name": "track_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vin_crc": {
+          "name": "vin_crc",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "retail_price": {
+          "name": "retail_price",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "stock_vehicle_attributes_branded_part_id_idx": {
+          "name": "stock_vehicle_attributes_branded_part_id_idx",
+          "columns": [
+            "branded_part_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "stock_vehicle_attributes_branded_part_id_branded_part_branded_part_id_fk": {
+          "name": "stock_vehicle_attributes_branded_part_id_branded_part_branded_part_id_fk",
+          "tableFrom": "stock_vehicle_attributes",
+          "tableTo": "branded_part",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "branded_part_id"
+          ],
+          "columnsTo": [
+            "branded_part_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "stock_vehicle_attributes_car_class_sva_car_class_sva_car_class_fk": {
+          "name": "stock_vehicle_attributes_car_class_sva_car_class_sva_car_class_fk",
+          "tableFrom": "stock_vehicle_attributes",
+          "tableTo": "sva_car_class",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "car_class"
+          ],
+          "columnsTo": [
+            "sva_car_class"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "stock_vehicle_attributes_mode_restriction_sva_mode_restriction_sva_mode_restriction_fk": {
+          "name": "stock_vehicle_attributes_mode_restriction_sva_mode_restriction_sva_mode_restriction_fk",
+          "tableFrom": "stock_vehicle_attributes",
+          "tableTo": "sva_mode_restriction",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "mode_restriction"
+          ],
+          "columnsTo": [
+            "sva_mode_restriction"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "stock_vehicle_attributes_vin_branded_part_id_branded_part_branded_part_id_fk": {
+          "name": "stock_vehicle_attributes_vin_branded_part_id_branded_part_branded_part_id_fk",
+          "tableFrom": "stock_vehicle_attributes",
+          "tableTo": "branded_part",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "vin_branded_part_id"
+          ],
+          "columnsTo": [
+            "branded_part_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.sva_car_class": {
+      "name": "sva_car_class",
+      "schema": "mcos",
+      "columns": {
+        "sva_car_class": {
+          "name": "sva_car_class",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "sva_car_class_car_class_idx": {
+          "name": "sva_car_class_car_class_idx",
+          "columns": [
+            "sva_car_class"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.sva_mode_restriction": {
+      "name": "sva_mode_restriction",
+      "schema": "mcos",
+      "columns": {
+        "sva_mode_restriction": {
+          "name": "sva_mode_restriction",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "sva_mode_restriction_idx": {
+          "name": "sva_mode_restriction_idx",
+          "columns": [
+            "sva_mode_restriction"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.tunables": {
+      "name": "tunables",
+      "schema": "mcos",
+      "columns": {
+        "club_creation_fee": {
+          "name": "club_creation_fee",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "club_creation_minimum_level": {
+          "name": "club_creation_minimum_level",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "club_officer_minimum_level": {
+          "name": "club_officer_minimum_level",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "race_pp_defeated_opponent": {
+          "name": "race_pp_defeated_opponent",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "race_pp_place_lost": {
+          "name": "race_pp_place_lost",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "race_penalty_per_rank": {
+          "name": "race_penalty_per_rank",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "race_bonus_per_rank": {
+          "name": "race_bonus_per_rank",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "race_bonus_per_mile_sponsored": {
+          "name": "race_bonus_per_mile_sponsored",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "race_bonus_per_mile_open": {
+          "name": "race_bonus_per_mile_open",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "levels_tunelog": {
+          "name": "levels_tunelog",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "levels_slope": {
+          "name": "levels_slope",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "levels_offset": {
+          "name": "levels_offset",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "max_ez_street_level": {
+          "name": "max_ez_street_level",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "club_wait_period_between_clubs": {
+          "name": "club_wait_period_between_clubs",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "turfwar_caption_bonus": {
+          "name": "turfwar_caption_bonus",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "turfwar_member_bonus": {
+          "name": "turfwar_member_bonus",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "top_dog_bonus": {
+          "name": "top_dog_bonus",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rank_advancement_bonus": {
+          "name": "rank_advancement_bonus",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tt_cash_reward_first": {
+          "name": "tt_cash_reward_first",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tt_cash_reward_second": {
+          "name": "tt_cash_reward_second",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tt_cash_reward_third": {
+          "name": "tt_cash_reward_third",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tt_points_reward_first": {
+          "name": "tt_points_reward_first",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tt_points_reward_second": {
+          "name": "tt_points_reward_second",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tt_points_reward_third": {
+          "name": "tt_points_reward_third",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "universal_repair_cost_modifier": {
+          "name": "universal_repair_cost_modifier",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "universal_scrap_value_modifier": {
+          "name": "universal_scrap_value_modifier",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ad_cost_1_day": {
+          "name": "ad_cost_1_day",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ad_cost_2_days": {
+          "name": "ad_cost_2_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ad_cost_3_days": {
+          "name": "ad_cost_3_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ad_cost_4_days": {
+          "name": "ad_cost_4_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ad_cost_5_days": {
+          "name": "ad_cost_5_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ad_cost_6_days": {
+          "name": "ad_cost_6_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ad_cost_7_days": {
+          "name": "ad_cost_7_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "trade_in_modifier": {
+          "name": "trade_in_modifier",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sim_street_max_wager": {
+          "name": "sim_street_max_wager",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "point_award_1st_place": {
+          "name": "point_award_1st_place",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "point_award_2nd_place": {
+          "name": "point_award_2nd_place",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "point_award_3rd_place": {
+          "name": "point_award_3rd_place",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "point_award_4th_place": {
+          "name": "point_award_4th_place",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "point_award_5th_place": {
+          "name": "point_award_5th_place",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "point_award_6th_place": {
+          "name": "point_award_6th_place",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "arcade_race_point_modifier": {
+          "name": "arcade_race_point_modifier",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mcots_pooling_frequency": {
+          "name": "mcots_pooling_frequency",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "starter_cash": {
+          "name": "starter_cash",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "enable_chear_emails": {
+          "name": "enable_chear_emails",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "salary_per_level": {
+          "name": "salary_per_level",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "club_max_members": {
+          "name": "club_max_members",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "club_registration_fee": {
+          "name": "club_registration_fee",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "club_reregistration_fee": {
+          "name": "club_reregistration_fee",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "classified_ad_bill_rate": {
+          "name": "classified_ad_bill_rate",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "classified_ad_max_days": {
+          "name": "classified_ad_max_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "classified_ad_max_size": {
+          "name": "classified_ad_max_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "classified_ad_max_per_persona": {
+          "name": "classified_ad_max_per_persona",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pap_award_percentage": {
+          "name": "pap_award_percentage",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deal_of_the_day_branded_part_id": {
+          "name": "deal_of_the_day_branded_part_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deal_of_the_day_discount": {
+          "name": "deal_of_the_day_discount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.user": {
+      "name": "user",
+      "schema": "mcos",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_name": {
+          "name": "user_name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "customer_id": {
+          "name": "customer_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_super_user": {
+          "name": "is_super_user",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "user_id_idx": {
+          "name": "user_id_idx",
+          "columns": [
+            "user_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.vehicle": {
+      "name": "vehicle",
+      "schema": "mcos",
+      "columns": {
+        "vehicle_id": {
+          "name": "vehicle_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "skin_id": {
+          "name": "skin_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "flags": {
+          "name": "flags",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "class": {
+          "name": "class",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "info_setting": {
+          "name": "info_setting",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "damage_info": {
+          "name": "damage_info",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "vehicle_id_idx": {
+          "name": "vehicle_id_idx",
+          "columns": [
+            "vehicle_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "vehicle_skin_id_skin_skin_id_fk": {
+          "name": "vehicle_skin_id_skin_skin_id_fk",
+          "tableFrom": "vehicle",
+          "tableTo": "skin",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "skin_id"
+          ],
+          "columnsTo": [
+            "skin_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "mcos.warehouse": {
+      "name": "warehouse",
+      "schema": "mcos",
+      "columns": {
+        "branded_part_id": {
+          "name": "branded_part_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "skin_id": {
+          "name": "skin_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "player_id": {
+          "name": "player_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "qty_avail": {
+          "name": "qty_avail",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_deal_of_the_day": {
+          "name": "is_deal_of_the_day",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "warehouse_branded_part_id_idx": {
+          "name": "warehouse_branded_part_id_idx",
+          "columns": [
+            "branded_part_id"
+          ],
+          "isUnique": false
+        },
+        "warehouse_skin_id_idx": {
+          "name": "warehouse_skin_id_idx",
+          "columns": [
+            "skin_id"
+          ],
+          "isUnique": false
+        },
+        "warehouse_player_id_idx": {
+          "name": "warehouse_player_id_idx",
+          "columns": [
+            "player_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "warehouse_branded_part_id_branded_part_branded_part_id_fk": {
+          "name": "warehouse_branded_part_id_branded_part_branded_part_id_fk",
+          "tableFrom": "warehouse",
+          "tableTo": "branded_part",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "branded_part_id"
+          ],
+          "columnsTo": [
+            "branded_part_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "warehouse_skin_id_skin_skin_id_fk": {
+          "name": "warehouse_skin_id_skin_skin_id_fk",
+          "tableFrom": "warehouse",
+          "tableTo": "skin",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "skin_id"
+          ],
+          "columnsTo": [
+            "skin_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "warehouse_player_id_player_player_id_fk": {
+          "name": "warehouse_player_id_player_player_id_fk",
+          "tableFrom": "warehouse",
+          "tableTo": "player",
+          "schemaTo": "mcos",
+          "columnsFrom": [
+            "player_id"
+          ],
+          "columnsTo": [
+            "player_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {
+    "mcos": "mcos"
+  },
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
