@@ -21,7 +21,7 @@
     "dependencies": {
         "@sentry/node": "^7.102.0",
         "@types/pg": "^8.11.6",
-        "drizzle-orm": "^0.30.10",
+        "drizzle-orm": "^0.31.0",
         "pg": "^8.11.5",
         "pg-hstore": "^2.3.4",
         "sequelize": "^6.37.3",
