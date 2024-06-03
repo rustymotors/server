@@ -20,7 +20,7 @@
     "license": "AGPL-3.0",
     "dependencies": {
         "@sentry/node": "^7.114.0",
-        "drizzle-orm": "^0.30.10",
+        "drizzle-orm": "^0.31.0",
         "vitest": "^1.6.0"
     },
     "directories": {
