@@ -19,7 +19,7 @@
     "author": "",
     "license": "AGPL-3.0",
     "dependencies": {
-        "@sentry/node": "^7.102.0",
+        "@sentry/node": "^8.0.0",
         "@types/pg": "^8.11.6",
         "drizzle-orm": "^0.31.0",
         "pg": "^8.11.5",
