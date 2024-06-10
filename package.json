@@ -33,6 +33,6 @@
     "schema"
   ],
   "devDependencies": {
-    "nx": "19.2.2"
+    "nx": "19.2.3"
   }
 }
