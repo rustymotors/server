@@ -21,4 +21,4 @@ package-lock.json
 meta.json
 
 
-.nx/cache
+.nx/
