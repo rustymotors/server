@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import Sentry from "@sentry/node";
+import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
 import { getServerLogger } from "rusty-motors-shared";
 import { verifyLegacyCipherSupport } from "rusty-motors-shared";
@@ -43,7 +43,6 @@ export default async function main() {
         profilesSampleRate: 1.0, // Profiling sample rate is relative to tracesSampleRate
         integrations: [
             nodeProfilingIntegration(),
-            ...Sentry.autoDiscoverNodePerformanceMonitoringIntegrations(),
         ],
         _experiments: {
             metricsAggregator: true,
