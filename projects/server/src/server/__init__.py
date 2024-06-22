@@ -50,8 +50,8 @@ class RustyMotorsServer(tk.Frame):
         self.port = int(args.port)
 
         self.server_socket = socket()
-        self.server_socket.bind((self.server_address, self.port))
         self.server_socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+        self.server_socket.bind((self.server_address, self.port))
 
         if self.server_socket is not None:
             self.server_socket.listen(1)
