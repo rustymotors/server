@@ -8,6 +8,9 @@ lint:
 format:
 	pdm run black .
 
+setcap:
+	@sudo setcap cap_net_bind_service=+ep $$(readlink -f $$(pdm run which python))
+
 
 test:
 	pdm run coverage run -m pytest
