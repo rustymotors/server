@@ -1,6 +1,6 @@
 init:
 	pip install --user pdm
-	pdm sync -d -G testing
+	pdm install
 
 lint:
 	pipenv run flake8 . --exit-zero
