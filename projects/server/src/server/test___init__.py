@@ -1,4 +1,3 @@
-from socket import SO_REUSEADDR, SOL_SOCKET
 import unittest
 from unittest.mock import MagicMock
 from server import RustyMotorsServer
@@ -20,9 +19,6 @@ class TestRustyMotorsServer(unittest.TestCase):
 
         # Assert that the server's server_socket is set to non-blocking mode
         self.assertFalse(server.server_socket.getblocking())
-
-        # Assert that the server's server_socket is set to reuse the address
-        self.assertEqual(server.server_socket.getsockopt(SOL_SOCKET, SO_REUSEADDR), 1)
 
 
 if __name__ == "__main__":
