@@ -5,7 +5,7 @@ black==24.4.2
 cfgv==3.4.0
 click==8.1.7
 colorama==0.4.6; sys_platform == "win32" or platform_system == "Windows"
-coverage==7.5.3
+coverage==7.5.4
 distlib==0.3.8
 filelock==3.15.4
 flake8==7.1.0
