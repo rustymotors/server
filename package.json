@@ -15,7 +15,9 @@
   "license": "AGPL-3.0",
   "private": true,
   "scripts": {
-    "start": "node --openssl-legacy-provider --env-file=.env --loader ts-node/esm ./apps/main/server.ts"
+    "clean": "rm -rf **/node_modules",
+    "start": "node --openssl-legacy-provider --env-file=.env --loader ts-node/esm ./apps/main/server.ts",
+    "test:all": "npm run test --workspaces --if-present"
   },
   "type": "module",
   "workspaces": [
