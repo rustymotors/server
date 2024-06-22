@@ -26,4 +26,3 @@ export async function populateSkinType(): Promise<void> {
             Sentry.captureException(error);
         });
 }
-

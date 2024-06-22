@@ -187,7 +187,7 @@ export function csvRowToPlayer(row: (string | number | Date | null)[]): typeof p
 
 for (const row of playerCsvRow) {
     if (row.length !== playerCsvHeader.length) {
-        throw new Error(`Row length does not match header length: got ${row.length}, expected ${playerCsvHeader.length}`);        
+        throw new Error(`Row length does not match header length: got ${row.length}, expected ${playerCsvHeader.length}`);
     }
 
     const player = [csvRowToPlayer(row.map((value, index) => {

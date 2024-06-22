@@ -33,7 +33,7 @@ export class ClientTrackingMessage extends ServerMessagePayload {
             throw error;
         }
     }
-    
+
     getType() {
         return this._type;
     }

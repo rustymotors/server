@@ -10,7 +10,7 @@ export const svaModeRestriction = pgTable(
     {
         svaModeRestriction: integer("sva_mode_restriction").notNull().primaryKey(),
         description: varchar("description", {
-            length: 100,            
+            length: 100,
         }).notNull(),
     },
     (table) => {

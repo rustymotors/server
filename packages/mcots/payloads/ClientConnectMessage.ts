@@ -68,5 +68,5 @@ export class ClientConnectionMessage extends ServerMessagePayload {
     toString(): string {
         return `ClientConnectionMessage {customerId: ${this._customerId}, personaId: ${this._personaId}, customerName: ${this._customerName}, personaName: ${this._personaName}, clientVersion: ${this._clientVersion}}`;
     }
-    
+
 }

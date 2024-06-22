@@ -15,7 +15,7 @@
         "sourceMap": true,
         "outDir": "dist",
         "emitDeclarationOnly": true
-        
+
     },
     "include": ["apps/**/*", "packages/**/*", "drizzle.config.ts", "schema/**/*.ts"],
 }

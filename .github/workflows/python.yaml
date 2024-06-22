@@ -1,0 +1,33 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Python
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  Testing:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, '3.10', '3.11']
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up PDM
+        uses: pdm-project/setup-pdm@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pdm sync -d -G test
+      - name: Run Tests
+        run: |
+          pdm test

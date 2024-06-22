@@ -110,4 +110,3 @@ export async function populateBrandedPart(): Promise<void> {
             Sentry.captureException(error);
         });
 }
-

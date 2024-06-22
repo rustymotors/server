@@ -160,7 +160,7 @@ export class GameProfile implements ISerializable {
         return buffer;
     }
     toString(): string {
-        return `GameProfile: 
+        return `GameProfile:
         customerID: ${this.customerId}
         profileName: ${this.profileName}
         serverId: ${this.serverId}

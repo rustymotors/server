@@ -5,7 +5,7 @@ export class UserStatusManager {
         return new UserStatus({ customerId: 0 });
     }
     static _instance: UserStatusManager;
-    
+
     static getInstance() {
         if (!UserStatusManager._instance) {
             UserStatusManager._instance = new UserStatusManager();

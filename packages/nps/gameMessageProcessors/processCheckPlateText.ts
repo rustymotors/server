@@ -31,4 +31,3 @@ export async function processCheckPlateText(
     log.resetName();
     return Promise.resolve();
 }
-

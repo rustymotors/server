@@ -20,7 +20,7 @@ export class MessageQueue extends SubThread {
     }: {
         parentThread: TGateway;
         log: TServerLogger;
-    }) {        
+    }) {
         super("MessageQueue", log, 100);
 
         this.log.setName(this.name);
@@ -34,7 +34,7 @@ export class MessageQueue extends SubThread {
         if (typeof MessageQueue._instance === "undefined") {
             MessageQueue._instance = this;
         }
-        
+
         this.log.resetName();
     }
 
@@ -66,4 +66,3 @@ export class MessageQueue extends SubThread {
         this.log.resetName();
     }
 }
-

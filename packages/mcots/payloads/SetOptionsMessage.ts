@@ -73,6 +73,6 @@ export class SetOptionsMessage extends ServerMessagePayload {
     toString() {
         return `SetOptionsMessage: lpCode=${this._lpCode}, lpText=${this._lpText}, carInfoSettings=${this._carInfoSettings}, carNumbers=${JSON.stringify(this._carNumbers)}`;
     }
-    
-    
+
+
 }

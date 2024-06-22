@@ -29,6 +29,6 @@ export const part = pgTable(
             idIdx: uniqueIndex("part_id_idx").on(table.partId),
             partParentPartIdIdx: index("part_parent_part_id_idx").on(table.parentPartId),
             partBrandedPartIdIdx: index("part_branded_part_id_idx").on(table.brandedPartId),
-            partAttachmentPointIdIdx: index("part_attachment_point_id_idx").on(table.attachmentPointId),            
+            partAttachmentPointIdIdx: index("part_attachment_point_id_idx").on(table.attachmentPointId),
         };
     });

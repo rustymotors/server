@@ -30,7 +30,7 @@ switch  ($msgBoxInput) {
 
   'Yes' {
 
-  ## Do something 
+  ## Do something
 
   }
 
@@ -39,4 +39,3 @@ switch  ($msgBoxInput) {
   ## Do something
 
   }
-

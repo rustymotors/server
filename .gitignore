@@ -22,3 +22,12 @@ meta.json
 
 
 .nx/
+
+# python ignores
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+.pytest_cache/
+.coverage
+*.xml

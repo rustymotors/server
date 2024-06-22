@@ -2,7 +2,7 @@ import type { Connection } from "rusty-motors-connection";
 
 export class ClientConnectionManager {
     static _instance: ClientConnectionManager;
-    
+
     static getInstance() {
         if (!ClientConnectionManager._instance) {
             ClientConnectionManager._instance = new ClientConnectionManager();

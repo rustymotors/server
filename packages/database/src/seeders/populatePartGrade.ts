@@ -29,6 +29,3 @@ export async function populatePartGrade(): Promise<void> {
             Sentry.captureException(error);
         });
 }
-
-
-
