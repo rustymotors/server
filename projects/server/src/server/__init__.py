@@ -1,8 +1,20 @@
 import tkinter as tk
 from socket import socket, create_server, SOL_SOCKET, SO_REUSEADDR
+import argparse
+import os
 
-server_address = "localhost"
-port = 80
+
+class EnvDefault(argparse.Action):
+    def __init__(self, envvar, required=True, default=None, **kwargs):
+        if envvar:
+            if envvar in os.environ:
+                default = os.environ[envvar]
+        if required and default:
+            required = False
+        super(EnvDefault, self).__init__(default=default, required=required, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, values)
 
 
 class RustyMotorsServer(tk.Frame):
@@ -15,10 +27,33 @@ class RustyMotorsServer(tk.Frame):
         tk.Label(self, text="Hello World!").grid(column=0, row=0)
         tk.Button(self, text="Quit", command=self.quit).grid(column=1, row=0)
 
-        self.server_socket = create_server((server_address, port))
+        parser = argparse.ArgumentParser()
+        parser.add_argument(
+            "--server-address",
+            action=EnvDefault,
+            envvar="SERVER_ADDRESS",
+            default="localhost",
+            help="The address to bind the server to. Default: localhost. \
+            Can be set with the SERVER_ADDRESS environment variable.",
+        )
+        parser.add_argument(
+            "--port",
+            action=EnvDefault,
+            envvar="PORT",
+            default=12345,
+            help="The port to bind the server to. Default: 12345. Can be set with the PORT environment variable.",
+        )
+        parser.add_help = True
+        args = parser.parse_args()
+
+        self.server_address = str(args.server_address)
+        self.port = int(args.port)
+
+        self.server_socket = create_server((self.server_address, self.port))
 
         if self.server_socket is not None:
             self.server_socket.listen(1)
+            print(f"Server listening on {self.server_address}:{self.port}")
             self.server_socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
             self.server_socket.setblocking(False)
             self.after(1000, self.try_accept, self.server_socket)
