@@ -74,7 +74,7 @@ export const player = pgTable(
         challengeRacesCompleted: integer("challenge_races_completed").default(0),
         carsLost: integer("cars_lost").default(0),
         carsWon: integer("cars_won").default(0),
-        
+
     },
     (table) => {
         return {

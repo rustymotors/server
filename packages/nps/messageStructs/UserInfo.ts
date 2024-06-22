@@ -40,7 +40,7 @@ export class UserInfo implements ISerializable {
         return 4 + 2 + this.profileName.length + 1 + 64;
     }
     toString(): string {
-        return `Profile ID: ${this.profileId}, 
+        return `Profile ID: ${this.profileId},
         Profile Name: ${this.profileName}`;
     }
 }

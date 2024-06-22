@@ -178,8 +178,8 @@ export class GameMessage implements IMessage {
     }
 
     toString(): string {
-        return `Id: ${this.header.getId()} 
-        Length: ${this.header.getLength()} 
+        return `Id: ${this.header.getId()}
+        Length: ${this.header.getLength()}
         Data: ${this.data.toString()}`;
     }
 

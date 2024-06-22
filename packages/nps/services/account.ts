@@ -28,12 +28,12 @@ export async function populateGameUsers(): Promise<void> {
 }
 
 export async function getUser(username: string, password: string): Promise<typeof userSchema.$inferSelect | null> {
-    
+
     const userAccount = await getDatabase().select().from(userSchema).where(
         and(
             eq(userSchema.userName, username),
             eq(userSchema.password, password),
-        ),        
+        ),
     ).limit(1).then((result) => {
         if (result.length === 0) {
             return null;

@@ -121,5 +121,3 @@ export async function populateModel(): Promise<void> {
             Sentry.captureException(error);
         });
 }
-
-

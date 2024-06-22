@@ -37,6 +37,3 @@ export function getServerMessageProcessor(messageId: number) {
 export function getServerMessageProcessors() {
     return serverMessageProcessors;
 }
-
-
-

@@ -2,10 +2,10 @@
 # It is not intended for manual editing.
 
 [metadata]
-groups = ["default", "dev", "pytest", "pre-commit", "test"]
+groups = ["default", "dev", "test"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:36a8fa866be3b06bb71dff47608f8beb4004e3a41502693ebf49e29bf3c55cfa"
+content_hash = "sha256:8209bdf4da581299d47bc2889f906c36d2d5674f5a9c79700d7db66550be8a6e"
 
 [[package]]
 name = "black"
@@ -122,6 +122,21 @@ dependencies = [
 files = [
     {file = "flake8-7.1.0-py2.py3-none-any.whl", hash = "sha256:2e416edcc62471a64cea09353f4e7bdba32aeb079b6e360554c659a122b1bc6a"},
     {file = "flake8-7.1.0.tar.gz", hash = "sha256:48a07b626b55236e0fb4784ee69a465fbf59d79eec1f5b4785c3d3bc57d17aa5"},
+]
+
+[[package]]
+name = "flake8-black"
+version = "0.3.6"
+requires_python = ">=3.7"
+summary = "flake8 plugin to call black as a code style validator"
+groups = ["dev"]
+dependencies = [
+    "black>=22.1.0",
+    "flake8>=3",
+]
+files = [
+    {file = "flake8-black-0.3.6.tar.gz", hash = "sha256:0dfbca3274777792a5bcb2af887a4cad72c72d0e86c94e08e3a3de151bb41c34"},
+    {file = "flake8_black-0.3.6-py3-none-any.whl", hash = "sha256:fe8ea2eca98d8a504f22040d9117347f6b367458366952862ac3586e7d4eeaca"},
 ]
 
 [[package]]
@@ -307,12 +322,13 @@ summary = "Default template for PDM package"
 groups = ["dev"]
 
 [[package]]
-name = "unknown"
-version = "0.0.0"
+name = "server"
+version = "0.1.0"
+requires_python = "==3.12.*"
 editable = true
-path = "./projects/main"
-summary = ""
-groups = ["dev"]
+path = "./projects/server"
+summary = "Default template for PDM package"
+groups = ["default", "dev"]
 
 [[package]]
 name = "virtualenv"

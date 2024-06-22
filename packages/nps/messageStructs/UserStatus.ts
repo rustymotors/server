@@ -22,7 +22,7 @@ export class UserStatus implements ISerializable {
         customerId: number;
         personaId?: number;
         sessionKey?: SessionKey;
-    
+
     }) {
         this._sessionId = randomUUID();
         this.customerId = customerId;
@@ -72,7 +72,7 @@ export class UserStatus implements ISerializable {
         return new UserStatus({
             customerId: 0,
         });
-        
+
     }
 
     static fromBytes(bytes: Buffer): UserStatus {
@@ -93,7 +93,7 @@ export class UserStatus implements ISerializable {
             customerId,
             personaId,
             sessionKey,
-        
+
         });
     }
 

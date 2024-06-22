@@ -21,7 +21,7 @@ const _users: Map<number, Buffer> = new Map();
 
 /**
  * Update a user record in the database
- 
+
 * @throws {Error} If the user record is not found
  */
 export async function updateUser(user: {
@@ -103,5 +103,3 @@ export async function fetchSessionKeyByConnectionId(
     }
     return Promise.resolve(record);
 }
-
-

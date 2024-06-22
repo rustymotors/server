@@ -23,7 +23,7 @@ export class ScheduledThread extends SubThread implements TScheduledThread{
     }: {
         parentThread: TGateway;
         log: TServerLogger;
-    }) {        
+    }) {
         super("ScheduledThread", log, 100);
         this.log.setName("ScheduledThread");
         if (!parentThread) {

@@ -10,7 +10,7 @@ export const svaCarClass = pgTable(
     {
         svaCarClass: integer("sva_car_class").notNull().primaryKey(),
         description: varchar("description", {
-            length: 50,            
+            length: 50,
         }).notNull(),
     },
     (table) => {

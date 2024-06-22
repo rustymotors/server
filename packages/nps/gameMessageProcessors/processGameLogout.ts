@@ -9,7 +9,7 @@ export async function processGameLogout(
     message: GameMessage,
     socketCallback: GameSocketCallback,
 ): Promise<void> {
-    
+
     sendNPSAck(socketCallback);
     return Promise.resolve();
 }

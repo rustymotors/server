@@ -63,5 +63,5 @@ export const tunables = pgTable(
         papAwardPercentage: integer("pap_award_percentage").notNull(),
         dealOfTheDayBrandedPartId: integer("deal_of_the_day_branded_part_id").notNull(),
         dealOfTheDayDiscount: integer("deal_of_the_day_discount").notNull(),
-    },    
+    },
 );

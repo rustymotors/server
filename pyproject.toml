@@ -5,7 +5,9 @@ description = "Default template for PDM package"
 authors = [
     {name = "Molly Draven", email = "drazi@duck.com"},
 ]
-dependencies = []
+dependencies = [
+    "server @ file:///${PROJECT_ROOT}/projects/server",
+]
 requires-python = "==3.12.*"
 readme = "README.md"
 license = {text = "AGPL-3.0"}
@@ -17,12 +19,19 @@ distribution = false
 [tool.pdm.dev-dependencies]
 dev = [
     "-e file:///${PROJECT_ROOT}/libs/serializable",
-    "-e file:///${PROJECT_ROOT}/projects/main",
+    "-e file:///${PROJECT_ROOT}/projects/server",
     "pre-commit>=3.7.1",
     "black>=24.4.2",
     "flake8>=7.1.0",
+    "flake8-black>=0.3.6",
 ]
 test = [
     "pytest>=8.2.2",
     "coverage>=7.5.3",
 ]
+
+[tool.pdm.scripts]
+rusty-server = "rm-server.py"
+lint = "pre-commit run --all-files"
+format = "black ."
+test = "pytest"

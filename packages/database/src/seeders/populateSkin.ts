@@ -13,7 +13,7 @@ export async function populateSkin(): Promise<void> {
         .insert(skinSchema)
         .values([
             {
-                skinId: 1, 
+                skinId: 1,
                 creatorId: 10,
                 skinTypeId: 1,
                 partTypeId: 101,
@@ -89,4 +89,3 @@ export async function populateSkin(): Promise<void> {
             Sentry.captureException(error);
         });
 }
-

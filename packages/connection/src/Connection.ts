@@ -110,7 +110,7 @@ export class Connection {
     private _personaId: number | null = null;
     private _cipherPair: McosEncryptionPair | null = null;
     private _channelSecure: boolean = false;
-    
+
     getConnectionId() {
         return this._connectionId;
     }
@@ -369,4 +369,3 @@ export function handleServerSocketError(connection: Connection, error: Error) {
     connection.close();
     log.resetName();
 }
-

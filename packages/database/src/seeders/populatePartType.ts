@@ -94,5 +94,3 @@ export async function populatePartType(): Promise<void> {
             Sentry.captureException(error);
         });
 }
-
-
