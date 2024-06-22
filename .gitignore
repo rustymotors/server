@@ -30,3 +30,4 @@ meta.json
 __pycache__
 .pytest_cache/
 .coverage
+*.xml
