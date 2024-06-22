@@ -3,10 +3,10 @@ init:
 	pdm install
 
 lint:
-	pipenv run flake8 . --exit-zero
+	pdm run flake8 . --exit-zero
 
 format:
-	pipenv run black .
+	pdm run black .
 
 
 test:
