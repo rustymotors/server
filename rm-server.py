@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-from server.rustomer_motors_server import RustyMotorsServer
+from server.rusty_motors_server import RustyMotorsServer
 
 
 path = "/home/drazisil/Downloads/MCO/mcity.exe"
