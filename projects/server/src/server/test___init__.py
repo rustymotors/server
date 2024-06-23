@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
-from server import RustyMotorsServer
+
+from server.rustomer_motors_server import RustyMotorsServer
 
 
 class TestRustyMotorsServer(unittest.TestCase):
