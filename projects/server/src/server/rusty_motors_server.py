@@ -32,6 +32,7 @@ class RustyMotorsServer(tk.Frame):
         self.grid()
         tk.Label(self, text="Hello World!").grid(column=0, row=0)
         tk.Button(self, text="Quit", command=self.shutdown).grid(column=1, row=0)
+        tk.Button(self, text="Start", command=self.crash).grid(column=2, row=0)
 
         self.bindings()
 
@@ -89,6 +90,10 @@ class RustyMotorsServer(tk.Frame):
         print("Registered all sockets")
 
         self.after(1000, self.try_poll)
+
+    def crash(self):
+        print("Crashing the server")
+        self.data = 1 / 0
 
     def shutdown(self):
         print("Shutting down server")
