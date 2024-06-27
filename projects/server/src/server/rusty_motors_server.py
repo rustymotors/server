@@ -1,27 +1,13 @@
 import argparse
 import tkinter as tk
+
+from server.TCPRequestHandler import TCPRequestHandler
+from server.WebRequestHandler import WebRequestHandler
 from .env_default_action import EnvDefault
 from select import poll, POLLIN
-from socketserver import BaseRequestHandler, ThreadingTCPServer
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from socketserver import ThreadingTCPServer
+from http.server import ThreadingHTTPServer
 import sys
-
-
-class WebRequestHandler(BaseHTTPRequestHandler):
-
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        self.wfile.write(b"Hello World!")
-
-
-class TCPRequestHandler(BaseRequestHandler):
-
-    def handle(self):
-        print(f"Received connection from {self.client_address}")
-        data = self.request.recv(1024)
-        print(f"Received data: {data}")
 
 
 class RustyMotorsServer(tk.Frame):
