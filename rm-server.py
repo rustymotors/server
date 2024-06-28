@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 
+from server.parseServerArguments import parseServerArguments
 from server.rusty_motors_server import RustyMotorsServer
 
 import sentry_sdk
@@ -23,7 +24,8 @@ path = "/home/drazisil/Downloads/MCO/mcity.exe"
 def main():
     print("Hello World!")
 
-    server = RustyMotorsServer()
+    args = parseServerArguments()
+    server = RustyMotorsServer(args)
     if server is not None:
         server.run()
     else:

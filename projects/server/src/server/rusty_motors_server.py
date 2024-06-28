@@ -1,9 +1,9 @@
-import argparse
 import tkinter as tk
 
 from server.TCPRequestHandler import TCPRequestHandler
 from server.WebRequestHandler import WebRequestHandler
-from .env_default_action import EnvDefault
+from server.setupTCPServer import setupTCPServer
+from server.tkservers import tkHTTPServer
 from select import poll, POLLIN
 from socketserver import ThreadingTCPServer
 from http.server import ThreadingHTTPServer
@@ -38,11 +38,13 @@ class RustyMotorsServer(tk.Frame):
 
     def __init__(
         self,
+        args,
         master=None,
     ):
         self.canLog = False
+        self.poll_interval = 100
 
-        self.args = self.parseServerArguments()
+        self.args = args
 
         try:
             self.initialize_gui_and_servers(master)
@@ -104,23 +106,18 @@ class RustyMotorsServer(tk.Frame):
     def initializeServers(self):
         # Setup HTTP server
         self.log(f"Starting HTTP server on {self.args.server_address}:{self.args.port}")
-        self.http_server = ThreadingHTTPServer(
-            (self.args.server_address, int(self.args.port)), WebRequestHandler
+        self.http_server = tkHTTPServer(
+            (self.args.server_address, int(self.args.port)), WebRequestHandler, self
         )
+        self.http_server.allow_reuse_address = True
+        self.http_server.server_bind()
+        self.http_server.socket.listen(5)
 
         try:
-            self.login_server = ThreadingTCPServer(
-                ("localhost", 8226), TCPRequestHandler
-            )
-            self.persona_server = ThreadingTCPServer(
-                ("localhost", 8228), TCPRequestHandler
-            )
-            self.lobby_server = ThreadingTCPServer(
-                ("localhost", 7003), TCPRequestHandler
-            )
-            self.mcots_server = ThreadingTCPServer(
-                ("localhost", 43300), TCPRequestHandler
-            )
+            self.login_server = setupTCPServer(self, 8226, TCPRequestHandler)
+            self.persona_server = setupTCPServer(self, 8228, TCPRequestHandler)
+            self.lobby_server = setupTCPServer(self, 7003, TCPRequestHandler)
+            self.mcots_server = setupTCPServer(self, 43300, TCPRequestHandler)
         except OSError as e:
             self.canLog = False
             raise Exception(f"Cannot bind to port {e}")
@@ -141,34 +138,6 @@ class RustyMotorsServer(tk.Frame):
         self.poller.register(self.mcots_server, POLLIN)
         self.log("Registered all sockets")
 
-    def parseServerArguments(self):
-        parser = argparse.ArgumentParser()
-        parser.add_argument(
-            "--server-address",
-            action=EnvDefault,
-            envvar="SERVER_ADDRESS",
-            default="localhost",
-            help="The address to bind the server to. Default: localhost. \
-            Can be set with the SERVER_ADDRESS environment variable.",
-        )
-        parser.add_argument(
-            "--port",
-            action=EnvDefault,
-            envvar="PORT",
-            default=3000,
-            help="The port to bind the server to. Default: 3000. Can be set with the PORT environment variable.",
-        )
-        parser.add_argument(
-            "--external-host",
-            action=EnvDefault,
-            envvar="EXTERNAL_HOST",
-            default="localhost",
-            help="The external host to tell clients to connect to. Default: localhost. \
-            Can be set with the EXTERNAL_HOST environment variable.",
-        )
-        args = parser.parse_args()
-        return args
-
     def shutdown(self):
         self.log("Shutting down servers...")
         if hasattr(self, "http_server"):
@@ -187,18 +156,21 @@ class RustyMotorsServer(tk.Frame):
         incoming = self.poller.poll(1)
 
         if len(incoming) == 0:
-            self.after(1000, self.pollingProcess)
+            self.checkServersForData()
             return
 
         for fd, event in incoming:
             if event == POLLIN:
                 self.handle_incoming(fd)
 
-        self.after(1000, self.pollingProcess)
+        self.checkServersForData()
+
+    def checkServersForData(self):
+        self.after(self.poll_interval, self.pollingProcess)
 
     def handle_incoming(self, fd):
         server = self.fdMapper[fd]
-        self.log(f"Handling incoming connection from {server}")
+        self.log(f"Handling incoming connection on port {server.server_address[1]}")
         server.handle_request()
 
     def registerKeyboardBinding(self):
@@ -208,5 +180,5 @@ class RustyMotorsServer(tk.Frame):
         self.entry.bind("<Return>", lambda event: self.processUserInput())
 
     def run(self):
-        self.after(1000, self.pollingProcess)
+        self.checkServersForData()
         self.mainloop()
