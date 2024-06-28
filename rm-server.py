@@ -24,9 +24,6 @@ def main():
     print("Hello World!")
 
     server = RustyMotorsServer({})
-    if server is None:
-        print("Unable to start server.")
-        exit(1)
     server.run()
 
 
