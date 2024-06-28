@@ -5,7 +5,7 @@
 groups = ["default", "dev", "test"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:18ce770ecb889163772a756e60c5d1bcb3e83d9e4889c1ebb8f0c6a5c299949a"
+content_hash = "sha256:a51a969fdb16ce77cf2e4229775b327a7175f98c20012fdaaf213c10436dcf17"
 
 [[package]]
 name = "black"
@@ -355,16 +355,6 @@ editable = true
 path = "./projects/server"
 summary = "Default template for PDM package"
 groups = ["default", "dev"]
-
-[[package]]
-name = "tcl"
-version = "0.2"
-summary = "A coding language used for Graphical user interface"
-groups = ["default"]
-files = [
-    {file = "Tcl-0.2-py3-none-any.whl", hash = "sha256:482e8147ed4c07563a621ffa5be874574527a9d60f5c3e9917b1f4079c5b27e5"},
-    {file = "Tcl-0.2.tar.gz", hash = "sha256:395f69c382dedf29f88b6cce9114024528fce7f073d7b84eaefa9b608f3ea193"},
-]
 
 [[package]]
 name = "urllib3"

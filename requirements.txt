@@ -28,6 +28,5 @@ pyyaml==6.0.1
 sentry-sdk==2.7.0
 -e file:///home/drazisil/mcos/libs/serializable#egg=serializable
 -e file:///home/drazisil/mcos/projects/server#egg=server
-tcl==0.2
 urllib3==2.2.2
 virtualenv==20.26.3

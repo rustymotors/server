@@ -6,7 +6,6 @@ authors = [{ name = "Molly Draven", email = "drazi@duck.com" }]
 dependencies = [
     "server @ file:///${PROJECT_ROOT}/projects/server",
     "sentry-sdk>=2.7.0",
-    "Tcl>=0.2",
 ]
 requires-python = "==3.12.*"
 readme = "README.md"
