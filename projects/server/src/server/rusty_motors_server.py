@@ -9,15 +9,54 @@ from socketserver import ThreadingTCPServer
 from http.server import ThreadingHTTPServer
 import sys
 
+root = tk.Tk()
+
 
 class RustyMotorsServer(tk.Frame):
+    """
+    A class representing the Rusty Motors Server.
+
+    This server provides a graphical user interface (GUI) for controlling and monitoring
+    various servers used in the Rusty Motors project.
+
+    Args:
+        master: The master widget.
+
+    Attributes:
+        args: The parsed server arguments.
+        http_server: The HTTP server instance.
+        login_server: The login server instance.
+        persona_server: The persona server instance.
+        lobby_server: The lobby server instance.
+        mcots_server: The MCOTS server instance.
+        fdMapper: A dictionary mapping file descriptors to server instances.
+        poller: The poller instance for handling incoming connections.
+
+    Extends:
+        tk.Frame
+    """
+
     def __init__(
         self,
         master=None,
     ):
+        self.canLog = False
+
         self.args = self.parseServerArguments()
 
-        self.initialize_gui_and_servers(master)
+        try:
+            self.initialize_gui_and_servers(master)
+        except Exception as e:
+            print(e)
+            sys.exit(1)
+
+    def log(self, message: str, type: str = "info"):
+        if self.canLog:
+            self.log_text.insert(tk.END, message, type)
+            self.log_text.insert(tk.END, "\n", type)
+            self.log_text.see(tk.END)
+        else:
+            print(message)
 
     def initialize_gui_and_servers(self, master):
         self.initialize_gui(master)
@@ -29,11 +68,11 @@ class RustyMotorsServer(tk.Frame):
     def initialize_gui(self, master):
         tk.Frame.__init__(self, master)
         self.grid()
-        tk.Wm.title(self.master, "Rusty Motors Server")
+        root.title("Rusty Motors Server")
         tk.Label(self, text="Rusty Motors Server").grid(row=0, column=0)
         tk.Button(self, text="Quit", command=self.shutdown).grid(row=1, column=1)
         # Create a Label for log messages
-        self.log = tk.Label(self, text="Log messages will appear here")
+        self.log_label = tk.Label(self, text="Log messages will appear here")
         # Create a scrollbar for the log
         self.scrollbar = tk.Scrollbar(self, orient="vertical")
         # Create a read-only Text widget to display the log
@@ -44,52 +83,49 @@ class RustyMotorsServer(tk.Frame):
             yscrollcommand=self.scrollbar.set,
             wrap="word",
         )
+        self.log_text.tag_config("input", foreground="blue")
+        self.log_text.tag_config("error", foreground="red")
         # Create an entry widget for user input
-        self.entry = tk.Entry(self, width=50, invcmd=self.processUserInput)
+        self.entry = tk.Entry(self, width=50)
 
         # Place the widgets on the grid
-        self.log.grid(row=2, column=0)
+        self.log_label.grid(row=2, column=0)
         self.scrollbar.grid(row=3, column=1, sticky="ns")
         self.log_text.grid(row=3, column=0)
         self.entry.grid(row=4, column=0)
         # Configure the scrollbar to scroll the log_text widget
         self.scrollbar.config(command=self.log_text.yview)
-
-        # Redirect stdout to the log_text widget
-        self.messageLogger()
+        self.canLog = True
 
     def processUserInput(self):
-        self.log_text.insert(tk.END, self.entry.get(), "green")
-
-    def messageLogger(self):
-        class StdoutRedirector:
-            def __init__(self, text_widget, message_type="stdout"):
-                self.text_widget = text_widget
-
-                if message_type == "stdout":
-                    self.color = "black"
-                elif message_type == "stderr":
-                    self.color = "red"
-
-            def write(self, message):
-                self.text_widget.insert(tk.END, message, self.color)
-                self.text_widget.see(tk.END)
-
-        sys.stdout = StdoutRedirector(self.log_text, message_type="stdout")
-        sys.stderr = StdoutRedirector(self.log_text, message_type="stderr")
+        self.log(f"User input: {self.entry.get()}", "input")
+        self.entry.delete(0, tk.END)
 
     def initializeServers(self):
         # Setup HTTP server
+        self.log(f"Starting HTTP server on {self.args.server_address}:{self.args.port}")
         self.http_server = ThreadingHTTPServer(
-            (self.args.server_address, self.args.port), WebRequestHandler
+            (self.args.server_address, int(self.args.port)), WebRequestHandler
         )
 
-        self.login_server = ThreadingTCPServer(("localhost", 8226), TCPRequestHandler)
-        self.persona_server = ThreadingTCPServer(("localhost", 8228), TCPRequestHandler)
-        self.lobby_server = ThreadingTCPServer(("localhost", 7003), TCPRequestHandler)
-        self.mcots_server = ThreadingTCPServer(("localhost", 43300), TCPRequestHandler)
+        try:
+            self.login_server = ThreadingTCPServer(
+                ("localhost", 8226), TCPRequestHandler
+            )
+            self.persona_server = ThreadingTCPServer(
+                ("localhost", 8228), TCPRequestHandler
+            )
+            self.lobby_server = ThreadingTCPServer(
+                ("localhost", 7003), TCPRequestHandler
+            )
+            self.mcots_server = ThreadingTCPServer(
+                ("localhost", 43300), TCPRequestHandler
+            )
+        except OSError as e:
+            self.canLog = False
+            raise Exception(f"Cannot bind to port {e}")
 
-        self.fdMapper: dict[int, ThreadingHTTPServer | TCPRequestHandler] = {
+        self.fdMapper: dict[int, ThreadingHTTPServer | ThreadingTCPServer] = {
             self.http_server.socket.fileno(): self.http_server,
             self.login_server.fileno(): self.login_server,
             self.persona_server.fileno(): self.persona_server,
@@ -103,7 +139,7 @@ class RustyMotorsServer(tk.Frame):
         self.poller.register(self.persona_server, POLLIN)
         self.poller.register(self.lobby_server, POLLIN)
         self.poller.register(self.mcots_server, POLLIN)
-        print("Registered all sockets")
+        self.log("Registered all sockets")
 
     def parseServerArguments(self):
         parser = argparse.ArgumentParser()
@@ -134,12 +170,17 @@ class RustyMotorsServer(tk.Frame):
         return args
 
     def shutdown(self):
-        print("Shutting down server")
-        self.http_server.server_close()
-        self.login_server.server_close()
-        self.persona_server.server_close()
-        self.lobby_server.server_close()
-        self.mcots_server.server_close()
+        self.log("Shutting down servers...")
+        if hasattr(self, "http_server"):
+            self.http_server.server_close()
+        if hasattr(self, "login_server"):
+            self.login_server.server_close()
+        if hasattr(self, "persona_server"):
+            self.persona_server.server_close()
+        if hasattr(self, "lobby_server"):
+            self.lobby_server.server_close()
+        if hasattr(self, "mcots_server"):
+            self.mcots_server.server_close()
         self.quit()
 
     def pollingProcess(self):
@@ -157,7 +198,7 @@ class RustyMotorsServer(tk.Frame):
 
     def handle_incoming(self, fd):
         server = self.fdMapper[fd]
-        print(f"Handling incoming connection from {server}")
+        self.log(f"Handling incoming connection from {server}")
         server.handle_request()
 
     def registerKeyboardBinding(self):
