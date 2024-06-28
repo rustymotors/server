@@ -25,6 +25,8 @@ class TestRustyMotorsServer(unittest.TestCase):
             port="3000",
         )
         server = RustyMotorsServer(args)
+        # Assuming the assertion line comes after the server initialization
+        server.log_text.insert.assert_called_with(1, "Hello, World!", "black")
         # Create a mock Text widget
         server.log_text = MagicMock(spec=Text)
 
