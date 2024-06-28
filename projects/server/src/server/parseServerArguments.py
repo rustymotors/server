@@ -5,6 +5,12 @@ import argparse
 
 
 def parseServerArguments():
+    """
+    Parse the command line arguments for the server.
+
+    Returns:
+        args (argparse.Namespace): The parsed command line arguments.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--server-address",
