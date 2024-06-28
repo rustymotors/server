@@ -6,6 +6,7 @@ authors = [{ name = "Molly Draven", email = "drazi@duck.com" }]
 dependencies = [
     "server @ file:///${PROJECT_ROOT}/projects/server",
     "sentry-sdk>=2.7.0",
+    "Tcl>=0.2",
 ]
 requires-python = "==3.12.*"
 readme = "README.md"
@@ -36,6 +37,7 @@ dev = [
     "black>=24.4.2",
     "flake8>=7.1.0",
     "flake8-black>=0.3.6",
+    "Tcl>=0.2",
 ]
 test = ["pytest>=8.2.2", "coverage>=7.5.3"]
 
