@@ -1,7 +1,9 @@
+import argparse
 import tkinter as tk
 
 from server.TCPRequestHandler import TCPRequestHandler
 from server.WebRequestHandler import WebRequestHandler
+from server.env_default_action import EnvDefault
 from server.setupTCPServer import setupTCPServer
 from server.tkservers import tkHTTPServer
 from select import poll, POLLIN
@@ -44,13 +46,46 @@ class RustyMotorsServer(tk.Frame):
         self.canLog = False
         self.poll_interval = 100
 
-        self.args = args
+        self.args = args or self.parse_args()
 
         try:
             self.initialize_gui_and_servers(master)
         except Exception as e:
             print(e)
             sys.exit(1)
+
+    def parse_args(self):
+        """
+        Parse the command line arguments for the server.
+
+        Returns:
+            args (argparse.Namespace): The parsed command line arguments.
+        """
+        parser = argparse.ArgumentParser()
+        parser.add_argument(
+            "--server-address",
+            action=EnvDefault,
+            envvar="SERVER_ADDRESS",
+            default="0.0.0.0",
+            help="The address to bind the server to. Default: 0.0.0.0. \
+            Can be set with the SERVER_ADDRESS environment variable.",
+        )
+        parser.add_argument(
+            "--port",
+            action=EnvDefault,
+            envvar="PORT",
+            default=3000,
+            help="The port to bind the server to. Default: 3000. Can be set with the PORT environment variable.",
+        )
+        parser.add_argument(
+            "--external-host",
+            action=EnvDefault,
+            envvar="EXTERNAL_HOST",
+            default="localhost",
+            help="The external host to tell clients to connect to. Default: localhost. \
+            Can be set with the EXTERNAL_HOST environment variable.",
+        )
+        return parser.parse_args()
 
     def log(self, message: str, type: str = "info"):
         if self.canLog:
