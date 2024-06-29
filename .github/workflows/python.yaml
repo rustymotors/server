@@ -31,3 +31,5 @@ jobs:
       - name: Run Tests
         run: |
           pdm test
+        env:
+          DISPLAY: 0.0
