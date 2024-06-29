@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ['3.11']
+        python-version: ['3.12']
         os: [ubuntu-latest, macOS-latest, windows-latest]
 
     steps:
@@ -27,7 +27,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt update && sudo apt install -y tcl tk
           pdm sync -d -G test
       - name: Run Tests
         run: |
