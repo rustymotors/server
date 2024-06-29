@@ -4,6 +4,8 @@ from server.tkservers import tkTCPServer
 
 import tkinter as tk
 
+allowed_backlog = 5
+
 
 def setupTCPServer(
     tkApp: tk.Frame, port: int, handler=TCPRequestHandler
@@ -11,5 +13,5 @@ def setupTCPServer(
     server = tkTCPServer(("localhost", port), handler, tkApp)
     server.allow_reuse_address = True
     server.server_bind()
-    server.socket.listen(5)
+    server.socket.listen(allowed_backlog)
     return server

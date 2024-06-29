@@ -27,6 +27,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          apt update && apt install -y tk
           pdm sync -d -G test
       - name: Run Tests
         run: |
