@@ -2,6 +2,7 @@
 
 
 from server.rusty_motors_server import RustyMotorsServer
+from sentry_sdk.integrations.socket import SocketIntegration
 
 import sentry_sdk
 
@@ -14,6 +15,7 @@ sentry_sdk.init(
     # of sampled transactions.
     # We recommend adjusting this value in production.
     profiles_sample_rate=1.0,
+    integrations=[SocketIntegration()],
 )
 
 
