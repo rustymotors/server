@@ -2,11 +2,11 @@
 
 Documention type: Tutorial
 
-Last updated: 2003c90b4aecc5150116e83a0f14d18f44bf3536
+Last updated: 40f6623947ee7a5c2ab90f9b1f64331c40180514
 
 ---
 
-This project isn't really geared towards an player of the game, but if you want to try it out, this is how to do so:
+This project isn't really geared towards a player of the game, but if you want to try it out, this is how to do so:
 
 ## Requirements
 
@@ -17,7 +17,8 @@ This project isn't really geared towards an player of the game, but if you want 
 -   Git
 -   Docker
 -   Docker Compose
--   NodeJS (v20.x - v21.x)
+-   NodeJS (v22.x)
+-   NVM
 -   The debug copy of the game
 
 ## Setup
@@ -31,9 +32,9 @@ After getting the requirements above ready, perform the following steps:
 3. Type `cd rusty-server` and press enter
 4. Type `./mcos/pull_nginx_image.sh` and press enter (this step may take a while, depending on your internet speed)
 5. Type `docker-compose up -d` and press enter
-6. Type `corepack enable pnpm` and press enter
-7. Type `pnpm install` and press enter
-8. Type `pnpm run build` and press enter
+6. Type `nvm install && nvm use` and press enter
+7. Type `npm install` and press enter
+8. Type `npm run build` and press enter
 9. Type `cp .env.example .env` and press enter
 10. Open the `.env` file with your favorite text editing program (the simpler the better) and edit the values as follows:
     a. `EXTERNAL_HOST=` - Add the hostname or ip of the computer you are running this server on. This value MUST be reachable from where you install the game.
@@ -61,7 +62,7 @@ After getting the requirements above ready, perform the following steps:
 9. Click "Next"
 10. You are now on a screen that asks where you want to save this certificate.
 11. Click on the "Place all certificates in the following store" and click "browse"
-12. Select "Trusted Roor Certification Authorities". This should be the second one down.
+12. Select "Trusted Root Certification Authorities". This should be the second one down.
 13. Click "Ok"
 14. Click "Next"
 15. Click "Finish"
@@ -96,6 +97,5 @@ After getting the requirements above ready, perform the following steps:
 If you haven't followed all the steps under the Setup section, this will probably not work well
 
 37. Double-click the debug copy of the game
-38. There are two pre-created logins, depending on what part you to see:
-    a. Username: "admin", Password: "admin" - No existing account, profile creation possible (not playabl, even if it says it was created)
-    b. Username: "molly", Password: "molly" - Existing account, can login to the server and reach the lobby. Any activities past that probably won't work.
+38. These are the possible pre-created logins
+    a. Username: "admin", Password: "admin" - No existing profile, profile design possible, but no cars to buy so you can't create
