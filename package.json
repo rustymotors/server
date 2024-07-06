@@ -17,6 +17,7 @@
   "scripts": {
     "clean": "rm -rf **/node_modules",
     "start": "node --openssl-legacy-provider --env-file=.env --loader ts-node/esm ./apps/main/server.ts",
+    "test": "npm run test:all",
     "test:all": "npm run test --workspaces --if-present"
   },
   "type": "module",
@@ -33,8 +34,5 @@
     "packages/shared",
     "packages/shared-packets",
     "schema"
-  ],
-  "devDependencies": {
-    "nx": "19.3.2"
-  }
+  ]
 }

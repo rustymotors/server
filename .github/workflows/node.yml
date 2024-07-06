@@ -7,39 +7,30 @@ on:
 env:
     MCO_LOG_LEVEL: warn
     EXTERNAL_HOST: mcouniverse.com
-    PRIVATE_KEY_FILE: thebeast/data/private_key.pem
-    CERTIFICATE_FILE: thebeast/data/mcouniverse.crt
-    PUBLIC_KEY_FILE: thebeast/data/pub.key
+    PRIVATE_KEY_FILE: thebeast/data/private_key.pem # These secrets are stored in the repository and are safe to "leak"
+    CERTIFICATE_FILE: thebeast/data/mcouniverse.crt # These secrets are stored in the repository and are safe to "leak"
+    PUBLIC_KEY_FILE: thebeast/data/pub.key # These secrets are stored in the repository and are safe to "leak"
 
 jobs:
     build-test:
         runs-on: ubuntu-latest
 
-        strategy:
-            matrix:
-                node-version: [20.x, 21.x]
-
         steps:
             - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
               with:
                   fetch-depth: 0
-            - name: Use Node.js ${{ matrix.node-version }}
+            - name: Use Node.js 22.x
               uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
               with:
-                  node-version: ${{ matrix.node-version }}
-            # - name: Resolve Outdated Comments
-            #   uses: Ardiannn08/resolve-outdated-comment@v1.3
-            #   with:
-            #       token: ${{ secrets.GH_TOKEN }}
-            #       mode: "delete"
+                  node-version: 22.x
             - name: Install and test
               run: |
                   npm install
-                  npm run test --workspaces --if-present
+                  npm test
               env:
                   CODECOV_UPLOAD_BUNDLE_TOKEN: ${{ secrets.CODECOV_UPLOAD_BUNDLE_TOKEN }}
             - name: Codecov
-              if: ${{ always() }}
+              if: ${{ always() }} # using always() to always run this step because i am uploading test results and coverage in one step
               env:
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
               run: |
