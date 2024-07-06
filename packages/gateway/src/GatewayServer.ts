@@ -34,6 +34,7 @@ import {
     populateBrand,
     populateSkin,
     populateSkinType,
+    populateWarehouse,
 } from "rusty-motors-database";
 
 /**
@@ -284,7 +285,7 @@ export class Gateway implements TGateway {
             await populatePlayer();
             await populateSkinType();
             await populateSkin();
-            // await populateWarehouse();
+            await populateWarehouse();
         } catch (error) {
             this.log.error(`Error in populating game data: ${error as string}`);
             throw error;

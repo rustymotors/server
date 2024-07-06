@@ -15,5 +15,6 @@ export { populatePartGrade } from "./src/seeders/populatePartGrade.js";
 export { populateBrand } from "./src/seeders/populateBrand.js";
 export { populateSkin } from "./src/seeders/populateSkin.js";
 export { populateSkinType } from "./src/seeders/populateSkinType.js";
+export { populateWarehouse } from "./src/seeders/populateWarehouse.js";
 export { getWarehouseInventory } from "./src/functions/getWarehouseInventory.js";
 export type { WarehouseInventory } from "./src/functions/getWarehouseInventory.js";
