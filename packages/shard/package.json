@@ -12,7 +12,7 @@
     "scripts": {
         "check": "tsc",
         "lint": "eslint .",
-        "format": "pnpm prettier --write .",
+        "format": "npm prettier --write .",
         "test": "vitest run --coverage"
     },
     "keywords": [],
