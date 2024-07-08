@@ -17,7 +17,9 @@ jobs:
             - name: Install and test using npm
               run: |
                   npm install
+                  export DATABASE_URL=$(npx pg-test start)
                   npm run test --workspaces --if-present
+                  npx pg-test stop
 
             - name: Create Sentry release
               uses: getsentry/action-release@586b62368d564f25d694ce05fcb9cf53de65ac4f # v1
