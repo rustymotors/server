@@ -51,7 +51,6 @@ jobs:
                   codecovcli --verbose do-upload --fail-on-error --flag shard --name shard-${{ matrix.node-version }}
                   codecovcli --verbose do-upload --fail-on-error --flag shared --name shared-${{ matrix.node-version }}
                   codecovcli --verbose do-upload --fail-on-error --flag shared-packets --name shared-packets-${{ matrix.node-version }}
-                  codecovcli --verbose do-upload --fail-on-error --flag schema --name schema-${{ matrix.node-version }}
 
             - uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4
               with:
