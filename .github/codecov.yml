@@ -48,10 +48,6 @@ flags:
         paths:
             - packages/shared-packets/**
         carryforward: true
-    schema:
-        paths:
-            - schema/**
-        carryforward: false
 
 component_management:
     individual_components:
