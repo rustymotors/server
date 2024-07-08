@@ -9,20 +9,17 @@
     },
     "type": "module",
     "scripts": {
-      "check": "tsc",
-      "lint": "eslint .",
-      "format": "pnpm prettier --write .",
-      "test": "vitest run --coverage"
-
+        "check": "tsc",
+        "lint": "eslint .",
+        "format": "npm prettier --write .",
+        "test": "vitest run --coverage"
     },
     "keywords": [],
     "author": "",
     "license": "AGPL-3.0",
     "dependencies": {
         "@sentry/node": "^8.0.0",
-        "drizzle-orm": "^0.31.0",
         "short-unique-id": "^5.0.3"
     },
-    "devDependencies": {},
     "description": ""
 }

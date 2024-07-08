@@ -19,6 +19,9 @@ export function generateTokenRecord(customerId: number): TokenRecord {
 }
 
 export function generateToken(customerId: number): string {
+    if (typeof customerId !== "number") {
+        throw new Error("Invalid customer ID");
+    }
     const tokenRecord = generateTokenRecord(customerId);
     activeTokens.set(tokenRecord.token, tokenRecord);
     return tokenRecord.token;

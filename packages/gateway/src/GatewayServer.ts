@@ -20,21 +20,10 @@ import {
     gameMessageProcessors,
     populateGameUsers,
     gameProfiles,
-    populateGameProfiles,
 } from "rusty-motors-nps";
 import { populateServerMessageProcessors } from "rusty-motors-mcots";
 import {
-    populatePlayer,
-    populatePlayerType,
-    populateBrandedPart,
-    populatePartType,
-    populateModel,
-    populateAbstractPartType,
-    populatePartGrade,
-    populateBrand,
-    populateSkin,
-    populateSkinType,
-    populateWarehouse,
+    getTuneables,
 } from "rusty-motors-database";
 
 /**
@@ -274,18 +263,6 @@ export class Gateway implements TGateway {
 
         try {
             await populateGameUsers();
-            await populateGameProfiles(gameProfiles);
-            await populatePlayerType();
-            await populateAbstractPartType();
-            await populatePartGrade();
-            await populatePartType();
-            await populateBrand();
-            await populateModel();
-            await populateBrandedPart();
-            await populatePlayer();
-            await populateSkinType();
-            await populateSkin();
-            await populateWarehouse();
         } catch (error) {
             this.log.error(`Error in populating game data: ${error as string}`);
             throw error;

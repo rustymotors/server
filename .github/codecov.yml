@@ -48,10 +48,6 @@ flags:
         paths:
             - packages/shared-packets/**
         carryforward: true
-    schema:
-        paths:
-            - schema/**
-        carryforward: true
 
 component_management:
     individual_components:
@@ -78,3 +74,6 @@ component_management:
               - packages/gateway/**
               - packages/mcots/**
               - packages/shared-packets/**
+
+ignore:
+    - "**/__generated__/**"

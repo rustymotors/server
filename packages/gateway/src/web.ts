@@ -96,7 +96,7 @@ export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
         }
 
         // Generate a token
-        const token = generateToken(user.customerId);
+        const token = generateToken(user.customer_id);
 
         return reply.send(`Valid=TRUE\nTicket=${token}`);
     });

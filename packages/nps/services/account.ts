@@ -1,61 +1,44 @@
-import { getDatabase } from "rusty-motors-database";
-import { user as userSchema } from "rusty-motors-schema";
-import { eq, and } from "drizzle-orm";
-import { getServerLogger } from "rusty-motors-shared";
+import { db, LoginSchema } from 'rusty-motors-database';
+import { getServerLogger } from 'rusty-motors-shared';
+import type { DatabaseSchema } from '../../database/src/services/database';
 
 const log = getServerLogger();
 
-
-
 export async function populateGameUsers(): Promise<void> {
-
-    await getDatabase().insert(userSchema).values([
-        {
-            userId: 1,
-            userName: "admin",
-            password: "admin",
-            customerId: 1,
-            isSuperUser: 1,
-        },
-        {
-            userId: 2,
-            userName: "molly",
-            password: "molly",
-            customerId: 2,
-            isSuperUser: 0,
-        },
-    ]).onConflictDoNothing();
+    await LoginSchema(db).insertOrIgnore({
+        customer_id: 1,
+        login_name: 'admin',
+        password: 'admin',
+        login_level: 1,
+    });
 }
 
-export async function getUser(username: string, password: string): Promise<typeof userSchema.$inferSelect | null> {
+export async function getUser(
+    username: string,
+    password: string
+): Promise<DatabaseSchema['login']['record'] | null> {
+    log.setName('getUser');
 
-    const userAccount = await getDatabase().select().from(userSchema).where(
-        and(
-            eq(userSchema.userName, username),
-            eq(userSchema.password, password),
-        ),
-    ).limit(1).then((result) => {
-        if (result.length === 0) {
-            return null;
-        }
+    log.debug(`Getting user ${username}, ${password}`);
 
-        const record =  result[0];
-
-        if (typeof record === "undefined") {
-            return null;
-        }
-
-        return record;
+    const userAccount = await LoginSchema(db).findOne({
+        login_name: username,
+        password,
     });
 
-    log.debug(`getUser: ${JSON.stringify(userAccount)}`);
+    if (!userAccount) {
+        log.warn(`User ${username} not found`);
+    }
 
-    return userAccount
+    return userAccount;
 }
 
-export async function isSuperUser(username: string, password: string): Promise<boolean> {
+export async function isSuperUser(
+    username: string,
+    password: string
+): Promise<boolean> {
     const user = await getUser(username, password);
-    return user ? user.isSuperUser === 1 : false;
+    return user ? user.login_level === 1 : false;
 }
 
 // Path: packages/nps/services/account.ts
