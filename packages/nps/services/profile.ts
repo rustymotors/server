@@ -1,38 +1,10 @@
-import { GameProfile } from "../messageStructs/GameProfile.js";
-import { getDatabase } from "rusty-motors-database";
-import { profile as profileSchema } from "rusty-motors-schema";
+import { db, ProfileSchema } from 'rusty-motors-database';
+import { GameProfile } from '../messageStructs/GameProfile.js';
 
 export const gameProfiles: GameProfile[] = [];
 
-export async function populateGameProfiles(profiles: GameProfile[]): Promise<void> {
-    const profile1 = GameProfile.new();
-    profile1.customerId = 2;
-    profile1.profileName = "molly";
-    profile1.serverId = 1;
-    profile1.createStamp = 0;
-    profile1.lastLoginStamp = 0;
-    profile1.numberGames = 0;
-    profile1.profileId = 1000;
-    profile1.isOnline = false;
-    profile1.gamePurchaseStamp = 0;
-    profile1.gameSerialNumber = "";
-    profile1.timeOnline = 0;
-    profile1.timeInGame = 0;
-    profile1.gameBlob = Buffer.alloc(0);
-    profile1.personalBlob = Buffer.alloc(0);
-    profile1.pictureBlob = Buffer.alloc(0);
-    profile1.dnd = false;
-    profile1.gameStartStamp = 0;
-    profile1.currentKey = "";
-    profile1.profileLevel = 0;
-    profile1.shardId = 44;
-    profiles.push(profile1);
-
-    return Promise.resolve();
-}
-
 export function getGameProfilesForCustomerId(
-    customerId: number,
+    customerId: number
 ): GameProfile[] {
     const profiles: GameProfile[] = [];
     for (const profile of gameProfiles.values()) {
@@ -62,28 +34,28 @@ export function gameProfileExists(profileName: string): boolean {
 }
 
 export async function addGameProfile(profile: GameProfile): Promise<void> {
-    await getDatabase().insert(profileSchema).values([{
-        customerId: profile.customerId,
-        profileName: profile.profileName,
-        serverId: profile.serverId,
-        createStamp: profile.createStamp,
-        lastLoginStamp: profile.lastLoginStamp,
-        numberGames: profile.numberGames,
-        profileId: profile.profileId,
-        isOnline: profile.isOnline,
-        gamePurchaseStamp: profile.gamePurchaseStamp,
-        gameSerialNumber: profile.gameSerialNumber,
-        timeOnline: profile.timeOnline,
-        timeInGame: profile.timeInGame,
-        gameBlob: profile.gameBlob.toString(),
-        personalBlob: profile.personalBlob.toString(),
-        pictureBlob: profile.pictureBlob.toString(),
+    await ProfileSchema(db).insertOrIgnore({
+        customer_id: profile.customerId,
+        profile_name: profile.profileName,
+        server_id: profile.serverId,
+        create_stamp: profile.createStamp,
+        last_login_stamp: profile.lastLoginStamp,
+        number_games: profile.numberGames,
+        profile_id: profile.profileId,
+        is_online: profile.isOnline,
+        game_purchase_stamp: profile.gamePurchaseStamp,
+        game_serial_number: profile.gameSerialNumber,
+        time_online: profile.timeOnline,
+        time_in_game: profile.timeInGame,
+        game_blob: profile.gameBlob.toString(),
+        personal_blob: profile.personalBlob.toString(),
+        picture_blob: profile.pictureBlob.toString(),
         dnd: profile.dnd,
-        gameStartStamp: profile.gameStartStamp,
-        currentKey: profile.currentKey,
-        profileLevel: profile.profileLevel,
-        shardId: profile.shardId,
-    }]).onConflictDoNothing();
+        game_start_stamp: profile.gameStartStamp,
+        current_key: profile.currentKey,
+        profile_level: profile.profileLevel,
+        shard_id: profile.shardId,
+    });
 }
 
 export function deleteGameProfile(profileId: number): void {

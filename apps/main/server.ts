@@ -21,6 +21,11 @@ import { verifyLegacyCipherSupport } from "rusty-motors-shared";
 import { getServerConfiguration } from "rusty-motors-shared";
 import { getGatewayServer } from "rusty-motors-gateway";
 
+process.on("unhandledRejection", (reason, promise) => {
+    console.error("Unhandled Rejection at:", promise, "reason:", reason);
+    Sentry.captureException(reason);
+});
+
 
 export default async function main() {
     const coreLogger = getServerLogger({
@@ -98,4 +103,10 @@ export default async function main() {
     }
 }
 
-await main();
+try {
+    await main();
+} catch (error) {
+    console.error("Error in main server:", error);
+    process.exit(1);
+    
+}

@@ -24,7 +24,6 @@ export {
     gameProfiles,
     getCustomerId,
     getGameProfilesForCustomerId,
-    populateGameProfiles,
 } from './services/profile.js';
 export { generateToken } from './services/token.js';
 export { UserStatusManager } from './src/UserStatusManager.js';

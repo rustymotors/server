@@ -7,6 +7,9 @@
     "url": "git@github.com:drazisil/mcos.git"
   },
   "dependencies": {
+    "@databases/pg": "^5.5.0",
+    "@databases/pg-schema-cli": "^4.4.0",
+    "@databases/pg-typed": "^4.4.1",
     "rusty-motors-shared": "^1.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
@@ -15,10 +18,12 @@
   "license": "AGPL-3.0",
   "private": true,
   "scripts": {
-    "clean": "rm -rf **/node_modules",
-    "start": "node --openssl-legacy-provider --env-file=.env --loader ts-node/esm ./apps/main/server.ts",
+    "clean": "rm --verbose -rf **/node_modules node_modules",
+    "start": "tsx --openssl-legacy-provider --env-file=.env ./apps/main/server.ts",
     "test": "npm run test:all",
-    "test:all": "npm run test --workspaces --if-present"
+    "test:all": "npm run test --workspaces --if-present",
+    "types:db": "npm --workspace rusty-motors-database run types:db",
+    "migrate": "pg-migrations apply --directory migrations    "
   },
   "type": "module",
   "workspaces": [
@@ -34,5 +39,9 @@
     "packages/shared",
     "packages/shared-packets",
     "schema"
-  ]
+  ],
+  "devDependencies": {
+    "@databases/pg-migrations": "^5.0.3",
+    "dotenv": "^16.4.5"
+  }
 }

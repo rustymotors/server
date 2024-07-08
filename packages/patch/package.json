@@ -9,11 +9,10 @@
     },
     "type": "module",
     "scripts": {
-      "check": "tsc",
-      "lint": "eslint .",
-      "format": "pnpm prettier --write .",
-      "test": "vitest run --coverage"
-
+        "check": "tsc",
+        "lint": "eslint .",
+        "format": "pnpm prettier --write .",
+        "test": "vitest run --coverage"
     },
     "keywords": [],
     "author": "",
@@ -24,6 +23,5 @@
     "directories": {
         "test": "test"
     },
-    "devDependencies": {},
     "description": ""
 }

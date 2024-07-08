@@ -1,12 +1,4 @@
-import { eq } from 'drizzle-orm';
-import { getDatabase } from 'rusty-motors-database';
-import {
-    brandedPart as brandedPartSchema,
-    model as modelSchema,
-    stockVehicleAttributes as stockVehicleAttributesSchema,
-    tunables as tunablesSchema,
-    warehouse as warehouseSchema,
-} from 'rusty-motors-schema';
+import { db, WarehouseSchema, getTuneables, sql } from 'rusty-motors-database';
 import { getServerLogger } from 'rusty-motors-shared';
 
 export type WarehouseInventory = {
@@ -35,87 +27,45 @@ export async function getWarehouseInventory(
         isDealOfTheDay: number;
     }[] = [];
 
-    const dealOfTheDayDiscount = await getDatabase()
-        .select({
-            dealOfTheDayBrandedPartId: tunablesSchema.dealOfTheDayBrandedPartId,
-            dealOfTheDayDiscount: tunablesSchema.dealOfTheDayDiscount,
-        })
-        .from(tunablesSchema)
-        .limit(1)
-        .then((rows) => {
-            return rows[0];
-        });
+    const tunables = getTuneables();
 
-    if (dealOfTheDayDiscount === null) {
-        log.debug('Deal of the day not found');
+    const dealOfTheDayDiscount = tunables.getDealOfTheDayDiscount();
+    const dealOfTheDayBrandedPartId = tunables.getDealOfTheDayBrandedPartId();
+
+
+    if (dealOfTheDayDiscount < 1) {
+        log.warn('Deal of the day not found');
     }
 
     if (brandId > 0) {
-        inventoryCars = await getDatabase()
-            .select({
+        inventoryCars = await db.query(sql`
+            SELECT
                 brandedPartId: warehouseSchema.brandedPartId,
                 retailPrice: stockVehicleAttributesSchema.retailPrice,
                 isDealOfTheDay: warehouseSchema.isDealOfTheDay,
-            })
-            .from(warehouseSchema)
-            .leftJoin(
-                brandedPartSchema,
-                eq(
-                    warehouseSchema.brandedPartId,
-                    brandedPartSchema.brandedPartId
-                )
-            )
-            .leftJoin(
-                modelSchema,
-                eq(brandedPartSchema.modelId, modelSchema.modelId)
-            )
-
-            .leftJoin(
-                stockVehicleAttributesSchema,
-                eq(
-                    warehouseSchema.brandedPartId,
-                    stockVehicleAttributesSchema.brandedPartId
-                )
-            )
-            .where(
-                eq(
-                    eq(warehouseSchema.playerId, warehouseId),
-                    eq(modelSchema.brandId, brandId)
-                )
-            );
+            FROM warehouse w
+            LEFT JOIN branded_part bp ON w.brandedPartId = bp.brandedPartId
+            LEFT JOIN model m ON bp.modelId = m.modelId
+            LEFT JOIN stock_vehicle_attributes sva ON w.brandedPartId = sva.brandedPartId
+            WHERE w.playerId = ${warehouseId} AND m.brandId = ${brandId}
+        `);
     } else {
-        inventoryCars = await getDatabase()
-            .select({
+        inventoryCars = await db.query(sql`
+            SELECT
                 brandedPartId: warehouseSchema.brandedPartId,
                 retailPrice: stockVehicleAttributesSchema.retailPrice,
                 isDealOfTheDay: warehouseSchema.isDealOfTheDay,
-            })
-            .from(warehouseSchema)
-            .leftJoin(
-                brandedPartSchema,
-                eq(
-                    warehouseSchema.brandedPartId,
-                    brandedPartSchema.brandedPartId
-                )
-            )
-            .leftJoin(
-                modelSchema,
-                eq(brandedPartSchema.modelId, modelSchema.modelId)
-            )
-
-            .leftJoin(
-                stockVehicleAttributesSchema,
-                eq(
-                    warehouseSchema.brandedPartId,
-                    stockVehicleAttributesSchema.brandedPartId
-                )
-            )
-            .where(eq(warehouseSchema.playerId, warehouseId));
+            FROM warehouse w
+            LEFT JOIN branded_part bp ON w.brandedPartId = bp.brandedPartId
+            LEFT JOIN model m ON bp.modelId = m.modelId
+            LEFT JOIN stock_vehicle_attributes sva ON w.brandedPartId = sva.brandedPartId
+            WHERE w.playerId = ${warehouseId}
+        `);
     }
 
     const inventory = {
         inventory: inventoryCars,
-        dealOfTheDayDiscount: dealOfTheDayDiscount?.dealOfTheDayDiscount ?? 0,
+        dealOfTheDayDiscount: dealOfTheDayDiscount ?? 0,
     };
 
     log.resetName();

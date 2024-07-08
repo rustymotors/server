@@ -10,15 +10,13 @@
         }
     },
     "scripts": {
-      "check": "tsc",
-      "lint": "eslint .",
-      "format": "pnpm prettier --write .",
-      "test": "vitest run --coverage"
-
+        "check": "tsc",
+        "lint": "eslint .",
+        "format": "pnpm prettier --write .",
+        "test": "vitest run --coverage"
     },
     "keywords": [],
     "author": "",
     "license": "AGPL-3.0",
-    "devDependencies": {},
     "description": ""
 }
