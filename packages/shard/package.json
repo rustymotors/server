@@ -19,7 +19,7 @@
     "author": "",
     "license": "AGPL-3.0",
     "dependencies": {
-        "vitest": "^1.6.0"
+        "vitest": "^2.0.0"
     },
     "directories": {
         "test": "test"
