@@ -9,7 +9,7 @@ colorama==0.4.6; sys_platform == "win32" or platform_system == "Windows"
 coverage==7.6.1
 distlib==0.3.8
 filelock==3.15.4
-flake8==7.1.0
+flake8==7.1.1
 flake8-black==0.3.6
 identify==2.6.0
 iniconfig==2.0.0
