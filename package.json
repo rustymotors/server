@@ -41,8 +41,8 @@
     "schema"
   ],
   "devDependencies": {
-    "@databases/pg-migrations": "^5.0.3",
-    "@databases/pg-test": "^3.1.2",
-    "dotenv": "^16.4.5"
+    "@databases/pg-migrations": "5.0.3",
+    "@databases/pg-test": "3.1.2",
+    "dotenv": "16.4.5"
   }
 }
