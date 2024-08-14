@@ -11,7 +11,7 @@ services:
         extra_hosts:
             - "host.docker.internal:host-gateway"
     db:
-        image: postgres:16.3@sha256:0aafd2ae7e6c391f39fb6b7621632d79f54068faebc726caf469e87bd1d301c0
+        image: postgres:16.4@sha256:c62fdb7fd6f519ef425c54760894c74e8d0cb04fbf4f7d3d79aafd86bae24edd
         restart: always
         environment:
             POSTGRES_DB: rm
