@@ -1,0 +1,27 @@
+{
+    "name": "rusty-motors-patch",
+    "version": "1.0.0",
+    "exports": {
+        ".": {
+            "import": "./index.js",
+            "require": "./index.js"
+        }
+    },
+    "type": "module",
+    "scripts": {
+        "check": "tsc",
+        "lint": "eslint .",
+        "format": "npm prettier --write .",
+        "test": "vitest run --coverage"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "AGPL-3.0",
+    "dependencies": {
+        "vitest": "^1.6.0"
+    },
+    "directories": {
+        "test": "test"
+    },
+    "description": ""
+}

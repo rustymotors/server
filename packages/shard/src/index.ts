@@ -14,9 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { readFileSync } from "fs";
-import { Configuration } from "../../shared/Configuration.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { readFile } from "node:fs/promises";
+import { Configuration } from "rusty-motors-shared";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
@@ -26,15 +25,14 @@ import { ServerError } from "../../shared/errors/ServerError.js";
  * @param {TConfiguration} config
  * @return {string}
  */
-export function handleGetCert(config: Configuration): string {
+export async function handleGetCert(config: Configuration): Promise<string> {
     if (config.certificateFile === undefined) {
-        throw new ServerError("Certificate file not defined");
+        throw new Error("Certificate file not defined");
     }
     try {
-        const cert = readFileSync(config.certificateFile, "utf8");
-        return cert;
+        return await readFile(config.certificateFile, "utf8");
     } catch (err) {
-        throw new ServerError(`Error reading certificate file: ${String(err)}`);
+        throw new Error(`Error reading certificate file: ${String(err)}`);
     }
 }
 
@@ -82,14 +80,13 @@ export function handleGetRegistry(config: Configuration): string {
  * @param {TConfiguration} config
  * @return {string}
  */
-export function handleGetKey(config: Configuration): string {
+export async function handleGetKey(config: Configuration): Promise<string> {
     if (config.publicKeyFile === undefined) {
-        throw new ServerError("Public key file not defined");
+        throw new Error("Public key file not defined");
     }
     try {
-        const key = readFileSync(config.publicKeyFile, "utf8");
-        return key;
+        return await readFile(config.publicKeyFile, "utf8");
     } catch (err) {
-        throw new ServerError(`Error reading public key file: ${String(err)}`);
+        throw new Error(`Error reading public key file: ${String(err)}`);
     }
 }
