@@ -1,0 +1,28 @@
+{
+    "name": "rusty-motors-cli",
+    "version": "1.0.0",
+    "exports": {
+        ".": {
+            "import": "./index.js",
+            "require": "./index.js"
+        }
+    },
+    "type": "module",
+    "scripts": {
+        "check": "tsc",
+        "lint": "eslint .",
+        "format": "npm prettier --write .",
+        "test": "vitest run --coverage"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "AGPL-3.0",
+    "devDependencies": {
+        "@vitest/coverage-v8": "1.6.0"
+    },
+    "dependencies": {
+        "rusty-motors-shared": "^1.0.0",
+        "rusty-motors-shared-packets": "^1.0.0"
+    },
+    "description": ""
+}

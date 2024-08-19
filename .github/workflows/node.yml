@@ -1,52 +1,58 @@
-name: Node.js CI
+name: Node.js
 
 on:
     push:
-        branches: [main]
     pull_request:
-        branches: [main]
 
 env:
     MCO_LOG_LEVEL: warn
+    EXTERNAL_HOST: mcouniverse.com
+    PRIVATE_KEY_FILE: thebeast/data/private_key.pem # These secrets are stored in the repository and are safe to "leak"
+    CERTIFICATE_FILE: thebeast/data/mcouniverse.crt # These secrets are stored in the repository and are safe to "leak"
+    PUBLIC_KEY_FILE: thebeast/data/pub.key # These secrets are stored in the repository and are safe to "leak"
 
 jobs:
-    build:
+    build-test:
         runs-on: ubuntu-latest
 
-        strategy:
-            matrix:
-                node-version: [18.x, 20.x, 21.x]
-
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
               with:
                   fetch-depth: 0
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v3
+            - name: Use Node.js 22.x
+              uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
               with:
-                  node-version: ${{ matrix.node-version }}
-            - run: npm ci install
-            - name: Test
-              run: npm run test:only
+                  node-version: 22.x
+            - name: Install and test
+              run: |
+                  npm install
+                  export DATABASE_URL=$(npx pg-test start)
+                  npm test
+                  npx pg-test stop
+              env:
+                  CODECOV_UPLOAD_BUNDLE_TOKEN: ${{ secrets.CODECOV_UPLOAD_BUNDLE_TOKEN }}
             - name: Codecov
-              env: # Or as an environment variable
+              if: ${{ always() }} # using always() to always run this step because i am uploading test results and coverage in one step
+              env:
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
               run: |
                   pip install --user pytest
                   pip install --user codecov-cli
-                  codecovcli --verbose create-commit --fail-on-error 
-                  codecovcli --verbose create-report --fail-on-error 
+                  codecovcli --verbose create-commit --fail-on-error
+                  codecovcli --verbose create-report --fail-on-error
+                  codecovcli do-upload --report-type test_results --file mcos.junit.xml
+                  codecovcli --verbose do-upload --fail-on-error --flag cli --name cli-${{ matrix.node-version }}
+                  codecovcli --verbose do-upload --fail-on-error --flag connection --name connection-${{ matrix.node-version }}
                   codecovcli --verbose do-upload --fail-on-error --flag database --name database-${{ matrix.node-version }}
                   codecovcli --verbose do-upload --fail-on-error --flag gateway --name gateway-${{ matrix.node-version }}
-                  codecovcli --verbose do-upload --fail-on-error --flag lobby --name lobby-${{ matrix.node-version }}
-                  codecovcli --verbose do-upload --fail-on-error --flag login --name login-${{ matrix.node-version }}
+                  codecovcli --verbose do-upload --fail-on-error --flag mcots --name mcots-${{ matrix.node-version }}
+                  codecovcli --verbose do-upload --fail-on-error --flag nps --name nps-${{ matrix.node-version }}
                   codecovcli --verbose do-upload --fail-on-error --flag patch --name patch-${{ matrix.node-version }}
-                  codecovcli --verbose do-upload --fail-on-error --flag persona --name persona-${{ matrix.node-version }}
                   codecovcli --verbose do-upload --fail-on-error --flag shard --name shard-${{ matrix.node-version }}
-                  codecovcli --verbose do-upload --fail-on-error --flag transactions --name transactions-${{ matrix.node-version }}
-                  codecovcli --verbose do-upload --fail-on-error --flag core --name core-${{ matrix.node-version }}
+                  codecovcli --verbose do-upload --fail-on-error --flag shared --name shared-${{ matrix.node-version }}
+                  codecovcli --verbose do-upload --fail-on-error --flag shared-packets --name shared-packets-${{ matrix.node-version }}
 
-            - uses: actions/upload-artifact@v3
+            - uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4
               with:
                   name: coverage_${{ matrix.node-version }}
                   path: coverage
