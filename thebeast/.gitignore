@@ -1,0 +1,23 @@
+*.env
+*.tsbuildinfo
+logs
+coverage
+*.log
+.nyc_output
+
+test-reports
+junit
+built
+*.sqlite
+junit.xml
+.dccache
+*.db
+node_modules/
+.DS_Store
+
+dist
+# Sentry Auth Token
+.sentryclirc
+*.map
+out/*
+.adminjs/
