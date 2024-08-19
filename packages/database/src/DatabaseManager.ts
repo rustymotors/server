@@ -3,155 +3,103 @@
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
 
-import { getServerLogger } from "../../shared/log.js";
-import { ConnectionRecord, RaceLobbyRecord } from "../../interfaces/index.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
+import type { ConnectionRecord } from "rusty-motors-shared";
+
+/**
+ * This class abstracts database methods
+ * @see {@link getDatabaseServer()} to get a singleton instance
+ */
+
+// This is a fake database table that holds sessions of currently logged in users
+const _sessions: ConnectionRecord[] = [];
+// This is a fake database table that holds user data
+const _users: Map<number, Buffer> = new Map();
 
 /**
  * @module Database
  */
 
-export class Database {
-    static instance: Database | undefined;
-    private _log: import("pino").Logger;
-    private _sessions: ConnectionRecord[];
-    private _lobbies: RaceLobbyRecord[][];
+/**
+ * Update a user record in the database
 
-    /**
-     * Creates an instance of Database.
-     *
-     * @param {import("pino").Logger} [log=getServerLogger({ module: "database" })]
-     */
-    constructor(
-        log: import("pino").Logger = getServerLogger({
-            module: "database",
-        }),
-    ) {
-        this._log = log;
-        this._sessions = [];
-        /**
-         * @private
-         * @type {import("../../interfaces/index.js").RaceLobbyRecord[]}
-         */
-        this._lobbies = [];
-    }
-
-    /**
-     * Return the singleton instance of the DatabaseManager class
-     *
-     * @static
-     * @param {import("pino").Logger} log
-     * @returns {Database}
-     */
-    static getInstance(log: import("pino").Logger): Database {
-        if (!Database.instance) {
-            Database.instance = new Database(log);
-        }
-        const self = Database.instance;
-        return self;
-    }
-
-    /**
-     * Locate customer session encryption key in the database
-     *
-     * @param {number} customerId
-     * @returns {Promise<import("../../interfaces/index.js").ConnectionRecord>}
-     * @throws {Error} If the session key is not found
-     */
-    async fetchSessionKeyByCustomerId(
-        customerId: number,
-    ): Promise<import("../../interfaces/index.js").ConnectionRecord> {
-        const record = this._sessions.find((session) => {
-            return session.customerId === customerId;
-        });
-        if (typeof record === "undefined") {
-            const err = new ServerError(
-                `Session key not found for customer ${customerId}`,
-            );
-            throw err;
-        }
-        return record;
-    }
-
-    /**
-     * Locate customer session encryption key in the database
-     *
-     * @param {string} connectionId
-     * @returns {Promise<import("../../interfaces/index.js").ConnectionRecord>}
-     * @throws {Error} If the session key is not found
-     */
-    async fetchSessionKeyByConnectionId(
-        connectionId: string,
-    ): Promise<import("../../interfaces/index.js").ConnectionRecord> {
-        const record = this._sessions.find((session) => {
-            return session.connectionId === connectionId;
-        });
-        if (typeof record === "undefined") {
-            const err = new ServerError(
-                `Session key not found for connection ${connectionId}`,
-            );
-            throw err;
-        }
-        return record;
-    }
-
-    /**
-     * Create or overwrite a customer's session key record
-     *
-     * @param {number} customerId
-     * @param {string} sessionKey
-     * @param {string} contextId
-     * @param {string} connectionId
-     * @returns {Promise<void>}
-     * @throws {Error} If the session key is not found
-     */
-    async updateSessionKey(
-        customerId: number,
-        sessionKey: string,
-        contextId: string,
-        connectionId: string,
-    ): Promise<void> {
-        const sKey = sessionKey.slice(0, 16);
-
-        const updatedSession: import("../../interfaces/index.js").ConnectionRecord =
-            {
-                customerId,
-                sessionKey,
-                sKey,
-                contextId,
-                connectionId,
-            };
-
-        const record = this._sessions.findIndex((session) => {
-            return session.customerId === customerId;
-        });
-        if (typeof record === "undefined") {
-            const err = new Error(
-                "Error updating session key: existing key not found",
-            );
-            throw err;
-        }
-        this._sessions.splice(record, 1, updatedSession);
+* @throws {Error} If the user record is not found
+ */
+export async function updateUser(user: {
+    userId: number;
+    userData: Buffer;
+}): Promise<void> {
+    try {
+        _users.set(user.userId, user.userData);
+        return Promise.resolve();
+    } catch (error) {
+        throw Error(`Error updating user: ${String(error)}`);
     }
 }
 
 /**
- * Return the singleton instance of the DatabaseManager class
+ * Locate customer session encryption key in the database
  *
- * @param {object} options
- * @param {import("pino").Logger} options.log=getServerLogger({ module: "database" })
- * @returns {Database}
+ * @throws {Error} If the session key is not found
  */
-
-export function getDatabaseServer(
-    option = {
-        log: getServerLogger({
-            module: "database",
-        }),
-    },
-): Database {
-    if (!Database.instance) {
-        Database.instance = new Database(option.log);
+export async function fetchSessionKeyByCustomerId(
+    customerId: number,
+): Promise<ConnectionRecord> {
+    const record = _sessions.find((session) => {
+        return session.customerId === customerId;
+    });
+    if (typeof record === "undefined") {
+        throw Error(`Session key not found for customer ${customerId}`);
     }
-    return Database.getInstance(option.log);
+    return Promise.resolve(record);
+}
+
+/**
+ * Create or overwrite a customer's session key record
+ *
+ * @param {number} customerId
+ * @param {string} sessionKey
+ * @param {string} contextId
+ * @param {string} connectionId
+ * @returns {Promise<void>}
+ */
+export async function updateSessionKey(
+    customerId: number,
+    sessionKey: string,
+    contextId: string,
+    connectionId: string,
+): Promise<void> {
+    const sKey = sessionKey.slice(0, 16);
+
+    const updatedSession: ConnectionRecord = {
+        customerId,
+        sessionKey,
+        sKey,
+        contextId,
+        connectionId,
+    };
+    const record = _sessions.findIndex((session) => {
+        return session.customerId === customerId;
+    });
+
+    _sessions.splice(record, 1, updatedSession);
+    return Promise.resolve();
+}
+
+/**
+ * Locate customer session encryption key in the database
+ *
+ * @param {string} connectionId
+ * @returns {Promise<ConnectionRecord>}
+ * @throws {Error} If the session key is not found
+ */
+export async function fetchSessionKeyByConnectionId(
+    connectionId: string,
+): Promise<ConnectionRecord> {
+    const record = _sessions.find((session) => {
+        return session.connectionId === connectionId;
+    });
+    if (typeof record === "undefined") {
+        throw Error(`Session key not found for connection ${connectionId}`);
+    }
+    return Promise.resolve(record);
 }

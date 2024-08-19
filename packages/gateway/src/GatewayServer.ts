@@ -1,51 +1,42 @@
 import { Socket, createServer as createSocketServer } from "node:net";
 import { onSocketConnection } from "./index.js";
+import fastify from "fastify";
 import {
     Configuration,
     getServerConfiguration,
-} from "../../shared/Configuration.js";
-import { getServerLogger } from "../../shared/log.js";
-import fastify from "fastify";
-import {
-    addOnDataHandler,
-    createInitialState,
-    fetchStateFromDatabase,
-} from "../../shared/State.js";
-import { ConsoleThread } from "../../cli/ConsoleThread.js";
+    type TGateway,
+    type TGatewayOptions,
+    type TServerLogger,
+} from "rusty-motors-shared";
+import { ConsoleThread, ScheduledThread } from "rusty-motors-cli";
 import { addWebRoutes } from "./web.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
-import { receiveLoginData } from "../../login/src/index.js";
-import { receivePersonaData } from "../../persona/src/internal.js";
-import { receiveLobbyData } from "../../lobby/src/internal.js";
-import { receiveTransactionsData } from "../../transactions/src/internal.js";
+
 import FastifySensible from "@fastify/sensible";
-import { Logger } from "pino";
+
+import {
+    populatePortToMessageTypes,
+    populateGameMessageProcessors,
+    portToMessageTypes,
+    gameMessageProcessors,
+    populateGameUsers,
+    gameProfiles,
+} from "rusty-motors-nps";
+import { populateServerMessageProcessors } from "rusty-motors-mcots";
+import {
+    getTuneables,
+} from "rusty-motors-database";
 
 /**
  * @module gateway
  */
 
-type GatewayOptions = {
-    config?: import("/home/drazisil/mcos/packages/shared/Configuration.js").Configuration;
-    log?: Logger;
-    backlogAllowedCount?: number;
-    listeningPortList?: number[];
-    socketConnectionHandler?: ({
-        incomingSocket,
-        log,
-    }: {
-        incomingSocket: Socket;
-        log?: Logger;
-    }) => void;
-};
-
 /**
  * Gateway server
  * @see {@link getGatewayServer()} to get a singleton instance
  */
-export class Gateway {
+export class Gateway implements TGateway {
     config: Configuration;
-    log: Logger;
+    log: TServerLogger;
     timer: NodeJS.Timeout | null;
     loopInterval: number;
     status: string;
@@ -58,24 +49,24 @@ export class Gateway {
         log,
     }: {
         incomingSocket: Socket;
-        log?: Logger;
+        log: TServerLogger;
     }) => void;
     static _instance: Gateway | undefined;
     webServer: import("fastify").FastifyInstance | undefined;
     readThread: ConsoleThread | undefined;
+    scheduledThread: ScheduledThread | undefined;
+
     /**
      * Creates an instance of GatewayServer.
-     * @param {GatewayOptions} options
+     * @param {TGatewayOptions} options
      */
     constructor({
         config = getServerConfiguration({}),
-        log = getServerLogger({
-            module: "GatewayServer",
-        }),
+        log,
         backlogAllowedCount = 0,
         listeningPortList = [],
         socketConnectionHandler = onSocketConnection,
-    }: GatewayOptions) {
+    }: TGatewayOptions) {
         log.debug("Creating GatewayServer instance");
 
         this.config = config;
@@ -87,6 +78,10 @@ export class Gateway {
         this.status = "stopped";
         this.consoleEvents = ["userExit", "userRestart", "userHelp"];
         this.backlogAllowedCount = backlogAllowedCount;
+
+        // Check if there are any listening ports specified
+        this.verifyPortListIsNotEmpty(listeningPortList);
+
         this.listeningPortList = listeningPortList;
         /** @type {import("node:net").Server[]} */
         this.servers = [];
@@ -96,30 +91,46 @@ export class Gateway {
     }
 
     /**
+     * Delete the GatewayServer instance
+     */
+    static deleteInstance() {
+        Gateway._instance = undefined;
+    }
+
+    /**
+     * Assert that the listeningPortList is not empty
+     * @param {number[]} listeningPortList
+     * @throws {Error} If the listeningPortList is empty
+     */
+    private verifyPortListIsNotEmpty(listeningPortList: number[]) {
+        if (listeningPortList.length === 0) {
+            this.log.error(
+                "No listening ports specified. Instance will not be created",
+            );
+            throw new Error("No listening ports specified");
+        }
+    }
+
+    /**
      * @return {import("fastify").FastifyInstance}
      */
     getWebServer(): import("fastify").FastifyInstance {
         if (this.webServer === undefined) {
-            throw new ServerError("webServer is undefined");
+            throw new Error("webServer is undefined");
         }
         return this.webServer;
     }
 
-    start() {
+    async start() {
         this.log.debug("Starting GatewayServer in start()");
         this.log.info("Server starting");
-
-        // Check if there are any listening ports specified
-        if (this.listeningPortList.length === 0) {
-            throw new Error("No listening ports specified");
-        }
 
         // Mark the GatewayServer as running
         this.log.debug("Marking GatewayServer as running");
         this.status = "running";
 
         // Initialize the GatewayServer
-        this.init();
+        await this.init();
 
         this.listeningPortList.forEach((port) => {
             const server = createSocketServer((s) => {
@@ -129,16 +140,14 @@ export class Gateway {
                 });
             });
 
-            server.listen(port, "0.0.0.0", this.backlogAllowedCount, () => {
-                this.log.debug(`Listening on port ${port}`);
-            });
+            server.listen(port, "0.0.0.0", this.backlogAllowedCount);
 
             // Add the server to the list of servers
             this.servers.push(server);
         });
 
         if (this.webServer === undefined) {
-            throw new ServerError("webServer is undefined");
+            throw new Error("webServer is undefined");
         }
 
         // Start the web server
@@ -151,7 +160,7 @@ export class Gateway {
             },
             (err, address) => {
                 if (err) {
-                    this.log.error(err);
+                    this.log.error(String(err));
                     process.exit(1);
                 }
                 this.log.info(`Server listening at ${address}`);
@@ -163,10 +172,10 @@ export class Gateway {
         // Stop the GatewayServer
         await this.stop();
 
-        console.log("=== Restarting... ===");
+        this.log.info("=== Restarting... ===");
 
         // Start the GatewayServer
-        this.start();
+        await this.start();
     }
 
     async exit() {
@@ -192,8 +201,13 @@ export class Gateway {
             this.readThread.stop();
         }
 
+        // Stop the scheduled thread
+        if (this.scheduledThread !== undefined) {
+            this.scheduledThread.stop();
+        }
+
         if (this.webServer === undefined) {
-            throw new ServerError("webServer is undefined");
+            throw new Error("webServer is undefined");
         }
         await this.webServer.close();
 
@@ -206,9 +220,7 @@ export class Gateway {
         this.log.debug("Marking GatewayServer as stopped");
         this.status = "stopped";
 
-        // Reset the global state
-        this.log.debug("Resetting the global state");
-        createInitialState({}).save();
+        this.log.info("Server stopped");
     }
 
     /**
@@ -216,17 +228,18 @@ export class Gateway {
      */
     handleReadThreadEvent(event: string) {
         if (event === "userExit") {
-            this.exit();
+            void this.exit();
         }
         if (event === "userRestart") {
-            this.restart();
+            void this.restart();
         }
         if (event === "userHelp") {
             this.help();
         }
     }
 
-    init() {
+    async init() {
+        this.log.setName("gateway:GatewayServer:init");
         // Create the read thread
         this.readThread = new ConsoleThread({
             parentThread: this,
@@ -235,7 +248,7 @@ export class Gateway {
 
         // Register the read thread events
         if (this.readThread === undefined) {
-            throw new ServerError("readThread is undefined");
+            throw new Error("readThread is undefined");
         }
         this.consoleEvents.forEach((event) => {
             this.readThread?.on(event, () => {
@@ -244,28 +257,38 @@ export class Gateway {
         });
 
         this.webServer = fastify({
-            logger: true,
+            logger: false,
         });
-        this.webServer.register(FastifySensible);
+        await this.webServer.register(FastifySensible);
 
-        let state = fetchStateFromDatabase();
+        try {
+            await populateGameUsers();
+        } catch (error) {
+            this.log.error(`Error in populating game data: ${error as string}`);
+            throw error;
+        }
 
-        state = addOnDataHandler(state, 8226, receiveLoginData);
-        state = addOnDataHandler(state, 8228, receivePersonaData);
-        state = addOnDataHandler(state, 7003, receiveLobbyData);
-        state = addOnDataHandler(state, 43300, receiveTransactionsData);
+        populatePortToMessageTypes(portToMessageTypes);
+        populateGameMessageProcessors(gameMessageProcessors);
 
-        state.save();
+        populateServerMessageProcessors();
+
+        // Create the scheduled thread
+        this.scheduledThread = new ScheduledThread({
+            parentThread: this,
+            log: this.log,
+        });
 
         this.log.debug("GatewayServer initialized");
+        this.log.resetName();
     }
 
     help() {
-        console.log("=== Help ===");
-        console.log("x: Exit");
-        console.log("r: Restart");
-        console.log("?: Help");
-        console.log("============");
+        this.log.info("=== Help ===");
+        this.log.info("x: Exit");
+        this.log.info("r: Restart");
+        this.log.info("?: Help");
+        this.log.info("============");
     }
     run() {
         // Intentionally left blank
@@ -273,19 +296,17 @@ export class Gateway {
 
     /**
      *
-     * @param {GatewayOptions} options
+     * @param {TGatewayOptions} options
      * @returns {Gateway}
      * @memberof Gateway
      */
     static getInstance({
         config = undefined,
-        log = getServerLogger({
-            module: "GatewayServer",
-        }),
+        log,
         backlogAllowedCount = 0,
         listeningPortList = [],
         socketConnectionHandler = onSocketConnection,
-    }: GatewayOptions): Gateway {
+    }: TGatewayOptions): Gateway {
         if (Gateway._instance === undefined) {
             Gateway._instance = new Gateway({
                 config,
@@ -313,20 +334,18 @@ Gateway._instance = undefined;
 /**
  * Get a singleton instance of GatewayServer
  *
- * @param {GatewayOptions} options
+ * @param {TGatewayOptions} options
  * @returns {Gateway}
  */
 export function getGatewayServer({
     config,
-    log = getServerLogger({
-        module: "GatewayServer",
-    }),
+    log,
     backlogAllowedCount = 0,
-    listeningPortList: listeningPortList = [],
+    listeningPortList = [],
     socketConnectionHandler = onSocketConnection,
 }: {
     config?: Configuration;
-    log?: Logger;
+    log: TServerLogger;
     backlogAllowedCount?: number;
     listeningPortList?: number[];
     socketConnectionHandler?: ({
@@ -334,7 +353,7 @@ export function getGatewayServer({
         log,
     }: {
         incomingSocket: Socket;
-        log?: Logger;
+        log: TServerLogger;
     }) => void;
 }): Gateway {
     return Gateway.getInstance({

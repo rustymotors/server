@@ -14,15 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerError } from "../../shared/errors/ServerError.js";
-import { getPatchServer } from "../../patch/src/PatchServer.js";
-import { generateShardList } from "../../shard/src/ShardServer.js";
-import { getServerConfiguration } from "../../shared/Configuration.js";
+import { CastanetResponse } from "rusty-motors-patch";
+import { generateShardList } from "rusty-motors-shard";
+import { getServerConfiguration } from "rusty-motors-shared";
 import {
     handleGetCert,
     handleGetKey,
     handleGetRegistry,
-} from "../../shard/src/index.js";
+} from "rusty-motors-shard";
+import { getUser } from "rusty-motors-nps";
+import { generateToken } from "rusty-motors-nps";
 
 /**
  * Add web routes to the web server
@@ -30,63 +31,114 @@ import {
  * @param {import("fastify").FastifyInstance} webServer The web server
  */
 export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
-    webServer.get("/", async (_request, reply) => {
+    webServer.addContentTypeParser("*", function (request, payload, done) {
+        let data = "";
+        payload.on("data", (chunk) => {
+            data += chunk;
+        });
+        payload.on("end", () => {
+            done(null, data);
+        });
+    });
+
+    webServer.get("/", (_request, reply) => {
         return reply.send("Hello, world!");
     });
 
-    webServer.get(
+    webServer.post(
         "/games/EA_Seattle/MotorCity/UpdateInfo",
         (_request, reply) => {
-            const response = getPatchServer().castanetResponse;
-            return reply.send(response);
+            const response = CastanetResponse;
+            return reply
+                .header(response.header.type, response.header.value)
+                .send(response.body);
         },
     );
 
-    webServer.get("/games/EA_Seattle/MotorCity/NPS", (_request, reply) => {
-        const response = getPatchServer().castanetResponse;
-        return reply.send(response);
+    webServer.post("/games/EA_Seattle/MotorCity/NPS", (_request, reply) => {
+        const response = CastanetResponse;
+        void reply.header(response.header.type, response.header.value);
+        return reply.send(response.body);
     });
 
-    webServer.get("/games/EA_Seattle/MotorCity/MCO", (_request, reply) => {
-        const response = getPatchServer().castanetResponse;
-        return reply.send(response);
+    webServer.post("/games/EA_Seattle/MotorCity/MCO", (_request, reply) => {
+        const response = CastanetResponse;
+        return reply
+            .header(response.header.type, response.header.value)
+            .send(response.body);
     });
 
-    webServer.get("/AuthLogin", (_request, reply) => {
-        return reply.send(
-            "Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e",
-        );
+    interface IQuerystring {
+        username: string;
+        password: string;
+    }
+
+    interface IHeaders {}
+
+    interface IReply {}
+
+    webServer.get<{
+        Querystring: IQuerystring;
+        Headers: IHeaders;
+        Reply: IReply;
+    }>("/AuthLogin", async (request, reply) => {
+        const username = request.query.username;
+        const password = request.query.password;
+
+        // Check for the username
+        const user = await getUser(username, password);
+
+        // If the user doesn't exist, return an error
+        if (user === null) {
+            return reply.send(
+                "reasoncode=INV-200\nreasontext=Unable to login\nreasonurl=https://rusty-motors.com",
+            );
+        }
+
+        // Generate a token
+        const token = generateToken(user.customer_id);
+
+        return reply.send(`Valid=TRUE\nTicket=${token}`);
     });
 
     webServer.get("/ShardList/", (_request, reply) => {
         const config = getServerConfiguration({});
         if (typeof config.host === "undefined") {
-            throw new ServerError("No host defined in config");
+            throw new Error("No host defined in config");
         }
         return reply.send(generateShardList(config.host));
     });
 
-    webServer.get("/cert", (_request, reply) => {
+    webServer.get("/cert", async (_request, reply) => {
         const config = getServerConfiguration({});
         if (typeof config.host === "undefined") {
-            throw new ServerError("No host defined in config");
+            throw new Error("No host defined in config");
         }
-        return reply.send(handleGetCert(config));
+        const certFile = await handleGetCert(config);
+        return reply
+            .header("Content-Type", "text/plain")
+            .header("Content-Disposition", "attachment; filename=cert.crt")
+            .send(certFile);
     });
 
-    webServer.get("/key", (_request, reply) => {
+    webServer.get("/key", async (_request, reply) => {
         const config = getServerConfiguration({});
         if (typeof config.host === "undefined") {
-            throw new ServerError("No host defined in config");
+            throw new Error("No host defined in config");
         }
-        return reply.send(handleGetKey(config));
+        const keyFile = await handleGetKey(config);
+        return reply
+            .header("Content-Type", "text/plain")
+            .header("Content-Disposition", "attachment; filename=pub.key")
+            .send(keyFile);
     });
 
     webServer.get("/registry", (_request, reply) => {
         const config = getServerConfiguration({});
         if (typeof config.host === "undefined") {
-            throw new ServerError("No host defined in config");
+            throw new Error("No host defined in config");
         }
-        return reply.send(handleGetRegistry(config));
+        const regFile = handleGetRegistry(config);
+        return reply.header("Content-Type", "text/plain").header("Content-Disposition", "attachment; filename=client.reg").send(regFile);
     });
 }

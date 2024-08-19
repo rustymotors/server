@@ -1,41 +1,39 @@
 import { emitKeypressEvents } from "node:readline";
-import { SubThread } from "../shared/SubThread.js";
-// eslint-disable-next-line no-unused-vars
-import { Gateway } from "../gateway/src/GatewayServer.js";
-import { ServerError } from "../shared/errors/ServerError.js";
+import { SubThread, type KeypressEvent, type TServerLogger } from "rusty-motors-shared";
+import type { TConsoleThread, TGateway } from "rusty-motors-shared";
 
 /**
  * @module ConsoleThread
  */
 
+
 /**
  * Console thread
  */
-export class ConsoleThread extends SubThread {
-    parentThread: Gateway;
+export class ConsoleThread extends SubThread implements TConsoleThread{
+    parentThread: TGateway;
     /**
      * @param {object} options
      * @param {Gateway} options.parentThread The parent thread
-     * @param {import("pino").Logger} options.log The logger
+     * @param {ServerLogger} options.log The logger
      */
     constructor({
         parentThread,
         log,
     }: {
-        parentThread: Gateway;
-        log: import("pino").Logger;
+        parentThread: TGateway;
+        log: TServerLogger;
     }) {
         super("ReadInput", log, 100);
         if (parentThread === undefined) {
-            throw new ServerError(
+            throw new Error(
                 "parentThread is undefined when creating ReadInput",
             );
         }
         this.parentThread = parentThread;
     }
 
-    /** @param {import("../interfaces/index.js").KeypressEvent} key */
-    handleKeypressEvent(key: import("../interfaces/index.js").KeypressEvent) {
+    handleKeypressEvent(key: KeypressEvent) {
         const keyString = key.sequence;
 
         if (keyString === "x") {
@@ -64,7 +62,7 @@ export class ConsoleThread extends SubThread {
         process.stdin.resume();
         process.stdin.on("keypress", (str, key) => {
             if (key !== undefined) {
-                this.handleKeypressEvent(key);
+                this.handleKeypressEvent(key as KeypressEvent);
             }
         });
     }

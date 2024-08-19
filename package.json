@@ -1,91 +1,48 @@
 {
-    "name": "mcos",
-    "version": "1.0.0",
-    "description": "a server",
-    "author": "Drazi Crendraven <drazisil@hey.com>",
-    "license": "AGPL-3.0",
-    "private": true,
-    "repository": {
-        "type": "git",
-        "url": "git@github.com:drazisil/mcos.git"
-    },
-    "scripts": {
-        "prepare": "husky install",
-        "pretest": "eslint --fix . && prettier --write .",
-        "test:only": "node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage packages",
-        "test": "node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage packages",
-        "prod": "make prod_node",
-        "prod:stop": "docker-compose stop",
-        "release": "standard-version --sign",
-        "start:dev": "tsx --openssl-legacy-provider server.ts",
-        "start:docker": "npm run start:dev 2>&1 | tee -a log/mcos/trace.log"
-    },
-    "files": [
-        "README.md",
-        "CHANGELOG.md",
-        "AUTHORS"
-    ],
-    "type": "module",
-    "dependencies": {
-        "@adminjs/sequelize": "^4.0.0",
-        "@fastify/sensible": "^5.2.0",
-        "@sentry/node": "7.73",
-        "@sentry/profiling-node": "^1.2.1",
-        "adminjs": "^7.2.2",
-        "fastify": "^4.22.2",
-        "moment": "^2.29.4",
-        "pino": "^8.15.0",
-        "sequelize": "^6.32.1",
-        "sqlite": "^5.0.1",
-        "ts-node": "10.9.1"
-    },
-    "devDependencies": {
-        "@sentry/cli": "^2.21.2",
-        "@tsconfig/node-lts": "^18.12.5",
-        "@tsconfig/node20": "^20.1.2",
-        "@types/chai": "4.3.7",
-        "@types/node": "^20.8.4",
-        "@types/sinon": "10.0.19",
-        "@types/sinon-chai": "3.2.10",
-        "@typescript-eslint/eslint-plugin": "^6.7.5",
-        "@typescript-eslint/parser": "^6.7.5",
-        "@vitest/coverage-v8": "^0.34.6",
-        "eslint": "^8.50.0",
-        "eslint-config-prettier": "^9.0.0",
-        "eslint-plugin-prettier": "5.0.1",
-        "husky": "^8.0.3",
-        "jsdoc": "^4.0.2",
-        "lint-staged": "^14.0.1",
-        "prettier": "3.0.3",
-        "prettier-eslint": "15.0.1",
-        "rimraf": "^5.0.5",
-        "standard-version": "^9.5.0",
-        "tsx": "3.13.0",
-        "typescript": "^5.2.2",
-        "typescript-eslint-language-service": "^5.0.5",
-        "vitest": "^0.34.6"
-    },
-    "c8": {
-        "all": true,
-        "reporter": [
-            "text",
-            "cobertura",
-            "html",
-            "lcov"
-        ],
-        "exclude": [
-            "coverage",
-            "**/*.test.m{j,t}s",
-            "docs",
-            "docs2"
-        ]
-    },
-    "lint-staged": {
-        "**/*.js": "eslint"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    }
+  "name": "rusty-motors",
+  "version": "0.5.0",
+  "author": "Molly Crendraven <drazi@duck.com>",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:drazisil/mcos.git"
+  },
+  "dependencies": {
+    "@databases/pg": "^5.5.0",
+    "@databases/pg-schema-cli": "^4.4.0",
+    "@databases/pg-typed": "^4.4.1",
+    "rusty-motors-shared": "^1.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "description": "This is a game server, being written from scratch, for a very old and long dead game. The owners of said game have shown no interest in bringing it back, but even so all names of their IP have been avoided to prevent issues.",
+  "license": "AGPL-3.0",
+  "private": true,
+  "scripts": {
+    "clean": "rm --verbose -rf **/node_modules node_modules",
+    "start": "tsx --openssl-legacy-provider --env-file=.env ./apps/main/server.ts",
+    "test": "npm run test:all",
+    "test:all": "npm run test --workspaces --if-present",
+    "types:db": "npm --workspace rusty-motors-database run types:db",
+    "migrate": "pg-migrations apply --directory migrations    "
+  },
+  "type": "module",
+  "workspaces": [
+    "apps/main",
+    "packages/cli",
+    "packages/connection",
+    "packages/database",
+    "packages/gateway",
+    "packages/mcots",
+    "packages/nps",
+    "packages/patch",
+    "packages/shard",
+    "packages/shared",
+    "packages/shared-packets",
+    "schema"
+  ],
+  "devDependencies": {
+    "@databases/pg-migrations": "^5.0.3",
+    "@databases/pg-test": "^3.1.2",
+    "dotenv": "^16.4.5"
+  }
 }

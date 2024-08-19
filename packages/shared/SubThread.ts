@@ -3,24 +3,14 @@
  */
 
 import { EventEmitter } from "node:events";
-import { getServerLogger } from "./log.js";
-import { Logger } from "pino";
-
+import type { TServerLogger } from "./index";
 export class SubThread extends EventEmitter {
-    name: any;
-    log: any;
+    name: string;
+    log: TServerLogger;
     loopInterval: number;
-    timer: any;
-    /**
-     * @param {string} name
-     * @param {module:shared/log.ServerLogger} log
-     * @param {number} [loopInterval=100]
-     */
-    constructor(
-        name: string,
-        log: Logger = getServerLogger({ module: "SubThread" }),
-        loopInterval: number = 100,
-    ) {
+    timer: ReturnType<typeof setInterval> | null = null;
+
+    constructor(name: string, log: TServerLogger, loopInterval = 100) {
         super();
         this.name = name;
         this.log = log;
@@ -30,7 +20,6 @@ export class SubThread extends EventEmitter {
 
     init() {
         this.emit("initialized");
-        // @ts-ignore
         this.timer = setInterval(this.run.bind(this), this.loopInterval);
     }
 

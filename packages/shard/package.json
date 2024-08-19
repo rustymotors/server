@@ -1,19 +1,27 @@
 {
-    "name": "@mcos/shard",
+    "name": "rusty-motors-shard",
     "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "type": "module",
-    "directories": {
-        "test": "test"
+    "description": "The shard service exposing the following endpoints to the gateway service:",
+    "exports": {
+        ".": {
+            "import": "./index.js",
+            "require": "./index.js"
+        }
     },
+    "type": "module",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "check": "tsc",
+        "lint": "eslint .",
+        "format": "npm prettier --write .",
+        "test": "vitest run --coverage"
     },
     "keywords": [],
     "author": "",
-    "license": "ISC",
+    "license": "AGPL-3.0",
     "dependencies": {
-        "@mcos/interfaces": "^1.0.0"
+        "vitest": "^1.6.0"
+    },
+    "directories": {
+        "test": "test"
     }
 }
