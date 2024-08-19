@@ -12,12 +12,12 @@ on:
 jobs:
     semgrep:
         name: Scan
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         env:
             SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
         container:
-            image: returntocorp/semgrep
+            image: returntocorp/semgrep@sha256:4614ec53294cc63f086755157dfb108121c69087d15c3e8d4c7ac603fb0eaa54
         if: (github.actor != 'dependabot[bot]')
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
             - run: semgrep ci

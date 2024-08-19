@@ -1,4 +1,3 @@
-import { ServerError } from "../errors/ServerError.js";
 import { SerializedBuffer } from "./SerializedBuffer.js";
 
 /**
@@ -19,13 +18,13 @@ export class RawMessage extends SerializedBuffer {
     }
     override deserialize(buffer: Buffer) {
         if (buffer.length < 4) {
-            throw new ServerError(
+            throw new Error(
                 `Unable to get header from buffer, got ${buffer.length}`,
             );
         }
         const length = buffer.readUInt16BE(2);
         if (buffer.length < length) {
-            throw new ServerError(
+            throw new Error(
                 `Expected buffer of length ${length}, got ${buffer.length}`,
             );
         }

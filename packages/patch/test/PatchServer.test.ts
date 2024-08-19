@@ -1,13 +1,12 @@
-import { mockPino } from "../../../test/factoryMocks.js";
-import { getServerLogger } from "../../shared/log.js";
 import { PatchServer, CastanetResponse } from "../src/PatchServer.js";
 import { describe, it, expect, vi } from "vitest";
+import { mockLogger } from "../../shared/test";
+import type { IncomingMessage, ServerResponse } from "http";
 
 describe("PatchServer", () => {
     it("should return the hard-coded value that tells the client there are no updates or patches", () => {
         // Arrange
-        mockPino();
-        const log = getServerLogger({ module: "Patch" });
+        const log = mockLogger();
         const patchServer = PatchServer.getInstance(log);
         const request = {
             socket: {
@@ -23,7 +22,7 @@ describe("PatchServer", () => {
         };
 
         // Act
-        patchServer.castanetResponse(request as any, response as any);
+        patchServer.castanetResponse(request as IncomingMessage, response as unknown as ServerResponse);
 
         // Assert
         expect(response.setHeader).toHaveBeenCalledWith(

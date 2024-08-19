@@ -1,0 +1,17 @@
+{
+    extends: ["config:best-practices", ":automergeStableNonMajor"],
+    packageRules: [
+        {
+            allowedVersions: "1.9.8",
+            matchDatasources: ["docker"],
+            matchPackageNames: [
+                // Prevent automatic updates from nginx:1.9.8
+                // While this image can still be found on DockerHub,
+                // it is also archived at https://archive.org/details/nginx_1.9.8.tar
+                // This is required to serve as a proxy to the [SChannel](https://web.archive.org/web/20230402130420/https://learn.microsoft.com/en-us/windows/win32/com/schannel) that Windows XP uses.
+                // Windows XP is required support since the legacy client can not be upgraded or modified.
+                "nginx",
+            ],
+        },
+    ],
+}
