@@ -1,8 +1,0 @@
-{
-    "extends": ["config:base"],
-    "statusCheckVerify": true,
-    "automerge": true,
-    "automergeType": "branch",
-    "rangeStrategy": "bump",
-    "enabledManagers": ["npm"]
-}
