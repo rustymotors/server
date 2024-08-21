@@ -27,15 +27,15 @@ import { ServerError } from "../../shared/errors/ServerError.js";
  * @return {string}
  */
 export function handleGetCert(config: Configuration): string {
-    if (config.certificateFile === undefined) {
-        throw new ServerError("Certificate file not defined");
-    }
-    try {
-        const cert = readFileSync(config.certificateFile, "utf8");
-        return cert;
-    } catch (err) {
-        throw new ServerError(`Error reading certificate file: ${String(err)}`);
-    }
+	if (config.certificateFile === undefined) {
+		throw new ServerError("Certificate file not defined");
+	}
+	try {
+		const cert = readFileSync(config.certificateFile, "utf8");
+		return cert;
+	} catch (err) {
+		throw new ServerError(`Error reading certificate file: ${String(err)}`);
+	}
 }
 
 /**
@@ -44,11 +44,11 @@ export function handleGetCert(config: Configuration): string {
  * @return {string}
  */
 export function handleGetRegistry(config: Configuration): string {
-    const externalHost = config.host;
-    const patchHost = externalHost;
-    const authHost = externalHost;
-    const shardHost = externalHost;
-    return `Windows Registry Editor Version 5.00
+	const externalHost = config.host;
+	const patchHost = externalHost;
+	const authHost = externalHost;
+	const shardHost = externalHost;
+	return `Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\EACom\\AuthAuth]
 "AuthLoginBaseService"="AuthLogin"
@@ -83,13 +83,13 @@ export function handleGetRegistry(config: Configuration): string {
  * @return {string}
  */
 export function handleGetKey(config: Configuration): string {
-    if (config.publicKeyFile === undefined) {
-        throw new ServerError("Public key file not defined");
-    }
-    try {
-        const key = readFileSync(config.publicKeyFile, "utf8");
-        return key;
-    } catch (err) {
-        throw new ServerError(`Error reading public key file: ${String(err)}`);
-    }
+	if (config.publicKeyFile === undefined) {
+		throw new ServerError("Public key file not defined");
+	}
+	try {
+		const key = readFileSync(config.publicKeyFile, "utf8");
+		return key;
+	} catch (err) {
+		throw new ServerError(`Error reading public key file: ${String(err)}`);
+	}
 }

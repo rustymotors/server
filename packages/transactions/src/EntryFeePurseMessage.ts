@@ -22,102 +22,102 @@ import { SerializedBuffer } from "../../shared/messageFactory.js";
  * This is the body of a MessageNode
  */
 export class EntryFeePurseMessage extends SerializedBuffer {
-    _msgNo: number;
-    _numberOfPurseEntries: number;
-    _shouldExpectMoreMessages: boolean;
-    _purseEntries: PurseEntry[];
-    constructor() {
-        super();
-        this._msgNo = 408; // 2 bytes
-        this._numberOfPurseEntries = 0; // 1 bytes
-        this._shouldExpectMoreMessages = false; // 1 byte
-        /** @type {PurseEntry[]} */
-        this._purseEntries = []; // 8 bytes each
-    }
+	_msgNo: number;
+	_numberOfPurseEntries: number;
+	_shouldExpectMoreMessages: boolean;
+	_purseEntries: PurseEntry[];
+	constructor() {
+		super();
+		this._msgNo = 408; // 2 bytes
+		this._numberOfPurseEntries = 0; // 1 bytes
+		this._shouldExpectMoreMessages = false; // 1 byte
+		/** @type {PurseEntry[]} */
+		this._purseEntries = []; // 8 bytes each
+	}
 
-    override size() {
-        return 5 + this._purseEntries.length * 8;
-    }
+	override size() {
+		return 5 + this._purseEntries.length * 8;
+	}
 
-    /**
-     * Add a lobby to the list
-     * @param {PurseEntry} lobby
-     */
-    addEntry(purseEntry: PurseEntry) {
-        this._purseEntries.push(purseEntry);
-        this._numberOfPurseEntries++;
-    }
+	/**
+	 * Add a lobby to the list
+	 * @param {PurseEntry} lobby
+	 */
+	addEntry(purseEntry: PurseEntry) {
+		this._purseEntries.push(purseEntry);
+		this._numberOfPurseEntries++;
+	}
 
-    override serialize() {
-        const neededSize = 5 + this._purseEntries.length * 563;
-        const buffer = Buffer.alloc(neededSize);
-        let offset = 0; // offset is 0
-        buffer.writeUInt16LE(this._msgNo, offset);
-        offset += 2; // offset is 2
-        buffer.writeUInt16LE(this._numberOfPurseEntries, offset);
-        offset += 2; // offset is 4
-        buffer.writeUInt8(this._shouldExpectMoreMessages ? 1 : 0, offset);
-        offset += 1; // offset is 5
-        for (const entry of this._purseEntries) {
-            entry.serialize().copy(buffer, offset);
-            offset += entry.size();
-        }
-        // offset is now 4 + this._lobbyList.length * 563
-        return buffer;
-    }
+	override serialize() {
+		const neededSize = 5 + this._purseEntries.length * 563;
+		const buffer = Buffer.alloc(neededSize);
+		let offset = 0; // offset is 0
+		buffer.writeUInt16LE(this._msgNo, offset);
+		offset += 2; // offset is 2
+		buffer.writeUInt16LE(this._numberOfPurseEntries, offset);
+		offset += 2; // offset is 4
+		buffer.writeUInt8(this._shouldExpectMoreMessages ? 1 : 0, offset);
+		offset += 1; // offset is 5
+		for (const entry of this._purseEntries) {
+			entry.serialize().copy(buffer, offset);
+			offset += entry.size();
+		}
+		// offset is now 4 + this._lobbyList.length * 563
+		return buffer;
+	}
 
-    override toString() {
-        return `EntryFeePurseMessage: msgNo=${this._msgNo} numberOfPurseEntries=${this._numberOfPurseEntries} shouldExpectMoreMessages=${this._shouldExpectMoreMessages} purseEntries=${this._purseEntries}`;
-    }
+	override toString() {
+		return `EntryFeePurseMessage: msgNo=${this._msgNo} numberOfPurseEntries=${this._numberOfPurseEntries} shouldExpectMoreMessages=${this._shouldExpectMoreMessages} purseEntries=${this._purseEntries}`;
+	}
 }
 
 export class PurseEntry extends SerializedBuffer {
-    _entryFee: number; // 4 bytes
-    _purse: number; // 4 bytes
-    constructor() {
-        super();
-        this._entryFee = 0;
-        this._purse = 0;
-    }
+	_entryFee: number; // 4 bytes
+	_purse: number; // 4 bytes
+	constructor() {
+		super();
+		this._entryFee = 0;
+		this._purse = 0;
+	}
 
-    override size() {
-        return 8;
-    }
+	override size() {
+		return 8;
+	}
 
-    /**
-     * Deserialize the data
-     *
-     * @param {Buffer} data
-     */
-    deserialize(data: Buffer) {
-        if (data.length !== this.size()) {
-            throw new ServerError(
-                `PurseEntry.deserialize() expected ${this.size()} bytes but got ${
-                    data.length
-                } bytes`,
-            );
-        }
-        let offset = 0;
-        this._entryFee = data.readUInt32LE(offset);
-        offset += 4; // offset is 4
-        this._purse = data.readUInt32LE(offset);
-        // offset is 8
+	/**
+	 * Deserialize the data
+	 *
+	 * @param {Buffer} data
+	 */
+	deserialize(data: Buffer) {
+		if (data.length !== this.size()) {
+			throw new ServerError(
+				`PurseEntry.deserialize() expected ${this.size()} bytes but got ${
+					data.length
+				} bytes`,
+			);
+		}
+		let offset = 0;
+		this._entryFee = data.readUInt32LE(offset);
+		offset += 4; // offset is 4
+		this._purse = data.readUInt32LE(offset);
+		// offset is 8
 
-        return this;
-    }
+		return this;
+	}
 
-    override serialize() {
-        const buf = Buffer.alloc(this.size());
-        let offset = 0; // offset is 0
-        buf.writeUInt32LE(this._entryFee, offset);
-        offset += 4; // offset is 4
-        buf.writeUInt32LE(this._purse, offset);
-        // offset is 8
+	override serialize() {
+		const buf = Buffer.alloc(this.size());
+		let offset = 0; // offset is 0
+		buf.writeUInt32LE(this._entryFee, offset);
+		offset += 4; // offset is 4
+		buf.writeUInt32LE(this._purse, offset);
+		// offset is 8
 
-        return buf;
-    }
+		return buf;
+	}
 
-    override toString() {
-        return `PurseEntry: entryFee=${this._entryFee} purse=${this._purse}`;
-    }
+	override toString() {
+		return `PurseEntry: entryFee=${this._entryFee} purse=${this._purse}`;
+	}
 }

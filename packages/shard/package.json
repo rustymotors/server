@@ -1,27 +1,27 @@
 {
-    "name": "rusty-motors-shard",
-    "version": "1.0.0",
-    "description": "The shard service exposing the following endpoints to the gateway service:",
-    "exports": {
-        ".": {
-            "import": "./index.js",
-            "require": "./index.js"
-        }
-    },
-    "type": "module",
-    "scripts": {
-        "check": "tsc",
-        "lint": "eslint .",
-        "format": "npm prettier --write .",
-        "test": "vitest run --coverage"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "AGPL-3.0",
-    "dependencies": {
-        "vitest": "^1.6.0"
-    },
-    "directories": {
-        "test": "test"
-    }
+	"name": "rusty-motors-shard",
+	"version": "1.0.0",
+	"description": "The shard service exposing the following endpoints to the gateway service:",
+	"exports": {
+		".": {
+			"import": "./index.js",
+			"require": "./index.js"
+		}
+	},
+	"type": "module",
+	"scripts": {
+		"check": "tsc",
+		"lint": "eslint .",
+		"format": "npm prettier --write .",
+		"test": "vitest run --coverage"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "AGPL-3.0",
+	"dependencies": {
+		"vitest": "^1.6.0"
+	},
+	"directories": {
+		"test": "test"
+	}
 }

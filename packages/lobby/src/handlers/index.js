@@ -27,15 +27,15 @@ import { _npsRequestGameConnectServer } from "./requestConnectGameServer.js";
 
 /** @type {GameMessageHandler[]} */
 export const handlerMap = [
-    {
-        opCode: 100,
-        name: "Connect game server",
-        handler: _npsRequestGameConnectServer,
-    },
-    { opCode: 217, name: "Heartbeat", handler: _npsHeartbeat },
-    {
-        opCode: 1101,
-        name: "Encrypted command",
-        handler: handleEncryptedNPSCommand,
-    },
+	{
+		opCode: 100,
+		name: "Connect game server",
+		handler: _npsRequestGameConnectServer,
+	},
+	{ opCode: 217, name: "Heartbeat", handler: _npsHeartbeat },
+	{
+		opCode: 1101,
+		name: "Encrypted command",
+		handler: handleEncryptedNPSCommand,
+	},
 ];

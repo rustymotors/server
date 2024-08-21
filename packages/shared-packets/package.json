@@ -1,22 +1,22 @@
 {
-    "name": "rusty-motors-shared-packets",
-    "private": true,
-    "version": "1.0.0",
-    "type": "module",
-    "exports": {
-        ".": {
-            "import": "./index.js",
-            "require": "./index.js"
-        }
-    },
-    "scripts": {
-        "check": "tsc",
-        "lint": "eslint .",
-        "format": "npm prettier --write .",
-        "test": "vitest run --coverage"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "AGPL-3.0",
-    "description": ""
+	"name": "rusty-motors-shared-packets",
+	"private": true,
+	"version": "1.0.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./index.js",
+			"require": "./index.js"
+		}
+	},
+	"scripts": {
+		"check": "tsc",
+		"lint": "eslint .",
+		"format": "npm prettier --write .",
+		"test": "vitest run --coverage"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "AGPL-3.0",
+	"description": ""
 }

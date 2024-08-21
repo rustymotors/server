@@ -8,32 +8,32 @@ import { processStockCarInfo } from "./processStockCarInfo.js";
 export type ServerSocketCallback = (messages: ServerMessage[]) => void;
 
 export type ServerMessageProcessor = (
-    connectionId: string,
-    message: ServerMessage,
-    socketCallback: ServerSocketCallback,
+	connectionId: string,
+	message: ServerMessage,
+	socketCallback: ServerSocketCallback,
 ) => Promise<void>;
 
 const serverMessageProcessors = new Map<number, ServerMessageProcessor>([]);
 
 export function addServerMessageProcessor(
-    messageId: number,
-    processor: ServerMessageProcessor,
+	messageId: number,
+	processor: ServerMessageProcessor,
 ) {
-    serverMessageProcessors.set(messageId, processor);
+	serverMessageProcessors.set(messageId, processor);
 }
 
 export function populateServerMessageProcessors() {
-    addServerMessageProcessor(105, processServerLogin);
-    addServerMessageProcessor(109, processSetOptions);
-    addServerMessageProcessor(141, processStockCarInfo);
-    addServerMessageProcessor(440, processClientTracking);
-    addServerMessageProcessor(438, processClientConnect);
-};
+	addServerMessageProcessor(105, processServerLogin);
+	addServerMessageProcessor(109, processSetOptions);
+	addServerMessageProcessor(141, processStockCarInfo);
+	addServerMessageProcessor(440, processClientTracking);
+	addServerMessageProcessor(438, processClientConnect);
+}
 
 export function getServerMessageProcessor(messageId: number) {
-    return serverMessageProcessors.get(messageId);
+	return serverMessageProcessors.get(messageId);
 }
 
 export function getServerMessageProcessors() {
-    return serverMessageProcessors;
+	return serverMessageProcessors;
 }

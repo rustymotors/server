@@ -6,8 +6,8 @@ import { getLobMiniUserList } from "./getLobMiniUserList.js";
 // 0128000800000000
 
 export type lobbyCommandProcessor = (
-    commandId: number,
-    data: Buffer,
+	commandId: number,
+	data: Buffer,
 ) => Promise<Buffer>;
 
 export const lobbyCommandMap = new Map<number, lobbyCommandProcessor>();

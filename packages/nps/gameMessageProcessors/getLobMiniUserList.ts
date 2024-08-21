@@ -1,28 +1,28 @@
 import {
-    GameMessage,
-    MiniUserInfo,
-    MiniUserList,
-    getAsHex,
-} from 'rusty-motors-nps';
-import { getServerLogger } from 'rusty-motors-shared';
+	GameMessage,
+	MiniUserInfo,
+	MiniUserList,
+	getAsHex,
+} from "rusty-motors-nps";
+import { getServerLogger } from "rusty-motors-shared";
 
 const log = getServerLogger();
 
 // Command id: 0x128
 export async function getLobMiniUserList(
-    commandId: number,
-    data: Buffer
+	commandId: number,
+	data: Buffer,
 ): Promise<Buffer> {
-    log.setName('nps:getLobMiniUserList');
-    log.info(`Processing getLobMiniUserList command: ${getAsHex(data)}`);
+	log.setName("nps:getLobMiniUserList");
+	log.info(`Processing getLobMiniUserList command: ${getAsHex(data)}`);
 
-    const miniUserList = new MiniUserList(0);
+	const miniUserList = new MiniUserList(0);
 
-    miniUserList.addChannelUser(new MiniUserInfo(1000, 'Molly'));
+	miniUserList.addChannelUser(new MiniUserInfo(1000, "Molly"));
 
-    const responseMessage = new GameMessage(0);
-    responseMessage.header.setId(0x229);
-    responseMessage.setData(miniUserList);
+	const responseMessage = new GameMessage(0);
+	responseMessage.header.setId(0x229);
+	responseMessage.setData(miniUserList);
 
-    return Promise.resolve(responseMessage.serialize());
+	return Promise.resolve(responseMessage.serialize());
 }

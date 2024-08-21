@@ -2,14 +2,14 @@ import { ServerError } from "../../../shared/errors/ServerError.js";
 import { SerializedBuffer } from "../../../shared/messageFactory.js";
 
 export class PlayerModel extends SerializedBuffer {
-    override serialize(): Buffer {
-        throw new ServerError("Method not implemented.");
-    }
-    serializeSize(): number {
-        throw new ServerError("Method not implemented.");
-    }
+	override serialize(): Buffer {
+		throw new ServerError("Method not implemented.");
+	}
+	serializeSize(): number {
+		throw new ServerError("Method not implemented.");
+	}
 
-    static schema = `CREATE TABLE Player (
+	static schema = `CREATE TABLE Player (
     PlayerID             int NOT NULL,
     CustomerID           int NOT NULL,
     PlayerTypeID         int NOT NULL,

@@ -1,7 +1,7 @@
 import { getServerLogger } from "../../shared/log.js";
 import {
-    LegacyMessage,
-    SerializedBuffer,
+	LegacyMessage,
+	SerializedBuffer,
 } from "../../shared/messageFactory.js";
 
 /**
@@ -17,43 +17,43 @@ import {
  */
 
 export async function _gameLogout({
-    connectionId,
-    message,
-    log = getServerLogger({
-        module: "PersonaServer",
-    }),
+	connectionId,
+	message,
+	log = getServerLogger({
+		module: "PersonaServer",
+	}),
 }: {
-    connectionId: string;
-    message: LegacyMessage;
-    log?: import("pino").Logger;
+	connectionId: string;
+	message: LegacyMessage;
+	log?: import("pino").Logger;
 }): Promise<{
-    connectionId: string;
-    messages: SerializedBuffer[];
+	connectionId: string;
+	messages: SerializedBuffer[];
 }> {
-    log.debug("_npsLogoutGameUser...");
-    const requestPacket = message;
-    log.debug(
-        `NPSMsg request object from _npsLogoutGameUser',
+	log.debug("_npsLogoutGameUser...");
+	const requestPacket = message;
+	log.debug(
+		`NPSMsg request object from _npsLogoutGameUser',
       ${JSON.stringify({
-          NPSMsg: requestPacket.toString(),
-      })}`,
-    );
+				NPSMsg: requestPacket.toString(),
+			})}`,
+	);
 
-    // Build the packet
-    const responsePacket = new LegacyMessage();
-    responsePacket._header.id = 519;
-    log.debug(
-        `NPSMsg response object from _npsLogoutGameUser',
+	// Build the packet
+	const responsePacket = new LegacyMessage();
+	responsePacket._header.id = 519;
+	log.debug(
+		`NPSMsg response object from _npsLogoutGameUser',
       ${JSON.stringify({
-          NPSMsg: responsePacket.toString(),
-      })}`,
-    );
+				NPSMsg: responsePacket.toString(),
+			})}`,
+	);
 
-    const outboundMessage = new SerializedBuffer();
-    outboundMessage._doDeserialize(responsePacket._doSerialize());
+	const outboundMessage = new SerializedBuffer();
+	outboundMessage._doDeserialize(responsePacket._doSerialize());
 
-    return {
-        connectionId,
-        messages: [outboundMessage],
-    };
+	return {
+		connectionId,
+		messages: [outboundMessage],
+	};
 }

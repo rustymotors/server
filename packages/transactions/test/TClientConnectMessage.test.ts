@@ -14,17 +14,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
 
 describe("TClientConnectMessage", () => {
-    describe(".byteLength", () => {
-        it("should have a value of 51", () => {
-            // Arrange
-            const testMessage = new TClientConnectMessage();
+	describe(".byteLength", () => {
+		it("should have a value of 51", () => {
+			// Arrange
+			const testMessage = new TClientConnectMessage();
 
-            // Assert
-            expect(testMessage.size()).toBe(51);
-        });
-    });
+			// Assert
+			expect(testMessage.size()).toBe(51);
+		});
+	});
 });

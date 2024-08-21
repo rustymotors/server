@@ -1,7 +1,7 @@
 import { getServerLogger } from "../../../shared/log.js";
 import {
-    NPSMessage,
-    SerializedBuffer,
+	NPSMessage,
+	SerializedBuffer,
 } from "../../../shared/messageFactory.js";
 
 /**
@@ -15,26 +15,26 @@ import {
  * }>}
  */
 export async function _npsHeartbeat({
-    connectionId,
-    // @ts-ignore
-    message, // eslint-disable-line no-unused-vars
-    log = getServerLogger({
-        module: "_npsHeartbeat",
-    }),
+	connectionId,
+	// @ts-ignore
+	message, // eslint-disable-line no-unused-vars
+	log = getServerLogger({
+		module: "_npsHeartbeat",
+	}),
 }) {
-    const packetContent = Buffer.alloc(8);
-    const packetResult = new NPSMessage();
-    packetResult._header.id = 0x127;
-    packetResult.setBuffer(packetContent);
+	const packetContent = Buffer.alloc(8);
+	const packetResult = new NPSMessage();
+	packetResult._header.id = 0x127;
+	packetResult.setBuffer(packetContent);
 
-    log.debug("Dumping packet...");
-    log.debug(packetResult.toString());
+	log.debug("Dumping packet...");
+	log.debug(packetResult.toString());
 
-    const outboundMessage = new SerializedBuffer();
-    outboundMessage._doDeserialize(packetResult.serialize());
+	const outboundMessage = new SerializedBuffer();
+	outboundMessage._doDeserialize(packetResult.serialize());
 
-    return {
-        connectionId,
-        messages: [outboundMessage],
-    };
+	return {
+		connectionId,
+		messages: [outboundMessage],
+	};
 }

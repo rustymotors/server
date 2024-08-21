@@ -1,102 +1,92 @@
 {
-    "name": "mcos",
-    "version": "1.0.0",
-    "description": "a server",
-    "author": "Drazi Crendraven <drazisil@hey.com>",
-    "license": "AGPL-3.0",
-    "private": true,
-    "repository": {
-        "type": "git",
-        "url": "git@github.com:drazisil/mcos.git"
-    },
-    "scripts": {
-        "clean": "rm --verbose -rf **/node_modules node_modules",
-        "start": "tsx --openssl-legacy-provider --env-file=.env ./apps/main/server.ts",
-        "test": "npm run test:all",
-        "test:all": "npm run test --workspaces --if-present",
-        "start:dev": "tsx --openssl-legacy-provider server.ts",
-        "types:db": "npm --workspace rusty-motors-database run types:db",
-        "migrate": "pg-migrations apply --directory migrations    "
-    },
-    "files": [
-        "README.md",
-        "CHANGELOG.md",
-        "AUTHORS"
-    ],
-    "type": "module",
-    "dependencies": {
-        "@adminjs/sequelize": "^4.1.1",
-        "@fastify/sensible": "^5.5.0",
-        "@sentry/node": "7.88",
-        "@sentry/profiling-node": "^1.3.2",
-        "adminjs": "^7.5.2",
-        "fastify": "^4.25.1",
-        "moment": "^2.29.4",
-        "pino": "^8.17.1",
-        "sequelize": "^6.35.2",
-        "sqlite": "^5.1.1",
-        "ts-node": "10.9.2"
-    },
-    "workspaces": [
-        "apps/main",
-        "packages/cli",
-        "packages/connection",
-        "packages/database",
-        "packages/gateway",
-        "packages/mcots",
-        "packages/nps",
-        "packages/patch",
-        "packages/shard",
-        "packages/shared",
-        "packages/shared-packets"
-      ],
-    "devDependencies": {
-        "@sentry/cli": "^2.23.1",
-        "@tsconfig/node-lts": "^20.1.0",
-        "@tsconfig/node20": "^20.1.2",
-        "@types/chai": "4.3.11",
-        "@types/node": "^20.10.5",
-        "@types/sinon": "17.0.2",
-        "@types/sinon-chai": "3.2.12",
-        "@typescript-eslint/eslint-plugin": "^6.15.0",
-        "@typescript-eslint/parser": "^6.15.0",
-        "@vitest/coverage-v8": "^1.1.0",
-        "eslint": "^8.56.0",
-        "eslint-config-prettier": "^9.1.0",
-        "eslint-plugin-prettier": "5.1.1",
-        "husky": "^8.0.3",
-        "jsdoc": "^4.0.2",
-        "lint-staged": "^15.2.0",
-        "prettier": "3.1.1",
-        "prettier-eslint": "16.2.0",
-        "rimraf": "^5.0.5",
-        "standard-version": "^9.5.0",
-        "tsx": "4.7.0",
-        "typescript": "^5.3.3",
-        "typescript-eslint-language-service": "^5.0.5",
-        "vitest": "^1.1.0"
-    },
-    "c8": {
-        "all": true,
-        "reporter": [
-            "text",
-            "cobertura",
-            "html",
-            "lcov"
-        ],
-        "exclude": [
-            "coverage",
-            "**/*.test.m{j,t}s",
-            "docs",
-            "docs2"
-        ]
-    },
-    "lint-staged": {
-        "**/*.js": "eslint"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    }
+	"name": "mcos",
+	"version": "1.0.0",
+	"description": "a server",
+	"author": "Drazi Crendraven <drazisil@hey.com>",
+	"license": "AGPL-3.0",
+	"private": true,
+	"repository": {
+		"type": "git",
+		"url": "git@github.com:drazisil/mcos.git"
+	},
+	"scripts": {
+		"clean": "rm --verbose -rf **/node_modules node_modules",
+		"start": "make start",
+		"check:all": "npm run check --workspaces --if-present",
+		"lint:all": "npm run lint --workspaces --if-present",
+		"format:all": "npm run format --workspaces --if-present",
+		"test": "npm run test:all",
+		"test:all": "npm run test --workspaces --if-present",
+		"start:dev": "tsx --openssl-legacy-provider server.ts",
+		"types:db": "npm --workspace rusty-motors-database run types:db",
+		"migrate": "pg-migrations apply --directory migrations    "
+	},
+	"files": ["README.md", "CHANGELOG.md", "AUTHORS"],
+	"type": "module",
+	"dependencies": {
+		"@adminjs/sequelize": "^4.1.1",
+		"@fastify/sensible": "^5.5.0",
+		"@sentry/node": "7.88",
+		"@sentry/profiling-node": "^1.3.2",
+		"adminjs": "^7.5.2",
+		"fastify": "^4.25.1",
+		"moment": "^2.29.4",
+		"pino": "^8.17.1",
+		"sequelize": "^6.35.2",
+		"sqlite": "^5.1.1",
+		"ts-node": "10.9.2"
+	},
+	"workspaces": [
+		"apps/main",
+		"packages/cli",
+		"packages/connection",
+		"packages/database",
+		"packages/gateway",
+		"packages/mcots",
+		"packages/nps",
+		"packages/patch",
+		"packages/shard",
+		"packages/shared",
+		"packages/shared-packets"
+	],
+	"devDependencies": {
+		"@biomejs/biome": "1.8.3",
+		"@sentry/cli": "^2.23.1",
+		"@tsconfig/node-lts": "^20.1.0",
+		"@tsconfig/node20": "^20.1.2",
+		"@types/chai": "4.3.11",
+		"@types/node": "^20.10.5",
+		"@types/sinon": "17.0.2",
+		"@types/sinon-chai": "3.2.12",
+		"@typescript-eslint/eslint-plugin": "^6.15.0",
+		"@typescript-eslint/parser": "^6.15.0",
+		"@vitest/coverage-v8": "^1.1.0",
+		"eslint": "^8.56.0",
+		"eslint-config-prettier": "^9.1.0",
+		"eslint-plugin-prettier": "5.1.1",
+		"husky": "^8.0.3",
+		"jsdoc": "^4.0.2",
+		"lint-staged": "^15.2.0",
+		"prettier": "3.1.1",
+		"prettier-eslint": "16.2.0",
+		"rimraf": "^5.0.5",
+		"standard-version": "^9.5.0",
+		"tsx": "4.7.0",
+		"typescript": "^5.3.3",
+		"typescript-eslint-language-service": "^5.0.5",
+		"vitest": "^1.1.0"
+	},
+	"c8": {
+		"all": true,
+		"reporter": ["text", "cobertura", "html", "lcov"],
+		"exclude": ["coverage", "**/*.test.m{j,t}s", "docs", "docs2"]
+	},
+	"lint-staged": {
+		"**/*.js": "eslint"
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "lint-staged"
+		}
+	}
 }

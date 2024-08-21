@@ -8,24 +8,24 @@ export { ServerMessage } from "./src/ServerMessage.js";
 export type * from "./src/types.js";
 
 export interface KeypressEvent {
-    sequence: string;
-    name: string;
-    ctrl: boolean;
-    meta: boolean;
-    shift: boolean;
+	sequence: string;
+	name: string;
+	ctrl: boolean;
+	meta: boolean;
+	shift: boolean;
 }
 
 export interface ConnectionRecord {
-    customerId: number;
-    connectionId: string;
-    sessionKey: string;
-    sKey: string;
-    contextId: string;
+	customerId: number;
+	connectionId: string;
+	sessionKey: string;
+	sKey: string;
+	contextId: string;
 }
 
 export {
-    McosEncryptionPair,
-    createCommandEncryptionPair,
-    createDataEncryptionPair,
-    verifyLegacyCipherSupport,
+	McosEncryptionPair,
+	createCommandEncryptionPair,
+	createDataEncryptionPair,
+	verifyLegacyCipherSupport,
 } from "./src/encryption.js";

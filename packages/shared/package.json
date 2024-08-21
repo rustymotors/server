@@ -1,34 +1,34 @@
 {
-    "name": "rusty-motors-shared",
-    "version": "1.0.0",
-    "exports": {
-        ".": {
-            "import": "./index.js",
-            "require": "./index.js"
-        },
-        "./test": {
-            "import": "./test/index.js",
-            "require": "./test/index.js"
-        }
-    },
-    "type": "module",
-    "scripts": {
-        "check": "tsc",
-        "lint": "eslint .",
-        "format": "npm prettier --write .",
-        "test": "vitest run --coverage"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "AGPL-3.0",
-    "dependencies": {
-        "fastify": "^4.27.0",
-        "pino": "^9.0.0",
-        "pino-pretty": "^11.0.0",
-        "vitest": "^1.6.0"
-    },
-    "directories": {
-        "test": "test"
-    },
-    "description": ""
+	"name": "rusty-motors-shared",
+	"version": "1.0.0",
+	"exports": {
+		".": {
+			"import": "./index.js",
+			"require": "./index.js"
+		},
+		"./test": {
+			"import": "./test/index.js",
+			"require": "./test/index.js"
+		}
+	},
+	"type": "module",
+	"scripts": {
+		"check": "tsc",
+		"lint": "eslint .",
+		"format": "npm prettier --write .",
+		"test": "vitest run --coverage"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "AGPL-3.0",
+	"dependencies": {
+		"fastify": "^4.27.0",
+		"pino": "^9.0.0",
+		"pino-pretty": "^11.0.0",
+		"vitest": "^1.6.0"
+	},
+	"directories": {
+		"test": "test"
+	},
+	"description": ""
 }
