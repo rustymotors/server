@@ -10,8 +10,8 @@ export class UserStatus extends BaseSerializable {
 	private customerId: number = 0;
 	private personaId: number = 0;
 	private isCacheHit: boolean = false;
-	readonly ban: UserAction = new UserAction("ban");
-	readonly gag: UserAction = new UserAction("gag");
+	readonly ban: UserAction;
+	readonly gag: UserAction;
 	private sessionKey: SessionKey = new SessionKey({});
 
 	constructor({
