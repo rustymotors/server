@@ -1,0 +1,21 @@
+{
+  "name": "rusty-motors-transactions",
+	"version": "1.0.0",
+	"exports": {
+		".": {
+			"import": "./index.js",
+			"require": "./index.js"
+		}
+	},
+	"type": "module",
+	"scripts": {
+		"check": "tsc",
+		"lint": "eslint .",
+		"format": "npx prettier --write .",
+		"test": "vitest run --coverage"
+	},
+  "keywords": [],
+  "author": "",
+	"license": "AGPL-3.0",
+  "description": ""
+}
