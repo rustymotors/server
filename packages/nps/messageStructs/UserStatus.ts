@@ -1,9 +1,9 @@
-import { randomUUID } from "crypto";
-import type { ISerializable } from "../types.js";
+import { randomUUID } from "node:crypto";
 import { SessionKey } from "./SessionKey.js";
 import { UserAction } from "./UserAction.js";
+import { BaseSerializable } from "./BaseSerializable.js";
 
-export class UserStatus implements ISerializable {
+export class UserStatus extends BaseSerializable {
 	private _sessionId: string = "";
 	private _remoteIp: string = "";
 	private _machineId: string = "";
@@ -23,6 +23,7 @@ export class UserStatus implements ISerializable {
 		personaId?: number;
 		sessionKey?: SessionKey;
 	}) {
+		super();
 		this._sessionId = randomUUID();
 		this.customerId = customerId;
 		this.personaId = personaId || 0;
@@ -33,9 +34,6 @@ export class UserStatus implements ISerializable {
 	}
 	serialize(): Buffer {
 		return this.toBytes();
-	}
-	deserialize(): void {
-		throw new Error("Method not implemented.");
 	}
 	getByteSize(): number {
 		return this.getSize();
@@ -169,7 +167,4 @@ export class UserStatus implements ISerializable {
 		return this.toBytes().toString("hex");
 	}
 
-	setData() {
-		throw new Error("Method not implemented.");
-	}
 }
