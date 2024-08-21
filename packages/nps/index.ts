@@ -18,7 +18,7 @@ export { UserInfo } from "./messageStructs/UserInfo.js";
 export { UserStatus } from "./messageStructs/UserStatus.js";
 export {
 	getUser,
-	populateGameUsers as populateGameUsers,
+	populateGameUsers,
 } from "./services/account.js";
 export {
 	gameProfiles,
