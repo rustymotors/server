@@ -190,6 +190,12 @@ importers:
 
   packages/patch: {}
 
+  packages/shard:
+    dependencies:
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0(@types/node@20.16.1)
+
   packages/shared:
     dependencies:
       fastify:
