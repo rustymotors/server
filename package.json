@@ -16,7 +16,7 @@
 		"lint:all": "npm run lint --workspaces --if-present",
 		"format:all": "npm run format --workspaces --if-present",
 		"test": "npm run test:all",
-		"test:all": "npm run test --workspaces --if-present",
+		"test:all": "pnpm run -r --stream test",
 		"start:dev": "tsx --openssl-legacy-provider server.ts",
 		"types:db": "npm --workspace rusty-motors-database run types:db",
 		"migrate": "pg-migrations apply --directory migrations    "
