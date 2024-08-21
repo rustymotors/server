@@ -43,12 +43,22 @@ export function newEncryptionSession({
 	customerId: number;
 	sessionKey: string;
 }): EncryptionSession {
+	/**
+	 * Create a new encryption session
+	 * 
+	 * While insecure, the use of DES is required for compatibility with the game
+	 */
 	const gameCipher = createCipheriv(
 		"des-cbc",
 		Buffer.from(sessionKey, "hex"),
 		Buffer.alloc(8),
 	);
 	gameCipher.setAutoPadding(false);
+	/**
+	 * Create a new decryption session
+	 * 
+	 * While insecure, the use of DES is required for compatibility with the game
+	 */
 	const gameDecipher = createDecipheriv(
 		"des-cbc",
 		Buffer.from(sessionKey, "hex"),
