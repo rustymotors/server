@@ -68,5 +68,4 @@ export async function processUserLogin(
 	socketCallback([responseBytes]);
 
 	log.resetName();
-	return Promise.resolve();
 }
