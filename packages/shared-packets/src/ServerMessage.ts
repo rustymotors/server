@@ -1,5 +1,5 @@
 import { McosEncryptionPair, getServerLogger } from "rusty-motors-shared";
-import { Serializable } from "./BasePacket.js";
+import { BasePacket, Serializable } from "./BasePacket.js";
 import type { IMessage, ISerializable } from "./interfaces.js";
 
 const log = getServerLogger();
@@ -7,7 +7,7 @@ const log = getServerLogger();
 /**
  *
  */
-export class ServerMessageHeader extends Serializable implements ISerializable {
+export class ServerMessageHeader extends BasePacket {
 	// All fields are little-endian
 	private length: number = 0; // 2 bytes
 	private signature: string = ""; // 4 bytes
@@ -52,7 +52,7 @@ export class ServerMessageHeader extends Serializable implements ISerializable {
 
 	isPayloadEncrypted(): boolean {
 		// Does the flags bitmask contain have 0x08 set?
-		return this.flags >= 0x08;
+		return (this.flags & 0x08) != 0;
 	}
 
 	setPayloadEncryption(encrypted: boolean): ServerMessageHeader {
