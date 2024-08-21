@@ -1,15 +1,16 @@
-import type { ISerializable } from "rusty-motors-nps";
 import { getAsHex, isOnlyOneSet } from "rusty-motors-nps";
 import { getServerLogger } from "rusty-motors-shared";
+import { BaseSerializable } from "./BaseSerializable.js";
 
 const log = getServerLogger();
 
-export class SessionKey implements ISerializable {
+export class SessionKey extends BaseSerializable {
 	private key: Buffer = Buffer.alloc(0);
 	private timestamp: number = 0;
 	private _isSet: boolean = false;
 
 	constructor({ key, timestamp }: { key?: Buffer; timestamp?: number }) {
+		super();
 		log.setName("SessionKey");
 		if (isOnlyOneSet(key, timestamp)) {
 			throw new Error("Both key and timestamp must be set if one is set");
