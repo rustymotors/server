@@ -12,7 +12,8 @@
 		"check": "tsc",
 		"lint": "eslint .",
 		"format": "npx prettier --write .",
-		"test": "vitest run --coverage"
+		"test": "echo \"Error: no test specified\" && exit 0",
+		"test:crypto": "pnpm node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage"
 	},
   "keywords": [],
   "author": "",

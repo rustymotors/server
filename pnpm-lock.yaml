@@ -157,9 +157,6 @@ importers:
       pg-hstore:
         specifier: ^2.3.4
         version: 2.3.4
-      vitest:
-        specifier: ^1.6.0
-        version: 1.6.0(@types/node@20.16.1)
 
   packages/gateway:
     dependencies:
@@ -172,9 +169,6 @@ importers:
       fastify:
         specifier: ^4.25.2
         version: 4.28.1
-      vitest:
-        specifier: ^1.6.0
-        version: 1.6.0(@types/node@20.16.1)
 
   packages/mcots:
     dependencies:
@@ -194,17 +188,7 @@ importers:
         specifier: ^5.0.3
         version: 5.2.0
 
-  packages/patch:
-    dependencies:
-      vitest:
-        specifier: ^1.6.0
-        version: 1.6.0(@types/node@20.16.1)
-
-  packages/shard:
-    dependencies:
-      vitest:
-        specifier: ^1.6.0
-        version: 1.6.0(@types/node@20.16.1)
+  packages/patch: {}
 
   packages/shared:
     dependencies:
@@ -217,9 +201,6 @@ importers:
       pino-pretty:
         specifier: ^11.0.0
         version: 11.2.2
-      vitest:
-        specifier: ^1.6.0
-        version: 1.6.0(@types/node@20.16.1)
 
   packages/shared-packets: {}
 

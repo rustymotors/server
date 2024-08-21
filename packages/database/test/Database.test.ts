@@ -1,6 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
-import { P } from "vitest/dist/reporters-5f784f42.js";
-import { mockPino } from "../../../test/factoryMocks.js";
+import { describe, expect, it } from "vitest";
 import { ServerError } from "../../shared/errors/ServerError.js";
 import { getServerLogger } from "../../shared/log.js";
 import { Database } from "../src/DatabaseManager.js";
@@ -8,12 +6,6 @@ import { Database } from "../src/DatabaseManager.js";
 describe("Database", () => {
 	it("returns the same instance", () => {
 		// arrange
-		vi.mock("pino", async () => {
-			const actual = await vi.importActual("pino");
-			return {
-				...(actual as P),
-			};
-		});
 		const log = getServerLogger({});
 		// act
 		const instance1 = Database.getInstance(log);
@@ -25,7 +17,6 @@ describe("Database", () => {
 	describe("fetchSessionKeyByCustomerId", () => {
 		it("throws when session key is not found", async () => {
 			// arrange
-			mockPino();
 			const log = getServerLogger({});
 			const instance = Database.getInstance(log);
 			const customerId = 1234;
@@ -44,7 +35,6 @@ describe("Database", () => {
 	describe("fetchSessionKeyByConnectionId", () => {
 		it("throws when session key is not found", async () => {
 			// arrange
-			mockPino();
 			const log = getServerLogger({});
 			const instance = Database.getInstance(log);
 			const connectionId = "1234";
@@ -65,7 +55,6 @@ describe("Database", () => {
 	describe("updateUser", () => {
 		it("returns successfully when passed a valid user record", async () => {
 			// arrange
-			mockPino();
 			const log = getServerLogger({});
 			const instance = Database.getInstance(log);
 			const userRecord = {

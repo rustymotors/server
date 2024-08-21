@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { mockPino } from "../../../test/factoryMocks.js";
 import { getServerLogger } from "../../shared/log.js";
 import { OldServerMessage } from "../../shared/messageFactory.js";
 import { login } from "../src/login.js";
@@ -11,7 +10,6 @@ describe("login", () => {
 		const incomingMessage = new OldServerMessage();
 		const imcommingBuffer = Buffer.from(JSON.stringify(incomingMessage));
 		incomingMessage.setBuffer(imcommingBuffer);
-		mockPino();
 		const log = getServerLogger({});
 
 		// act

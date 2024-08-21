@@ -17,9 +17,6 @@
 	"keywords": [],
 	"author": "",
 	"license": "AGPL-3.0",
-	"dependencies": {
-		"vitest": "^1.6.0"
-	},
 	"directories": {
 		"test": "test"
 	},

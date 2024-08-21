@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { mockPino } from "../../../test/factoryMocks.js";
 import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
 import { State } from "../../shared/State.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
@@ -18,7 +17,6 @@ describe("clientConnect", () => {
 		const incomingMessage = new TClientConnectMessage();
 		incomingMessage._customerId = customerId;
 
-		mockPino();
 		const log = getServerLogger({});
 		const state: State = {
 			encryptions: {},

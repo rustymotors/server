@@ -1,7 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { Socket } from "node:net";
 import { beforeAll, beforeEach, describe, expect, it, test, vi } from "vitest";
-import { mockPino } from "../../../test/factoryMocks.js";
 import {
 	McosEncryption,
 	State,
@@ -22,7 +21,6 @@ let testSocket2: Socket;
 
 describe("Encryption", () => {
 	beforeAll(() => {
-		mockPino();
 		testSave = (state?: State) => {
 			if (typeof state === "undefined") {
 				throw new ServerError("State not defined");

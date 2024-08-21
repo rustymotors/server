@@ -24,8 +24,7 @@
 	"dependencies": {
 		"fastify": "^4.27.0",
 		"pino": "^9.0.0",
-		"pino-pretty": "^11.0.0",
-		"vitest": "^1.6.0"
+		"pino-pretty": "^11.0.0"
 	},
 	"directories": {
 		"test": "test"

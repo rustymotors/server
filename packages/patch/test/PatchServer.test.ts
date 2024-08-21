@@ -1,12 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import { mockPino } from "../../../test/factoryMocks.js";
 import { getServerLogger } from "../../shared/log.js";
 import { CastanetResponse, PatchServer } from "../src/PatchServer.js";
 
 describe("PatchServer", () => {
 	it("should return the hard-coded value that tells the client there are no updates or patches", () => {
 		// Arrange
-		mockPino();
 		const log = getServerLogger({ module: "Patch" });
 		const patchServer = PatchServer.getInstance(log);
 		const request = {
