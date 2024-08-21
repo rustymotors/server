@@ -19,7 +19,7 @@ export async function getUser(
 ): Promise<DatabaseSchema["login"]["record"] | null> {
 	log.setName("getUser");
 
-	log.debug(`Getting user ${username}, ${password}`);
+	log.debug(`Getting user: ${username}, password: ${"*".repeat(password.length)}`);
 
 	const userAccount = await LoginSchema(db).findOne({
 		login_name: username,
