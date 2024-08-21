@@ -2,7 +2,7 @@ import {
 	type WarehouseInventory,
 	getWarehouseInventory,
 } from "rusty-motors-database";
-import { StackCarInfo, StockCar } from "rusty-motors-mcots";
+import { StockCarInfo, StockCar } from "rusty-motors-mcots";
 import { getServerLogger } from "rusty-motors-shared";
 import {
 	ServerGenericRequest,
@@ -43,7 +43,7 @@ export async function processStockCarInfo(
 			`Sending car info for lot owner ${lotOwnerId} and brand ${brandId}`,
 		);
 
-		const responsePacket = new StackCarInfo();
+		const responsePacket = new StockCarInfo();
 
 		responsePacket.setMessageId(141);
 		responsePacket.setStarterCash(100);
@@ -52,7 +52,7 @@ export async function processStockCarInfo(
 
 		const response = new ServerMessage(141);
 
-		if (inventoryCars.inventory.length > StackCarInfo.MAX_CARS_PER_MESSAGE) {
+		if (inventoryCars.inventory.length > StockCarInfo.MAX_CARS_PER_MESSAGE) {
 			log.error(
 				`Too many cars in inventory: ${inventoryCars.inventory.length}`,
 			);

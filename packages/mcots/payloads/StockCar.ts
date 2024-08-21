@@ -46,7 +46,7 @@ export class StockCar extends Serializable {
 	}
 }
 
-export class StackCarInfo extends ServerMessagePayload {
+export class StockCarInfo extends ServerMessagePayload {
 	static MAX_CARS_PER_MESSAGE = 100;
 	private _cars: StockCar[] = [];
 	// msgNo: 2 bytes
@@ -98,7 +98,7 @@ export class StackCarInfo extends ServerMessagePayload {
 
 			return buffer;
 		} catch (error) {
-			log.error(`Error serializing StackCarInfo: ${error as string}`);
+			log.error(`Error serializing StockCarInfo: ${error as string}`);
 			throw error;
 		}
 	}
@@ -117,6 +117,6 @@ export class StackCarInfo extends ServerMessagePayload {
 	}
 
 	toString(): string {
-		return `StackCarInfo: ${this._cars.length} cars, ${this._starterCash} starter cash, ${this._dealerId} dealerId, ${this._brandId} brandId`;
+		return `StockCarInfo: ${this._cars.length} cars, ${this._starterCash} starter cash, ${this._dealerId} dealerId, ${this._brandId} brandId`;
 	}
 }

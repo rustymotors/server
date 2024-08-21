@@ -11,7 +11,7 @@ export {
 	LoginMessage,
 	LoginCompleteMessage,
 	SetOptionsMessage,
-	StackCarInfo,
+	StockCarInfo,
 	StockCar,
 } from "./payloads/index.js";
 
