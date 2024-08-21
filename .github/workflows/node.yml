@@ -26,9 +26,9 @@ jobs:
             - name: Install and test
               run: |
                   npm install
-                  export DATABASE_URL=$(npx pg-test start)
+                #   export DATABASE_URL=$(npx pg-test start)
                   npm test
-                  npx pg-test stop
+                #   npx pg-test stop
               env:
                   CODECOV_UPLOAD_BUNDLE_TOKEN: ${{ secrets.CODECOV_UPLOAD_BUNDLE_TOKEN }}
             - name: Codecov
