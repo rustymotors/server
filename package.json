@@ -12,9 +12,9 @@
 	"scripts": {
 		"clean": "rm --verbose -rf **/node_modules node_modules",
 		"start": "make start",
-		"check:all": "npm run check --workspaces --if-present",
-		"lint:all": "npm run lint --workspaces --if-present",
-		"format:all": "npm run format --workspaces --if-present",
+		"check:all": "pnpm run -r --stream check",
+		"lint:all": "pnpm run -r --stream lint",
+		"format:all": "pnpm run -r --stream format",
 		"test": "npm run test:all",
 		"test:all": "pnpm run -r --stream test",
 		"start:dev": "tsx --openssl-legacy-provider server.ts",
