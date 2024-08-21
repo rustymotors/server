@@ -1,19 +1,19 @@
-import type { ISerializable } from "rusty-motors-nps";
 import { putLenString } from "rusty-motors-nps";
-import { NPSList } from "./NPSList.js";
 
 import { getServerLogger } from "rusty-motors-shared";
+import { BaseSerializable } from "./BaseSerializable.js";
 
 const log = getServerLogger();
 
 const channelRecordSize = 40;
 
-export class MiniRiffInfo implements ISerializable {
+export class MiniRiffInfo extends BaseSerializable {
 	riffName: string; // 32 bytes - max length
 	riffId: number; // 4 bytes
 	population: number; // 2 bytes
 
 	constructor(riffName: string, riffId: number, population: number) {
+		super();
 		if (riffName.length > 32) {
 			throw new Error(`Riff name too long: ${riffName}`);
 		}
@@ -34,9 +34,6 @@ export class MiniRiffInfo implements ISerializable {
 		log.debug(`MiniRiffInfo: ${this.toString()} - ${buffer.toString("hex")}`);
 		return buffer;
 	}
-	deserialize(data: Buffer): void {
-		throw new Error("Method not implemented.");
-	}
 	getByteSize(): number {
 		return 4 + this.riffName.length + 1 + 4 + 2;
 	}
@@ -45,17 +42,15 @@ export class MiniRiffInfo implements ISerializable {
 	}
 }
 
-export class MiniRiffList extends NPSList implements ISerializable {
+export class MiniRiffList extends BaseSerializable {
+	private riffs: MiniRiffInfo[] = [];
+	
 	override serialize(): Buffer {
 		return this.toBytes();
-	}
-	override deserialize(data: Buffer): void {
-		throw new Error("Method not implemented.");
 	}
 	override getByteSize(): number {
 		return this.getSize();
 	}
-	private riffs: MiniRiffInfo[] = [];
 
 	getMaxRiffs(): number {
 		return this.riffs.length;
@@ -65,7 +60,7 @@ export class MiniRiffList extends NPSList implements ISerializable {
 		this.riffs.push(riff);
 	}
 
-	override toBytes(): Buffer {
+	toBytes(): Buffer {
 		const buffer = Buffer.alloc(this.getSize());
 		let offset = 0;
 		buffer.writeUInt32BE(this.riffs.length, offset);
@@ -82,11 +77,11 @@ export class MiniRiffList extends NPSList implements ISerializable {
 	override toString(): string {
 		return `MiniRiffList(riffs=${this.riffs})`;
 	}
-	override toHex(): string {
+	toHex(): string {
 		return this.toBytes().toString("hex");
 	}
 
-	override getSize(): number {
+	getSize(): number {
 		let size = 4;
 		for (const riff of this.riffs) {
 			size += riff.getByteSize();
