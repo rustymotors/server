@@ -2,6 +2,7 @@ export { SubThread } from "./SubThread.js";
 export { NetworkMessage } from "./src/NetworkMessage.js";
 export { ServerLogger, getServerLogger } from "./log.js";
 export { Configuration, getServerConfiguration } from "./Configuration.js";
+export { McosEncryptionPair } from "./State.ts";
 
 export { RawMessage } from "./src/RawMessage.js";
 export { ServerMessage } from "./src/ServerMessage.js";
