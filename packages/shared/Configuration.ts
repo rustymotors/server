@@ -47,7 +47,7 @@ export class Configuration {
 
 			this.host = host;
 
-			this.logLevel = logLevel;
+			this.logLevel = logLevel.toLowerCase();
 			Configuration.instance = this;
 		} catch (error) {
 			logger.fatal(`Error in core server: ${String(error)}`);
