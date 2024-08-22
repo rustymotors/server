@@ -28,14 +28,14 @@ test:
 # DATABASE_URL environment variable.
 	@DATABASE_URL=$$(npx pg-test start) && \
 	echo "Testing with DATABASE_URL=$$DATABASE_URL" && \
-	pnpm migrate && \
-	pnpm test
+	DATABASE_URL=$$DATABASE_URL pnpm migrate && \
+	DATABASE_URL=$$DATABASE_URL pnpm test
 	@npx pg-test stop
 
 
 
 start:
-	@EXTERNAL_HOST=mcouniverse.com PRIVATE_KEY_FILE=data/private_key.pem CERTIFICATE_FILE=data/mcouniverse.crt PUBLIC_KEY_FILE=data/pub.key LOG_LEVEL=trace npm run start:dev
+	@pnpx tsx --openssl-legacy-provider --env-file=.env server.ts
 
 prod_node:
 	docker-compose --file docker-compose.yml up -d --build
