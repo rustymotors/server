@@ -19,10 +19,17 @@ certs:
 	@echo "certs regenerated. remember to update pub.key for all clients"
 
 test:
-	@export DATABASE_URL=$$(npx pg-test start)
-	@echo "Testing with DATABASE_URL=$$DATABASE_URL"
-	@pnpm migrate
-	@pnpm test
+# This will start a postgres server in the background and run the tests
+# against it. The server will be stopped after the tests are done.
+#
+# Note the use of `$$` to escape the `$` character. This is required
+# because the command is being run in a subshell. That the command
+# is being run in a subshell is why we can't use `export` to set the
+# DATABASE_URL environment variable.
+	@DATABASE_URL=$$(npx pg-test start) && \
+	echo "Testing with DATABASE_URL=$$DATABASE_URL" && \
+	pnpm migrate && \
+	pnpm test
 	@npx pg-test stop
 
 
