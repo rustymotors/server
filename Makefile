@@ -20,6 +20,7 @@ certs:
 
 test:
 	@export DATABASE_URL=$$(npx pg-test start)
+	@echo "Testing with DATABASE_URL=$$DATABASE_URL"
 	@pnpm migrate
 	@pnpm test
 	@npx pg-test stop
