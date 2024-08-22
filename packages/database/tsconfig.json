@@ -3,5 +3,9 @@
 	"compilerOptions": {
 		"incremental": true,
 		"composite": true
-	}
+	},
+	"include": [
+		"index.ts",
+		"src"
+	]
 }
