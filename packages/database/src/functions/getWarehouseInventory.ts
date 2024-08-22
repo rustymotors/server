@@ -1,5 +1,5 @@
-import { db, WarehouseSchema, getTuneables, sql } from 'rusty-motors-database';
-import { getServerLogger } from 'rusty-motors-shared';
+import { db, WarehouseSchema, getTuneables, sql } from '../../index.js';
+import { getServerLogger } from '../../../shared/log.js';
 
 export type WarehouseInventory = {
     inventory: {
@@ -14,8 +14,7 @@ export async function getWarehouseInventory(
     warehouseId: number,
     brandId: number
 ): Promise<WarehouseInventory> {
-    const log = getServerLogger();
-    log.setName('getWarehouseInventory');
+    const log = getServerLogger({ name: 'getWarehouseInventory' });
 
     log.debug(
         `Getting warehouse inventory for part ${brandId} in warehouse ${warehouseId}`

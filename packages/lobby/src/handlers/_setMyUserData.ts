@@ -1,9 +1,9 @@
-import { getDatabaseServer } from "../../../database/src/DatabaseManager.js";
 import { getServerConfiguration } from "../../../shared/Configuration.js";
 import { ServerError } from "../../../shared/errors/ServerError.js";
 import { getServerLogger } from "../../../shared/log.js";
 import { LegacyMessage } from "../../../shared/LegacyMessage.js";
 import { UserInfo } from "../UserInfoMessage.js";
+import { updateUser } from "../../../database/index.js";
 
 export async function _setMyUserData({
     connectionId,
@@ -27,11 +27,9 @@ export async function _setMyUserData({
 
         log.debug(`User ID: ${incomingMessage._userId}`);
 
-        // Get the database instance
-        const db = getDatabaseServer();
 
         // Update the user's data
-        db.updateUser({
+        updateUser({
             userId: incomingMessage._userId,
             userData: incomingMessage._userData,
         });

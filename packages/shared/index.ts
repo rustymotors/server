@@ -5,7 +5,6 @@ export { Configuration, getServerConfiguration } from "./Configuration.js";
 
 export { RawMessage } from "./src/RawMessage.js";
 export { ServerMessage } from "./src/ServerMessage.js";
-export type * from "./src/types.js";
 
 export interface KeypressEvent {
 	sequence: string;

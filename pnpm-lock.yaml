@@ -41,6 +41,9 @@ importers:
       rusty-motors-nps:
         specifier: link:packages/nps
         version: link:packages/nps
+      rusty-motors-shared:
+        specifier: link:packages/shared
+        version: link:packages/shared
       sequelize:
         specifier: ^6.35.2
         version: 6.37.3(pg@8.12.0)

@@ -1,4 +1,3 @@
-import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
 import {
     createCommandEncryptionPair,
     createDataEncryptionPair,
@@ -15,6 +14,7 @@ import { OldServerMessage } from "../../shared/OldServerMessage.js";
 import { GenericReply } from "./GenericReplyMessage.js";
 import { TClientConnectMessage } from "./TClientConnectMessage.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import { fetchSessionKeyByCustomerId } from "../../database/index.js";
 
 /**
  * @param {MessageHandlerArgs} args
@@ -54,9 +54,7 @@ export async function clientConnect({
 
     log.debug(`Looking up the session key for ${customerId}...`);
 
-    result = await getDatabaseServer({
-        log,
-    }).fetchSessionKeyByCustomerId(customerId);
+    result = await fetchSessionKeyByCustomerId(customerId);
     log.debug(`Session key found for ${customerId}`);
 
     const newCommandEncryptionPair = createCommandEncryptionPair(

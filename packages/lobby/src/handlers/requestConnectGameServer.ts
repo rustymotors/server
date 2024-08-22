@@ -1,4 +1,3 @@
-import { getDatabaseServer } from "../../../database/src/DatabaseManager.js";
 import { getPersonasByPersonaId } from "../../../persona/src/getPersonasByPersonaId.js";
 import { getServerLogger } from "../../../shared/log.js";
 import { LoginInfoMessage } from "../LoginInfoMessage.js";
@@ -16,6 +15,7 @@ import {
 import { ServerError } from "../../../shared/errors/ServerError.js";
 import { SerializedBuffer } from "../../../shared/SerializedBuffer.js";
 import { UserInfoMessage } from "../UserInfoMessage.js";
+import { fetchSessionKeyByCustomerId } from "../../../database/index.js";
 
 /**
  * Convert to zero padded hex
@@ -79,9 +79,7 @@ export async function _npsRequestGameConnectServer({
 
     if (!existingEncryption) {
         // Set the encryption keys on the lobby connection
-        const databaseManager = getDatabaseServer({ log });
-        const keys = await databaseManager
-            .fetchSessionKeyByCustomerId(customerId)
+        const keys = await fetchSessionKeyByCustomerId(customerId)
             .catch((/** @type {unknown} */ error: unknown) => {
                 throw new ServerError(
                     `Unable to fetch session key for customerId ${customerId.toString()}: ${String(

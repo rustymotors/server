@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
 import { DatabaseManager } from "../../interfaces/index.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
 import { getServerLogger } from "../../shared/log.js";
@@ -25,7 +24,6 @@ import { handleLoginData } from "./internal.js";
  * Please use {@link LoginServer.getInstance()}
  */
 export class LoginServer {
-    databaseManager: DatabaseManager;
     _log: any;
     static _instance: LoginServer | undefined;
     /**
@@ -36,7 +34,6 @@ export class LoginServer {
      * @memberof LoginServer
      */
     constructor({
-        database = getDatabaseServer(),
         log = getServerLogger({
             module: "LoginServer",
         }),
@@ -44,7 +41,6 @@ export class LoginServer {
         database: import("../../interfaces/index.js").DatabaseManager;
         log?: import("pino").Logger;
     }) {
-        this.databaseManager = database;
         this._log = log;
         LoginServer._instance = this;
     }

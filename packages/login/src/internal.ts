@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
 import { getServerConfiguration } from "../../shared/Configuration.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
 import { getServerLogger } from "../../shared/log.js";
@@ -22,6 +21,7 @@ import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
 import { NPSMessage } from "../../shared/NPSMessage.js";
 import { NetworkMessage } from "../../shared/src/NetworkMessage.js";
 import { NPSUserStatus } from "./NPSUserStatus.js";
+import { updateSessionKey } from "../../database/index.js";
 
 /** @type {import("../../interfaces/index.js").UserRecordMini[]} */
 const userRecords: import("../../interfaces/index.js").UserRecordMini[] = [
@@ -101,8 +101,7 @@ async function login({
 
     // Save sessionkey in database under customerId
     log.debug("Preparing to update session key in db");
-    await getDatabaseServer()
-        .updateSessionKey(
+    await updateSessionKey(
             userRecord.customerId,
             sessionKey ?? "",
             contextId,

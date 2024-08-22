@@ -5,7 +5,7 @@ const DatabaseSchema = await import('../__generated__/schema.json');
 
 export { sql };
 
-export const db = createConnectionPool();
+export const db = createConnectionPool(process.env['DATABASE_URL']);
 
 // You can list whatever tables you actually have here:
 export const {
