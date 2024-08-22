@@ -29,7 +29,7 @@ jobs:
             - name: Install and test
               run: |
                   pnpm install
-                  pnpm test
+                  make test
               env:
                   CODECOV_UPLOAD_BUNDLE_TOKEN: ${{ secrets.CODECOV_UPLOAD_BUNDLE_TOKEN }}
             - name: Codecov

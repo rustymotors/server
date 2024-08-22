@@ -1,3 +1,5 @@
+include .env
+
 all:
 	@npm install
 
@@ -8,8 +10,10 @@ certs:
 	@echo "certs regenerated. remember to update pub.key for all clients"
 
 test:
-	@clear
+	@export DATABASE_URL=$$(npx pg-test start)
+	@pnpm migrate
 	@pnpm test
+	@npx pg-test stop
 
 
 
