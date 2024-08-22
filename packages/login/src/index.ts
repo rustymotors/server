@@ -18,108 +18,110 @@ import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
 import { DatabaseManager } from "../../interfaces/index.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
 import { getServerLogger } from "../../shared/log.js";
-import { NPSMessage } from "../../shared/messageFactory.js";
+import { NPSMessage } from "../../shared/NPSMessage.js";
 import { handleLoginData } from "./internal.js";
 
 /**
  * Please use {@link LoginServer.getInstance()}
  */
 export class LoginServer {
-	databaseManager: DatabaseManager;
-	_log: any;
-	static _instance: LoginServer | undefined;
-	/**
-	 * Please use {@see LoginServer.getInstance} instead
-	 * @param {object} options
-	 * @param {import("../../interfaces/index.js").DatabaseManager} options.database
-	 * @param {import("pino").Logger} [options.log=getServerLogger({ module: "LoginServer" })]
-	 * @memberof LoginServer
-	 */
-	constructor({
-		database = getDatabaseServer(),
-		log = getServerLogger({
-			module: "LoginServer",
-		}),
-	}: {
-		database: import("../../interfaces/index.js").DatabaseManager;
-		log?: import("pino").Logger;
-	}) {
-		this.databaseManager = database;
-		this._log = log;
-		LoginServer._instance = this;
-	}
+    databaseManager: DatabaseManager;
+    _log: any;
+    static _instance: LoginServer | undefined;
+    /**
+     * Please use {@see LoginServer.getInstance} instead
+     * @param {object} options
+     * @param {import("../../interfaces/index.js").DatabaseManager} options.database
+     * @param {import("pino").Logger} [options.log=getServerLogger({ module: "LoginServer" })]
+     * @memberof LoginServer
+     */
+    constructor({
+        database = getDatabaseServer(),
+        log = getServerLogger({
+            module: "LoginServer",
+        }),
+    }: {
+        database: import("../../interfaces/index.js").DatabaseManager;
+        log?: import("pino").Logger;
+    }) {
+        this.databaseManager = database;
+        this._log = log;
+        LoginServer._instance = this;
+    }
 
-	/**
-	 * Get the single instance of the login server
-	 *
-	 * @static
-	 * @param {import("../../interfaces/index.js").DatabaseManager} database
-	 * @param {import("pino").Logger} log
-	 * @return {LoginServer}
-	 */
-	static getInstance(
-		database: import("../../interfaces/index.js").DatabaseManager,
-		log: import("pino").Logger,
-	): LoginServer {
-		if (typeof LoginServer._instance === "undefined") {
-			LoginServer._instance = new LoginServer({
-				database,
-				log,
-			});
-		}
-		return LoginServer._instance;
-	}
+    /**
+     * Get the single instance of the login server
+     *
+     * @static
+     * @param {import("../../interfaces/index.js").DatabaseManager} database
+     * @param {import("pino").Logger} log
+     * @return {LoginServer}
+     */
+    static getInstance(
+        database: import("../../interfaces/index.js").DatabaseManager,
+        log: import("pino").Logger,
+    ): LoginServer {
+        if (typeof LoginServer._instance === "undefined") {
+            LoginServer._instance = new LoginServer({
+                database,
+                log,
+            });
+        }
+        return LoginServer._instance;
+    }
 
-	/**
-	 *
-	 * @param {string} contextId
-	 * @return {import("../../interfaces/index.js").UserRecordMini}
-	 */
-	_npsGetCustomerIdByContextId(
-		contextId: string,
-	): import("../../interfaces/index.js").UserRecordMini {
-		this._log.debug(">>> _npsGetCustomerIdByContextId");
-		/** @type {import("../../interfaces/index.js").UserRecordMini[]} */
-		const users: import("../../interfaces/index.js").UserRecordMini[] = [
-			{
-				contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
-				customerId: 0x0012808b,
-				userId: 0x00000002,
-			},
-			{
-				contextId: "d316cd2dd6bf870893dfbaaf17f965884e",
-				customerId: 0x0054b46c,
-				userId: 0x00000001,
-			},
-		];
-		if (contextId.toString() === "") {
-			const err = new ServerError(`Unknown contextId: ${contextId.toString()}`);
-			throw err;
-		}
+    /**
+     *
+     * @param {string} contextId
+     * @return {import("../../interfaces/index.js").UserRecordMini}
+     */
+    _npsGetCustomerIdByContextId(
+        contextId: string,
+    ): import("../../interfaces/index.js").UserRecordMini {
+        this._log.debug(">>> _npsGetCustomerIdByContextId");
+        /** @type {import("../../interfaces/index.js").UserRecordMini[]} */
+        const users: import("../../interfaces/index.js").UserRecordMini[] = [
+            {
+                contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
+                customerId: 0x0012808b,
+                userId: 0x00000002,
+            },
+            {
+                contextId: "d316cd2dd6bf870893dfbaaf17f965884e",
+                customerId: 0x0054b46c,
+                userId: 0x00000001,
+            },
+        ];
+        if (contextId.toString() === "") {
+            const err = new ServerError(
+                `Unknown contextId: ${contextId.toString()}`,
+            );
+            throw err;
+        }
 
-		const userRecord = users.filter((user) => user.contextId === contextId);
-		if (typeof userRecord[0] === "undefined" || userRecord.length !== 1) {
-			this._log.debug(
-				`preparing to leave _npsGetCustomerIdByContextId after not finding record',
+        const userRecord = users.filter((user) => user.contextId === contextId);
+        if (typeof userRecord[0] === "undefined" || userRecord.length !== 1) {
+            this._log.debug(
+                `preparing to leave _npsGetCustomerIdByContextId after not finding record',
         ${JSON.stringify({
-					contextId,
-				})}`,
-			);
-			const err = new ServerError(
-				`Unable to locate user record matching contextId ${contextId}`,
-			);
-			throw err;
-		}
+            contextId,
+        })}`,
+            );
+            const err = new ServerError(
+                `Unable to locate user record matching contextId ${contextId}`,
+            );
+            throw err;
+        }
 
-		this._log.debug(
-			`preparing to leave _npsGetCustomerIdByContextId after finding record',
+        this._log.debug(
+            `preparing to leave _npsGetCustomerIdByContextId after finding record',
       ${JSON.stringify({
-				contextId,
-				userRecord,
-			})}`,
-		);
-		return userRecord[0];
-	}
+          contextId,
+          userRecord,
+      })}`,
+        );
+        return userRecord[0];
+    }
 }
 
 /** @type {LoginServer | undefined} */
@@ -137,30 +139,30 @@ LoginServer._instance = undefined;
  * @return {Promise<import("../../shared/State.js").ServiceResponse>}
  */
 export async function receiveLoginData({
-	connectionId,
-	message,
-	log = getServerLogger({
-		module: "LoginServer",
-	}),
+    connectionId,
+    message,
+    log = getServerLogger({
+        module: "LoginServer",
+    }),
 }: {
-	connectionId: string;
-	message: NPSMessage;
-	log?: import("pino").Logger;
+    connectionId: string;
+    message: NPSMessage;
+    log?: import("pino").Logger;
 }): Promise<import("../../shared/State.js").ServiceResponse> {
-	try {
-		log.debug("Entering login module");
-		const response = await handleLoginData({
-			connectionId,
-			message,
-			log,
-		});
-		log.debug(`There are ${response.messages.length} messages`);
-		log.debug("Exiting login module");
-		return response;
-	} catch (error) {
-		const err = new ServerError(
-			`There was an error in the login service: ${String(error)}`,
-		);
-		throw err;
-	}
+    try {
+        log.debug("Entering login module");
+        const response = await handleLoginData({
+            connectionId,
+            message,
+            log,
+        });
+        log.debug(`There are ${response.messages.length} messages`);
+        log.debug("Exiting login module");
+        return response;
+    } catch (error) {
+        const err = new ServerError(
+            `There was an error in the login service: ${String(error)}`,
+        );
+        throw err;
+    }
 }

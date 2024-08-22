@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { OldServerMessage } from "./messageFactory.js";
+import { OldServerMessage } from "./OldServerMessage.js";
 
 describe("ServerMessage", () => {
 	describe(".byteLength", () => {

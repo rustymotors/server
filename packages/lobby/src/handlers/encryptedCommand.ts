@@ -1,16 +1,14 @@
 import { getServerConfiguration } from "../../../shared/Configuration.js";
 import {
-	fetchStateFromDatabase,
-	getEncryption,
-	updateEncryption,
+    fetchStateFromDatabase,
+    getEncryption,
+    updateEncryption,
 } from "../../../shared/State.js";
 import { ServerError } from "../../../shared/errors/ServerError.js";
 import { getServerLogger } from "../../../shared/log.js";
-import {
-	LegacyMessage,
-	MessageBuffer,
-	SerializedBuffer,
-} from "../../../shared/messageFactory.js";
+import { MessageBuffer } from "../../../shared/MessageBuffer.js";
+import { SerializedBuffer } from "../../../shared/SerializedBuffer.js";
+import { LegacyMessage } from "../../../shared/LegacyMessage.js";
 import { _setMyUserData } from "./_setMyUserData.js";
 import { handleGetMiniUserList } from "./handleGetMiniUserList.js";
 import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";
@@ -32,16 +30,16 @@ import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";
  * }>}[]}
  */
 export const messageHandlers: {
-	opCode: number;
-	name: string;
-	handler: (args: {
-		connectionId: string;
-		message: SerializedBuffer;
-		log: import("pino").Logger;
-	}) => Promise<{
-		connectionId: string;
-		messages: SerializedBuffer[];
-	}>;
+    opCode: number;
+    name: string;
+    handler: (args: {
+        connectionId: string;
+        message: SerializedBuffer;
+        log: import("pino").Logger;
+    }) => Promise<{
+        connectionId: string;
+        messages: SerializedBuffer[];
+    }>;
 }[] = [];
 
 /**
@@ -57,41 +55,41 @@ export const messageHandlers: {
  * }>}
  */
 async function encryptCmd({
-	connectionId,
-	message,
-	log = getServerLogger({
-		module: "Lobby",
-	}),
+    connectionId,
+    message,
+    log = getServerLogger({
+        module: "Lobby",
+    }),
 }: {
-	connectionId: string;
-	message: LegacyMessage | MessageBuffer;
-	log?: import("pino").Logger;
+    connectionId: string;
+    message: LegacyMessage | MessageBuffer;
+    log?: import("pino").Logger;
 }): Promise<{
-	connectionId: string;
-	message: LegacyMessage | MessageBuffer;
+    connectionId: string;
+    message: LegacyMessage | MessageBuffer;
 }> {
-	const state = fetchStateFromDatabase();
+    const state = fetchStateFromDatabase();
 
-	const encryption = getEncryption(state, connectionId);
+    const encryption = getEncryption(state, connectionId);
 
-	if (typeof encryption === "undefined") {
-		throw new ServerError(
-			`Unable to locate encryption session for connection id ${connectionId}`,
-		);
-	}
+    if (typeof encryption === "undefined") {
+        throw new ServerError(
+            `Unable to locate encryption session for connection id ${connectionId}`,
+        );
+    }
 
-	const result = encryption.commandEncryption.encrypt(message.data);
+    const result = encryption.commandEncryption.encrypt(message.data);
 
-	updateEncryption(state, encryption).save();
+    updateEncryption(state, encryption).save();
 
-	log.debug(`[ciphered Cmd: ${result.toString("hex")}`);
+    log.debug(`[ciphered Cmd: ${result.toString("hex")}`);
 
-	message.setBuffer(result);
+    message.setBuffer(result);
 
-	return {
-		connectionId,
-		message,
-	};
+    return {
+        connectionId,
+        message,
+    };
 }
 
 /**
@@ -107,72 +105,72 @@ async function encryptCmd({
  * }>}
  */
 async function decryptCmd({
-	connectionId,
-	message,
-	log = getServerLogger({
-		module: "Lobby",
-	}),
+    connectionId,
+    message,
+    log = getServerLogger({
+        module: "Lobby",
+    }),
 }: {
-	connectionId: string;
-	message: LegacyMessage;
-	log?: import("pino").Logger;
+    connectionId: string;
+    message: LegacyMessage;
+    log?: import("pino").Logger;
 }): Promise<{
-	connectionId: string;
-	message: LegacyMessage;
+    connectionId: string;
+    message: LegacyMessage;
 }> {
-	const state = fetchStateFromDatabase();
+    const state = fetchStateFromDatabase();
 
-	const encryption = getEncryption(state, connectionId);
+    const encryption = getEncryption(state, connectionId);
 
-	if (typeof encryption === "undefined") {
-		throw new ServerError(
-			`Unable to locate encryption session for connection id ${connectionId}`,
-		);
-	}
+    if (typeof encryption === "undefined") {
+        throw new ServerError(
+            `Unable to locate encryption session for connection id ${connectionId}`,
+        );
+    }
 
-	const result = encryption.commandEncryption.decrypt(message.data);
+    const result = encryption.commandEncryption.decrypt(message.data);
 
-	updateEncryption(state, encryption).save();
+    updateEncryption(state, encryption).save();
 
-	log.debug(`[Deciphered Cmd: ${result.toString("hex")}`);
+    log.debug(`[Deciphered Cmd: ${result.toString("hex")}`);
 
-	message.setBuffer(result);
+    message.setBuffer(result);
 
-	return {
-		connectionId,
-		message,
-	};
+    return {
+        connectionId,
+        message,
+    };
 }
 
 export type NpsCommandHandler = {
-	opCode: number;
-	name: string;
-	handler: (args: {
-		connectionId: string;
-		message: LegacyMessage;
-		log: import("pino").Logger;
-	}) => Promise<{
-		connectionId: string;
-		message: LegacyMessage;
-	}>;
+    opCode: number;
+    name: string;
+    handler: (args: {
+        connectionId: string;
+        message: LegacyMessage;
+        log: import("pino").Logger;
+    }) => Promise<{
+        connectionId: string;
+        message: LegacyMessage;
+    }>;
 };
 
 const npsCommandHandlers: NpsCommandHandler[] = [
-	{
-		opCode: 0x128,
-		name: "NPS_GET_MINI_USER_LIST",
-		handler: handleGetMiniUserList,
-	},
-	{
-		opCode: 0x30c,
-		name: "NPS_SEND_MINI_RIFF_LIST",
-		handler: handleSendMiniRiffList,
-	},
-	{
-		opCode: 0x103,
-		name: "NPS_SET_MY_USER_DATA",
-		handler: _setMyUserData,
-	},
+    {
+        opCode: 0x128,
+        name: "NPS_GET_MINI_USER_LIST",
+        handler: handleGetMiniUserList,
+    },
+    {
+        opCode: 0x30c,
+        name: "NPS_SEND_MINI_RIFF_LIST",
+        handler: handleSendMiniRiffList,
+    },
+    {
+        opCode: 0x103,
+        name: "NPS_SET_MY_USER_DATA",
+        handler: _setMyUserData,
+    },
 ];
 
 /**
@@ -188,42 +186,42 @@ const npsCommandHandlers: NpsCommandHandler[] = [
  * }>}}
  */
 async function handleCommand({
-	connectionId,
-	message,
-	log = getServerLogger({
-		module: "Lobby",
-	}),
+    connectionId,
+    message,
+    log = getServerLogger({
+        module: "Lobby",
+    }),
 }: {
-	connectionId: string;
-	message: LegacyMessage;
-	log?: import("pino").Logger;
+    connectionId: string;
+    message: LegacyMessage;
+    log?: import("pino").Logger;
 }): Promise<{
-	connectionId: string;
-	message: MessageBuffer | LegacyMessage;
+    connectionId: string;
+    message: MessageBuffer | LegacyMessage;
 }> {
-	log.level = getServerConfiguration({}).logLevel ?? "info";
-	const incommingRequest = message;
+    log.level = getServerConfiguration({}).logLevel ?? "info";
+    const incommingRequest = message;
 
-	log.debug(
-		`Received command: ${incommingRequest._doSerialize().toString("hex")}`,
-	);
+    log.debug(
+        `Received command: ${incommingRequest._doSerialize().toString("hex")}`,
+    );
 
-	// What is the command?
-	const command = incommingRequest.data.readUInt16BE(0);
+    // What is the command?
+    const command = incommingRequest.data.readUInt16BE(0);
 
-	log.debug(`Command: ${command}`);
+    log.debug(`Command: ${command}`);
 
-	const handler = npsCommandHandlers.find((h) => h.opCode === command);
+    const handler = npsCommandHandlers.find((h) => h.opCode === command);
 
-	if (typeof handler === "undefined") {
-		throw new ServerError(`Unknown command: ${command}`);
-	}
+    if (typeof handler === "undefined") {
+        throw new ServerError(`Unknown command: ${command}`);
+    }
 
-	return handler.handler({
-		connectionId,
-		message,
-		log,
-	});
+    return handler.handler({
+        connectionId,
+        message,
+        log,
+    });
 }
 
 /**
@@ -240,64 +238,64 @@ async function handleCommand({
 
  */
 export async function handleEncryptedNPSCommand({
-	connectionId,
-	message,
-	log = getServerLogger({
-		module: "Lobby",
-	}),
+    connectionId,
+    message,
+    log = getServerLogger({
+        module: "Lobby",
+    }),
 }: {
-	connectionId: string;
-	message: SerializedBuffer;
-	log?: import("pino").Logger;
+    connectionId: string;
+    message: SerializedBuffer;
+    log?: import("pino").Logger;
 }): Promise<{
-	connectionId: string;
-	messages: SerializedBuffer[];
+    connectionId: string;
+    messages: SerializedBuffer[];
 }> {
-	log.level = getServerConfiguration({}).logLevel ?? "info";
+    log.level = getServerConfiguration({}).logLevel ?? "info";
 
-	const inboundMessage = new LegacyMessage();
-	inboundMessage._doDeserialize(message.data);
+    const inboundMessage = new LegacyMessage();
+    inboundMessage._doDeserialize(message.data);
 
-	// Decipher
-	const decipheredMessage = decryptCmd({
-		connectionId,
-		message: inboundMessage,
-		log,
-	});
+    // Decipher
+    const decipheredMessage = decryptCmd({
+        connectionId,
+        message: inboundMessage,
+        log,
+    });
 
-	const response = handleCommand({
-		connectionId,
-		message: (await decipheredMessage).message,
-		log,
-	});
+    const response = handleCommand({
+        connectionId,
+        message: (await decipheredMessage).message,
+        log,
+    });
 
-	// Encipher
-	const encryptedResponse = encryptCmd({
-		connectionId,
-		message: (await response).message,
-		log,
-	});
+    // Encipher
+    const encryptedResponse = encryptCmd({
+        connectionId,
+        message: (await response).message,
+        log,
+    });
 
-	const outboundMessage = new SerializedBuffer();
-	outboundMessage.setBuffer((await encryptedResponse).message.serialize());
+    const outboundMessage = new SerializedBuffer();
+    outboundMessage.setBuffer((await encryptedResponse).message.serialize());
 
-	return {
-		connectionId,
-		messages: [outboundMessage],
-	};
+    return {
+        connectionId,
+        messages: [outboundMessage],
+    };
 }
 
 export const channelRecordSize = 40;
 
 export const channels = [
-	{
-		id: 0,
-		name: "Channel 1",
-		population: 1,
-	},
-	{
-		id: 191,
-		name: "MCCHAT",
-		population: 0,
-	},
+    {
+        id: 0,
+        name: "Channel 1",
+        population: 1,
+    },
+    {
+        id: 191,
+        name: "MCCHAT",
+        population: 0,
+    },
 ];

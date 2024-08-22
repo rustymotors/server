@@ -17,11 +17,9 @@
 import { getServerConfiguration } from "../../shared/Configuration.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
 import { getServerLogger } from "../../shared/log.js";
-import {
-	LegacyMessage,
-	NPSMessage,
-	SerializedBuffer,
-} from "../../shared/messageFactory.js";
+import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
+import { NPSMessage } from "../../shared/NPSMessage.js";
+import { LegacyMessage } from "../../shared/LegacyMessage.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
 import { handleTrackingPing } from "./handlers/handleTrackingPing.js";
 import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
@@ -42,32 +40,32 @@ import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServe
  * }>}[]}
  */
 export const messageHandlers: {
-	opCode: number;
-	name: string;
-	handler: (args: {
-		connectionId: string;
-		message: SerializedBuffer;
-		log: import("pino").Logger;
-	}) => Promise<{
-		connectionId: string;
-		messages: SerializedBuffer[];
-	}>;
+    opCode: number;
+    name: string;
+    handler: (args: {
+        connectionId: string;
+        message: SerializedBuffer;
+        log: import("pino").Logger;
+    }) => Promise<{
+        connectionId: string;
+        messages: SerializedBuffer[];
+    }>;
 }[] = [
-	{
-		opCode: 256, // 0x100
-		name: "User login",
-		handler: _npsRequestGameConnectServer,
-	},
-	{
-		opCode: 4353, // 0x1101
-		name: "Encrypted command",
-		handler: handleEncryptedNPSCommand,
-	},
-	{
-		opCode: 535, // 0x0217
-		name: "Tracking ping",
-		handler: handleTrackingPing,
-	},
+    {
+        opCode: 256, // 0x100
+        name: "User login",
+        handler: _npsRequestGameConnectServer,
+    },
+    {
+        opCode: 4353, // 0x1101
+        name: "Encrypted command",
+        handler: handleEncryptedNPSCommand,
+    },
+    {
+        opCode: 535, // 0x0217
+        name: "Tracking ping",
+        handler: handleTrackingPing,
+    },
 ];
 
 /**
@@ -82,70 +80,70 @@ export const messageHandlers: {
  * @throws {Error} Unknown code was received
  */
 export async function receiveLobbyData({
-	connectionId,
-	message,
-	log = getServerLogger({
-		module: "Lobby",
-	}),
+    connectionId,
+    message,
+    log = getServerLogger({
+        module: "Lobby",
+    }),
 }: {
-	connectionId: string;
-	message: SerializedBuffer;
-	log?: import("pino").Logger;
+    connectionId: string;
+    message: SerializedBuffer;
+    log?: import("pino").Logger;
 }): Promise<{
-	connectionId: string;
-	messages: SerializedBuffer[];
+    connectionId: string;
+    messages: SerializedBuffer[];
 }> {
-	log.level = getServerConfiguration({}).logLevel ?? "info";
+    log.level = getServerConfiguration({}).logLevel ?? "info";
 
-	/** @type {LegacyMessage | NPSMessage} */
-	let inboundMessage: LegacyMessage | NPSMessage;
+    /** @type {LegacyMessage | NPSMessage} */
+    let inboundMessage: LegacyMessage | NPSMessage;
 
-	// Check data length
-	const dataLength = message.data.length;
+    // Check data length
+    const dataLength = message.data.length;
 
-	if (dataLength < 4) {
-		throw new ServerError(
-			`Data length ${dataLength} is too short to deserialize`,
-		);
-	}
+    if (dataLength < 4) {
+        throw new ServerError(
+            `Data length ${dataLength} is too short to deserialize`,
+        );
+    }
 
-	if (dataLength > 12) {
-		inboundMessage = new NPSMessage();
-	} else {
-		inboundMessage = new LegacyMessage();
-	}
+    if (dataLength > 12) {
+        inboundMessage = new NPSMessage();
+    } else {
+        inboundMessage = new LegacyMessage();
+    }
 
-	inboundMessage._doDeserialize(message.data);
+    inboundMessage._doDeserialize(message.data);
 
-	const { data } = message;
-	log.debug(
-		`Received Lobby packet',
+    const { data } = message;
+    log.debug(
+        `Received Lobby packet',
     ${JSON.stringify({
-			data: data.toString("hex"),
-		})}`,
-	);
+        data: data.toString("hex"),
+    })}`,
+    );
 
-	const supportedHandler = messageHandlers.find((h) => {
-		return h.opCode === inboundMessage._header.id;
-	});
+    const supportedHandler = messageHandlers.find((h) => {
+        return h.opCode === inboundMessage._header.id;
+    });
 
-	if (typeof supportedHandler === "undefined") {
-		// We do not yet support this message code
-		throw new ServerError(
-			`UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
-		);
-	}
+    if (typeof supportedHandler === "undefined") {
+        // We do not yet support this message code
+        throw new ServerError(
+            `UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
+        );
+    }
 
-	try {
-		const result = await supportedHandler.handler({
-			connectionId,
-			message,
-			log,
-		});
-		log.debug(`Returning with ${result.messages.length} messages`);
-		log.debug("Leaving receiveLobbyData");
-		return result;
-	} catch (error) {
-		throw new ServerError(`Error handling lobby data: ${String(error)}`);
-	}
+    try {
+        const result = await supportedHandler.handler({
+            connectionId,
+            message,
+            log,
+        });
+        log.debug(`Returning with ${result.messages.length} messages`);
+        log.debug("Leaving receiveLobbyData");
+        return result;
+    } catch (error) {
+        throw new ServerError(`Error handling lobby data: ${String(error)}`);
+    }
 }

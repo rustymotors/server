@@ -1,6 +1,6 @@
 export { SubThread } from "./SubThread.js";
 export { NetworkMessage } from "./src/NetworkMessage.js";
-export { ServerLogger, getServerLogger } from "./src/log.js";
+export { ServerLogger, getServerLogger } from "./log.js";
 export { Configuration, getServerConfiguration } from "./Configuration.js";
 
 export { RawMessage } from "./src/RawMessage.js";
@@ -23,9 +23,4 @@ export interface ConnectionRecord {
 	contextId: string;
 }
 
-export {
-	McosEncryptionPair,
-	createCommandEncryptionPair,
-	createDataEncryptionPair,
-	verifyLegacyCipherSupport,
-} from "./src/encryption.js";
+

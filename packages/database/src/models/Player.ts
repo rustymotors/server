@@ -1,5 +1,5 @@
 import { ServerError } from "../../../shared/errors/ServerError.js";
-import { SerializedBuffer } from "../../../shared/messageFactory.js";
+import { SerializedBuffer } from "../../../shared/SerializedBuffer.js";
 
 export class PlayerModel extends SerializedBuffer {
 	override serialize(): Buffer {
