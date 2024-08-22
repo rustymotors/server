@@ -10,7 +10,7 @@ import {
     areBothUndefined,
     areBothSet,
     isOnlyOneSet,
-} from "../utils/pureCompare";
+} from "../src/utils/pureCompare";
 
 describe("isZero", () => {
     it("returns true if the number is zero", () => {
