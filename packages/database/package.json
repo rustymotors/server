@@ -25,11 +25,14 @@
         "@sentry/node": "^8.0.0",
         "@types/pg": "^8.11.6",
         "pg": "^8.11.5",
-        "pg-hstore": "^2.3.4",
-        "vitest": "^1.6.0"
+        "pg-hstore": "^2.3.4"
     },
     "directories": {
         "test": "test"
     },
-    "description": ""
+    "description": "",
+    "devDependencies": {
+        "@vitest/coverage-v8": "2",
+        "vitest": "^2.0.5"
+    }
 }
