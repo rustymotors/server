@@ -1,7 +1,8 @@
 import { getServerLogger } from "rusty-motors-shared";
 import { ServerMessagePayload } from "rusty-motors-shared-packets";
+import { readStringFromBuffer } from "./utils";
 
-const log = getServerLogger();
+const log = getServerLogger({});
 
 export class ClientConnectionMessage extends ServerMessagePayload {
 	private _customerId: number = 0; // 4 bytes
@@ -30,9 +31,9 @@ export class ClientConnectionMessage extends ServerMessagePayload {
 
 			this._personaId = data.readUInt32LE(6);
 
-			this._customerName = data.toString("utf8", 10, 23);
+			this._customerName = readStringFromBuffer(data, 10, 23);
 
-			this._personaName = data.toString("utf8", 23, 36);
+			this._personaName = readStringFromBuffer(data, 23, 36);
 
 			this._clientVersion = data.readUInt32LE(36);
 
