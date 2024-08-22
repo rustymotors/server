@@ -5,7 +5,7 @@ import {
     updateEncryption,
 } from "../../../shared/State.js";
 import { ServerError } from "../../../shared/errors/ServerError.js";
-import { getServerLogger } from "../../../shared/log.js";
+import { getServerLogger } from "rusty-motors-shared";
 import { MessageBuffer } from "../../../shared/MessageBuffer.js";
 import { SerializedBuffer } from "../../../shared/SerializedBuffer.js";
 import { LegacyMessage } from "../../../shared/LegacyMessage.js";

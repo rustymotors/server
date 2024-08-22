@@ -21,7 +21,7 @@ import {
     updateEncryption,
 } from "../../shared/State.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
-import { getServerLogger } from "../../shared/log.js";
+import { getServerLogger } from "rusty-motors-shared";
 // eslint-disable-next-line no-unused-vars
 import { OldServerMessage } from "../../shared/OldServerMessage.js";
 import { SerializedBuffer } from "../../shared/SerializedBuffer.js";

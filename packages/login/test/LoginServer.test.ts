@@ -4,7 +4,7 @@ import {
 	mockPino,
 	unmockPino,
 } from "../../../test/factoryMocks.js";
-import { getServerLogger } from "../../shared/log.js";
+import { getServerLogger } from "rusty-motors-shared";
 import { LoginServer } from "../src/index.js";
 
 describe("LoginServer", () => {

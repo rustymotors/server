@@ -1,5 +1,5 @@
 import { getPersonasByPersonaId } from "../../../persona/src/getPersonasByPersonaId.js";
-import { getServerLogger } from "../../../shared/log.js";
+import { getServerLogger } from "rusty-motors-shared";
 import { LoginInfoMessage } from "../LoginInfoMessage.js";
 
 import {

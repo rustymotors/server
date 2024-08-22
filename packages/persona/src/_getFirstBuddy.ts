@@ -1,4 +1,4 @@
-import { getServerLogger } from "../../shared/log.js";
+import { getServerLogger } from "rusty-motors-shared";
 import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
 import { NPSMessage } from "../../shared/NPSMessage.js";
 import { LegacyMessage } from "../../shared/LegacyMessage.js";

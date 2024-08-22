@@ -1,4 +1,4 @@
-import { Logger, LoggerOptions, pino } from "pino";
+import { type Logger, type LoggerOptions, pino } from "pino";
 
 type ServerLoggerOptions = {
 	level?: string;

@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { ServerError } from "../../shared/errors/ServerError.js";
-import { getServerLogger } from "../../shared/log.js";
+import { getServerLogger } from "rusty-motors-shared";
 
 import { Logger } from "pino";
 import { getServerConfiguration } from "../../shared/Configuration.js";

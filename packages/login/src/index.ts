@@ -16,7 +16,7 @@
 
 import { DatabaseManager } from "../../interfaces/index.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
-import { getServerLogger } from "../../shared/log.js";
+import { getServerLogger } from "rusty-motors-shared";
 import { NPSMessage } from "../../shared/NPSMessage.js";
 import { handleLoginData } from "./internal.js";
 

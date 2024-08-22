@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { mockPino } from "../../../test/factoryMocks.js";
-import { getServerLogger } from "../../shared/log.js";
+import { getServerLogger } from "rusty-motors-shareds";
 import { OldServerMessage } from "../../shared/messageFactory.js";
 import { getLobbies } from "../src/getLobbies.js";
 

@@ -19,7 +19,7 @@ import Sentry from "@sentry/node";
 import { getGatewayServer } from "./packages/gateway/src/GatewayServer.js";
 import { verifyLegacyCipherSupport } from "./packages/gateway/src/encryption.js";
 import { getServerConfiguration } from "./packages/shared/Configuration.js";
-import { getServerLogger } from "./packages/shared/log.js";
+import { getServerLogger } from "rusty-motors-shared";
 
 
 const coreLogger = getServerLogger({

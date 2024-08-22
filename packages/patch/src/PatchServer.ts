@@ -1,6 +1,6 @@
 import { Buffer } from "node:buffer";
 import { IncomingMessage, ServerResponse } from "node:http";
-import { getServerLogger } from "../../shared/log.js";
+import { getServerLogger } from "rusty-motors-shared";
 
 export const CastanetResponse = {
 	body: Buffer.from([

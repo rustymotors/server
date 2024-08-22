@@ -1,7 +1,7 @@
 import { Socket, createServer as createSocketServer } from "node:net";
 import FastifySensible from "@fastify/sensible";
 import fastify from "fastify";
-import { Logger } from "pino";
+import type { Logger } from "pino";
 import { ConsoleThread } from "../../cli/ConsoleThread.js";
 import { receiveLobbyData } from "../../lobby/src/internal.js";
 import { receiveLoginData } from "../../login/src/index.js";
@@ -16,7 +16,7 @@ import {
 	fetchStateFromDatabase,
 } from "../../shared/State.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
-import { getServerLogger } from "../../shared/log.js";
+import { getServerLogger } from "rusty-motors-shared";
 import { receiveTransactionsData } from "../../transactions/src/internal.js";
 import { onSocketConnection } from "./index.js";
 import { addWebRoutes } from "./web.js";

@@ -1,5 +1,5 @@
 import { getServerConfiguration } from "../../../shared/Configuration.js";
-import { getServerLogger } from "../../../shared/log.js";
+import { getServerLogger } from "rusty-motors-shared";
 import { SerializedBuffer } from "../../../shared/SerializedBuffer.js";
 
 export async function handleTrackingPing({

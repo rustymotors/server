@@ -1,6 +1,6 @@
 export { SubThread } from "./SubThread.js";
 export { NetworkMessage } from "./src/NetworkMessage.js";
-export { ServerLogger, getServerLogger } from "./log.js";
+export { ServerLogger, getServerLogger } from "./src/log.js";
 export { Configuration, getServerConfiguration } from "./Configuration.js";
 export { McosEncryptionPair } from "./State.ts";
 

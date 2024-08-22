@@ -1,5 +1,5 @@
-import { db, WarehouseSchema, getTuneables, sql } from '../../index.js';
-import { getServerLogger } from '../../../shared/log.js';
+import { db, WarehouseSchema, getTuneables, sql } from "../../index.js";
+import { getServerLogger } from "rusty-motors-shared";
 
 export type WarehouseInventory = {
     inventory: {

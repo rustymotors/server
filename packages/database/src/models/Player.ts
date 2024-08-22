@@ -1,5 +1,5 @@
-import { ServerError } from "../../../shared/errors/ServerError.js";
-import { SerializedBuffer } from "../../../shared/SerializedBuffer.js";
+import { ServerError } from "rusty-motors-shared";
+import { SerializedBuffer } from "rusty-motors-shared";
 
 export class PlayerModel extends SerializedBuffer {
 	override serialize(): Buffer {

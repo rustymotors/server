@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { getServerLogger } from "../../shared/log.js";
+import { getServerLogger } from "rusty-motors-shared";
 import { CastanetResponse, PatchServer } from "../src/PatchServer.js";
 
 describe("PatchServer", () => {

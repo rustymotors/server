@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
-import { getServerLogger } from "../../shared/log.js";
+import { getServerLogger } from "rusty-motors-shared";
 import { OldServerMessage } from "../../shared/messageFactory.js";
 import { trackingPing } from "../src/trackingPing.js";
 

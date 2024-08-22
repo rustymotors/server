@@ -24,7 +24,7 @@ import {
     wrapSocket,
 } from "../../shared/State.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
-import { getServerLogger } from "../../shared/log.js";
+import { getServerLogger } from "rusty-motors-shared";
 
 import { Socket } from "node:net";
 import { Logger } from "pino";
