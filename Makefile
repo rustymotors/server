@@ -1,4 +1,13 @@
-include .env
+# This will read from .env file and export all the variables
+# to the environment. This is useful for running the tests
+# and other commands that require the environment variables
+# to be set.
+#
+# Warning: This will cause the makefile to fail if the .env
+# file is not present. This is the desired behavior as we
+# want to make sure that the environment variables are set
+# before running the tests.
+# include .env // Disabled for now
 
 all:
 	@npm install
