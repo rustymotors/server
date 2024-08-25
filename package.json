@@ -47,6 +47,7 @@
         "rusty-motors-login": "link:packages/login",
         "rusty-motors-mcots": "link:packages/mcots",
         "rusty-motors-nps": "link:packages/nps",
+        "rusty-motors-sessions": "link:packages/sessions",
         "rusty-motors-shared": "link:packages/shared",
         "rusty-motors-shared-packets": "link:packages/shared-packets",
         "rusty-motors-transactions": "link:packages/transactions",
