@@ -1,10 +1,10 @@
-export { ClientConnectionManager } from "./ClientConnectionManager.js";
-export { ErrorNoKey } from "./errors/ErrorNoKey.js";
+export { ClientConnectionManager } from "./src/ClientConnectionManager.js";
+export { ErrorNoKey } from "./src/errors/ErrorNoKey.js";
 export {
 	getServerMessageProcessor,
 	populateServerMessageProcessors,
-} from "./messageProcessors/index.js";
-export type { ServerSocketCallback } from "./messageProcessors/index.js";
+} from "./src/messageProcessors/index.js";
+export type { ServerSocketCallback } from "./src/messageProcessors/index.js";
 export {
 	ClientConnectionMessage,
 	ClientTrackingMessage,
@@ -13,6 +13,6 @@ export {
 	SetOptionsMessage,
 	StockCarInfo,
 	StockCar,
-} from "./payloads/index.js";
+} from "./src/payloads/index.js";
 
 // Path: packages/mcots/index.ts

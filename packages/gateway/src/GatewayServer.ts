@@ -18,6 +18,7 @@ import { receiveTransactionsData } from "rusty-motors-transactions";
 import { onSocketConnection } from "./index.js";
 import { addWebRoutes } from "./web.js";
 import { populateGameMessageProcessors, populatePortToMessageTypes, portToMessageTypes, gameMessageProcessors } from "rusty-motors-nps";
+import { populateServerMessageProcessors } from "rusty-motors-mcots";
 
 /**
  * Options for the GatewayServer.
