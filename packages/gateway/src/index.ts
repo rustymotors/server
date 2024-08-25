@@ -17,13 +17,14 @@
 import { randomUUID } from "node:crypto";
 import {
     type OnDataHandler,
+    type ServiceResponse,
     addSocket,
     fetchStateFromDatabase,
     getOnDataHandler,
     removeSocket,
     wrapSocket,
 } from "rusty-motors-shared";
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { ServerError } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 
 import { Socket } from "node:net";
@@ -171,7 +172,7 @@ export function onSocketConnection({
             })
                 .then(
                     (
-                        /** @type {import("../../shared/State.js").ServiceResponse} */ response: import("../../shared/State.js").ServiceResponse,
+                        response: ServiceResponse,
                     ) => {
                         log.debug("onData handler returned");
                         const { messages } = response;
