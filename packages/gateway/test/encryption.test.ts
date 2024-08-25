@@ -7,8 +7,8 @@ import {
 	addEncryption,
 	createInitialState,
 	getEncryption,
-} from "../../shared/State.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
+} from "rusty-motors-shared";
+import { ServerError } from "rusty-motors-shared";
 import {
 	createCommandEncryptionPair,
 	createDataEncryptionPair,
