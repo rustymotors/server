@@ -10,7 +10,8 @@
 				"noMultipleSpacesInRegularExpressionLiterals": "error",
 				"noUselessCatch": "error",
 				"noWith": "error",
-				"useArrowFunction": "off"
+				"useArrowFunction": "off",
+				"useLiteralKeys":"off"
 			},
 			"correctness": {
 				"noConstAssign": "error",
