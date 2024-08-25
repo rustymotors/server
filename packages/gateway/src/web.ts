@@ -21,8 +21,8 @@ import {
     handleGetKey,
     handleGetRegistry,
 } from "../../shard/src/index.js";
-import { getServerConfiguration } from "../../shared/Configuration.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { getServerConfiguration } from "rusty-motors-shared";
+import { ServerError } from "rusty-motors-shared";
 
 /**
  * Add web routes to the web server
