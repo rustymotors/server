@@ -12,7 +12,7 @@ import {
     fetchStateFromDatabase,
     getEncryption,
 } from "../../../shared/State.js";
-import { ServerError } from "../../../shared/errors/ServerError.js";
+import { ServerError } from "rusty-motors-shared";
 import { SerializedBufferOld } from "../../../shared/SerializedBufferOld.js";
 import { UserInfoMessage } from "../UserInfoMessage.js";
 import { fetchSessionKeyByCustomerId } from "../../../database/index.js";

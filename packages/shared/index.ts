@@ -10,8 +10,9 @@ export { RawMessage } from "./src/RawMessage.js";
 export { ServerMessage } from "./src/ServerMessage.js";
 export { AbstractSerializable, SerializableMixin } from "./messageFactory.js";
 export { ServerError } from "./errors/ServerError.js";
-export {NPSMessage} from "./NPSMessage.js";
-export {OldServerMessage} from "./OldServerMessage.js";
+export { NPSMessage } from "./NPSMessage.js";
+export { OldServerMessage } from "./OldServerMessage.js";
+export { MessageBufferOld } from "./MessageBufferOld.js";
 export {
     McosEncryptionPair,
     McosEncryption,

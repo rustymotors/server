@@ -2,9 +2,9 @@ import { Cipher, Decipher } from "node:crypto";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { Socket } from "node:net";
 import pino from "pino";
-import { Configuration } from "../shared/Configuration.js";
-import { ServerError } from "../shared/errors/ServerError.js";
-import { SerializedBufferOld } from "../shared/SerializedBufferOld.ts";
+import { Configuration } from "rusty-motors-shared";
+import { ServerError } from "rusty-motors-shared";
+import { SerializedBufferOld } from "rusty-motors-shared";
 
 /**
  * @module interfaces

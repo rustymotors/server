@@ -2,7 +2,7 @@ import { ServerError } from "./errors/ServerError.js";
 import { MessageHeader } from "./MessageHeader.js";
 import { SerializedBufferOld } from "./SerializedBufferOld.js";
 
-export class MessageBuffer extends SerializedBufferOld {
+export class MessageBufferOld extends SerializedBufferOld {
     _header: MessageHeader;
     _buffer: Buffer;
     constructor() {
@@ -14,10 +14,10 @@ export class MessageBuffer extends SerializedBufferOld {
     /**
      * @param {number} id - The ID of the message
      * @param {Buffer} buffer - The buffer to deserialize
-     * @returns {MessageBuffer}
+     * @returns {MessageBufferOld}
      */
-    static createGameMessage(id: number, buffer: Buffer): MessageBuffer {
-        const message = new MessageBuffer();
+    static createGameMessage(id: number, buffer: Buffer): MessageBufferOld {
+        const message = new MessageBufferOld();
         message._header._messageId = id;
         message.buffer = buffer;
         return message;
@@ -81,9 +81,9 @@ export class MessageBuffer extends SerializedBufferOld {
 
     /**
      * @param {Buffer} buffer
-     * @returns {MessageBuffer}
+     * @returns {MessageBufferOld}
      */
-    deserialize(buffer: Buffer): MessageBuffer {
+    deserialize(buffer: Buffer): MessageBufferOld {
         this._header.deserialize(buffer.subarray(0, 8));
         if (buffer.length < 4 + this._header.messageLength) {
             throw new ServerError(

@@ -1,8 +1,8 @@
 import { emitKeypressEvents } from "node:readline";
 // eslint-disable-next-line no-unused-vars
-import { Gateway } from "../gateway/src/GatewayServer.js";
-import { SubThread } from "../shared/SubThread.js";
-import { ServerError } from "../shared/errors/ServerError.js";
+import { Gateway } from "rusty-motors-gateway";
+import { SubThread } from "rusty-motors-shared";
+import { ServerError } from "rusty-motors-shared";
 
 /**
  * @module ConsoleThread

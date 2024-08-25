@@ -1,1 +1,1 @@
-export { getGatewayServer } from "./src/GatewayServer.js";
+export { getGatewayServer, Gateway } from "./src/GatewayServer.js";

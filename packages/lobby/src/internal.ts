@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { getServerConfiguration } from "../../shared/Configuration.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { ServerError } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 import { NPSMessage } from "../../shared/NPSMessage.js";

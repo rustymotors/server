@@ -4,9 +4,9 @@ import {
     getEncryption,
     updateEncryption,
 } from "../../../shared/State.js";
-import { ServerError } from "../../../shared/errors/ServerError.js";
+import { ServerError } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
-import { MessageBuffer } from "../../../shared/MessageBuffer.js";
+import { MessageBufferOld } from "rusty-motors-shared";
 import { SerializedBufferOld } from "../../../shared/SerializedBufferOld.js";
 import { LegacyMessage } from "../../../shared/LegacyMessage.js";
 import { _setMyUserData } from "./_setMyUserData.js";
@@ -62,11 +62,11 @@ async function encryptCmd({
     }),
 }: {
     connectionId: string;
-    message: LegacyMessage | MessageBuffer;
+    message: LegacyMessage | MessageBufferOld;
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    message: LegacyMessage | MessageBuffer;
+    message: LegacyMessage | MessageBufferOld;
 }> {
     const state = fetchStateFromDatabase();
 
@@ -197,7 +197,7 @@ async function handleCommand({
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    message: MessageBuffer | LegacyMessage;
+    message: MessageBufferOld | LegacyMessage;
 }> {
     log.level = getServerConfiguration({}).logLevel ?? "info";
     const incommingRequest = message;

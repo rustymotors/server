@@ -1,5 +1,5 @@
 import { getServerConfiguration } from "../../../shared/Configuration.js";
-import { ServerError } from "../../../shared/errors/ServerError.js";
+import { ServerError } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 import { GameMessage } from "../../../shared/GameMessage.js";
 import { LegacyMessage } from "../../../shared/LegacyMessage.js";
