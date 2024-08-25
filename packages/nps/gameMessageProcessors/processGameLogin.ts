@@ -174,8 +174,7 @@ export async function processGameLogin(
 				// Send the ack
 				socketCallback([loginACK.serialize()]);
 
-				// Create a new UserStatus message
-				const userStatus = UserStatus.new();
+				// Update the user status
 				userStatus.setCustomerId(user.customerId);
 				userStatus.setPersonaId(0);
 				userStatus.ban.set({
@@ -185,7 +184,6 @@ export async function processGameLogin(
 				userStatus.setSessionKey(SessionKey.fromKeyString(sessionKey));
 
 				UserStatusManager.addUserStatus(userStatus);
-
 				// Create a new message - UserStatus
 				const userStatusMessage = new GameMessage(257);
 				userStatusMessage.header.setId(0x601);
