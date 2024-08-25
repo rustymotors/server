@@ -2,10 +2,12 @@
 	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
 		"incremental": true,
-		"composite": true
+		"composite": true,
+		"resolveJsonModule": true
 	},
 	"include": [
 		"index.ts",
-		"src"
+		"src",
+		"src/__generated__/schema.json"
 	]
 }

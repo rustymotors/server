@@ -1,11 +1,15 @@
-import createConnectionPool, { sql } from '@databases/pg';
-import tables from '@databases/pg-typed';
-import type DatabaseSchema from '../__generated__/index.js';
-const DatabaseSchema = await import('../__generated__/schema.json');
+import atdb from "@databases/pg";
+import { sql } from "@databases/pg";
+import tables from "@databases/pg-typed";
+import type DatabaseSchemaType from "../__generated__/index.js";
+const DatabaseSchema = await import("../__generated__/schema.json");
 
 export { sql };
 
-export const db = createConnectionPool(process.env['DATABASE_URL']);
+const createConnectionPool = atdb.default;
+const defineTables = tables.default;
+
+export const db = createConnectionPool(process.env["DATABASE_URL"]);
 
 // You can list whatever tables you actually have here:
 export const {
@@ -30,7 +34,7 @@ export const {
     warehouse: WarehouseSchema,
     login: LoginSchema,
     profile: ProfileSchema,
-} = tables<DatabaseSchema>({
+} = defineTables<DatabaseSchemaType>({
     databaseSchema: DatabaseSchema.default,
 });
 export type { DatabaseSchema };
