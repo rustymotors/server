@@ -1,4 +1,4 @@
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { ServerError } from "rusty-motors-shared";
 
 /**
  * Clamp a value between 0 and 255
