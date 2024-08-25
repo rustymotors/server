@@ -6,21 +6,31 @@ export { SerializedBuffer } from "./src/SerializedBuffer.js";
 export { RawMessage } from "./src/RawMessage.js";
 export { ServerMessage } from "./src/ServerMessage.js";
 export { ServerError } from "./errors/ServerError.js";
+export {
+    McosEncryptionPair,
+    addSession,
+    createInitialState,
+    fetchStateFromDatabase,
+    addOnDataHandler,
+    addSocket,
+    getOnDataHandler,
+    removeSocket,
+    wrapSocket,
+} from "./State.js";
+export type { OnDataHandler } from "./State.js";
 
 export interface KeypressEvent {
-	sequence: string;
-	name: string;
-	ctrl: boolean;
-	meta: boolean;
-	shift: boolean;
+    sequence: string;
+    name: string;
+    ctrl: boolean;
+    meta: boolean;
+    shift: boolean;
 }
 
 export interface ConnectionRecord {
-	customerId: number;
-	connectionId: string;
-	sessionKey: string;
-	sKey: string;
-	contextId: string;
+    customerId: number;
+    connectionId: string;
+    sessionKey: string;
+    sKey: string;
+    contextId: string;
 }
-
-

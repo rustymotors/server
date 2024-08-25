@@ -16,18 +16,18 @@
 
 import { randomUUID } from "node:crypto";
 import {
-    OnDataHandler,
+    type OnDataHandler,
     addSocket,
     fetchStateFromDatabase,
     getOnDataHandler,
     removeSocket,
     wrapSocket,
-} from "../../shared/State.js";
+} from "rusty-motors-shared";
 import { ServerError } from "../../shared/errors/ServerError.js";
 import { getServerLogger } from "rusty-motors-shared";
 
 import { Socket } from "node:net";
-import { Logger } from "pino";
+import type { Logger } from "pino";
 import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
 import { getGatewayServer } from "./GatewayServer.js";
 

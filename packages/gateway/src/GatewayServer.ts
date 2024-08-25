@@ -9,13 +9,13 @@ import { receivePersonaData } from "../../persona/src/internal.js";
 import {
 	Configuration,
 	getServerConfiguration,
-} from "../../shared/Configuration.js";
+} from "rusty-motors-shared";
 import {
 	addOnDataHandler,
 	createInitialState,
 	fetchStateFromDatabase,
-} from "../../shared/State.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
+} from "rusty-motors-shared";
+import { ServerError } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 import { receiveTransactionsData } from "../../transactions/src/internal.js";
 import { onSocketConnection } from "./index.js";
@@ -26,7 +26,7 @@ import { addWebRoutes } from "./web.js";
  */
 
 type GatewayOptions = {
-	config?: import("/home/drazisil/mcos/packages/shared/Configuration.js").Configuration;
+	config?: Configuration;
 	log?: Logger;
 	backlogAllowedCount?: number;
 	listeningPortList?: number[];
