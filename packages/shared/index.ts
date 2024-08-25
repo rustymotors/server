@@ -8,7 +8,7 @@ export { ServerMessage } from "./src/ServerMessage.js";
 export { ServerError } from "./errors/ServerError.js";
 export {
     McosEncryptionPair,
-    addSession,
+    McosEncryption, addSession,
     createInitialState,
     fetchStateFromDatabase,
     addOnDataHandler,
@@ -16,8 +16,12 @@ export {
     getOnDataHandler,
     removeSocket,
     wrapSocket,
+    addEncryption,
+    getEncryption,
 } from "./State.js";
+export type { State } from "./State.js";
 export type { OnDataHandler, ServiceResponse } from "./State.js";
+export { LegacyMessage } from "./LegacyMessage.js";
 
 export interface KeypressEvent {
     sequence: string;
