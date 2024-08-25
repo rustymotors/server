@@ -153,8 +153,8 @@ export function onSocketConnection({
     // Add the data handler to the socket
     incomingSocket.on(
         "data",
-        (/** @type {Buffer} */ incomingDataAsBuffer: Buffer) => {
-            log.trace(`Incoming data: ${incomingDataAsBuffer.toString("hex")}`);
+        function socketDataHandler(incomingDataAsBuffer: Buffer) {
+            log.trace(`Incoming data on port ${localPort}: ${incomingDataAsBuffer.toString("hex")}`);
 
             // Deserialize the raw message
             const rawMessage = new SerializedBufferOld()._doDeserialize(
