@@ -5,7 +5,7 @@ import { getLenString } from "../src/utils/pureGet.js";
 import { sendNPSAck } from "../src/utils/sendNPSAck.js";
 import type { GameSocketCallback } from "./index.js";
 
-const log = getServerLogger();
+const log = getServerLogger({});
 
 export async function processCheckPlateText(
 	connectionId: string,
@@ -13,8 +13,7 @@ export async function processCheckPlateText(
 	message: GameMessage,
 	socketCallback: GameSocketCallback,
 ): Promise<void> {
-	log.setName("nps:processCheckPlateText");
-
+	log.info("processCheckPlateText called");
 	const plateType = message.getDataAsBuffer().readUInt32BE(0);
 
 	const requestedPlateText = getLenString(message.getDataAsBuffer(), 4, false);
@@ -24,6 +23,5 @@ export async function processCheckPlateText(
 	);
 
 	sendNPSAck(socketCallback);
-	log.resetName();
 	return Promise.resolve();
 }

@@ -6,14 +6,14 @@ import {
 } from "rusty-motors-nps";
 import { getServerLogger } from "rusty-motors-shared";
 
-const log = getServerLogger();
+const log = getServerLogger({});
 
 // Command id: 0x128
 export async function getLobMiniUserList(
 	commandId: number,
 	data: Buffer,
 ): Promise<Buffer> {
-	log.setName("nps:getLobMiniUserList");
+	log.debug("getLobMiniUserList called");
 	log.info(`Processing getLobMiniUserList command: ${getAsHex(data)}`);
 
 	const miniUserList = new MiniUserList(0);

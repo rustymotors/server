@@ -31,6 +31,7 @@ import { getServerLogger } from "rusty-motors-shared";
 import { Socket } from "node:net";
 import type { Logger } from "pino";
 import { getGatewayServer } from "./GatewayServer.js";
+import { getPortMessageType, UserStatusManager } from "rusty-motors-nps";
 
 /**
  * @typedef {object} OnDataHandlerArgs
@@ -132,6 +133,42 @@ export function onSocketConnection({
     // Add the socket to the global state
     addSocket(fetchStateFromDatabase(), wrappedSocket).save();
 
+    // =======================
+    // Handle incoming socket in shadow mode
+    // =======================
+
+    try {
+        // Get expected message type
+        const messageType = getPortMessageType(localPort);
+        log.debug(`[${newConnectionId}] Expected message type: ${messageType}`);
+
+        switch (messageType) {
+            case "Game": {
+                // Handle game messages
+                // Create a new user status
+                const userStatus = UserStatusManager.newUserStatus();
+                log.debug(`[${newConnectionId}] Created new user status`);
+
+                UserStatusManager.addUserStatus(userStatus);
+                log.debug(`[${newConnectionId}] Added user status to manager`);
+
+                break;
+            }
+
+            case "Server": {
+                // Handle server messages
+                break;
+            }
+
+            default: {
+                log.warn(`[${newConnectionId}] No message type found`);
+                break;
+            }
+        }
+    } catch (error) {
+        log.error(`[${newConnectionId}] Error handling socket: ${error}`);
+    }
+
     // This is a new TCP socket, so it's probably not using HTTP
     // Let's look for a port onData handler
     /** @type {OnDataHandler | undefined} */
@@ -154,7 +191,11 @@ export function onSocketConnection({
     incomingSocket.on(
         "data",
         function socketDataHandler(incomingDataAsBuffer: Buffer) {
-            log.trace(`Incoming data on port ${localPort}: ${incomingDataAsBuffer.toString("hex")}`);
+            log.trace(
+                `Incoming data on port ${localPort}: ${incomingDataAsBuffer.toString(
+                    "hex",
+                )}`,
+            );
 
             // Deserialize the raw message
             const rawMessage = new SerializedBufferOld()._doDeserialize(
@@ -170,34 +211,28 @@ export function onSocketConnection({
                 connectionId: newConnectionId,
                 message: rawMessage,
             })
-                .then(
-                    (
-                        response: ServiceResponse,
-                    ) => {
-                        log.debug("onData handler returned");
-                        const { messages } = response;
+                .then((response: ServiceResponse) => {
+                    log.debug("onData handler returned");
+                    const { messages } = response;
 
-                        // Log the messages
-                        log.trace(
-                            `Messages: ${messages.map((m) => m.toString())}`,
-                        );
+                    // Log the messages
+                    log.trace(`Messages: ${messages.map((m) => m.toString())}`);
 
-                        // Serialize the messages
-                        const serializedMessages = messages.map((m) =>
-                            m.serialize(),
-                        );
+                    // Serialize the messages
+                    const serializedMessages = messages.map((m) =>
+                        m.serialize(),
+                    );
 
-                        try {
-                            // Send the messages
-                            serializedMessages.forEach((m) => {
-                                incomingSocket.write(m);
-                                log.trace(`Sent data: ${m.toString("hex")}`);
-                            });
-                        } catch (error) {
-                            log.error(`Error sending data: ${String(error)}`);
-                        }
-                    },
-                )
+                    try {
+                        // Send the messages
+                        serializedMessages.forEach((m) => {
+                            incomingSocket.write(m);
+                            log.trace(`Sent data: ${m.toString("hex")}`);
+                        });
+                    } catch (error) {
+                        log.error(`Error sending data: ${String(error)}`);
+                    }
+                })
                 .catch((/** @type {Error} */ error: Error) => {
                     log.error(`Error handling data: ${String(error)}`);
 

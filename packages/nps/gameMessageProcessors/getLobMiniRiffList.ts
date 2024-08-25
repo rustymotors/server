@@ -6,14 +6,14 @@ import {
 } from "rusty-motors-nps";
 import { getServerLogger } from "rusty-motors-shared";
 
-const log = getServerLogger();
+const log = getServerLogger({});
 
 // Command id: 0x30c
 export async function getLobMiniRiffList(
 	commandId: number,
 	data: Buffer,
 ): Promise<Buffer> {
-	log.setName("nps:getLobMiniRiffList");
+	log.debug("getLobMiniRiffList called");
 	log.info(`Processing getLobMiniRiffList command: ${getAsHex(data)}`);
 
 	const riffList = new MiniRiffList();

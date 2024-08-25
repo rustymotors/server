@@ -2,7 +2,7 @@ import type { ISerializable } from "rusty-motors-nps";
 import { getAsHex } from "rusty-motors-nps";
 import { getServerLogger } from "rusty-motors-shared";
 
-const log = getServerLogger();
+const log = getServerLogger({});
 
 export class UserAction implements ISerializable {
     private name: string;

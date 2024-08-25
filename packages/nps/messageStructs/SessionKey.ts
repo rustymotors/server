@@ -2,7 +2,7 @@ import { getAsHex, isOnlyOneSet } from "rusty-motors-nps";
 import { getServerLogger } from "rusty-motors-shared";
 import { BaseSerializable } from "./BaseSerializable.js";
 
-const log = getServerLogger();
+const log = getServerLogger({});
 
 export class SessionKey extends BaseSerializable {
 	private key: Buffer = Buffer.alloc(0);
@@ -11,7 +11,7 @@ export class SessionKey extends BaseSerializable {
 
 	constructor({ key, timestamp }: { key?: Buffer; timestamp?: number }) {
 		super();
-		log.setName("SessionKey");
+		log.debug("SessionKey.constructor");
 		if (isOnlyOneSet(key, timestamp)) {
 			throw new Error("Both key and timestamp must be set if one is set");
 		}
@@ -22,20 +22,19 @@ export class SessionKey extends BaseSerializable {
 			this.timestamp = timestamp;
 			this._isSet = true;
 		}
-		log.resetName();
 	}
-	serialize(): Buffer {
+	override serialize(): Buffer {
 		return this.toBytes();
 	}
-	deserialize(data: Buffer): void {
+	override deserialize(data: Buffer): void {
 		SessionKey.fromBytes(data);
 	}
-	getByteSize(): number {
+	override getByteSize(): number {
 		throw new Error("Method not implemented.");
 	}
 
 	static fromBytes(bytes: Buffer): SessionKey {
-		log.setName("SessionKey.fromBytes");
+		log.debug("SessionKey.fromBytes");
 		const keyLength = bytes.readUInt16BE(0);
 
 		// Set the data offset
@@ -48,7 +47,6 @@ export class SessionKey extends BaseSerializable {
 		// Get the timestamp
 		const timestamp = bytes.readUInt32BE(dataOffset);
 
-		log.resetName();
 
 		return new SessionKey({
 			key,
@@ -69,7 +67,7 @@ export class SessionKey extends BaseSerializable {
 		return this.key.toString("hex");
 	}
 
-	toString(): string {
+	override toString(): string {
 		return `SessionKey(key=${this.getKey()}, timestamp=${this.timestamp})`;
 	}
 

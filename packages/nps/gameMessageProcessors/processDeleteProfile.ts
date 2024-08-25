@@ -8,7 +8,7 @@ import type { GameSocketCallback } from "./index.js";
 import { getServerLogger } from "rusty-motors-shared";
 import type { UserStatus } from "../messageStructs/UserStatus.js";
 
-const log = getServerLogger();
+const log = getServerLogger({});
 
 export function loadPrivateKey(path: string): string {
 	const privateKey = fs.readFileSync(path);
@@ -92,7 +92,7 @@ export async function processDeleteProfile(
 	message: GameMessage,
 	socketCallback: GameSocketCallback,
 ): Promise<void> {
-	log.setName("nps:processDeleteProfile");
+	log.debug("processDeleteProfile called");
 	// Log the message
 	log.info(`Delete profile request: ${message.toString()}`);
 
@@ -104,6 +104,5 @@ export async function processDeleteProfile(
 
 	// Send the ack
 	socketCallback([loginACK.serialize()]);
-	log.resetName();
 	return Promise.resolve();
 }

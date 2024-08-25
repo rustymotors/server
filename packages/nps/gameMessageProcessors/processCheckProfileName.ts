@@ -5,7 +5,7 @@ import type { GameSocketCallback } from "./index.js";
 import { getServerLogger } from "rusty-motors-shared";
 import type { UserStatus } from "../messageStructs/UserStatus.js";
 
-const log = getServerLogger();
+const log = getServerLogger({});
 
 export async function processCheckProfileName(
 	connectionId: string,
@@ -13,7 +13,7 @@ export async function processCheckProfileName(
 	message: GameMessage,
 	socketCallback: GameSocketCallback,
 ): Promise<void> {
-	log.setName("nps:processCheckProfileName");
+	log.info("processCheckProfileName called");
 	const customerId = message.serialize().readUInt32BE(8);
 
 	const requestedPersonaName = getLenString(message.serialize(), 12, false);
@@ -28,6 +28,5 @@ export async function processCheckProfileName(
 	const responseBytes = response.serialize();
 
 	socketCallback([responseBytes]);
-	log.resetName();
 	return Promise.resolve();
 }

@@ -17,6 +17,7 @@ import { getServerLogger } from "rusty-motors-shared";
 import { receiveTransactionsData } from "rusty-motors-transactions";
 import { onSocketConnection } from "./index.js";
 import { addWebRoutes } from "./web.js";
+import { populateGameMessageProcessors, populatePortToMessageTypes, portToMessageTypes, gameMessageProcessors } from "rusty-motors-nps";
 
 /**
  * Options for the GatewayServer.
@@ -254,6 +255,9 @@ export class Gateway {
         state = addOnDataHandler(state, 43300, receiveTransactionsData);
 
         state.save();
+
+        populatePortToMessageTypes(portToMessageTypes);
+        populateGameMessageProcessors(gameMessageProcessors);
 
         this.log.debug("GatewayServer initialized");
     }

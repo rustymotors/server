@@ -11,7 +11,7 @@ import { getAsHex, getLenString } from "../src/utils/pureGet.js";
 import type { ISerializable } from "../types.js";
 import type { GameSocketCallback } from "./index.js";
 
-const log = getServerLogger();
+const log = getServerLogger({});
 
 export function loadPrivateKey(path: string): string {
 	const privateKey = fs.readFileSync(path);
@@ -36,7 +36,7 @@ export function unpackUserLoginMessage(message: ISerializable): {
 	gameId: string;
 	contextToken: string;
 } {
-	log.setName("nps:unpackUserLoginMessage");
+	log.debug("unpackUserLoginMessage called");
 	log.info(`Unpacking user login message: ${getAsHex(message.serialize())}`);
 
 	// Get the context token
@@ -90,7 +90,6 @@ export function unpackUserLoginMessage(message: ISerializable): {
 	// Update the data offset
 	dataOffset += 2 + nextDataLength2;
 
-	log.resetName();
 
 	// Return the session key, game id, and context token
 	return {
@@ -115,7 +114,7 @@ export async function processGameLogin(
 			op: "processLogin",
 		},
 		() => {
-			log.setName("nps:processLogin");
+			log.debug("processGameLogin called");
 
 			log.info(`Login: ${message.toString()}`);
 
@@ -206,6 +205,5 @@ export async function processGameLogin(
 			}
 		},
 	);
-	log.resetName();
 	return Promise.resolve();
 }

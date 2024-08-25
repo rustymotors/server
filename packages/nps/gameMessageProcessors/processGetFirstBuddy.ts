@@ -10,7 +10,7 @@ import type { GameSocketCallback } from "./index.js";
 import type { UserStatus } from "rusty-motors-nps";
 import { getServerLogger } from "rusty-motors-shared";
 
-const log = getServerLogger();
+const log = getServerLogger({});
 
 export async function processFirstBuddy(
 	connectionId: string,
@@ -18,7 +18,7 @@ export async function processFirstBuddy(
 	message: GameMessage,
 	socketCallback: GameSocketCallback,
 ): Promise<void> {
-	log.setName("nps:processFirstBuddy");
+	log.info("processFirstBuddy called");
 	const profileId = getDWord(message.getDataAsBuffer(), 0, false);
 
 	log.info(`GetFirstBuddy profile: ${profileId}`);
@@ -39,6 +39,5 @@ export async function processFirstBuddy(
 	log.info("===========================================");
 
 	socketCallback([outMessage.serialize()]);
-	log.resetName();
 	return Promise.resolve();
 }

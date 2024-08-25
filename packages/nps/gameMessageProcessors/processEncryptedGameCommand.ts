@@ -15,7 +15,7 @@ import { lobbyCommandMap } from "./lobbyCommands.js";
 import { getServerLogger } from "rusty-motors-shared";
 import type { UserStatus } from "../messageStructs/UserStatus.js";
 
-const log = getServerLogger();
+const log = getServerLogger({});
 
 export async function processEncryptedGameCommand(
 	connectionId: string,
@@ -23,7 +23,7 @@ export async function processEncryptedGameCommand(
 	message: GameMessage,
 	socketCallback: GameSocketCallback,
 ): Promise<void> {
-	log.setName("nps:processEncryptedGameCommand");
+	log.debug("processEncryptedGameCommand called");
 	log.info(`Attempting to decrypt message: ${message.toString()}`);
 
 	// Get the encryption session
@@ -109,6 +109,5 @@ export async function processEncryptedGameCommand(
 	const responseBytes = responsePacket.serialize();
 
 	socketCallback([responseBytes]);
-	log.resetName();
 	return Promise.resolve();
 }
