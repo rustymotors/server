@@ -1,7 +1,7 @@
-import { getServerConfiguration } from "../../../shared/Configuration.js";
-import { ServerError } from "../../../shared/errors/ServerError.js";
+import { getServerConfiguration } from "rusty-motors-shared";
+import { ServerError } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
-import { LegacyMessage } from "../../../shared/LegacyMessage.js";
+import { LegacyMessage } from "rusty-motors-shared";
 import { UserInfo } from "../UserInfoMessage.js";
 import { updateUser } from "../../../database/index.js";
 

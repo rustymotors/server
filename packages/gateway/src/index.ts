@@ -30,7 +30,6 @@ import { getServerLogger } from "rusty-motors-shared";
 
 import { Socket } from "node:net";
 import type { Logger } from "pino";
-import { SerializedBuffer } from "rusty-motors-shared";
 import { getGatewayServer } from "./GatewayServer.js";
 
 /**
