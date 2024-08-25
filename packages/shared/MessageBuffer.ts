@@ -1,8 +1,8 @@
 import { ServerError } from "./errors/ServerError.js";
 import { MessageHeader } from "./MessageHeader.js";
-import { SerializedBuffer } from "./SerializedBuffer.js";
+import { SerializedBufferOld } from "./SerializedBufferOld.js";
 
-export class MessageBuffer extends SerializedBuffer {
+export class MessageBuffer extends SerializedBufferOld {
     _header: MessageHeader;
     _buffer: Buffer;
     constructor() {

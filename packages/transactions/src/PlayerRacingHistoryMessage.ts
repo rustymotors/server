@@ -1,6 +1,6 @@
-import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 
-export class PlayerRacingHistoryMessage extends SerializedBuffer {
+export class PlayerRacingHistoryMessage extends SerializedBufferOld {
     _msgId: number; // 2 bytes
     _userId: number; // 4 bytes
     _numRaces: number; // 2 bytes
@@ -75,7 +75,7 @@ export class PlayerRacingHistoryMessage extends SerializedBuffer {
     }
 }
 
-export class RacingHistoryRecordEntry extends SerializedBuffer {
+export class RacingHistoryRecordEntry extends SerializedBufferOld {
     raceType: number; // 4 bytes
     numberOfRacesEntered: number; // 4 bytes
     numberOfRacesFinished: number; // 4 bytes

@@ -7,7 +7,7 @@ import {
 import { ServerError } from "../../../shared/errors/ServerError.js";
 import { getServerLogger } from "rusty-motors-shared";
 import { MessageBuffer } from "../../../shared/MessageBuffer.js";
-import { SerializedBuffer } from "../../../shared/SerializedBuffer.js";
+import { SerializedBufferOld } from "../../../shared/SerializedBufferOld.js";
 import { LegacyMessage } from "../../../shared/LegacyMessage.js";
 import { _setMyUserData } from "./_setMyUserData.js";
 import { handleGetMiniUserList } from "./handleGetMiniUserList.js";
@@ -22,11 +22,11 @@ import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";
  * name: string,
  * handler: (args: {
  * connectionId: string,
- * message: SerializedBuffer,
+ * message: SerializedBufferOld,
  * log: import("pino").Logger,
  * }) => Promise<{
  * connectionId: string,
- * messages: SerializedBuffer[],
+ * messages: SerializedBufferOld[],
  * }>}[]}
  */
 export const messageHandlers: {
@@ -34,11 +34,11 @@ export const messageHandlers: {
     name: string;
     handler: (args: {
         connectionId: string;
-        message: SerializedBuffer;
+        message: SerializedBufferOld;
         log: import("pino").Logger;
     }) => Promise<{
         connectionId: string;
-        messages: SerializedBuffer[];
+        messages: SerializedBufferOld[];
     }>;
 }[] = [];
 
@@ -229,11 +229,11 @@ async function handleCommand({
  *
  * @param {object} args
  * @param {string} args.connectionId
- * @param {SerializedBuffer} args.message
+ * @param {SerializedBufferOld} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
   * @returns {Promise<{
 *  connectionId: string,
-* messages: SerializedBuffer[],
+* messages: SerializedBufferOld[],
 * }>}
 
  */
@@ -245,11 +245,11 @@ export async function handleEncryptedNPSCommand({
     }),
 }: {
     connectionId: string;
-    message: SerializedBuffer;
+    message: SerializedBufferOld;
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBuffer[];
+    messages: SerializedBufferOld[];
 }> {
     log.level = getServerConfiguration({}).logLevel ?? "info";
 
@@ -276,7 +276,7 @@ export async function handleEncryptedNPSCommand({
         log,
     });
 
-    const outboundMessage = new SerializedBuffer();
+    const outboundMessage = new SerializedBufferOld();
     outboundMessage.setBuffer((await encryptedResponse).message.serialize());
 
     return {

@@ -7,16 +7,18 @@ import { SerializableMixin, AbstractSerializable } from "./messageFactory.js";
  * @mixin {SerializableMixin}
  */
 
-export class SerializedBuffer extends SerializableMixin(AbstractSerializable) {
+export class SerializedBufferOld extends SerializableMixin(
+    AbstractSerializable,
+) {
     constructor() {
         super();
     }
 
     /**
      * @param {Buffer} buffer
-     * @returns {SerializedBuffer}
+     * @returns {SerializedBufferOld}
      */
-    override _doDeserialize(buffer: Buffer): SerializedBuffer {
+    override _doDeserialize(buffer: Buffer): SerializedBufferOld {
         this.setBuffer(buffer);
         return this;
     }

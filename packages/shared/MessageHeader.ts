@@ -1,6 +1,6 @@
-import { SerializedBuffer } from "./SerializedBuffer.js";
+import { SerializedBufferOld } from "./SerializedBufferOld.js";
 
-export class MessageHeader extends SerializedBuffer {
+export class MessageHeader extends SerializedBufferOld {
     _size: number;
     _messageId: number;
     _messageLength: number;

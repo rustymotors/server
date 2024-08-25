@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { LegacyMessage } from "../../../shared/messageFactory.js";
+import { LegacyMessage } from "rusty-motors-shared";
 import { handleSendMiniRiffList } from "../../src/handlers/handleSendMiniRiffList.js";
 
 describe("handleSendMiniRiffList", () => {

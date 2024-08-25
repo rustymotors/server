@@ -1,6 +1,6 @@
-import { SerializedBuffer } from "./SerializedBuffer.js";
+import { SerializedBufferOld } from "./SerializedBufferOld.js";
 
-export class Timestamp extends SerializedBuffer {
+export class Timestamp extends SerializedBufferOld {
     _year: number;
     _month: number;
     _day: number;

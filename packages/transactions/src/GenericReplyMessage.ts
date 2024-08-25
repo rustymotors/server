@@ -14,9 +14,9 @@
  * @property {Buffer} data2
  */
 
-import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 
-export class GenericReply extends SerializedBuffer {
+export class GenericReply extends SerializedBufferOld {
     msgNo: number;
     msgReply: number;
     result: Buffer;
@@ -56,7 +56,7 @@ export class GenericReply extends SerializedBuffer {
     }
 }
 
-export class GenericReplyMessage extends SerializedBuffer {
+export class GenericReplyMessage extends SerializedBufferOld {
     msgNo: number;
     toFrom: number;
     appId: number;

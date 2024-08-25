@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 
 /**
  * A message listing the player's owned vehicles
  * This is the body of a MessageNode
  */
-export class OwnedVehiclesMessage extends SerializedBuffer {
+export class OwnedVehiclesMessage extends SerializedBufferOld {
     _msgNo: number;
     _numberOfVehicles: number;
     _vehicleList: OwnedVehicle[];
@@ -67,7 +67,7 @@ export class OwnedVehiclesMessage extends SerializedBuffer {
     }
 }
 
-export class OwnedVehicle extends SerializedBuffer {
+export class OwnedVehicle extends SerializedBufferOld {
     _vehicleId: number;
     _brandedPartId: number;
     constructor() {

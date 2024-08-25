@@ -19,7 +19,7 @@ import { getServerLogger } from "rusty-motors-shared";
 
 import { Logger } from "pino";
 import { getServerConfiguration } from "../../shared/Configuration.js";
-import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 import { LegacyMessage } from "../../shared/LegacyMessage.js";
 import {
     PersonaList,
@@ -45,7 +45,7 @@ const NAME_BUFFER_SIZE = 30;
  * log: import("pino").Logger,
  * }) => Promise<{
  * connectionId: string,
- * messages: SerializedBuffer[],
+ * messages: SerializedBufferOld[],
  * }>}[]}
  */
 export const messageHandlers: {
@@ -57,7 +57,7 @@ export const messageHandlers: {
         log: Logger;
     }) => Promise<{
         connectionId: string;
-        messages: SerializedBuffer[];
+        messages: SerializedBufferOld[];
     }>;
 }[] = [
     {
@@ -162,7 +162,7 @@ async function getPersonaMapsByCustomerId(
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: SerializedBuffer[],
+ * messages: SerializedBufferOld[],
  * }>}
  */
 async function getPersonaMaps({
@@ -175,7 +175,7 @@ async function getPersonaMaps({
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBuffer[];
+    messages: SerializedBufferOld[];
 }> {
     log.debug("_npsGetPersonaMaps...");
 
@@ -235,7 +235,7 @@ async function getPersonaMaps({
             })}`,
         );
 
-        const outboundMessage = new SerializedBuffer();
+        const outboundMessage = new SerializedBufferOld();
         outboundMessage._doDeserialize(personaMapsMessage.serialize());
 
         return {
@@ -262,11 +262,11 @@ async function getPersonaMaps({
  *
  * @param {object} args
  * @param {string} args.connectionId
- * @param {SerializedBuffer} args.message
+ * @param {SerializedBufferOld} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "PersonaServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: SerializedBuffer[],
+ * messages: SerializedBufferOld[],
  * }>}
  * @throws {Error} Unknown code was received
  */
@@ -278,11 +278,11 @@ export async function receivePersonaData({
     }),
 }: {
     connectionId: string;
-    message: SerializedBuffer;
+    message: SerializedBufferOld;
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBuffer[];
+    messages: SerializedBufferOld[];
 }> {
     log.level = getServerConfiguration({}).logLevel ?? "info";
     const { data } = message;

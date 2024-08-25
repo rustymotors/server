@@ -1,5 +1,5 @@
 import { getServerLogger } from "rusty-motors-shared";
-import { SerializedBuffer } from "../../../shared/SerializedBuffer.js";
+import { SerializedBufferOld } from "../../../shared/SerializedBufferOld.js";
 import { LegacyMessage } from "../../../shared/LegacyMessage.js";
 import { RawMessage } from "../../../shared/src/RawMessage.js";
 
@@ -19,7 +19,7 @@ export async function validatePersonaName({
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBuffer[];
+    messages: SerializedBufferOld[];
 }> {
     log.debug("_npsLogoutGameUser...");
     const requestPacket = message;
@@ -39,7 +39,7 @@ export async function validatePersonaName({
       })}`,
     );
 
-    const outboundMessage = new SerializedBuffer();
+    const outboundMessage = new SerializedBufferOld();
     outboundMessage._doDeserialize(responsePacket.serialize());
 
     return {

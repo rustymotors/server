@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 import { serializeString } from "../../shared/serializeString.js";
 
 /**
  * A message listing the lobbies
  * This is the body of a MessageNode
  */
-export class GameUrlsMessage extends SerializedBuffer {
+export class GameUrlsMessage extends SerializedBufferOld {
     _msgNo: number;
     _urlCount: number;
     _shouldExpectMoreMessages: boolean;
@@ -71,7 +71,7 @@ export class GameUrlsMessage extends SerializedBuffer {
     }
 }
 
-export class GameUrl extends SerializedBuffer {
+export class GameUrl extends SerializedBufferOld {
     _urlId: number;
     urlRef: string;
     constructor() {

@@ -15,14 +15,14 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Timestamp } from "../../shared/TimeStamp.js";
-import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 import { serializeStringRaw } from "../../shared/serializeStringRaw.js";
 
 /**
  * A message listing the player's owned vehicles
  * This is the body of a MessageNode
  */
-export class PlayerInfoMessage extends SerializedBuffer {
+export class PlayerInfoMessage extends SerializedBufferOld {
     _msgNo: number; // 2 bytes
     _playerId: number; // 4 bytes
     _playerName: string; // 13 bytes

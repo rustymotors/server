@@ -1,5 +1,5 @@
 import { getServerLogger } from "rusty-motors-shared";
-import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 import { LegacyMessage } from "../../shared/LegacyMessage.js";
 
 /**
@@ -10,7 +10,7 @@ import { LegacyMessage } from "../../shared/LegacyMessage.js";
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: SerializedBuffer[],
+ * messages: SerializedBufferOld[],
  * }>}
  */
 
@@ -26,7 +26,7 @@ export async function _selectGamePersona({
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBuffer[];
+    messages: SerializedBufferOld[];
 }> {
     log.debug("_npsSelectGamePersona...");
     const requestPacket = message;
@@ -51,7 +51,7 @@ export async function _selectGamePersona({
             .toString("hex")} `,
     );
 
-    const outboundMessage = new SerializedBuffer();
+    const outboundMessage = new SerializedBufferOld();
     outboundMessage.setBuffer(responsePacket._doSerialize());
 
     return {

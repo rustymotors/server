@@ -1,6 +1,6 @@
-import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 
-export class PlayerPhysicalMessage extends SerializedBuffer {
+export class PlayerPhysicalMessage extends SerializedBufferOld {
     _msgNo: number; // 2 bytes
     _playerId: number; // 4 bytes
     _bodytype: number; // 4 bytes

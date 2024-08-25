@@ -1,6 +1,6 @@
 import { getServerConfiguration } from "../../../shared/Configuration.js";
 import { getServerLogger } from "rusty-motors-shared";
-import { SerializedBuffer } from "../../../shared/SerializedBuffer.js";
+import { SerializedBufferOld } from "../../../shared/SerializedBufferOld.js";
 
 export async function handleTrackingPing({
     connectionId,
@@ -10,11 +10,11 @@ export async function handleTrackingPing({
     }),
 }: {
     connectionId: string;
-    message: SerializedBuffer;
+    message: SerializedBufferOld;
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBuffer[];
+    messages: SerializedBufferOld[];
 }> {
     log.level = getServerConfiguration({}).logLevel ?? "info";
 

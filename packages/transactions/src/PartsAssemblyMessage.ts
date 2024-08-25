@@ -1,6 +1,6 @@
-import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 
-export class PartsAssemblyMessage extends SerializedBuffer {
+export class PartsAssemblyMessage extends SerializedBufferOld {
     _msgNo: number;
     _ownerId: number;
     _numberOfParts: number;
@@ -37,7 +37,7 @@ export class PartsAssemblyMessage extends SerializedBuffer {
     }
 }
 
-export class Part extends SerializedBuffer {
+export class Part extends SerializedBufferOld {
     _partId: number; // 4 bytes
     _parentPartId: number; // 4 bytes
     _brandedPartId: number; // 4 bytes

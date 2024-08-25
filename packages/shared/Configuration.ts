@@ -1,4 +1,4 @@
-import { Logger } from "pino";
+import type { Logger } from "pino";
 import { getServerLogger } from "./src/log.js";
 
 /**

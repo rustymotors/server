@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 
 /**
  * A message listing the lobbies
  * This is the body of a MessageNode
  */
-export class ArcadeCarMessage extends SerializedBuffer {
+export class ArcadeCarMessage extends SerializedBufferOld {
     _msgNo: number;
     _carCount: number;
     _shouldExpectMoreMessages: boolean;
@@ -70,7 +70,7 @@ export class ArcadeCarMessage extends SerializedBuffer {
     }
 }
 
-export class ArcadeCarInfo extends SerializedBuffer {
+export class ArcadeCarInfo extends SerializedBufferOld {
     _brandedPartId: number;
     _lobbyId: number;
     constructor() {

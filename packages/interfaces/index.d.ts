@@ -4,7 +4,7 @@ import { Socket } from "node:net";
 import pino from "pino";
 import { Configuration } from "../shared/Configuration.js";
 import { ServerError } from "../shared/errors/ServerError.js";
-import { SerializedBuffer } from "../shared/SerializedBuffer.ts";
+import { SerializedBufferOld } from "../shared/SerializedBufferOld.ts";
 
 /**
  * @module interfaces
@@ -189,7 +189,7 @@ export interface RaceLobbyRecord {
 
 export interface ServiceArgs {
     connectionId: string;
-    message: SerializedBuffer;
+    message: SerializedBufferOld;
     log: import("pino").Logger;
 }
 

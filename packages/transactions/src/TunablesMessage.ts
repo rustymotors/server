@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 
 /**
  * A message listing the lobbies
  * This is the body of a MessageNode
  */
-export class TunablesMessage extends SerializedBuffer {
+export class TunablesMessage extends SerializedBufferOld {
     _msgNo: number;
     _clubCreationCost: number;
     _clubCreationRequiredLevel: number;

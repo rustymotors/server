@@ -1,4 +1,4 @@
-import { SerializedBuffer } from "./SerializedBuffer.js";
+import { SerializedBufferOld } from "./SerializedBufferOld.js";
 import { serverHeader } from "./serverHeader.js";
 
 /**
@@ -7,7 +7,7 @@ import { serverHeader } from "./serverHeader.js";
  * @mixin {SerializableMixin}
  */
 
-export class OldServerMessage extends SerializedBuffer {
+export class OldServerMessage extends SerializedBufferOld {
     _header: serverHeader;
     _msgNo: number;
     constructor() {

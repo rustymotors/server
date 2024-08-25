@@ -1,14 +1,21 @@
+import { LegacyMessage } from "./LegacyMessage.js";
+
 export { SubThread } from "./SubThread.js";
 export { NetworkMessage } from "./src/NetworkMessage.js";
 export { ServerLogger, getServerLogger } from "./src/log.js";
 export { Configuration, getServerConfiguration } from "./Configuration.js";
 export { SerializedBuffer } from "./src/SerializedBuffer.js";
+export { SerializedBufferOld } from "./SerializedBufferOld.js";
 export { RawMessage } from "./src/RawMessage.js";
 export { ServerMessage } from "./src/ServerMessage.js";
+export { AbstractSerializable, SerializableMixin } from "./messageFactory.js";
 export { ServerError } from "./errors/ServerError.js";
+export {NPSMessage} from "./NPSMessage.js";
+export {OldServerMessage} from "./OldServerMessage.js";
 export {
     McosEncryptionPair,
-    McosEncryption, addSession,
+    McosEncryption,
+    addSession,
     createInitialState,
     fetchStateFromDatabase,
     addOnDataHandler,

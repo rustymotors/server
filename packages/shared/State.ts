@@ -9,7 +9,7 @@
 import { Cipher, Decipher } from "crypto";
 import { Socket } from "node:net";
 import { Logger } from "pino";
-import { SerializedBuffer } from "./SerializedBuffer.js";
+import { SerializedBufferOld } from "./SerializedBufferOld.js";
 
 /**
  * @external RawMessage
@@ -181,7 +181,7 @@ export function wrapSocket(
 interface OnDataHandlerArgs {
     args: {
         connectionId: string;
-        message: SerializedBuffer;
+        message: SerializedBufferOld;
         log?: Logger;
     };
 }
@@ -191,7 +191,7 @@ interface OnDataHandlerArgs {
 
 export interface ServiceResponse {
     connectionId: string;
-    messages: SerializedBuffer[];
+    messages: SerializedBufferOld[];
 }
 
 export type OnDataHandler = Function;

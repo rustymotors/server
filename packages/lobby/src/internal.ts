@@ -17,7 +17,7 @@
 import { getServerConfiguration } from "../../shared/Configuration.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
 import { getServerLogger } from "rusty-motors-shared";
-import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 import { NPSMessage } from "../../shared/NPSMessage.js";
 import { LegacyMessage } from "../../shared/LegacyMessage.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
@@ -32,11 +32,11 @@ import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServe
  * name: string,
  * handler: (args: {
  * connectionId: string,
- * message: SerializedBuffer,
+ * message: SerializedBufferOld,
  * log: import("pino").Logger,
  * }) => Promise<{
  * connectionId: string,
- * messages: SerializedBuffer[],
+ * messages: SerializedBufferOld[],
  * }>}[]}
  */
 export const messageHandlers: {
@@ -44,11 +44,11 @@ export const messageHandlers: {
     name: string;
     handler: (args: {
         connectionId: string;
-        message: SerializedBuffer;
+        message: SerializedBufferOld;
         log: import("pino").Logger;
     }) => Promise<{
         connectionId: string;
-        messages: SerializedBuffer[];
+        messages: SerializedBufferOld[];
     }>;
 }[] = [
     {
@@ -71,11 +71,11 @@ export const messageHandlers: {
 /**
  * @param {object} args
  * @param {string} args.connectionId
- * @param {SerializedBuffer} args.message
+ * @param {SerializedBufferOld} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "PersonaServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: SerializedBuffer[],
+ * messages: SerializedBufferOld[],
  * }>}
  * @throws {Error} Unknown code was received
  */
@@ -87,11 +87,11 @@ export async function receiveLobbyData({
     }),
 }: {
     connectionId: string;
-    message: SerializedBuffer;
+    message: SerializedBufferOld;
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBuffer[];
+    messages: SerializedBufferOld[];
 }> {
     log.level = getServerConfiguration({}).logLevel ?? "info";
 

@@ -1,5 +1,5 @@
 import { getServerLogger } from "rusty-motors-shared";
-import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 import { NPSMessage } from "../../shared/NPSMessage.js";
 import { LegacyMessage } from "../../shared/LegacyMessage.js";
 import { BuddyCount, BuddyInfoMessage, BuddyList } from "./BuddyInfoMessage.js";
@@ -16,7 +16,7 @@ export async function _getFirstBuddy({
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBuffer[];
+    messages: SerializedBufferOld[];
 }> {
     // This message is a versioned nps message
     const incomingMessage = new NPSMessage();
@@ -39,7 +39,7 @@ export async function _getFirstBuddy({
     const buddyCountMessage = new BuddyCount();
     buddyCountMessage.buddyCount = 0;
 
-    const outboundMessage1 = new SerializedBuffer();
+    const outboundMessage1 = new SerializedBufferOld();
     outboundMessage1._doDeserialize(buddyCountMessage.serialize());
 
     const buddyInfoMessage = new BuddyInfoMessage();
@@ -59,7 +59,7 @@ export async function _getFirstBuddy({
         buddyInfoMessage.add(buddyInfo);
     }
 
-    const outboundMessage = new SerializedBuffer();
+    const outboundMessage = new SerializedBufferOld();
     outboundMessage._doDeserialize(buddyInfoMessage.serialize());
 
     log.debug(

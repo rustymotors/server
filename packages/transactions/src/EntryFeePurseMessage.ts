@@ -15,13 +15,13 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { ServerError } from "../../shared/errors/ServerError.js";
-import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 
 /**
  * A message listing the entry fees and purses for each entry fee
  * This is the body of a MessageNode
  */
-export class EntryFeePurseMessage extends SerializedBuffer {
+export class EntryFeePurseMessage extends SerializedBufferOld {
     _msgNo: number;
     _numberOfPurseEntries: number;
     _shouldExpectMoreMessages: boolean;
@@ -71,7 +71,7 @@ export class EntryFeePurseMessage extends SerializedBuffer {
     }
 }
 
-export class PurseEntry extends SerializedBuffer {
+export class PurseEntry extends SerializedBufferOld {
     _entryFee: number; // 4 bytes
     _purse: number; // 4 bytes
     constructor() {

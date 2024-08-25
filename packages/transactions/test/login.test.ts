@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getServerLogger } from "rusty-motors-shared";
-import { OldServerMessage } from "../../shared/messageFactory.js";
+import { OldServerMessage } from "rusty-motors-shared";
 import { login } from "../src/login.js";
 
 describe("login", () => {

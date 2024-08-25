@@ -15,15 +15,15 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { OldServerMessage } from "../../shared/OldServerMessage.js";
-import { SerializedBuffer } from "../../shared/SerializedBuffer.js";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 
-export class ListEntry extends SerializedBuffer {
+export class ListEntry extends SerializedBufferOld {
     constructor() {
         super();
     }
 }
 
-export class LoginCompleteMessage extends SerializedBuffer {
+export class LoginCompleteMessage extends SerializedBufferOld {
     _msgNo: number;
     _serverTime: number;
     _firstTime: boolean;

@@ -1,7 +1,7 @@
 import { GameMessageHeader } from "./GameMessageHeader.js";
-import { SerializedBuffer } from "./SerializedBuffer.js";
+import { SerializedBufferOld } from "./SerializedBufferOld.js";
 
-export class GameMessage extends SerializedBuffer {
+export class GameMessage extends SerializedBufferOld {
     _header: GameMessageHeader;
     _recordData: Buffer;
     constructor(gameMessageId: number) {
@@ -22,7 +22,7 @@ export class GameMessage extends SerializedBuffer {
     }
 
     /** @deprecated - Use deserialize instead */
-    override _doDeserialize(buffer: Buffer): SerializedBuffer {
+    override _doDeserialize(buffer: Buffer): SerializedBufferOld {
         this._header._doDeserialize(buffer);
         this._recordData = Buffer.alloc(this._header._gameMessageLength - 4);
         buffer.copy(this._recordData, 0, 8);
