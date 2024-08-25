@@ -1,4 +1,4 @@
-import { getServerLogger } from "../src/log.js";
+import { getServerLogger } from "./log.js";
 
 /**
  * @module errors

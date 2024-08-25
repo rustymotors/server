@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 
 import { Logger } from "pino";
 import { Configuration } from "../../shared/Configuration.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { ServerError } from "../../shared/src/ServerError.js";
 import { LegacyMessage } from "../../shared/LegacyMessage.js";
 
 /**

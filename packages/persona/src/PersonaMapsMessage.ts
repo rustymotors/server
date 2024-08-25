@@ -1,5 +1,5 @@
 import { serializeString } from "../../core/src/serializationHelpers.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { ServerError } from "../../shared/src/ServerError.js";
 import { NPSMessage } from "../../shared/NPSMessage.js";
 import { NPSHeader } from "../../shared/NPSHeader.js";
 

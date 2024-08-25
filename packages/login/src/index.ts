@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { DatabaseManager } from "../../interfaces/index.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { ServerError } from "../../shared/src/ServerError.js";
 import { getServerLogger } from "rusty-motors-shared";
 import { NPSMessage } from "../../shared/NPSMessage.js";
 import { handleLoginData } from "./internal.js";

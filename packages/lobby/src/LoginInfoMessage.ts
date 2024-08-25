@@ -1,4 +1,4 @@
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { ServerError } from "../../shared/src/ServerError.js";
 import { deserializeString } from "../../shared/deserializeString.js";
 import { LegacyMessage } from "../../shared/LegacyMessage.js";
 import { serializeString } from "../../shared/serializeString.js";

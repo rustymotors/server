@@ -1,4 +1,4 @@
-import { ServerError } from "./errors/ServerError.js";
+import { ServerError } from "./src/ServerError.js";
 import { legacyHeader } from "./legacyHeader.js";
 
 /**
