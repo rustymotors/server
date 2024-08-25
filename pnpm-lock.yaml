@@ -32,18 +32,30 @@ importers:
       fastify:
         specifier: ^4.25.1
         version: 4.28.1
+      lobby:
+        specifier: link:packages/lobby
+        version: link:packages/lobby
       moment:
         specifier: ^2.29.4
         version: 2.30.1
       pino:
         specifier: ^8.17.1
         version: 8.21.0
+      rusty-motors-cli:
+        specifier: link:packages/cli
+        version: link:packages/cli
       rusty-motors-database:
         specifier: link:packages/database
         version: link:packages/database
       rusty-motors-gateway:
         specifier: link:packages/gateway
         version: link:packages/gateway
+      rusty-motors-lobby:
+        specifier: link:packages/lobby
+        version: link:packages/lobby
+      rusty-motors-login:
+        specifier: link:packages/login
+        version: link:packages/login
       rusty-motors-nps:
         specifier: link:packages/nps
         version: link:packages/nps
@@ -53,6 +65,9 @@ importers:
       rusty-motors-shared-packets:
         specifier: link:packages/shared-packets
         version: link:packages/shared-packets
+      rusty-motors-transactions:
+        specifier: link:packages/transactions
+        version: link:packages/transactions
       sequelize:
         specifier: ^6.35.2
         version: 6.37.3(pg@8.12.0)
@@ -193,6 +208,44 @@ importers:
         version: 2.0.5(@types/node@22.5.0)
 
   packages/gateway:
+    dependencies:
+      '@fastify/sensible':
+        specifier: ^5.5.0
+        version: 5.6.0
+      '@sentry/node':
+        specifier: ^8.0.0
+        version: 8.26.0
+      fastify:
+        specifier: ^4.25.2
+        version: 4.28.1
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: '2'
+        version: 2.0.5(vitest@2.0.5(@types/node@22.5.0))
+      vitest:
+        specifier: ^2.0.5
+        version: 2.0.5(@types/node@22.5.0)
+
+  packages/lobby:
+    dependencies:
+      '@fastify/sensible':
+        specifier: ^5.5.0
+        version: 5.6.0
+      '@sentry/node':
+        specifier: ^8.0.0
+        version: 8.26.0
+      fastify:
+        specifier: ^4.25.2
+        version: 4.28.1
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: '2'
+        version: 2.0.5(vitest@2.0.5(@types/node@22.5.0))
+      vitest:
+        specifier: ^2.0.5
+        version: 2.0.5(@types/node@22.5.0)
+
+  packages/login:
     dependencies:
       '@fastify/sensible':
         specifier: ^5.5.0
