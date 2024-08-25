@@ -17,9 +17,7 @@
 import type { Socket } from "node:net";
 import { ServerMessage } from "rusty-motors-shared-packets";
 import { getServerMessageProcessor } from "rusty-motors-mcots";
-import type { TServerLogger } from "rusty-motors-shared";
 import * as Sentry from "@sentry/node";
-import { db } from "rusty-motors-database";
 import { createCipheriv, createDecipheriv, getCiphers } from "node:crypto";
 import { McosEncryptionPair } from "rusty-motors-shared";
 import { ClientConnectionManager } from "rusty-motors-mcots";
@@ -104,7 +102,6 @@ export function verifyLegacyCipherSupport() {
 export class Connection {
     private _socket: Socket;
     private _connectionId: string;
-    private _logger: TServerLogger;
     private _personaId: number | null = null;
     private _cipherPair: McosEncryptionPair | null = null;
     private _channelSecure: boolean = false;
@@ -113,10 +110,9 @@ export class Connection {
         return this._connectionId;
     }
 
-    constructor(socket: Socket, connectionId: string, logger: TServerLogger) {
+    constructor(socket: Socket, connectionId: string) {
         this._socket = socket;
         this._connectionId = connectionId;
-        this._logger = logger;
 
         this._socket.on("data", (data) => this.handleServerSocketData(data));
         this._socket.on("error", (error) =>
@@ -124,7 +120,7 @@ export class Connection {
         );
         this._socket.on("close", () => this.close());
 
-        this._logger.debug(`Connection ${this._connectionId} created`);
+        log.debug(`Connection ${this._connectionId} created`);
     }
 
     get id(): string {
@@ -137,7 +133,7 @@ export class Connection {
 
     setChannelSecure(channelSecure: boolean): void {
         if (channelSecure && this._cipherPair === null) {
-            this._logger.error(
+            log.error(
                 `Tried to set channel secure without a cipher pair for connection ${this._connectionId}`,
             );
             throw new Error(
@@ -152,13 +148,13 @@ export class Connection {
     }
 
     private async _getCiperKeyFromDatabase() {
-        this._logger.setName("Connection:_getCiperKeyFromDatabase");
+        log.debug(`Getting cipher key from database for persona ID ${this._personaId}`);
         if (this._cipherPair !== null) {
             return;
         }
 
         if (typeof this._personaId !== "number") {
-            this._logger.error(
+            log.error(
                 `Tried to get cipher key from database without a persona ID`,
             );
             throw new Error(
@@ -167,7 +163,7 @@ export class Connection {
         }
 
         // Get the cipher key from the database
-        const session_key = await getDatabase()
+        const session_key = await db
             .select()
             .from(keySchema)
             .where(eq(keySchema.userId, this._personaId))

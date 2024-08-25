@@ -10,14 +10,14 @@ import { getServerLogger } from "rusty-motors-shared";
 import { ServerMessage } from "rusty-motors-shared-packets";
 import { sendSuccess } from "./sendSuccess.js";
 
-const log = getServerLogger();
+const log = getServerLogger({});
 
 export async function processClientConnect(
 	connectionId: string,
 	message: ServerMessage,
 	socketCallback: ServerSocketCallback,
 ): Promise<void> {
-	log.setName("processClientConnect");
+	log.debug(`Processing client connect request: ${message.toString()}`);
 	try {
 		log.debug(`Processing client connect request: ${message.toString()}`);
 
