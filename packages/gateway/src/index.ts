@@ -92,7 +92,7 @@ export function socketEndHandler({
     }),
 }: {
     connectionId: string;
-    log?: import("pino").Logger;
+    log?: Logger;
 }) {
     log.debug(`Connection ${connectionId} ended`);
 
@@ -104,8 +104,8 @@ export function socketEndHandler({
  * Handle incoming TCP connections
  *
  * @param {object} options
- * @param {module:net.Socket} options.incomingSocket The incoming socket
- * @param {import("pino").Logger} [options.log=getServerLogger({ module: "onDataHandler" })] The logger to use
+ * @param {Socket} options.incomingSocket The incoming socket
+ * @param {Logger} [options.log=getServerLogger({ module: "onDataHandler" })] The logger to use
  *
  */
 export function onSocketConnection({
@@ -115,7 +115,7 @@ export function onSocketConnection({
     }),
 }: {
     incomingSocket: Socket;
-    log?: import("pino").Logger;
+    log?: Logger;
 }) {
     // Get the local port and remote address
     const { localPort, remoteAddress } = incomingSocket;
