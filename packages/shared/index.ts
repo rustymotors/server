@@ -17,7 +17,7 @@ export {
     removeSocket,
     wrapSocket,
 } from "./State.js";
-export type { OnDataHandler } from "./State.js";
+export type { OnDataHandler, ServiceResponse } from "./State.js";
 
 export interface KeypressEvent {
     sequence: string;
