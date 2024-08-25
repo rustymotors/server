@@ -1,4 +1,4 @@
-import { db, WarehouseSchema, getTuneables, sql } from "../../index.js";
+import { db, getTuneables, sql } from "../../index.js";
 import { getServerLogger } from "rusty-motors-shared";
 
 export type WarehouseInventory = {
@@ -67,6 +67,5 @@ export async function getWarehouseInventory(
         dealOfTheDayDiscount: dealOfTheDayDiscount ?? 0,
     };
 
-    log.resetName();
     return inventory;
 }
