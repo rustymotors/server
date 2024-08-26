@@ -1,7 +1,18 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { saveClientConnection, clearConnectedClients, findClientByCustomerId, hasClientEncryptionPair, newClientConnection, setClientEncryption } from "../index.js"
+import {
+    saveClientConnection,
+    clearConnectedClients,
+    findClientByCustomerId,
+    hasClientEncryptionPair,
+    newClientConnection,
+    setClientEncryption,
+} from "../index.js";
 
 describe("Client connections", () => {
+    beforeEach(() => {
+        clearConnectedClients();
+    });
+
     describe("newClientConnection", () => {
         it("should create a new client connection", () => {
             const connectionId = "123";
@@ -29,11 +40,6 @@ describe("Client connections", () => {
     });
 
     describe("findClientByCustomerId", () => {
-
-        beforeEach(() => {
-            clearConnectedClients();
-        });
-
         it("should find a client by customer ID", () => {
             const connectionId = "123";
             const customerId = 456;
@@ -52,17 +58,53 @@ describe("Client connections", () => {
         });
     });
 
+    describe("setClientEncryption", () => {
+        it("should set the client encryption pair", () => {
+            const connectionId = "123";
+            const customerId = 456;
+            const sessionKey = "ea25e21a2a022d71";
+
+            const client = newClientConnection(connectionId, customerId);
+            saveClientConnection(connectionId, client);
+
+            setClientEncryption(client, sessionKey);
+
+            expect(client.sessionKey).toBe(sessionKey);
+        });
+
+        it("should throw an error if the session key is not provided", () => {
+            const connectionId = "123";
+            const customerId = 456;
+
+            const client = newClientConnection(connectionId, customerId);
+            saveClientConnection(connectionId, client);
+
+            expect(() => setClientEncryption(client, "")).toThrow();
+        });
+
+        it("should throw an error if the session key is invalid", () => {
+            const connectionId = "123";
+            const customerId = 456;
+
+            const client = newClientConnection(connectionId, customerId);
+            saveClientConnection(connectionId, client);
+
+            expect(() => setClientEncryption(client, "invalid")).toThrow();
+        });
+    });
+
     describe("hasClientEncryptionPair", () => {
         it("should return true if the client has an encryption pair", () => {
             const connectionId = "123";
             const customerId = 456;
+            const sessionKey = "ea25e21a2a022d71";
             const client = newClientConnection(connectionId, customerId);
             saveClientConnection(connectionId, client);
 
             expect(hasClientEncryptionPair(client, "game")).toBe(false);
             expect(hasClientEncryptionPair(client, "server")).toBe(false);
 
-            setClientEncryption(client, "sessionKey");
+            setClientEncryption(client, sessionKey);
 
             expect(hasClientEncryptionPair(client, "game")).toBe(true);
             expect(hasClientEncryptionPair(client, "server")).toBe(true);
@@ -84,4 +126,3 @@ describe("Client connections", () => {
         });
     });
 });
-    

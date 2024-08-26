@@ -1,4 +1,4 @@
-import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
+import { createCipheriv, createDecipheriv } from "node:crypto";
 
 /**
  * Represents a pair of encryption and decryption functions.
@@ -14,31 +14,75 @@ type CipherPair = {
  * Generates a pair of cipher and decipher functions for game encryption.
  * @returns The cipher and decipher functions.
  */
-function createGameEncryptionPair(): CipherPair {
-    const key = randomBytes(32);
-    const iv = randomBytes(16);
-    const cipher = createCipheriv("aes-256-cbc", key, iv);
-    const decipher = createDecipheriv("aes-256-cbc", key, iv);
-    return {
-        encrypt: cipher.update.bind(cipher),
-        decrypt: decipher.update.bind(decipher),
-    };
+function createGameEncryptionPair(key: string): CipherPair {
+    try {
+        assertStringIsHex(key);
+        if (key.length !== 16) {
+            throw Error(
+                `Invalid game key length: ${key.length}. The key must be 16 bytes long.`,
+            );
+        }
+
+        // The key used by the game 8 bytes long.
+        // Since the key is in hex format, we need to slice it to 16 characters.
+        key = key.slice(0, 16);
+
+        // The IV is intentionally required to be all zeros.
+        const iv = Buffer.alloc(8);
+        const keyBuffer = Buffer.from(key, "hex");
+
+        // The algorithm is intentionally set to "des-cbc".
+        // This is because the game uses this insecure algorithm.
+        // We are intentionally using an insecure algorithm here to match the game.
+        const cipher = createCipheriv("des-cbc", keyBuffer, iv);
+        const decipher = createDecipheriv("des-cbc", keyBuffer, iv);
+
+        return {
+            encrypt: cipher.update.bind(cipher),
+            decrypt: decipher.update.bind(decipher),
+        };
+    } catch (error: unknown) {
+        const err = new Error(`Failed to create game encryption pair`);
+        err.cause = error;
+        throw err;
+    }
 }
 
 /**
  * Generates a pair of encryption and decryption functions for the server.
- * 
+ *
+ * @param key - The key to use for encryption and decryption. Must be 16 hex characters.
  * @returns {CipherPair} The encryption and decryption functions.
  */
-function createServerEncryptionPair(): CipherPair {
-    const key = randomBytes(32);
-    const iv = randomBytes(16);
-    const cipher = createCipheriv("aes-256-cbc", key, iv);
-    const decipher = createDecipheriv("aes-256-cbc", key, iv);
-    return {
-        encrypt: cipher.update.bind(cipher),
-        decrypt: decipher.update.bind(decipher),
-    };
+function createServerEncryptionPair(key: string): CipherPair {
+    try {
+        assertStringExists(key);
+        assertStringIsHex(key);
+        if (key.length !== 16) {
+            throw Error(
+                `Invalid server key length: ${key.length}. The key must be 16 bytes long.`,
+            );
+        }
+
+        // The IV is intentionally required to be empty.
+        const iv = Buffer.alloc(0);
+        const keyBuffer = Buffer.from(key, "hex");
+
+        // The algorithm is intentionally set to "rc4".
+        // This is because the game uses this insecure algorithm.
+        // We are intentionally using an insecure algorithm here to match the game.
+        const cipher = createCipheriv("rc4", keyBuffer, iv);
+        const decipher = createDecipheriv("rc4", keyBuffer, iv);
+
+        return {
+            encrypt: cipher.update.bind(cipher),
+            decrypt: decipher.update.bind(decipher),
+        };
+    } catch (error: unknown) {
+        const err = new Error(`Failed to create server encryption pair`);
+        err.cause = error;
+        throw err;
+    }
 }
 
 type ConnectedClient = {
@@ -58,21 +102,28 @@ type ConnectedClient = {
     serverEncryptionHandshakeComplete: boolean;
 };
 
-
-
 /**
  * Sets the client encryption for a connected client.
- * 
+ *
  * @param client - The connected client to set the encryption for.
  * @param sessionKey - The session key to associate with the client.
  * @returns The updated connected client with the encryption set.
  */
-export function setClientEncryption(client: ConnectedClient, sessionKey: string): ConnectedClient {
-    const gameEncryptionPair = createGameEncryptionPair();
-    const serverEncryptionPair = createServerEncryptionPair();
-    client.sessionKey = sessionKey;
-    client.gameEncryptionPair = gameEncryptionPair;
-    client.serverEncryptionPair = serverEncryptionPair;
+export function setClientEncryption(
+    client: ConnectedClient,
+    sessionKey: string,
+): ConnectedClient {
+    try {
+        const gameEncryptionPair = createGameEncryptionPair(sessionKey);
+        const serverEncryptionPair = createServerEncryptionPair(sessionKey);
+        client.sessionKey = sessionKey;
+        client.gameEncryptionPair = gameEncryptionPair;
+        client.serverEncryptionPair = serverEncryptionPair;
+    } catch (error: unknown) {
+        const err = new Error(`Failed to set client encryption`);
+        err.cause = error;
+        throw err;
+    }
     return client;
 }
 
@@ -90,9 +141,7 @@ const connectedClients: Record<string, ConnectedClient> = {};
  * @returns The connected client with the specified customer ID.
  * @throws Error if no client is found with the given customer ID.
  */
-export function findClientByCustomerId(
-    customerId: number,
-): ConnectedClient {
+export function findClientByCustomerId(customerId: number): ConnectedClient {
     const client = Object.values(connectedClients).find(
         (client) => client.customerId === customerId,
     );
@@ -145,7 +194,7 @@ export function newClientConnection(
 
 /**
  * Saves the client connection with the specified connection ID.
- * 
+ *
  * @param connectionId - The ID of the connection.
  * @param client - The connected client to be saved.
  */
@@ -162,5 +211,23 @@ export function saveClientConnection(
 export function clearConnectedClients(): void {
     for (const connectionId in connectedClients) {
         delete connectedClients[connectionId];
+    }
+}
+
+function assertStringExists(str: string): void {
+    if (str === "" || typeof str === "undefined") {
+        throw new Error("String not provided");
+    }
+}
+
+/**
+ * Asserts that a given string is a valid hexadecimal string.
+ *
+ * @param str - The string to be validated.
+ * @throws {Error} If the string is not a valid hexadecimal string.
+ */
+function assertStringIsHex(str: string): void {
+    if (!/^[0-9a-fA-F]+$/.test(str)) {
+        throw new Error(`Invalid hex string: ${str}`);
     }
 }
