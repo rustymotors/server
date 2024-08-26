@@ -3,8 +3,8 @@
  */
 
 import { EventEmitter } from "node:events";
-import { getServerLogger } from "./log.js";
 import { Logger } from "pino";
+import { getServerLogger } from "./src/log.js";
 
 export class SubThread extends EventEmitter {
     name: any;

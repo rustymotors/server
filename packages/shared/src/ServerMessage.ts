@@ -1,4 +1,4 @@
-import { ServerError } from "../errors/ServerError.js";
+import { ServerError } from "./ServerError.js";
 import { SerializedBuffer } from "./SerializedBuffer.js";
 
 class HeaderShim {

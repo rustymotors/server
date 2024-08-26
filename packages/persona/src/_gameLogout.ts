@@ -1,8 +1,6 @@
-import { getServerLogger } from "../../shared/log.js";
-import {
-    LegacyMessage,
-    SerializedBuffer,
-} from "../../shared/messageFactory.js";
+import { getServerLogger } from "rusty-motors-shared";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
+import { LegacyMessage } from "../../shared/LegacyMessage.js";
 
 /**
  * Handle game logout
@@ -12,7 +10,7 @@ import {
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: SerializedBuffer[],
+ * messages: SerializedBufferOld[],
  * }>}
  */
 
@@ -28,7 +26,7 @@ export async function _gameLogout({
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBuffer[];
+    messages: SerializedBufferOld[];
 }> {
     log.debug("_npsLogoutGameUser...");
     const requestPacket = message;
@@ -49,7 +47,7 @@ export async function _gameLogout({
       })}`,
     );
 
-    const outboundMessage = new SerializedBuffer();
+    const outboundMessage = new SerializedBufferOld();
     outboundMessage._doDeserialize(responsePacket._doSerialize());
 
     return {

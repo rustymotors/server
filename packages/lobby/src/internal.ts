@@ -14,17 +14,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
-import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
-import { getServerLogger } from "../../shared/log.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
 import { getServerConfiguration } from "../../shared/Configuration.js";
-import {
-    LegacyMessage,
-    NPSMessage,
-    SerializedBuffer,
-} from "../../shared/messageFactory.js";
+import { ServerError } from "rusty-motors-shared";
+import { getServerLogger } from "rusty-motors-shared";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
+import { NPSMessage } from "../../shared/NPSMessage.js";
+import { LegacyMessage } from "../../shared/LegacyMessage.js";
+import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
 import { handleTrackingPing } from "./handlers/handleTrackingPing.js";
+import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
 
 /**
  * Array of supported message handlers
@@ -34,11 +32,11 @@ import { handleTrackingPing } from "./handlers/handleTrackingPing.js";
  * name: string,
  * handler: (args: {
  * connectionId: string,
- * message: SerializedBuffer,
+ * message: SerializedBufferOld,
  * log: import("pino").Logger,
  * }) => Promise<{
  * connectionId: string,
- * messages: SerializedBuffer[],
+ * messages: SerializedBufferOld[],
  * }>}[]}
  */
 export const messageHandlers: {
@@ -46,11 +44,11 @@ export const messageHandlers: {
     name: string;
     handler: (args: {
         connectionId: string;
-        message: SerializedBuffer;
+        message: SerializedBufferOld;
         log: import("pino").Logger;
     }) => Promise<{
         connectionId: string;
-        messages: SerializedBuffer[];
+        messages: SerializedBufferOld[];
     }>;
 }[] = [
     {
@@ -73,11 +71,11 @@ export const messageHandlers: {
 /**
  * @param {object} args
  * @param {string} args.connectionId
- * @param {SerializedBuffer} args.message
+ * @param {SerializedBufferOld} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "PersonaServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: SerializedBuffer[],
+ * messages: SerializedBufferOld[],
  * }>}
  * @throws {Error} Unknown code was received
  */
@@ -89,11 +87,11 @@ export async function receiveLobbyData({
     }),
 }: {
     connectionId: string;
-    message: SerializedBuffer;
+    message: SerializedBufferOld;
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBuffer[];
+    messages: SerializedBufferOld[];
 }> {
     log.level = getServerConfiguration({}).logLevel ?? "info";
 

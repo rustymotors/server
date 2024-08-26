@@ -1,6 +1,6 @@
-import { GenericRequestMessage } from "./GenericRequestMessage.js";
-import { OldServerMessage } from "../../shared/messageFactory.js";
+import { OldServerMessage } from "../../shared/OldServerMessage.js";
 import { GameUrl, GameUrlsMessage } from "./GameUrlsMessage.js";
+import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
 /**

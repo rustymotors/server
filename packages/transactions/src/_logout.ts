@@ -1,5 +1,5 @@
+import { OldServerMessage } from "../../shared/OldServerMessage.js";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
-import { OldServerMessage } from "../../shared/messageFactory.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
 /**

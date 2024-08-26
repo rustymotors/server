@@ -1,5 +1,5 @@
-import { Logger } from "pino";
-import { getServerLogger } from "./log.js";
+import type { Logger } from "pino";
+import { getServerLogger } from "./src/log.js";
 
 /**
  * @module shared/Configuration
@@ -47,7 +47,7 @@ export class Configuration {
 
             this.host = host;
 
-            this.logLevel = logLevel;
+            this.logLevel = logLevel.toLowerCase();
             Configuration.instance = this;
         } catch (error) {
             logger.fatal(`Error in core server: ${String(error)}`);
