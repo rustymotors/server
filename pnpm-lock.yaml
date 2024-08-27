@@ -323,6 +323,22 @@ importers:
         specifier: ^2.0.5
         version: 2.0.5(@types/node@22.5.0)
 
+  packages/persona:
+    dependencies:
+      '@sentry/node':
+        specifier: ^8.0.0
+        version: 8.26.0
+      short-unique-id:
+        specifier: ^5.0.3
+        version: 5.2.0
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: '2'
+        version: 2.0.5(vitest@2.0.5(@types/node@22.5.0))
+      vitest:
+        specifier: ^2.0.5
+        version: 2.0.5(@types/node@22.5.0)
+
   packages/sessions:
     dependencies:
       '@sentry/node':
