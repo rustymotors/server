@@ -30,6 +30,7 @@ export {
 export type { State } from "./State.js";
 export type { OnDataHandler, ServiceResponse } from "./State.js";
 export { LegacyMessage } from "./LegacyMessage.js";
+export * from "./src/interfaces.js";
 
 export interface KeypressEvent {
     sequence: string;
