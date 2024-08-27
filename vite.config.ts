@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig, coverageConfigDefaults } from "vitest/config";
 
 export default defineConfig({
 	test: {
@@ -10,7 +10,8 @@ export default defineConfig({
 				"src/**/*.test.ts",
 				"bin/**/*.ts",
 				"interfaces",
-				"vite.config.ts"
+				"vite.config.ts",
+				...coverageConfigDefaults.exclude
 			],
 			reporter: ["lcov", "text", "cobertura"],
 		},
