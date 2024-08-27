@@ -30,7 +30,7 @@ importers:
         specifier: ^7.5.2
         version: 7.8.11(@types/react@18.3.4)
       fastify:
-        specifier: ^4.25.1
+        specifier: ^4.28.1
         version: 4.28.1
       lobby:
         specifier: link:packages/lobby
@@ -234,7 +234,7 @@ importers:
         specifier: ^8.0.0
         version: 8.26.0
       fastify:
-        specifier: ^4.25.2
+        specifier: ^4.28.1
         version: 4.28.1
     devDependencies:
       '@vitest/coverage-v8':
@@ -253,7 +253,7 @@ importers:
         specifier: ^8.0.0
         version: 8.26.0
       fastify:
-        specifier: ^4.25.2
+        specifier: ^4.28.1
         version: 4.28.1
     devDependencies:
       '@vitest/coverage-v8':
@@ -272,7 +272,7 @@ importers:
         specifier: ^8.0.0
         version: 8.26.0
       fastify:
-        specifier: ^4.25.2
+        specifier: ^4.28.1
         version: 4.28.1
     devDependencies:
       '@vitest/coverage-v8':
@@ -351,7 +351,7 @@ importers:
   packages/shared:
     dependencies:
       fastify:
-        specifier: ^4.27.0
+        specifier: ^4.28.1
         version: 4.28.1
       pino:
         specifier: ^9.0.0
