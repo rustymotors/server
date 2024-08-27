@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { DatabaseManager } from "../../interfaces/index.js";
+import { DatabaseManager } from "../../shared/src/interfaces.js";
 import { ServerError } from "../../shared/src/ServerError.js";
 import { getServerLogger } from "rusty-motors-shared";
 import { NPSMessage } from "../../shared/NPSMessage.js";
@@ -38,7 +38,7 @@ export class LoginServer {
             module: "LoginServer",
         }),
     }: {
-        database: import("../../interfaces/index.js").DatabaseManager;
+        database: import("../../shared/src/interfaces.js").DatabaseManager;
         log?: import("pino").Logger;
     }) {
         this._log = log;
@@ -54,7 +54,7 @@ export class LoginServer {
      * @return {LoginServer}
      */
     static getInstance(
-        database: import("../../interfaces/index.js").DatabaseManager,
+        database: import("../../shared/src/interfaces.js").DatabaseManager,
         log: import("pino").Logger,
     ): LoginServer {
         if (typeof LoginServer._instance === "undefined") {
@@ -73,21 +73,22 @@ export class LoginServer {
      */
     _npsGetCustomerIdByContextId(
         contextId: string,
-    ): import("../../interfaces/index.js").UserRecordMini {
+    ): import("../../shared/src/interfaces.js").UserRecordMini {
         this._log.debug(">>> _npsGetCustomerIdByContextId");
         /** @type {import("../../interfaces/index.js").UserRecordMini[]} */
-        const users: import("../../interfaces/index.js").UserRecordMini[] = [
-            {
-                contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
-                customerId: 0x0012808b,
-                userId: 0x00000002,
-            },
-            {
-                contextId: "d316cd2dd6bf870893dfbaaf17f965884e",
-                customerId: 0x0054b46c,
-                userId: 0x00000001,
-            },
-        ];
+        const users: import("../../shared/src/interfaces.js").UserRecordMini[] =
+            [
+                {
+                    contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
+                    customerId: 0x0012808b,
+                    userId: 0x00000002,
+                },
+                {
+                    contextId: "d316cd2dd6bf870893dfbaaf17f965884e",
+                    customerId: 0x0054b46c,
+                    userId: 0x00000001,
+                },
+            ];
         if (contextId.toString() === "") {
             const err = new ServerError(
                 `Unknown contextId: ${contextId.toString()}`,

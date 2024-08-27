@@ -24,7 +24,7 @@ import { NPSUserStatus } from "./NPSUserStatus.js";
 import { updateSessionKey } from "../../database/index.js";
 
 /** @type {import("../../interfaces/index.js").UserRecordMini[]} */
-const userRecords: import("../../interfaces/index.js").UserRecordMini[] = [
+const userRecords: import("../../shared/src/interfaces.js").UserRecordMini[] = [
     {
         contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
         customerId: 0x0012808b,
