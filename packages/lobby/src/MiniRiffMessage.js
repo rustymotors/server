@@ -1,9 +1,9 @@
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { ServerError } from "../../shared/src/ServerError.js";
 import {
     LegacyMessage,
+    SerializedBufferOld,
     serializeString,
-    SerializedBuffer,
-} from "../../shared/messageFactory.js";
+} from "rusty-motors-shared";
 
 export class MiniRiffMessage extends LegacyMessage {
     constructor() {

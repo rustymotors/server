@@ -1,18 +1,18 @@
-import { ServerError } from "../../../shared/errors/ServerError.js";
-import { SerializedBuffer } from "../../../shared/messageFactory.js";
+import { ServerError } from "rusty-motors-shared";
+import { SerializedBuffer } from "rusty-motors-shared";
 
 export class LobbyModel extends SerializedBuffer {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    deserialize(_inputBuffer: Buffer): LobbyModel {
-        throw new ServerError("Method not implemented.");
-    }
-    override serialize(): Buffer {
-        throw new ServerError("Method not implemented.");
-    }
-    serializeSize(): number {
-        throw new ServerError("Method not implemented.");
-    }
-    static schema = `CREATE TABLE IF NOT EXISTS "lobbies"
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	override deserialize(_inputBuffer: Buffer): LobbyModel {
+		throw new ServerError("Method not implemented.");
+	}
+	override serialize(): Buffer {
+		throw new ServerError("Method not implemented.");
+	}
+	serializeSize(): number {
+		throw new ServerError("Method not implemented.");
+	}
+	static schema = `CREATE TABLE IF NOT EXISTS "lobbies"
     (
       "lobyID" integer NOT NULL,
       "raceTypeID" integer NOT NULL,

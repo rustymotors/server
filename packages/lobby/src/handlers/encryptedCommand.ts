@@ -1,19 +1,17 @@
-import { getServerLogger } from "../../../shared/log.js";
+import { getServerConfiguration } from "../../../shared/Configuration.js";
 import {
     fetchStateFromDatabase,
     getEncryption,
     updateEncryption,
 } from "../../../shared/State.js";
-import { ServerError } from "../../../shared/errors/ServerError.js";
-import {
-    LegacyMessage,
-    MessageBuffer,
-    SerializedBuffer,
-} from "../../../shared/messageFactory.js";
-import { getServerConfiguration } from "../../../shared/Configuration.js";
-import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";
-import { handleGetMiniUserList } from "./handleGetMiniUserList.js";
+import { ServerError } from "rusty-motors-shared";
+import { getServerLogger } from "rusty-motors-shared";
+import { MessageBufferOld } from "rusty-motors-shared";
+import { SerializedBufferOld } from "../../../shared/SerializedBufferOld.js";
+import { LegacyMessage } from "../../../shared/LegacyMessage.js";
 import { _setMyUserData } from "./_setMyUserData.js";
+import { handleGetMiniUserList } from "./handleGetMiniUserList.js";
+import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";
 // eslint-disable-next-line no-unused-vars
 
 /**
@@ -24,11 +22,11 @@ import { _setMyUserData } from "./_setMyUserData.js";
  * name: string,
  * handler: (args: {
  * connectionId: string,
- * message: SerializedBuffer,
+ * message: SerializedBufferOld,
  * log: import("pino").Logger,
  * }) => Promise<{
  * connectionId: string,
- * messages: SerializedBuffer[],
+ * messages: SerializedBufferOld[],
  * }>}[]}
  */
 export const messageHandlers: {
@@ -36,11 +34,11 @@ export const messageHandlers: {
     name: string;
     handler: (args: {
         connectionId: string;
-        message: SerializedBuffer;
+        message: SerializedBufferOld;
         log: import("pino").Logger;
     }) => Promise<{
         connectionId: string;
-        messages: SerializedBuffer[];
+        messages: SerializedBufferOld[];
     }>;
 }[] = [];
 
@@ -64,11 +62,11 @@ async function encryptCmd({
     }),
 }: {
     connectionId: string;
-    message: LegacyMessage | MessageBuffer;
+    message: LegacyMessage | MessageBufferOld;
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    message: LegacyMessage | MessageBuffer;
+    message: LegacyMessage | MessageBufferOld;
 }> {
     const state = fetchStateFromDatabase();
 
@@ -199,7 +197,7 @@ async function handleCommand({
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    message: MessageBuffer | LegacyMessage;
+    message: MessageBufferOld | LegacyMessage;
 }> {
     log.level = getServerConfiguration({}).logLevel ?? "info";
     const incommingRequest = message;
@@ -231,11 +229,11 @@ async function handleCommand({
  *
  * @param {object} args
  * @param {string} args.connectionId
- * @param {SerializedBuffer} args.message
+ * @param {SerializedBufferOld} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
   * @returns {Promise<{
 *  connectionId: string,
-* messages: SerializedBuffer[],
+* messages: SerializedBufferOld[],
 * }>}
 
  */
@@ -247,11 +245,11 @@ export async function handleEncryptedNPSCommand({
     }),
 }: {
     connectionId: string;
-    message: SerializedBuffer;
+    message: SerializedBufferOld;
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBuffer[];
+    messages: SerializedBufferOld[];
 }> {
     log.level = getServerConfiguration({}).logLevel ?? "info";
 
@@ -278,7 +276,7 @@ export async function handleEncryptedNPSCommand({
         log,
     });
 
-    const outboundMessage = new SerializedBuffer();
+    const outboundMessage = new SerializedBufferOld();
     outboundMessage.setBuffer((await encryptedResponse).message.serialize());
 
     return {

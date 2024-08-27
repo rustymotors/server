@@ -1,11 +1,11 @@
-import { GenericRequestMessage } from "./GenericRequestMessage.js";
-import { OldServerMessage } from "../../shared/messageFactory.js";
-import { PartsAssemblyMessage } from "./PartsAssemblyMessage.js";
 import {
     fetchStateFromDatabase,
     findSessionByConnectionId,
 } from "../../shared/State.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { ServerError } from "../../shared/src/ServerError.js";
+import { OldServerMessage } from "../../shared/OldServerMessage.js";
+import { GenericRequestMessage } from "./GenericRequestMessage.js";
+import { PartsAssemblyMessage } from "./PartsAssemblyMessage.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
 export async function _getOwnedParts({

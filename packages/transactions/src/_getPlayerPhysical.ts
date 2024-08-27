@@ -1,5 +1,5 @@
+import { OldServerMessage } from "../../shared/OldServerMessage.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
-import { OldServerMessage } from "../../shared/messageFactory.js";
 import { PlayerPhysicalMessage } from "./PlayerPhysicalMessage.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 

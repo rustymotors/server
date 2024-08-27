@@ -1,6 +1,7 @@
-import { GenericReply } from "./GenericReplyMessage.js";
-import { TClientConnectMessage } from "./TClientConnectMessage.js";
-import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
+import {
+    createCommandEncryptionPair,
+    createDataEncryptionPair,
+} from "../../gateway/src/encryption.js";
 import {
     McosEncryption,
     McosSession,
@@ -9,12 +10,11 @@ import {
     fetchStateFromDatabase,
     getEncryption,
 } from "../../shared/State.js";
-import {
-    createCommandEncryptionPair,
-    createDataEncryptionPair,
-} from "../../gateway/src/encryption.js";
-import { OldServerMessage } from "../../shared/messageFactory.js";
+import { OldServerMessage } from "../../shared/OldServerMessage.js";
+import { GenericReply } from "./GenericReplyMessage.js";
+import { TClientConnectMessage } from "./TClientConnectMessage.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import { fetchSessionKeyByCustomerId } from "../../database/index.js";
 
 /**
  * @param {MessageHandlerArgs} args
@@ -54,9 +54,7 @@ export async function clientConnect({
 
     log.debug(`Looking up the session key for ${customerId}...`);
 
-    result = await getDatabaseServer({
-        log,
-    }).fetchSessionKeyByCustomerId(customerId);
+    result = await fetchSessionKeyByCustomerId(customerId);
     log.debug(`Session key found for ${customerId}`);
 
     const newCommandEncryptionPair = createCommandEncryptionPair(

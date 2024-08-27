@@ -1,32 +1,30 @@
 import { Socket, createServer as createSocketServer } from "node:net";
-import { onSocketConnection } from "./index.js";
-import {
-    Configuration,
-    getServerConfiguration,
-} from "../../shared/Configuration.js";
-import { getServerLogger } from "../../shared/log.js";
-import fastify from "fastify";
+import FastifySensible from "@fastify/sensible";
+import fastify, { type FastifyInstance } from "fastify";
+import type { Logger } from "pino";
+import { ConsoleThread } from "rusty-motors-cli";
+import { receiveLobbyData } from "rusty-motors-lobby";
+import { receiveLoginData } from "rusty-motors-login";
+import { receivePersonaData } from "../../persona/src/internal.js";
+import { Configuration, getServerConfiguration } from "rusty-motors-shared";
 import {
     addOnDataHandler,
     createInitialState,
     fetchStateFromDatabase,
-} from "../../shared/State.js";
-import { ConsoleThread } from "../../cli/ConsoleThread.js";
+} from "rusty-motors-shared";
+import { ServerError } from "rusty-motors-shared";
+import { getServerLogger } from "rusty-motors-shared";
+import { receiveTransactionsData } from "rusty-motors-transactions";
+import { onSocketConnection } from "./index.js";
 import { addWebRoutes } from "./web.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
-import { receiveLoginData } from "../../login/src/index.js";
-import { receivePersonaData } from "../../persona/src/internal.js";
-import { receiveLobbyData } from "../../lobby/src/internal.js";
-import { receiveTransactionsData } from "../../transactions/src/internal.js";
-import FastifySensible from "@fastify/sensible";
-import { Logger } from "pino";
+import { populateGameMessageProcessors, populatePortToMessageTypes, portToMessageTypes, gameMessageProcessors } from "rusty-motors-nps";
+import { populateServerMessageProcessors } from "rusty-motors-mcots";
 
 /**
- * @module gateway
+ * Options for the GatewayServer.
  */
-
 type GatewayOptions = {
-    config?: import("/home/drazisil/mcos/packages/shared/Configuration.js").Configuration;
+    config?: Configuration;
     log?: Logger;
     backlogAllowedCount?: number;
     listeningPortList?: number[];
@@ -52,7 +50,7 @@ export class Gateway {
     consoleEvents: string[];
     backlogAllowedCount: number;
     listeningPortList: number[];
-    servers: import("node:net").Server[];
+    activeServers: import("node:net").Server[];
     socketconnection: ({
         incomingSocket,
         log,
@@ -89,16 +87,16 @@ export class Gateway {
         this.backlogAllowedCount = backlogAllowedCount;
         this.listeningPortList = listeningPortList;
         /** @type {import("node:net").Server[]} */
-        this.servers = [];
+        this.activeServers = [];
         this.socketconnection = socketConnectionHandler;
 
         Gateway._instance = this;
     }
 
     /**
-     * @return {import("fastify").FastifyInstance}
+     * @return {FastifyInstance}
      */
-    getWebServer(): import("fastify").FastifyInstance {
+    getWebServer(): FastifyInstance {
         if (this.webServer === undefined) {
             throw new ServerError("webServer is undefined");
         }
@@ -121,7 +119,7 @@ export class Gateway {
         // Initialize the GatewayServer
         this.init();
 
-        this.listeningPortList.forEach((port) => {
+        this.listeningPortList.forEach(async (port) => {
             const server = createSocketServer((s) => {
                 this.socketconnection({
                     incomingSocket: s,
@@ -129,12 +127,14 @@ export class Gateway {
                 });
             });
 
+            // Listen on the specified port
+
             server.listen(port, "0.0.0.0", this.backlogAllowedCount, () => {
                 this.log.debug(`Listening on port ${port}`);
             });
 
             // Add the server to the list of servers
-            this.servers.push(server);
+            this.activeServers.push(server);
         });
 
         if (this.webServer === undefined) {
@@ -183,7 +183,7 @@ export class Gateway {
         this.status = "stopping";
 
         // Stop the servers
-        this.servers.forEach((server) => {
+        this.activeServers.forEach((server) => {
             server.close();
         });
 
@@ -256,6 +256,9 @@ export class Gateway {
         state = addOnDataHandler(state, 43300, receiveTransactionsData);
 
         state.save();
+
+        populatePortToMessageTypes(portToMessageTypes);
+        populateGameMessageProcessors(gameMessageProcessors);
 
         this.log.debug("GatewayServer initialized");
     }

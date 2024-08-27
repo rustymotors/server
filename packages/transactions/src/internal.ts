@@ -14,21 +14,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerError } from "../../shared/errors/ServerError.js";
-import { messageHandlers } from "./handlers.js";
-import { getServerLogger } from "../../shared/log.js";
+import { getServerConfiguration } from "../../shared/Configuration.js";
 import {
     fetchStateFromDatabase,
     getEncryption,
     updateEncryption,
 } from "../../shared/State.js";
+import { ServerError } from "../../shared/src/ServerError.js";
+import { getServerLogger } from "rusty-motors-shared";
 // eslint-disable-next-line no-unused-vars
-import {
-    SerializedBuffer,
-    OldServerMessage,
-} from "../../shared/messageFactory.js";
-import { getServerConfiguration } from "../../shared/Configuration.js";
+import { OldServerMessage } from "../../shared/OldServerMessage.js";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 import { ServerMessage } from "../../shared/src/ServerMessage.js";
+import { messageHandlers } from "./handlers.js";
 
 /**
  *
@@ -132,11 +130,11 @@ async function processInput({
 /**
  * @param {object} args
  * @param {string} args.connectionId
- * @param {SerializedBuffer} args.message
+ * @param {SerializedBufferOld} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "transactionServer" })]
  * @returns {Promise<{
  *     connectionId: string,
- *    messages: SerializedBuffer[]
+ *    messages: SerializedBufferOld[]
  * }>}
  */
 export async function receiveTransactionsData({
@@ -147,11 +145,11 @@ export async function receiveTransactionsData({
     }),
 }: {
     connectionId: string;
-    message: SerializedBuffer;
+    message: SerializedBufferOld;
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBuffer[];
+    messages: SerializedBufferOld[];
 }> {
     log.level = getServerConfiguration({}).logLevel ?? "info";
 
@@ -214,7 +212,7 @@ export async function receiveTransactionsData({
     });
 
     // Loop through the outbound messages and encrypt them
-    const outboundMessages: SerializedBuffer[] = [];
+    const outboundMessages: SerializedBufferOld[] = [];
 
     response.messages.forEach((outboundMessage) => {
         log.debug(`Outbound message: ${outboundMessage.toString()}`);
@@ -255,7 +253,7 @@ export async function receiveTransactionsData({
 
                 log.debug(`Encrypted message: ${outboundMessage.toString()}`);
 
-                const outboundRawMessage = new SerializedBuffer();
+                const outboundRawMessage = new SerializedBufferOld();
                 outboundRawMessage.setBuffer(outboundMessage.serialize());
                 log.debug(
                     `Encrypted message: ${outboundRawMessage.toString()}`,
@@ -267,7 +265,7 @@ export async function receiveTransactionsData({
                 );
             }
         } else {
-            const outboundRawMessage = new SerializedBuffer();
+            const outboundRawMessage = new SerializedBufferOld();
             outboundRawMessage.setBuffer(outboundMessage.serialize());
             log.debug(`Outbound message: ${outboundRawMessage.toString()}`);
             outboundMessages.push(outboundRawMessage);

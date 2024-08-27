@@ -1,0 +1,30 @@
+{
+    "name": "rusty-motors-connection",
+    "version": "1.0.0",
+    "exports": {
+        ".": {
+            "import": "./index.js",
+            "require": "./index.js"
+        }
+    },
+    "type": "module",
+    "scripts": {
+        "check": "tsc",
+        "lint": "eslint .",
+        "format": "npm prettier --write .",
+        "test:db": "vitest run --coverage",
+        "test:diabled": "dotenvx run -f ../../.env -- pnpm run test:db",
+        "test": "echo 'No tests yet' && exit 0"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "AGPL-3.0",
+    "dependencies": {
+        "@sentry/node": "^8.0.0",
+        "vitest": "^1.6.0"
+    },
+    "directories": {
+        "test": "test"
+    },
+    "description": ""
+}

@@ -1,8 +1,6 @@
-import { getServerLogger } from "../../../shared/log.js";
-import {
-    LegacyMessage,
-    SerializedBuffer,
-} from "../../../shared/messageFactory.js";
+import { getServerLogger } from "rusty-motors-shared";
+import { SerializedBufferOld } from "../../../shared/SerializedBufferOld.js";
+import { LegacyMessage } from "../../../shared/LegacyMessage.js";
 import { RawMessage } from "../../../shared/src/RawMessage.js";
 
 /**
@@ -21,27 +19,31 @@ export async function validatePersonaName({
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBuffer[];
+    messages: SerializedBufferOld[];
 }> {
-    log.debug("_npsLogoutGameUser...");
+    log.debug("validatePersonaName called");
     const requestPacket = message;
     log.debug(
-        `NPSMsg request object from _npsLogoutGameUser',
-      ${JSON.stringify({
-          NPSMsg: requestPacket.toString(),
-      })}`,
+        `NPSMsg request object from validatePersonaName ${requestPacket.toString()}`,
     );
 
+    enum responseCodes {
+        NPS_DUP_USER = 0x20a,
+        NPS_USER_VALID = 0x601,
+    }
+
+
+    
     // Build the packet
-    const responsePacket = new RawMessage(522); // 0x020a - NPS_DUP_USER
+    const responsePacket = new RawMessage(responseCodes.NPS_DUP_USER); 
     log.debug(
-        `NPSMsg response object from _npsLogoutGameUser',
+        `NPSMsg response object from validatePersonaName
       ${JSON.stringify({
           NPSMsg: responsePacket.toString(),
       })}`,
     );
 
-    const outboundMessage = new SerializedBuffer();
+    const outboundMessage = new SerializedBufferOld();
     outboundMessage._doDeserialize(responsePacket.serialize());
 
     return {

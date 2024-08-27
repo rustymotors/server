@@ -15,12 +15,13 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { getServerConfiguration } from "../../shared/Configuration.js";
-import { NPSUserStatus } from "./NPSUserStatus.js";
-import { getServerLogger } from "../../shared/log.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
-import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
-import { NPSMessage, SerializedBuffer } from "../../shared/messageFactory.js";
+import { ServerError } from "../../shared/src/ServerError.js";
+import { getServerLogger } from "rusty-motors-shared";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
+import { NPSMessage } from "../../shared/NPSMessage.js";
 import { NetworkMessage } from "../../shared/src/NetworkMessage.js";
+import { NPSUserStatus } from "./NPSUserStatus.js";
+import { updateSessionKey } from "../../database/index.js";
 
 /** @type {import("../../interfaces/index.js").UserRecordMini[]} */
 const userRecords: import("../../interfaces/index.js").UserRecordMini[] = [
@@ -41,11 +42,11 @@ const userRecords: import("../../interfaces/index.js").UserRecordMini[] = [
  * @private
  * @param {object} args
  * @param {string} args.connectionId
- * @param {SerializedBuffer} args.message
+ * @param {SerializedBufferOld} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: SerializedBuffer[],
+ * messages: SerializedBufferOld[],
  * }>}
  */
 async function login({
@@ -56,11 +57,11 @@ async function login({
     }),
 }: {
     connectionId: string;
-    message: SerializedBuffer;
+    message: SerializedBufferOld;
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBuffer[];
+    messages: SerializedBufferOld[];
 }> {
     const data = message.serialize();
 
@@ -100,21 +101,17 @@ async function login({
 
     // Save sessionkey in database under customerId
     log.debug("Preparing to update session key in db");
-    await getDatabaseServer()
-        .updateSessionKey(
-            userRecord.customerId,
-            sessionKey ?? "",
-            contextId,
-            connectionId,
-        )
-        .catch((error) => {
-            const err = new ServerError(
-                `Unable to update session key in the database: ${String(
-                    error,
-                )}`,
-            );
-            throw err;
-        });
+    await updateSessionKey(
+        userRecord.customerId,
+        sessionKey ?? "",
+        contextId,
+        connectionId,
+    ).catch((error) => {
+        const err = new ServerError(
+            `Unable to update session key in the database: ${String(error)}`,
+        );
+        throw err;
+    });
 
     log.debug("Session key updated");
 
@@ -142,7 +139,7 @@ async function login({
     log.debug("Returning login response");
     log.debug(`Outbound message: ${outboundMessage.asHex()}`);
 
-    const outboundMessage2 = new SerializedBuffer();
+    const outboundMessage2 = new SerializedBufferOld();
     outboundMessage2._doDeserialize(outboundMessage.serialize());
 
     log.debug(
@@ -166,11 +163,11 @@ async function login({
  * name: string,
  * handler: (args: {
  * connectionId: string,
- * message: SerializedBuffer,
+ * message: SerializedBufferOld,
  * log: import("pino").Logger,
  * }) => Promise<{
  * connectionId: string,
- * messages: SerializedBuffer[],
+ * messages: SerializedBufferOld[],
  * }>}[]}
  */
 export const messageHandlers: {
@@ -178,11 +175,11 @@ export const messageHandlers: {
     name: string;
     handler: (args: {
         connectionId: string;
-        message: SerializedBuffer;
+        message: SerializedBufferOld;
         log: import("pino").Logger;
     }) => Promise<{
         connectionId: string;
-        messages: SerializedBuffer[];
+        messages: SerializedBufferOld[];
     }>;
 }[] = [
     {
@@ -198,11 +195,11 @@ export const messageHandlers: {
  * @export
  * @param {object} args
  * @param {string} args.connectionId
- * @param {SerializedBuffer} args.message
+ * @param {SerializedBufferOld} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: SerializedBuffer[],
+ * messages: SerializedBufferOld[],
  * }>}
  */
 export async function handleLoginData({
@@ -213,11 +210,11 @@ export async function handleLoginData({
     }),
 }: {
     connectionId: string;
-    message: SerializedBuffer;
+    message: SerializedBufferOld;
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBuffer[];
+    messages: SerializedBufferOld[];
 }> {
     log.level = getServerConfiguration({}).logLevel ?? "info";
     log.debug(`Received Login Server packet: ${connectionId}`);
