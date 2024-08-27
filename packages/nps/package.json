@@ -1,0 +1,29 @@
+{
+	"name": "rusty-motors-nps",
+	"version": "1.0.0",
+	"exports": {
+		".": {
+			"import": "./index.js",
+			"require": "./index.js"
+		}
+	},
+	"type": "module",
+	"scripts": {
+		"check": "tsc",
+		"lint": "eslint .",
+		"format": "npm prettier --write .",
+		"test": "vitest run --coverage"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "AGPL-3.0",
+	"dependencies": {
+		"@sentry/node": "^8.0.0",
+		"short-unique-id": "^5.0.3"
+	},
+	"description": "",
+	"devDependencies": {
+		"@vitest/coverage-v8": "2",
+		"vitest": "^2.0.5"
+	}
+}

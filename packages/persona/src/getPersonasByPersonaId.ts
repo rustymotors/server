@@ -1,5 +1,5 @@
 import { PersonaRecord } from "../../interfaces/index.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { ServerError } from "../../shared/src/ServerError.js";
 import { personaRecords } from "./internal.js";
 
 /**

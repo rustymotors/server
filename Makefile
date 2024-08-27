@@ -1,3 +1,14 @@
+# This will read from .env file and export all the variables
+# to the environment. This is useful for running the tests
+# and other commands that require the environment variables
+# to be set.
+#
+# Warning: This will cause the makefile to fail if the .env
+# file is not present. This is the desired behavior as we
+# want to make sure that the environment variables are set
+# before running the tests.
+# include .env // Disabled for now
+
 all:
 	@npm install
 
@@ -8,14 +19,23 @@ certs:
 	@echo "certs regenerated. remember to update pub.key for all clients"
 
 test:
-	@clear
-	@npm test
+# This will start a postgres server in the background and run the tests
+# against it. The server will be stopped after the tests are done.
+#
+# Note the use of `$$` to escape the `$` character. This is required
+# because the command is being run in a subshell. That the command
+# is being run in a subshell is why we can't use `export` to set the
+# DATABASE_URL environment variable.
+	@DATABASE_URL=$$(npx pg-test start) && \
+	echo "Testing with DATABASE_URL=$$DATABASE_URL" && \
+	DATABASE_URL=$$DATABASE_URL pnpm migrate && \
+	DATABASE_URL=$$DATABASE_URL pnpm test
+	@npx pg-test stop
 
-build:
-	@npm run build:dev
+
 
 start:
-	@EXTERNAL_HOST=mcouniverse.com PRIVATE_KEY_FILE=data/private_key.pem CERTIFICATE_FILE=data/mcouniverse.crt PUBLIC_KEY_FILE=data/pub.key LOG_LEVEL=trace npm run start:dev
+	@pnpx tsx --openssl-legacy-provider --env-file=.env server.ts
 
 prod_node:
 	docker-compose --file docker-compose.yml up -d --build

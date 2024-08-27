@@ -1,10 +1,10 @@
 import { privateDecrypt } from "node:crypto";
 import { readFileSync } from "node:fs";
 
-import { ServerError } from "../../shared/errors/ServerError.js";
-import { LegacyMessage } from "../../shared/messageFactory.js";
-import { Configuration } from "../../shared/Configuration.js";
 import { Logger } from "pino";
+import { Configuration } from "../../shared/Configuration.js";
+import { ServerError } from "../../shared/src/ServerError.js";
+import { LegacyMessage } from "../../shared/LegacyMessage.js";
 
 /**
  * @typedef {import("../../shared/Configuration.js").Configuration} Configuration

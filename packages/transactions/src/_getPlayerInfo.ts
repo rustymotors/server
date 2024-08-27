@@ -1,7 +1,7 @@
+import { ServerError } from "../../shared/src/ServerError.js";
+import { OldServerMessage } from "../../shared/OldServerMessage.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
-import { OldServerMessage } from "../../shared/messageFactory.js";
 import { PlayerInfoMessage } from "./PlayerInfoMessage.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
 export async function _getPlayerInfo(

@@ -20,3 +20,5 @@ dist
 .sentryclirc
 *.map
 out/*
+*.junit.xml
+mcos.junit.xml

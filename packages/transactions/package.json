@@ -1,0 +1,26 @@
+{
+	"name": "rusty-motors-transactions",
+	"version": "1.0.0",
+	"exports": {
+		".": {
+			"import": "./index.js",
+			"require": "./index.js"
+		}
+	},
+	"type": "module",
+	"scripts": {
+		"check": "tsc",
+		"lint": "eslint .",
+		"format": "npx prettier --write .",
+		"test": "echo \"Error: no test specified\" && exit 0",
+		"test:crypto": "pnpm node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "AGPL-3.0",
+	"description": "",
+	"devDependencies": {
+		"@vitest/coverage-v8": "2",
+		"vitest": "^2.0.5"
+	}
+}

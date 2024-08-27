@@ -7,9 +7,9 @@
 
 // eslint-disable-next-line no-unused-vars
 import { Cipher, Decipher } from "crypto";
-import { SerializedBuffer } from "./messageFactory.js";
 import { Socket } from "node:net";
 import { Logger } from "pino";
+import { SerializedBufferOld } from "./SerializedBufferOld.js";
 
 /**
  * @external RawMessage
@@ -181,7 +181,7 @@ export function wrapSocket(
 interface OnDataHandlerArgs {
     args: {
         connectionId: string;
-        message: SerializedBuffer;
+        message: SerializedBufferOld;
         log?: Logger;
     };
 }
@@ -191,7 +191,7 @@ interface OnDataHandlerArgs {
 
 export interface ServiceResponse {
     connectionId: string;
-    messages: SerializedBuffer[];
+    messages: SerializedBufferOld[];
 }
 
 export type OnDataHandler = Function;

@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerError } from "../../shared/errors/ServerError.js";
-import { SerializedBuffer } from "../../shared/messageFactory.js";
+import { ServerError } from "../../shared/src/ServerError.js";
+import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 
 /**
  * A message listing the lobbies
  * This is the body of a MessageNode
  */
-export class LobbyMessage extends SerializedBuffer {
+export class LobbyMessage extends SerializedBufferOld {
     _msgNo: number;
     _lobbyCount: number;
     _shouldExpectMoreMessages: boolean;
@@ -71,7 +71,7 @@ export class LobbyMessage extends SerializedBuffer {
     }
 }
 
-export class LobbyInfo extends SerializedBuffer {
+export class LobbyInfo extends SerializedBufferOld {
     _lobbyId: number;
     _raceTypeId: number;
     _terfId: number;

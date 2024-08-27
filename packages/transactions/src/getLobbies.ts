@@ -1,7 +1,7 @@
-import { LobbyInfo, LobbyMessage } from "./LobbyMessage.js";
-import { OldServerMessage } from "../../shared/messageFactory.js";
-import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import { OldServerMessage } from "../../shared/OldServerMessage.js";
 import { EntryFeePurseMessage, PurseEntry } from "./EntryFeePurseMessage.js";
+import { LobbyInfo, LobbyMessage } from "./LobbyMessage.js";
+import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
 /**
  * @param {MessageHandlerArgs} args

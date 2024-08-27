@@ -14,15 +14,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerError } from "../../shared/errors/ServerError.js";
 import { CastanetResponse } from "../../patch/src/PatchServer.js";
 import { generateShardList } from "../../shard/src/ShardServer.js";
-import { getServerConfiguration } from "../../shared/Configuration.js";
 import {
     handleGetCert,
     handleGetKey,
     handleGetRegistry,
 } from "../../shard/src/index.js";
+import { getServerConfiguration } from "rusty-motors-shared";
+import { ServerError } from "rusty-motors-shared";
 
 /**
  * Add web routes to the web server
@@ -30,7 +30,7 @@ import {
  * @param {import("fastify").FastifyInstance} webServer The web server
  */
 export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
-    webServer.addContentTypeParser("*", function (request, payload, done) {
+    webServer.addContentTypeParser("*", (_request, payload, done) => {
         let data = "";
         payload.on("data", (chunk) => {
             data += chunk;

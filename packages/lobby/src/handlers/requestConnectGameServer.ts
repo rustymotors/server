@@ -1,10 +1,7 @@
-import { getServerLogger } from "../../../shared/log.js";
 import { getPersonasByPersonaId } from "../../../persona/src/getPersonasByPersonaId.js";
-import { getDatabaseServer } from "../../../database/src/DatabaseManager.js";
+import { getServerLogger } from "rusty-motors-shared";
 import { LoginInfoMessage } from "../LoginInfoMessage.js";
 
-import { ServerError } from "../../../shared/errors/ServerError.js";
-import { UserInfoMessage } from "../UserInfoMessage.js";
 import {
     createCommandEncryptionPair,
     createDataEncryptionPair,
@@ -15,7 +12,10 @@ import {
     fetchStateFromDatabase,
     getEncryption,
 } from "../../../shared/State.js";
-import { SerializedBuffer } from "../../../shared/messageFactory.js";
+import { ServerError } from "rusty-motors-shared";
+import { SerializedBufferOld } from "../../../shared/SerializedBufferOld.js";
+import { UserInfoMessage } from "../UserInfoMessage.js";
+import { fetchSessionKeyByCustomerId } from "../../../database/index.js";
 
 /**
  * Convert to zero padded hex
@@ -40,7 +40,7 @@ export function toHex(data: Buffer): string {
  * @param {import("../../../interfaces/index.js").ServiceArgs} args
  * @returns {Promise<{
  *  connectionId: string,
- * messages: SerializedBuffer[],
+ * messages: SerializedBufferOld[],
  * }>}
  */
 export async function _npsRequestGameConnectServer({
@@ -51,7 +51,7 @@ export async function _npsRequestGameConnectServer({
     }),
 }: import("../../../interfaces/index.js").ServiceArgs): Promise<{
     connectionId: string;
-    messages: SerializedBuffer[];
+    messages: SerializedBufferOld[];
 }> {
     // This is a NPS_LoginInfo packet
     // As a legacy packet, it used the old NPSMessage format
@@ -79,16 +79,15 @@ export async function _npsRequestGameConnectServer({
 
     if (!existingEncryption) {
         // Set the encryption keys on the lobby connection
-        const databaseManager = getDatabaseServer({ log });
-        const keys = await databaseManager
-            .fetchSessionKeyByCustomerId(customerId)
-            .catch((/** @type {unknown} */ error: unknown) => {
+        const keys = await fetchSessionKeyByCustomerId(customerId).catch(
+            (/** @type {unknown} */ error: unknown) => {
                 throw new ServerError(
                     `Unable to fetch session key for customerId ${customerId.toString()}: ${String(
                         error,
                     )}`,
                 );
-            });
+            },
+        );
         if (keys === undefined) {
             throw new ServerError("Error fetching session keys!");
         }
@@ -128,7 +127,7 @@ export async function _npsRequestGameConnectServer({
         `!!! outbound lobby login response packet: ${responsePacket.toString()}`,
     );
 
-    const outboundMessage = new SerializedBuffer();
+    const outboundMessage = new SerializedBufferOld();
     outboundMessage._doDeserialize(responsePacket.serialize());
 
     return {

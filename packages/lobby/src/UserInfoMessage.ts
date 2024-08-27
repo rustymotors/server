@@ -1,9 +1,7 @@
-import { ServerError } from "../../shared/errors/ServerError.js";
-import {
-    LegacyMessage,
-    deserializeString,
-    serializeString,
-} from "../../shared/messageFactory.js";
+import { ServerError } from "../../shared/src/ServerError.js";
+import { deserializeString } from "../../shared/deserializeString.js";
+import { LegacyMessage } from "../../shared/LegacyMessage.js";
+import { serializeString } from "../../shared/serializeString.js";
 // eslint-disable-next-line no-unused-vars
 import { LoginInfoMessage } from "./LoginInfoMessage.js";
 

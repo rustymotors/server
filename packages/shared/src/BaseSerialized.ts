@@ -1,4 +1,4 @@
-import { ServerError } from "../errors/ServerError.js";
+import { ServerError } from "./ServerError.js";
 
 export interface Serializable {
     data: Buffer;
@@ -32,7 +32,7 @@ export class BaseSerialized implements Serializable {
         throw new ServerError("Not implemented");
     }
 
-    deserialize(buffer: Buffer): Serializable {
+    deserialize(_buffer: Buffer): Serializable {
         throw new ServerError("Not implemented");
     }
 

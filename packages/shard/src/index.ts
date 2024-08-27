@@ -16,7 +16,7 @@
 
 import { readFileSync } from "fs";
 import { Configuration } from "../../shared/Configuration.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { ServerError } from "../../shared/src/ServerError.js";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.

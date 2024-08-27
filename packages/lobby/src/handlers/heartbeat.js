@@ -1,8 +1,8 @@
-import { getServerLogger } from "../../../shared/log.js";
+import { getServerLogger } from "rusty-motors-shared";
 import {
     NPSMessage,
     SerializedBuffer,
-} from "../../../shared/messageFactory.js";
+} from "rusty-motors-shared";
 
 /**
  * @param {object} args

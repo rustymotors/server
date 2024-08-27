@@ -1,4 +1,4 @@
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { ServerError } from "rusty-motors-shared";
 
 /**
  * Clamp a value between 0 and 255
@@ -6,7 +6,7 @@ import { ServerError } from "../../shared/errors/ServerError.js";
  * @returns {number}
  */
 export function clamp16(value: number): number {
-    return Math.max(0, Math.min(65535, value));
+	return Math.max(0, Math.min(65535, value));
 }
 
 /**
@@ -15,7 +15,7 @@ export function clamp16(value: number): number {
  * @returns {number}
  */
 export function clamp32(value: number): number {
-    return Math.max(0, Math.min(4294967295, value));
+	return Math.max(0, Math.min(4294967295, value));
 }
 
 /**
@@ -24,11 +24,11 @@ export function clamp32(value: number): number {
  * @returns {Buffer}
  */
 export function serializeBool(bool: boolean): Buffer {
-    const buf = Buffer.alloc(1);
+	const buf = Buffer.alloc(1);
 
-    buf.writeUInt8(bool ? 1 : 0);
+	buf.writeUInt8(bool ? 1 : 0);
 
-    return buf;
+	return buf;
 }
 
 /**
@@ -37,11 +37,11 @@ export function serializeBool(bool: boolean): Buffer {
  * @returns {Buffer}
  */
 export function serializeByte(byte: number): Buffer {
-    const buf = Buffer.alloc(1);
+	const buf = Buffer.alloc(1);
 
-    buf.writeUInt8(byte);
+	buf.writeUInt8(byte);
 
-    return buf;
+	return buf;
 }
 
 /**
@@ -50,11 +50,11 @@ export function serializeByte(byte: number): Buffer {
  * @returns {Buffer}
  */
 export function serializeWord(word: number): Buffer {
-    const buf = Buffer.alloc(2);
+	const buf = Buffer.alloc(2);
 
-    buf.writeUInt16BE(word);
+	buf.writeUInt16BE(word);
 
-    return buf;
+	return buf;
 }
 
 /**
@@ -63,11 +63,11 @@ export function serializeWord(word: number): Buffer {
  * @returns {Buffer}
  */
 export function serializeDWord(dword: number): Buffer {
-    const buf = Buffer.alloc(4);
+	const buf = Buffer.alloc(4);
 
-    buf.writeUInt32BE(dword);
+	buf.writeUInt32BE(dword);
 
-    return buf;
+	return buf;
 }
 
 /**
@@ -76,11 +76,11 @@ export function serializeDWord(dword: number): Buffer {
  * @returns {Buffer}
  */
 export function serializeFloat(f: number): Buffer {
-    const buf = Buffer.alloc(4);
+	const buf = Buffer.alloc(4);
 
-    buf.writeFloatBE(f);
+	buf.writeFloatBE(f);
 
-    return buf;
+	return buf;
 }
 
 /**
@@ -89,12 +89,12 @@ export function serializeFloat(f: number): Buffer {
  * @returns {Buffer}
  */
 export function serializeString(str: string): Buffer {
-    const buf = Buffer.alloc(str.length + 2);
+	const buf = Buffer.alloc(str.length + 2);
 
-    buf.writeUInt16BE(str.length);
-    buf.write(str, 2);
+	buf.writeUInt16BE(str.length);
+	buf.write(str, 2);
 
-    return buf;
+	return buf;
 }
 
 /**
@@ -103,7 +103,7 @@ export function serializeString(str: string): Buffer {
  * @returns {boolean}
  */
 export function deserializeBool(buff: Buffer): boolean {
-    return buff.readUInt8() === 1;
+	return buff.readUInt8() === 1;
 }
 
 /**
@@ -112,7 +112,7 @@ export function deserializeBool(buff: Buffer): boolean {
  * @returns {number}
  */
 export function deserializeByte(buff: Buffer): number {
-    return buff.readUInt8();
+	return buff.readUInt8();
 }
 
 /**
@@ -121,7 +121,7 @@ export function deserializeByte(buff: Buffer): number {
  * @returns {number}
  */
 export function deserializeWord(buff: Buffer): number {
-    return buff.readUInt16BE();
+	return buff.readUInt16BE();
 }
 
 /**
@@ -130,7 +130,7 @@ export function deserializeWord(buff: Buffer): number {
  * @returns {number}
  */
 export function deserializeDWord(buff: Buffer): number {
-    return buff.readUInt32BE();
+	return buff.readUInt32BE();
 }
 
 /**
@@ -139,7 +139,7 @@ export function deserializeDWord(buff: Buffer): number {
  * @returns {number}
  */
 export function deserializeFloat(buff: Buffer): number {
-    return buff.readFloatBE();
+	return buff.readFloatBE();
 }
 
 /**
@@ -148,33 +148,33 @@ export function deserializeFloat(buff: Buffer): number {
  * @returns {string}
  */
 export function deserializeString(buf: Buffer): string {
-    const size = buf.readUInt16BE();
-    if (size > buf.length - 2) {
-        throw new ServerError("Size is bigger than the buffer length - 2");
-    }
-    const str = buf.subarray(2, size + 2).toString("utf8");
+	const size = buf.readUInt16BE();
+	if (size > buf.length - 2) {
+		throw new ServerError("Size is bigger than the buffer length - 2");
+	}
+	const str = buf.subarray(2, size + 2).toString("utf8");
 
-    return str;
+	return str;
 }
 
 export function sizeOfBool() {
-    return 1;
+	return 1;
 }
 
 export function sizeOfByte() {
-    return 1;
+	return 1;
 }
 
 export function sizeOfWord() {
-    return 2;
+	return 2;
 }
 
 export function sizeOfDWord() {
-    return 4;
+	return 4;
 }
 
 export function sizeOfFloat() {
-    return 4;
+	return 4;
 }
 
 /**
@@ -183,5 +183,5 @@ export function sizeOfFloat() {
  * @returns {number}
  */
 export function sizeOfString(string: string): number {
-    return string.length + 2;
+	return string.length + 2;
 }
