@@ -18,7 +18,7 @@ importers:
         specifier: ^1.10.2
         version: 1.10.2
       '@fastify/sensible':
-        specifier: ^5.5.0
+        specifier: ^5.6.0
         version: 5.6.0
       '@sentry/node':
         specifier: '7.88'
@@ -228,7 +228,7 @@ importers:
   packages/gateway:
     dependencies:
       '@fastify/sensible':
-        specifier: ^5.5.0
+        specifier: ^5.6.0
         version: 5.6.0
       '@sentry/node':
         specifier: ^8.0.0
@@ -247,7 +247,7 @@ importers:
   packages/lobby:
     dependencies:
       '@fastify/sensible':
-        specifier: ^5.5.0
+        specifier: ^5.6.0
         version: 5.6.0
       '@sentry/node':
         specifier: ^8.0.0
@@ -266,7 +266,7 @@ importers:
   packages/login:
     dependencies:
       '@fastify/sensible':
-        specifier: ^5.5.0
+        specifier: ^5.6.0
         version: 5.6.0
       '@sentry/node':
         specifier: ^8.0.0
