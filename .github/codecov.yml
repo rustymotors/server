@@ -8,39 +8,39 @@ flags:
     database:
         paths:
             - packages/database/**
-        carryforward: true
+        carryforward: false
     gateway:
         paths:
             - packages/gateway/**
-        carryforward: true
+        carryforward: false
     lobby:
         paths:
             - packages/lobby/**
-        carryforward: true
+        carryforward: false
     login:
         paths:
             - packages/login/**
-        carryforward: true
+        carryforward: false
     patch:
         paths:
             - packages/patch/**
-        carryforward: true
+        carryforward: false
     persona:
         paths:
             - packages/persona/**
-        carryforward: true
+        carryforward: false
     shard:
         paths:
             - packages/shard/**
-        carryforward: true
+        carryforward: false
     shared:
         paths:
             - packages/shared/**
-        carryforward: true
+        carryforward: false
     transactions:
         paths:
             - packages/transactions/**
-        carryforward: true
+        carryforward: false
     interfaces:
         paths:
             - packages/interfaces/**
@@ -48,7 +48,7 @@ flags:
     core:
         paths:
             - packages/core/**
-        carryforward: true
+        carryforward: false
 
 component_management:
     individual_components:
