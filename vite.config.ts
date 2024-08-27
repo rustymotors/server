@@ -10,6 +10,7 @@ export default defineConfig({
 				"src/**/*.test.ts",
 				"bin/**/*.ts",
 				"interfaces",
+				"vite.config.ts"
 			],
 			reporter: ["lcov", "text", "cobertura"],
 		},
