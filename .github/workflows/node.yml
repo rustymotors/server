@@ -142,7 +142,7 @@ jobs:
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
               run: |
                   codecovcli --verbose do-upload --fail-on-error --flag shared-packets --name shared-packets --dir packages/shared-packets
-            - name: Codecov 
+            - name: Codecov  upload transactions coverage
               if: ${{ always() }} # using always() to always run this step because i am uploading test results and coverage in one step
               env:
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
