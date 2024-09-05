@@ -21,7 +21,7 @@ import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 import { NPSMessage } from "../../shared/NPSMessage.js";
 import { NetworkMessage } from "../../shared/src/NetworkMessage.js";
 import { NPSUserStatus } from "./NPSUserStatus.js";
-import { updateSessionKey } from "../../database/index.js";
+import { updateSessionKey } from "rusty-motors-database";
 
 /** @type {import("../../interfaces/index.js").UserRecordMini[]} */
 const userRecords: import("../../shared/src/interfaces.js").UserRecordMini[] = [

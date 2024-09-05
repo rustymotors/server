@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { DatabaseManager } from "../../shared/src/interfaces.js";
-import { ServerError } from "../../shared/src/ServerError.js";
 import { getServerLogger } from "rusty-motors-shared";
 import { NPSMessage } from "../../shared/NPSMessage.js";
 import { handleLoginData } from "./internal.js";
@@ -23,106 +21,103 @@ import { handleLoginData } from "./internal.js";
 /**
  * Please use {@link LoginServer.getInstance()}
  */
-export class LoginServer {
-    _log: any;
-    static _instance: LoginServer | undefined;
-    /**
-     * Please use {@see LoginServer.getInstance} instead
-     * @param {object} options
-     * @param {import("../../interfaces/index.js").DatabaseManager} options.database
-     * @param {import("pino").Logger} [options.log=getServerLogger({ module: "LoginServer" })]
-     * @memberof LoginServer
-     */
-    constructor({
-        log = getServerLogger({
-            module: "LoginServer",
-        }),
-    }: {
-        database: import("../../shared/src/interfaces.js").DatabaseManager;
-        log?: import("pino").Logger;
-    }) {
-        this._log = log;
-        LoginServer._instance = this;
-    }
+// export class LoginServer {
+//     _log: any;
+//     // static _instance: LoginServer | undefined;
+//     /**
+//      * Please use {@see LoginServer.getInstance} instead
+//      * @param {object} options
+//      * @param {import("../../interfaces/index.js").DatabaseManager} options.database
+//      * @param {import("pino").Logger} [options.log=getServerLogger({ module: "LoginServer" })]
+//      * @memberof LoginServer
+//      */
+//     constructor({
+//         log = getServerLogger({
+//             module: "LoginServer",
+//         }),
+//     }: {
+//         log?: import("pino").Logger;
+//     }) {
+//         this._log = log;
+//         // LoginServer._instance = this;
+//     }
 
-    /**
-     * Get the single instance of the login server
-     *
-     * @static
-     * @param {import("../../interfaces/index.js").DatabaseManager} database
-     * @param {import("pino").Logger} log
-     * @return {LoginServer}
-     */
-    static getInstance(
-        database: import("../../shared/src/interfaces.js").DatabaseManager,
-        log: import("pino").Logger,
-    ): LoginServer {
-        if (typeof LoginServer._instance === "undefined") {
-            LoginServer._instance = new LoginServer({
-                database,
-                log,
-            });
-        }
-        return LoginServer._instance;
-    }
+//     /**
+//      * Get the single instance of the login server
+//      *
+//      * @static
+//      * @param {import("../../interfaces/index.js").DatabaseManager} database
+//      * @param {import("pino").Logger} log
+//      * @return {LoginServer}
+//      */
+//     // static getInstance(
+//     //     database: import("../../shared/src/interfaces.js").DatabaseManager,
+//     //     log: import("pino").Logger,
+//     // ): LoginServer {
+//     //     if (typeof LoginServer._instance === "undefined") {
+//     //         LoginServer._instance = new LoginServer({
+//     //             database,
+//     //             log,
+//     //         });
+//     //     }
+//     //     return LoginServer._instance;
+//     // }
 
-    /**
-     *
-     * @param {string} contextId
-     * @return {import("../../interfaces/index.js").UserRecordMini}
-     */
-    _npsGetCustomerIdByContextId(
-        contextId: string,
-    ): import("../../shared/src/interfaces.js").UserRecordMini {
-        this._log.debug(">>> _npsGetCustomerIdByContextId");
-        /** @type {import("../../interfaces/index.js").UserRecordMini[]} */
-        const users: import("../../shared/src/interfaces.js").UserRecordMini[] =
-            [
-                {
-                    contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
-                    customerId: 0x0012808b,
-                    userId: 0x00000002,
-                },
-                {
-                    contextId: "d316cd2dd6bf870893dfbaaf17f965884e",
-                    customerId: 0x0054b46c,
-                    userId: 0x00000001,
-                },
-            ];
-        if (contextId.toString() === "") {
-            const err = new ServerError(
-                `Unknown contextId: ${contextId.toString()}`,
-            );
-            throw err;
-        }
+//     /**
+//      *
+//      * @param {string} contextId
+//      * @return {import("../../interfaces/index.js").UserRecordMini}
+//      */
+//     _npsGetCustomerIdByContextId(
+//         contextId: string,
+//     ): import("../../shared/src/interfaces.js").UserRecordMini {
+//         this._log.debug(">>> _npsGetCustomerIdByContextId");
+//         /** @type {import("../../interfaces/index.js").UserRecordMini[]} */
+//         const users: import("../../shared/src/interfaces.js").UserRecordMini[] =
+//             [
+//                 {
+//                     contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
+//                     customerId: 0x0012808b,
+//                     userId: 0x00000002,
+//                 },
+//                 {
+//                     contextId: "d316cd2dd6bf870893dfbaaf17f965884e",
+//                     customerId: 0x0054b46c,
+//                     userId: 0x00000001,
+//                 },
+//             ];
+//         if (contextId.toString() === "") {
+//             const err = new Error(`Unknown contextId: ${contextId.toString()}`);
+//             throw err;
+//         }
 
-        const userRecord = users.filter((user) => user.contextId === contextId);
-        if (typeof userRecord[0] === "undefined" || userRecord.length !== 1) {
-            this._log.debug(
-                `preparing to leave _npsGetCustomerIdByContextId after not finding record',
-        ${JSON.stringify({
-            contextId,
-        })}`,
-            );
-            const err = new ServerError(
-                `Unable to locate user record matching contextId ${contextId}`,
-            );
-            throw err;
-        }
+//         const userRecord = users.filter((user) => user.contextId === contextId);
+//         if (typeof userRecord[0] === "undefined" || userRecord.length !== 1) {
+//             this._log.debug(
+//                 `preparing to leave _npsGetCustomerIdByContextId after not finding record',
+//         ${JSON.stringify({
+//             contextId,
+//         })}`,
+//             );
+//             const err = new Error(
+//                 `Unable to locate user record matching contextId ${contextId}`,
+//             );
+//             throw err;
+//         }
 
-        this._log.debug(
-            `preparing to leave _npsGetCustomerIdByContextId after finding record',
-      ${JSON.stringify({
-          contextId,
-          userRecord,
-      })}`,
-        );
-        return userRecord[0];
-    }
-}
+//         this._log.debug(
+//             `preparing to leave _npsGetCustomerIdByContextId after finding record',
+//       ${JSON.stringify({
+//           contextId,
+//           userRecord,
+//       })}`,
+//         );
+//         return userRecord[0];
+//     }
+// }
 
 /** @type {LoginServer | undefined} */
-LoginServer._instance = undefined;
+// LoginServer._instance = undefined;
 
 /**
  * Entry and exit point of the Login service
@@ -157,7 +152,7 @@ export async function receiveLoginData({
         log.debug("Exiting login module");
         return response;
     } catch (error) {
-        const err = new ServerError(
+        const err = new Error(
             `There was an error in the login service: ${String(error)}`,
         );
         throw err;
