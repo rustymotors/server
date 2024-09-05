@@ -64,12 +64,6 @@ jobs:
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
               run: |
                   codecovcli --verbose do-upload --fail-on-error --flag connection --name connection --dir packages/connection
-            - name: Codecov upload core coverage
-              if: ${{ always() }} # using always() to always run this step because i am uploading test results and coverage in one step
-              env:
-                  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-              run: |
-                  codecovcli --verbose do-upload --fail-on-error --flag core --name core --dir packages/core
             - name: Codecov upload database coverage
               if: ${{ always() }} # using always() to always run this step because i am uploading test results and coverage in one step
               env:
