@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { PersonaRecord } from "../../interfaces/index.js";
+import { PersonaRecord } from "rusty-motors-shared";
 import { getPersonasByPersonaId } from "../src/getPersonasByPersonaId.js";
 
 describe("getPersonasByPersonaId", () => {

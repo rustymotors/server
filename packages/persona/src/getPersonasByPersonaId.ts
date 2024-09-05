@@ -1,4 +1,4 @@
-import { PersonaRecord } from "../../interfaces/index.js";
+import { PersonaRecord } from "../../shared/src/interfaces.js";
 import { ServerError } from "../../shared/src/ServerError.js";
 import { personaRecords } from "./internal.js";
 
@@ -14,7 +14,7 @@ export async function getPersonasByPersonaId({
 }: {
     personas?: PersonaRecord[];
     id: number;
-}): Promise<import("../../interfaces/index.js").PersonaRecord[]> {
+}): Promise<import("../../shared/src/interfaces.js").PersonaRecord[]> {
     const results = personaRecords.filter((persona) => {
         const match = id === persona.id.readInt32BE(0);
         return match;

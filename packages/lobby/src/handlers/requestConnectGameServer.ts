@@ -49,7 +49,7 @@ export async function _npsRequestGameConnectServer({
     log = getServerLogger({
         module: "LoginServer",
     }),
-}: import("../../../interfaces/index.js").ServiceArgs): Promise<{
+}: import("../../../shared/src/interfaces.js").ServiceArgs): Promise<{
     connectionId: string;
     messages: SerializedBufferOld[];
 }> {

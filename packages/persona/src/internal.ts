@@ -101,7 +101,7 @@ export function generateNameBuffer(name: string, size: number): Buffer {
  * NOTE: Currently we only support one persona per customer
  * @type {import("../../interfaces/index.js").PersonaRecord[]}
  */
-export const personaRecords: import("../../interfaces/index.js").PersonaRecord[] =
+export const personaRecords: import("../../shared/src/interfaces.js").PersonaRecord[] =
     [
         {
             customerId: 2868969472,
@@ -128,7 +128,7 @@ export const personaRecords: import("../../interfaces/index.js").PersonaRecord[]
  */
 async function getPersonasByCustomerId(
     customerId: number,
-): Promise<import("../../interfaces/index.js").PersonaRecord[]> {
+): Promise<import("../../shared/src/interfaces.js").PersonaRecord[]> {
     const results = personaRecords.filter(
         (persona) => persona.customerId === customerId,
     );
@@ -145,7 +145,7 @@ async function getPersonasByCustomerId(
  */
 async function getPersonaMapsByCustomerId(
     customerId: number,
-): Promise<import("../../interfaces/index.js").PersonaRecord[]> {
+): Promise<import("../../shared/src/interfaces.js").PersonaRecord[]> {
     switch (customerId) {
         case 5551212:
             return getPersonasByCustomerId(customerId);

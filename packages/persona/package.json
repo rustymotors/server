@@ -1,5 +1,5 @@
 {
-	"name": "rusty-motors-gateway",
+	"name": "rusty-motors-persona",
 	"version": "1.0.0",
 	"exports": {
 		".": {
@@ -11,20 +11,15 @@
 	"scripts": {
 		"check": "tsc",
 		"lint": "eslint .",
-		"format": "npx prettier --write .",
-		"test": "vitest run --coverage",
-		"test:crypto": "pnpm node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage"
+		"format": "npm prettier --write .",
+		"test": "vitest run --coverage"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "AGPL-3.0",
 	"dependencies": {
-		"@fastify/sensible": "^5.6.0",
 		"@sentry/node": "^8.0.0",
-		"fastify": "^4.28.1"
-	},
-	"directories": {
-		"test": "test"
+		"short-unique-id": "^5.0.3"
 	},
 	"description": "",
 	"devDependencies": {

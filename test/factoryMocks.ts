@@ -1,13 +1,6 @@
 import { expect, it, vi } from "vitest";
 import { verifyLegacyCipherSupport } from "../packages/gateway/src/encryption.js";
-import { DatabaseManager } from "../packages/interfaces/index.js";
 
-export function mockDatabaseManager(): DatabaseManager {
-	return {
-		updateSessionKey: vi.fn(),
-		fetchSessionKeyByCustomerId: vi.fn(),
-	};
-}
 
 export function mockPino() {
 	vi.mock("pino", () => {
