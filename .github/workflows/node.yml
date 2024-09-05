@@ -82,12 +82,6 @@ jobs:
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
               run: |
                   codecovcli --verbose do-upload --fail-on-error --flag gateway --name gateway --dir packages/gateway
-            - name: Codecov upload interfaces coverage
-              if: ${{ always() }} # using always() to always run this step because i am uploading test results and coverage in one step
-              env:
-                  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-              run: |
-                  codecovcli --verbose do-upload --fail-on-error --flag interfaces --name interfaces --dir packages/interfaces
             - name: Codecov upload lobby coverage
               if: ${{ always() }} # using always() to always run this step because i am uploading test results and coverage in one step
               env:
