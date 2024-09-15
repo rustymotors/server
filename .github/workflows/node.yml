@@ -8,9 +8,9 @@ on:
 env:
     MCO_LOG_LEVEL: warn
     EXTERNAL_HOST: mcouniverse.com
-    PRIVATE_KEY_FILE: thebeast/data/private_key.pem # These secrets are stored in the repository and are safe to "leak"
-    CERTIFICATE_FILE: thebeast/data/mcouniverse.crt # These secrets are stored in the repository and are safe to "leak"
-    PUBLIC_KEY_FILE: thebeast/data/pub.key # These secrets are stored in the repository and are safe to "leak"
+    PRIVATE_KEY_FILE: data/private_key.pem # These secrets are stored in the repository and are safe to "leak"
+    CERTIFICATE_FILE: data/mcouniverse.crt # These secrets are stored in the repository and are safe to "leak"
+    PUBLIC_KEY_FILE: data/pub.key # These secrets are stored in the repository and are safe to "leak"
 
 jobs:
     build-test:
@@ -20,10 +20,10 @@ jobs:
             - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
               with:
                   fetch-depth: 0
-            - name: Use Node.js 22.x
+            - name: Use Node.js 20.x
               uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
               with:
-                  node-version: 22.x
+                  node-version: 20.x
             - name: Setup pnpm
               uses: pnpm/action-setup@v4.0.0
             - name: Install and test
