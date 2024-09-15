@@ -288,7 +288,7 @@ importers:
         specifier: ^8.0.0
         version: 8.26.0
       short-unique-id:
-        specifier: ^5.0.3
+        specifier: ^5.2.0
         version: 5.2.0
     devDependencies:
       '@vitest/coverage-v8':
@@ -304,7 +304,7 @@ importers:
         specifier: ^8.0.0
         version: 8.26.0
       short-unique-id:
-        specifier: ^5.0.3
+        specifier: ^5.2.0
         version: 5.2.0
     devDependencies:
       '@vitest/coverage-v8':
@@ -329,7 +329,7 @@ importers:
         specifier: ^8.0.0
         version: 8.26.0
       short-unique-id:
-        specifier: ^5.0.3
+        specifier: ^5.2.0
         version: 5.2.0
     devDependencies:
       '@vitest/coverage-v8':
@@ -345,7 +345,7 @@ importers:
         specifier: ^8.0.0
         version: 8.26.0
       short-unique-id:
-        specifier: ^5.0.3
+        specifier: ^5.2.0
         version: 5.2.0
     devDependencies:
       '@vitest/coverage-v8':
@@ -373,7 +373,7 @@ importers:
         specifier: ^9.3.2
         version: 9.3.2
       pino-pretty:
-        specifier: ^11.0.0
+        specifier: ^11.2.2
         version: 11.2.2
     devDependencies:
       '@vitest/coverage-v8':
