@@ -59,7 +59,7 @@
         "@biomejs/biome": "1.9.0",
         "@databases/pg-migrations": "^5.0.3",
         "@databases/pg-test": "^3.1.2",
-        "@sentry/cli": "^2.33.1",
+        "@sentry/cli": "^2.36.1",
         "@tsconfig/node-lts": "^20.1.0",
         "@tsconfig/node20": "^20.1.4",
         "@types/chai": "4.3.19",
