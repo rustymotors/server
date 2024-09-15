@@ -179,11 +179,11 @@ importers:
         version: link:../shared-packets
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: 2.0.5
-        version: 2.0.5(vitest@2.0.5(@types/node@22.5.0))
+        specifier: 2.1.1
+        version: 2.1.1(vitest@2.1.1(@types/node@22.5.0))
       vitest:
-        specifier: ^2.0.5
-        version: 2.0.5(@types/node@22.5.0)
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.5.0)
 
   packages/connection:
     dependencies:
@@ -191,8 +191,8 @@ importers:
         specifier: ^8.0.0
         version: 8.26.0
       vitest:
-        specifier: ^2.0.5
-        version: 2.0.5(@types/node@22.5.0)
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.5.0)
 
   packages/database:
     dependencies:
@@ -219,11 +219,11 @@ importers:
         version: 2.3.4
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: '2'
-        version: 2.0.5(vitest@2.0.5(@types/node@22.5.0))
+        specifier: 2.1.1
+        version: 2.1.1(vitest@2.1.1(@types/node@22.5.0))
       vitest:
-        specifier: ^2.0.5
-        version: 2.0.5(@types/node@22.5.0)
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.5.0)
 
   packages/gateway:
     dependencies:
@@ -238,11 +238,11 @@ importers:
         version: 4.28.1
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: '2'
-        version: 2.0.5(vitest@2.0.5(@types/node@22.5.0))
+        specifier: 2.1.1
+        version: 2.1.1(vitest@2.1.1(@types/node@22.5.0))
       vitest:
-        specifier: ^2.0.5
-        version: 2.0.5(@types/node@22.5.0)
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.5.0)
 
   packages/lobby:
     dependencies:
@@ -257,11 +257,11 @@ importers:
         version: 4.28.1
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: '2'
-        version: 2.0.5(vitest@2.0.5(@types/node@22.5.0))
+        specifier: 2.1.1
+        version: 2.1.1(vitest@2.1.1(@types/node@22.5.0))
       vitest:
-        specifier: ^2.0.5
-        version: 2.0.5(@types/node@22.5.0)
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.5.0)
 
   packages/login:
     dependencies:
@@ -276,11 +276,11 @@ importers:
         version: 4.28.1
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: '2'
-        version: 2.0.5(vitest@2.0.5(@types/node@22.5.0))
+        specifier: 2.1.1
+        version: 2.1.1(vitest@2.1.1(@types/node@22.5.0))
       vitest:
-        specifier: ^2.0.5
-        version: 2.0.5(@types/node@22.5.0)
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.5.0)
 
   packages/mcots:
     dependencies:
@@ -292,11 +292,11 @@ importers:
         version: 5.2.0
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: '2'
-        version: 2.0.5(vitest@2.0.5(@types/node@22.5.0))
+        specifier: 2.1.1
+        version: 2.1.1(vitest@2.1.1(@types/node@22.5.0))
       vitest:
-        specifier: ^2.0.5
-        version: 2.0.5(@types/node@22.5.0)
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.5.0)
 
   packages/nps:
     dependencies:
@@ -308,20 +308,20 @@ importers:
         version: 5.2.0
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: '2'
-        version: 2.0.5(vitest@2.0.5(@types/node@22.5.0))
+        specifier: 2.1.1
+        version: 2.1.1(vitest@2.1.1(@types/node@22.5.0))
       vitest:
-        specifier: ^2.0.5
-        version: 2.0.5(@types/node@22.5.0)
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.5.0)
 
   packages/patch:
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: '2'
-        version: 2.0.5(vitest@2.0.5(@types/node@22.5.0))
+        specifier: 2.1.1
+        version: 2.1.1(vitest@2.1.1(@types/node@22.5.0))
       vitest:
-        specifier: ^2.0.5
-        version: 2.0.5(@types/node@22.5.0)
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.5.0)
 
   packages/persona:
     dependencies:
@@ -333,11 +333,11 @@ importers:
         version: 5.2.0
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: '2'
-        version: 2.0.5(vitest@2.0.5(@types/node@22.5.0))
+        specifier: 2.1.1
+        version: 2.1.1(vitest@2.1.1(@types/node@22.5.0))
       vitest:
-        specifier: ^2.0.5
-        version: 2.0.5(@types/node@22.5.0)
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.5.0)
 
   packages/sessions:
     dependencies:
@@ -349,20 +349,20 @@ importers:
         version: 5.2.0
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: '2'
-        version: 2.0.5(vitest@2.0.5(@types/node@22.5.0))
+        specifier: 2.1.1
+        version: 2.1.1(vitest@2.1.1(@types/node@22.5.0))
       vitest:
-        specifier: ^2.0.5
-        version: 2.0.5(@types/node@22.5.0)
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.5.0)
 
   packages/shard:
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: '2'
-        version: 2.0.5(vitest@2.0.5(@types/node@22.5.0))
+        specifier: 2.1.1
+        version: 2.1.1(vitest@2.1.1(@types/node@22.5.0))
       vitest:
-        specifier: ^2.0.5
-        version: 2.0.5(@types/node@22.5.0)
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.5.0)
 
   packages/shared:
     dependencies:
@@ -377,29 +377,29 @@ importers:
         version: 11.2.2
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: '2'
-        version: 2.0.5(vitest@2.0.5(@types/node@22.5.0))
+        specifier: 2.1.1
+        version: 2.1.1(vitest@2.1.1(@types/node@22.5.0))
       vitest:
-        specifier: ^2.0.5
-        version: 2.0.5(@types/node@22.5.0)
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.5.0)
 
   packages/shared-packets:
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: '2'
-        version: 2.0.5(vitest@2.0.5(@types/node@22.5.0))
+        specifier: 2.1.1
+        version: 2.1.1(vitest@2.1.1(@types/node@22.5.0))
       vitest:
-        specifier: ^2.0.5
-        version: 2.0.5(@types/node@22.5.0)
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.5.0)
 
   packages/transactions:
     devDependencies:
       '@vitest/coverage-v8':
-        specifier: '2'
-        version: 2.0.5(vitest@2.0.5(@types/node@22.5.0))
+        specifier: 2.1.1
+        version: 2.1.1(vitest@2.1.1(@types/node@22.5.0))
       vitest:
-        specifier: ^2.0.5
-        version: 2.0.5(@types/node@22.5.0)
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.5.0)
 
 packages:
 
@@ -2643,23 +2643,62 @@ packages:
     peerDependencies:
       vitest: 2.0.5
 
+  '@vitest/coverage-v8@2.1.1':
+    resolution: {integrity: sha512-md/A7A3c42oTT8JUHSqjP5uKTWJejzUW4jalpvs+rZ27gsURsMU8DEb+8Jf8C6Kj2gwfSHJqobDNBuoqlm0cFw==}
+    peerDependencies:
+      '@vitest/browser': 2.1.1
+      vitest: 2.1.1
+    peerDependenciesMeta:
+      '@vitest/browser':
+        optional: true
+
   '@vitest/expect@2.0.5':
     resolution: {integrity: sha512-yHZtwuP7JZivj65Gxoi8upUN2OzHTi3zVfjwdpu2WrvCZPLwsJ2Ey5ILIPccoW23dd/zQBlJ4/dhi7DWNyXCpA==}
+
+  '@vitest/expect@2.1.1':
+    resolution: {integrity: sha512-YeueunS0HiHiQxk+KEOnq/QMzlUuOzbU1Go+PgAsHvvv3tUkJPm9xWt+6ITNTlzsMXUjmgm5T+U7KBPK2qQV6w==}
+
+  '@vitest/mocker@2.1.1':
+    resolution: {integrity: sha512-LNN5VwOEdJqCmJ/2XJBywB11DLlkbY0ooDJW3uRX5cZyYCrc4PI/ePX0iQhE3BiEGiQmK4GE7Q/PqCkkaiPnrA==}
+    peerDependencies:
+      '@vitest/spy': 2.1.1
+      msw: ^2.3.5
+      vite: ^5.0.0
+    peerDependenciesMeta:
+      msw:
+        optional: true
+      vite:
+        optional: true
 
   '@vitest/pretty-format@2.0.5':
     resolution: {integrity: sha512-h8k+1oWHfwTkyTkb9egzwNMfJAEx4veaPSnMeKbVSjp4euqGSbQlm5+6VHwTr7u4FJslVVsUG5nopCaAYdOmSQ==}
 
+  '@vitest/pretty-format@2.1.1':
+    resolution: {integrity: sha512-SjxPFOtuINDUW8/UkElJYQSFtnWX7tMksSGW0vfjxMneFqxVr8YJ979QpMbDW7g+BIiq88RAGDjf7en6rvLPPQ==}
+
   '@vitest/runner@2.0.5':
     resolution: {integrity: sha512-TfRfZa6Bkk9ky4tW0z20WKXFEwwvWhRY+84CnSEtq4+3ZvDlJyY32oNTJtM7AW9ihW90tX/1Q78cb6FjoAs+ig==}
+
+  '@vitest/runner@2.1.1':
+    resolution: {integrity: sha512-uTPuY6PWOYitIkLPidaY5L3t0JJITdGTSwBtwMjKzo5O6RCOEncz9PUN+0pDidX8kTHYjO0EwUIvhlGpnGpxmA==}
 
   '@vitest/snapshot@2.0.5':
     resolution: {integrity: sha512-SgCPUeDFLaM0mIUHfaArq8fD2WbaXG/zVXjRupthYfYGzc8ztbFbu6dUNOblBG7XLMR1kEhS/DNnfCZ2IhdDew==}
 
+  '@vitest/snapshot@2.1.1':
+    resolution: {integrity: sha512-BnSku1WFy7r4mm96ha2FzN99AZJgpZOWrAhtQfoxjUU5YMRpq1zmHRq7a5K9/NjqonebO7iVDla+VvZS8BOWMw==}
+
   '@vitest/spy@2.0.5':
     resolution: {integrity: sha512-c/jdthAhvJdpfVuaexSrnawxZz6pywlTPe84LUB2m/4t3rl2fTo9NFGBG4oWgaD+FTgDDV8hJ/nibT7IfH3JfA==}
 
+  '@vitest/spy@2.1.1':
+    resolution: {integrity: sha512-ZM39BnZ9t/xZ/nF4UwRH5il0Sw93QnZXd9NAZGRpIgj0yvVwPpLd702s/Cx955rGaMlyBQkZJ2Ir7qyY48VZ+g==}
+
   '@vitest/utils@2.0.5':
     resolution: {integrity: sha512-d8HKbqIcya+GR67mkZbrzhS5kKhtp8dQLcmRZLGTscGVg7yImT82cIrhtn2L8+VujWcy6KZweApgNmPsTAO/UQ==}
+
+  '@vitest/utils@2.1.1':
+    resolution: {integrity: sha512-Y6Q9TsI+qJ2CC0ZKj6VBb+T8UPz593N113nnUykqwANqhgf3QkZeHFlusgKLTqrnVHbj/XDKZcDHol+dxVT+rQ==}
 
   JSONStream@1.3.5:
     resolution: {integrity: sha512-E+iruNOY8VV9s4JEbe1aNEm6MiszPRr/UfcHMz0TQh1BXSxHK+ASV1R6W4HpjBhSeS+54PIsAMCBmwD06LLsqQ==}
@@ -5482,6 +5521,9 @@ packages:
   tinyexec@0.2.0:
     resolution: {integrity: sha512-au8dwv4xKSDR+Fw52csDo3wcDztPdne2oM1o/7LFro4h6bdFmvyUAeAfX40pwDtzHgRFqz1XWaUqgKS2G83/ig==}
 
+  tinyexec@0.3.0:
+    resolution: {integrity: sha512-tVGE0mVJPGb0chKhqmsoosjsS+qUnJVGJpZgsHYQcGoPlG3B51R3PouqTgEGH2Dc9jjFyOqOpix6ZHNMXp1FZg==}
+
   tinymce@6.8.4:
     resolution: {integrity: sha512-okoJyxuPv1gzASxQDNgQbnUXOdAIyoOSXcXcZZu7tiW0PSKEdf3SdASxPBupRj+64/E3elHwVRnzSdo82Emqbg==}
 
@@ -5699,6 +5741,11 @@ packages:
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
 
+  vite-node@2.1.1:
+    resolution: {integrity: sha512-N/mGckI1suG/5wQI35XeR9rsMsPqKXzq1CdUndzVstBj/HvyxxGctwnK6WX43NGt5L3Z5tcRf83g4TITKJhPrA==}
+    engines: {node: ^18.0.0 || >=20.0.0}
+    hasBin: true
+
   vite@5.4.2:
     resolution: {integrity: sha512-dDrQTRHp5C1fTFzcSaMxjk6vdpKvT+2/mIdE07Gw2ykehT49O0z/VHS3zZ8iV/Gh8BJJKHWOe5RjaNrW5xf/GA==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -5739,6 +5786,31 @@ packages:
       '@types/node': ^18.0.0 || >=20.0.0
       '@vitest/browser': 2.0.5
       '@vitest/ui': 2.0.5
+      happy-dom: '*'
+      jsdom: '*'
+    peerDependenciesMeta:
+      '@edge-runtime/vm':
+        optional: true
+      '@types/node':
+        optional: true
+      '@vitest/browser':
+        optional: true
+      '@vitest/ui':
+        optional: true
+      happy-dom:
+        optional: true
+      jsdom:
+        optional: true
+
+  vitest@2.1.1:
+    resolution: {integrity: sha512-97We7/VC0e9X5zBVkvt7SGQMGrRtn3KtySFQG5fpaMlS+l62eeXRQO633AYhSTC3z7IMebnPPNjGXVGNRFlxBA==}
+    engines: {node: ^18.0.0 || >=20.0.0}
+    hasBin: true
+    peerDependencies:
+      '@edge-runtime/vm': '*'
+      '@types/node': ^18.0.0 || >=20.0.0
+      '@vitest/browser': 2.1.1
+      '@vitest/ui': 2.1.1
       happy-dom: '*'
       jsdom: '*'
     peerDependenciesMeta:
@@ -8406,6 +8478,24 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@vitest/coverage-v8@2.1.1(vitest@2.1.1(@types/node@22.5.0))':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@bcoe/v8-coverage': 0.2.3
+      debug: 4.3.6(supports-color@5.5.0)
+      istanbul-lib-coverage: 3.2.2
+      istanbul-lib-report: 3.0.1
+      istanbul-lib-source-maps: 5.0.6
+      istanbul-reports: 3.1.7
+      magic-string: 0.30.11
+      magicast: 0.3.4
+      std-env: 3.7.0
+      test-exclude: 7.0.1
+      tinyrainbow: 1.2.0
+      vitest: 2.1.1(@types/node@22.5.0)
+    transitivePeerDependencies:
+      - supports-color
+
   '@vitest/expect@2.0.5':
     dependencies:
       '@vitest/spy': 2.0.5
@@ -8413,7 +8503,26 @@ snapshots:
       chai: 5.1.1
       tinyrainbow: 1.2.0
 
+  '@vitest/expect@2.1.1':
+    dependencies:
+      '@vitest/spy': 2.1.1
+      '@vitest/utils': 2.1.1
+      chai: 5.1.1
+      tinyrainbow: 1.2.0
+
+  '@vitest/mocker@2.1.1(@vitest/spy@2.1.1)(vite@5.4.2(@types/node@22.5.0))':
+    dependencies:
+      '@vitest/spy': 2.1.1
+      estree-walker: 3.0.3
+      magic-string: 0.30.11
+    optionalDependencies:
+      vite: 5.4.2(@types/node@22.5.0)
+
   '@vitest/pretty-format@2.0.5':
+    dependencies:
+      tinyrainbow: 1.2.0
+
+  '@vitest/pretty-format@2.1.1':
     dependencies:
       tinyrainbow: 1.2.0
 
@@ -8422,9 +8531,20 @@ snapshots:
       '@vitest/utils': 2.0.5
       pathe: 1.1.2
 
+  '@vitest/runner@2.1.1':
+    dependencies:
+      '@vitest/utils': 2.1.1
+      pathe: 1.1.2
+
   '@vitest/snapshot@2.0.5':
     dependencies:
       '@vitest/pretty-format': 2.0.5
+      magic-string: 0.30.11
+      pathe: 1.1.2
+
+  '@vitest/snapshot@2.1.1':
+    dependencies:
+      '@vitest/pretty-format': 2.1.1
       magic-string: 0.30.11
       pathe: 1.1.2
 
@@ -8432,10 +8552,20 @@ snapshots:
     dependencies:
       tinyspy: 3.0.0
 
+  '@vitest/spy@2.1.1':
+    dependencies:
+      tinyspy: 3.0.0
+
   '@vitest/utils@2.0.5':
     dependencies:
       '@vitest/pretty-format': 2.0.5
       estree-walker: 3.0.3
+      loupe: 3.1.1
+      tinyrainbow: 1.2.0
+
+  '@vitest/utils@2.1.1':
+    dependencies:
+      '@vitest/pretty-format': 2.1.1
       loupe: 3.1.1
       tinyrainbow: 1.2.0
 
@@ -11516,6 +11646,8 @@ snapshots:
 
   tinyexec@0.2.0: {}
 
+  tinyexec@0.3.0: {}
+
   tinymce@6.8.4: {}
 
   tinypool@1.0.1: {}
@@ -11695,6 +11827,23 @@ snapshots:
       - supports-color
       - terser
 
+  vite-node@2.1.1(@types/node@22.5.0):
+    dependencies:
+      cac: 6.7.14
+      debug: 4.3.6(supports-color@5.5.0)
+      pathe: 1.1.2
+      vite: 5.4.2(@types/node@22.5.0)
+    transitivePeerDependencies:
+      - '@types/node'
+      - less
+      - lightningcss
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+
   vite@5.4.2(@types/node@22.5.0):
     dependencies:
       esbuild: 0.21.5
@@ -11730,6 +11879,40 @@ snapshots:
     transitivePeerDependencies:
       - less
       - lightningcss
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+
+  vitest@2.1.1(@types/node@22.5.0):
+    dependencies:
+      '@vitest/expect': 2.1.1
+      '@vitest/mocker': 2.1.1(@vitest/spy@2.1.1)(vite@5.4.2(@types/node@22.5.0))
+      '@vitest/pretty-format': 2.1.1
+      '@vitest/runner': 2.1.1
+      '@vitest/snapshot': 2.1.1
+      '@vitest/spy': 2.1.1
+      '@vitest/utils': 2.1.1
+      chai: 5.1.1
+      debug: 4.3.6(supports-color@5.5.0)
+      magic-string: 0.30.11
+      pathe: 1.1.2
+      std-env: 3.7.0
+      tinybench: 2.9.0
+      tinyexec: 0.3.0
+      tinypool: 1.0.1
+      tinyrainbow: 1.2.0
+      vite: 5.4.2(@types/node@22.5.0)
+      vite-node: 2.1.1(@types/node@22.5.0)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@types/node': 22.5.0
+    transitivePeerDependencies:
+      - less
+      - lightningcss
+      - msw
       - sass
       - sass-embedded
       - stylus
