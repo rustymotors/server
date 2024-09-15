@@ -13,6 +13,8 @@ export { ServerError } from "./src/ServerError.js";
 export { NPSMessage } from "./NPSMessage.js";
 export { OldServerMessage } from "./OldServerMessage.js";
 export { MessageBufferOld } from "./MessageBufferOld.js";
+export { GameMessage } from "./GameMessage.js";
+export { serializeString } from "./serializeString.js";
 export {
     McosEncryptionPair,
     McosEncryption,
