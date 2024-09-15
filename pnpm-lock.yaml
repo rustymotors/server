@@ -151,7 +151,7 @@ importers:
         specifier: 16.2.0
         version: 16.2.0
       rimraf:
-        specifier: ^5.0.5
+        specifier: ^5.0.10
         version: 5.0.10
       standard-version:
         specifier: ^9.5.0
