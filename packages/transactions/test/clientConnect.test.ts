@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
+import { updateSessionKey } from "rusty-motors-database";
 import { State } from "../../shared/State.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
 import { getServerLogger } from "rusty-motors-shared";
 import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
 import { clientConnect } from "../src/clientConnect.js";
@@ -18,16 +17,7 @@ describe("clientConnect", () => {
 		incomingMessage._customerId = customerId;
 
 		const log = getServerLogger({});
-		const state: State = {
-			encryptions: {},
-			sessions: {},
-			filePaths: {},
-			sockets: {},
-			queuedConnections: {},
-			onDataHandlers: {},
-			save() {},
-		};
-		getDatabaseServer().updateSessionKey(
+		updateSessionKey(
 			customerId,
 			sessionKey,
 			contextId,
@@ -44,7 +34,7 @@ describe("clientConnect", () => {
 		} catch (error) {
 			// assert
 			expect(error).toEqual(
-				new ServerError(`Encryption not found for connection ${connectionId}`),
+				new Error(`Encryption not found for connection ${connectionId}`),
 			);
 		}
 	});

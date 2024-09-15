@@ -1,1 +1,1 @@
-export { receiveLoginData } from "./src/index.js";
+export { receiveLoginData } from "./src/receiveLoginData.js";
