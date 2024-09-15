@@ -64,7 +64,7 @@ try {
 		certificateFile: process.env['CERTIFICATE_FILE'],
 		privateKeyFile: process.env['PRIVATE_KEY_FILE'],
 		publicKeyFile: process.env['PUBLIC_KEY_FILE'],
-		logLevel: process.env['LOG_LEVEL'] || "info",
+		logLevel: process.env['MCO_LOG_LEVEL'] || "info",
 	});
 
 	const appLog = getServerLogger({
