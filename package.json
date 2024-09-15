@@ -39,6 +39,7 @@
         "lobby": "link:packages/lobby",
         "moment": "^2.29.4",
         "pino": "^9.3.2",
+        "rusty-motors-chat": "link:src/chat",
         "rusty-motors-cli": "link:packages/cli",
         "rusty-motors-connection": "link:packages/connection",
         "rusty-motors-database": "link:packages/database",
