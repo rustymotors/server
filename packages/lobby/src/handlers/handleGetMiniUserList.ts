@@ -5,7 +5,7 @@ import { GameMessage } from "../../../shared/GameMessage.js";
 import { LegacyMessage } from "../../../shared/LegacyMessage.js";
 import { serializeString } from "../../../shared/serializeString.js";
 import { UserInfo } from "../UserInfoMessage.js";
-import { channelRecordSize, channels } from "./encryptedCommand.js";
+import { channelRecordSize, channels } from "./channels.js";
 
 const user1 = new UserInfo();
 user1._userId = 1;
