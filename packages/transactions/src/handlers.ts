@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { OldServerMessage } from "../../shared/OldServerMessage.js";
-import { ServerMessage } from "../../shared/src/ServerMessage.js";
+import { OldServerMessage } from "rusty-motors-shared";
+import { ServerMessage } from "rusty-motors-shared";
 import { _getArcadeCarInfo } from "./_getArcadeCarInfo.js";
 import { _getGameUrls } from "./_getGameUrls.js";
 import { _getOwnedParts } from "./_getOwnedParts.js";

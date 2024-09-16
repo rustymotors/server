@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { updateSessionKey } from "rusty-motors-database";
-import { State } from "../../shared/State.js";
 import { getServerLogger } from "rusty-motors-shared";
 import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
 import { clientConnect } from "../src/clientConnect.js";

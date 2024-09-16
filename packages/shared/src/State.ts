@@ -9,7 +9,7 @@
 import { Cipher, Decipher } from "crypto";
 import { Socket } from "node:net";
 import type { Logger } from "pino";
-import { SerializedBufferOld } from "./src/SerializedBufferOld.js";
+import { SerializedBufferOld } from "./SerializedBufferOld.js";
 import { Serializable } from "rusty-motors-shared-packets";
 
 /**
