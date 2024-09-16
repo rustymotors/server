@@ -20,7 +20,7 @@
 	"license": "AGPL-3.0",
 	"dependencies": {
 		"@fastify/sensible": "^5.6.0",
-		"@sentry/node": "^8.0.0",
+		"@sentry/node": "^8.30.0",
 		"fastify": "^4.28.1"
 	},
 	"directories": {
