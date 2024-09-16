@@ -81,7 +81,7 @@ importers:
         specifier: link:packages/transactions
         version: link:packages/transactions
       sequelize:
-        specifier: ^6.35.2
+        specifier: ^6.37.3
         version: 6.37.3
       sqlite:
         specifier: ^5.1.1
@@ -11813,7 +11813,7 @@ snapshots:
 
   wkx@0.5.0:
     dependencies:
-      '@types/node': 20.16.1
+      '@types/node': 22.5.0
 
   word-wrap@1.2.5: {}
 
