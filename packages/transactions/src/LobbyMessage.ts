@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { ServerError } from "../../shared/src/ServerError.js";
-import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
+import { SerializedBufferOld } from "../../shared/src/SerializedBufferOld.js";
 
 /**
  * A message listing the lobbies

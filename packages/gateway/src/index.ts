@@ -32,6 +32,7 @@ import type { Logger } from "pino";
 import { getGatewayServer } from "./GatewayServer.js";
 import { getPortMessageType, UserStatusManager } from "rusty-motors-nps";
 import { BasePacket } from "../../shared-packets/src/BasePacket.js";
+import * as Sentry from "@sentry/node";
 
 /**
  * @typedef {object} OnDataHandlerArgs
@@ -206,6 +207,11 @@ export function onSocketConnection({
 
             log.debug("Calling onData handler");
 
+            Sentry.startSpan({
+                name: "onDataHandler",
+                op: "onDataHandler",
+            }, async (span) => {
+
             portOnDataHandler({
                 connectionId: newConnectionId,
                 message: rawMessage,
@@ -234,10 +240,18 @@ export function onSocketConnection({
                 })
                 .catch((/** @type {Error} */ error: Error) => {
                     log.error(`Error handling data: ${String(error)}`);
+                    Sentry.captureException(error);
+                    Sentry.flush(2000).then(() => {
+                        log.debug("Sentry flushed");
+                        // Call server shutdown
+                        getGatewayServer({}).shutdown();
+                    }
+                    );
+                }).finally(() =>
+                    span.end(),                    
+                );
 
-                    // Call server shutdown
-                    getGatewayServer({}).shutdown();
-                });
+            });
         },
     );
 

@@ -1,4 +1,5 @@
 import { type Logger, type LoggerOptions, pino } from "pino";
+import * as Sentry from "@sentry/node";
 
 type ServerLoggerOptions = {
     level?: string;
@@ -28,6 +29,8 @@ export class ServerLogger {
      */
     fatal(message: string) {
         this.logger.fatal(message);
+        Sentry.captureMessage(message);
+
     }
 
     /**
@@ -35,6 +38,7 @@ export class ServerLogger {
      */
     error(message: string) {
         this.logger.error(message);
+        Sentry.captureMessage(message);
     }
 
     /**
@@ -42,6 +46,7 @@ export class ServerLogger {
      */
     warn(message: string) {
         this.logger.warn(message);
+        Sentry.captureMessage(message);
     }
 
     /**
@@ -49,6 +54,7 @@ export class ServerLogger {
      */
     info(message: string) {
         this.logger.info(message);
+        Sentry.captureMessage(message);
     }
 
     /**
@@ -56,6 +62,7 @@ export class ServerLogger {
      */
     debug(message: string) {
         this.logger.debug(message);
+        Sentry.captureMessage(message);
     }
 
     /**
@@ -63,6 +70,7 @@ export class ServerLogger {
      */
     trace(message: string) {
         this.logger.trace(message);
+        Sentry.captureMessage(message);
     }
 
     /**

@@ -1,6 +1,6 @@
 import { getServerLogger } from "rusty-motors-shared";
-import { SerializedBufferOld } from "../../../shared/SerializedBufferOld.js";
-import { LegacyMessage } from "../../../shared/LegacyMessage.js";
+import { SerializedBufferOld } from "../../../shared/src/SerializedBufferOld.js";
+import { LegacyMessage } from "../../../shared/src/LegacyMessage.js";
 import { RawMessage } from "../../../shared/src/RawMessage.js";
 
 /**
@@ -32,10 +32,8 @@ export async function validatePersonaName({
         NPS_USER_VALID = 0x601,
     }
 
-
-    
     // Build the packet
-    const responsePacket = new RawMessage(responseCodes.NPS_DUP_USER); 
+    const responsePacket = new RawMessage(responseCodes.NPS_DUP_USER);
     log.debug(
         `NPSMsg response object from validatePersonaName
       ${JSON.stringify({

@@ -8,7 +8,7 @@
  * - RawMessage
  */
 
-import { ServerError } from "./src/ServerError.js";
+import { ServerError } from "./ServerError.js";
 
 /**
  * @abstract

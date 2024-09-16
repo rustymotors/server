@@ -1,4 +1,4 @@
-import { OldServerMessage } from "../../shared/OldServerMessage.js";
+import { OldServerMessage } from "rusty-motors-shared";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { TLoginMessage } from "./TLoginMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";

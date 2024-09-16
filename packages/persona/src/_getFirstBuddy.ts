@@ -1,7 +1,7 @@
 import { getServerLogger } from "rusty-motors-shared";
-import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
-import { NPSMessage } from "../../shared/NPSMessage.js";
-import { LegacyMessage } from "../../shared/LegacyMessage.js";
+import { SerializedBufferOld } from "../../shared/src/SerializedBufferOld.js";
+import { NPSMessage } from "../../shared/src/NPSMessage.js";
+import { LegacyMessage } from "../../shared/src/LegacyMessage.js";
 import { BuddyCount, BuddyInfoMessage, BuddyList } from "./BuddyInfoMessage.js";
 
 export async function _getFirstBuddy({

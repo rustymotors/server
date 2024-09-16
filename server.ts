@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { exit } from "node:process";
-import Sentry from "@sentry/node";
+import * as Sentry from "@sentry/node";
 import { getGatewayServer } from "rusty-motors-gateway";
 import { verifyLegacyCipherSupport } from "rusty-motors-gateway";
 import { getServerConfiguration } from "rusty-motors-shared";
@@ -32,15 +32,6 @@ try {
 	coreLogger.fatal(`Error in core server: ${String(err)}`);
 	exit(1);
 }
-
-Sentry.init({
-	dsn: process.env['SENTRY_DSN'],
-
-	// We recommend adjusting this value in production, or using tracesSampler
-	// for finer control
-	tracesSampleRate: 1.0,
-	profilesSampleRate: 1.0, // Profiling sample rate is relative to tracesSampleRate
-});
 
 try {
 	if (typeof process.env['EXTERNAL_HOST'] === "undefined") {

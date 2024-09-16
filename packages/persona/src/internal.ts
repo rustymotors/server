@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerError } from "../../shared/src/ServerError.js";
+import { ServerError } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 
 import type { Logger } from "pino";
-import { getServerConfiguration } from "../../shared/Configuration.js";
-import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
-import { LegacyMessage } from "../../shared/LegacyMessage.js";
+import { getServerConfiguration } from "rusty-motors-shared";
+import { SerializedBufferOld } from "rusty-motors-shared";
+import { LegacyMessage } from "rusty-motors-shared";
 import {
     PersonaList,
     PersonaMapsMessage,

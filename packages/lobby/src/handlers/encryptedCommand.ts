@@ -1,14 +1,14 @@
-import { getServerConfiguration } from "../../../shared/Configuration.js";
+import { getServerConfiguration } from "rusty-motors-shared";
 import {
     fetchStateFromDatabase,
     getEncryption,
     updateEncryption,
-} from "../../../shared/State.js";
+} from "rusty-motors-shared";
 import { ServerError } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 import { MessageBufferOld } from "rusty-motors-shared";
-import { SerializedBufferOld } from "../../../shared/SerializedBufferOld.js";
-import { LegacyMessage } from "../../../shared/LegacyMessage.js";
+import { SerializedBufferOld } from "rusty-motors-shared";
+import { LegacyMessage } from "rusty-motors-shared";
 import { _setMyUserData } from "./_setMyUserData.js";
 import { handleGetMiniUserList } from "./handleGetMiniUserList.js";
 import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";

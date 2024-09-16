@@ -9,8 +9,8 @@
 import { Cipher, Decipher } from "crypto";
 import { Socket } from "node:net";
 import type { Logger } from "pino";
-import { SerializedBufferOld } from "./SerializedBufferOld.js";
-import { Serializable} from 'rusty-motors-shared-packets';
+import { SerializedBufferOld } from "./src/SerializedBufferOld.js";
+import { Serializable } from "rusty-motors-shared-packets";
 
 /**
  * @external RawMessage
@@ -180,11 +180,10 @@ export function wrapSocket(
 }
 
 type OnDataHandlerArgs = {
-        connectionId: string;
-        message: Serializable;
-        log?: Logger;
-    
-}
+    connectionId: string;
+    message: Serializable;
+    log?: Logger;
+};
 /**
  * @requires module:packages/shared/RawMessage
  */
@@ -194,7 +193,9 @@ export interface ServiceResponse {
     messages: SerializedBufferOld[];
 }
 
-export type OnDataHandler = (args: OnDataHandlerArgs) => Promise<ServiceResponse>;
+export type OnDataHandler = (
+    args: OnDataHandlerArgs,
+) => Promise<ServiceResponse>;
 /**
  * @param {OnDataHandlerArgs} args The arguments for the handler.
  * @returns {ServiceResponse} The

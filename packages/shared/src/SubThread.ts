@@ -4,7 +4,7 @@
 
 import { EventEmitter } from "node:events";
 import type { Logger } from "pino";
-import { getServerLogger } from "./src/log.js";
+import { getServerLogger } from "./log.js";
 
 export class SubThread extends EventEmitter {
     name: any;

@@ -1,5 +1,5 @@
 import { ServerError } from "./ServerError.js";
-import { legacyHeader } from "../legacyHeader.js";
+import { legacyHeader } from "./legacyHeader.js";
 
 /**
  * A game message header is a 8 byte header with the following fields:

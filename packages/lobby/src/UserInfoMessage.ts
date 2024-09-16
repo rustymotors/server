@@ -1,7 +1,7 @@
-import { ServerError } from "../../shared/src/ServerError.js";
-import { deserializeString } from "../../shared/deserializeString.js";
-import { LegacyMessage } from "../../shared/LegacyMessage.js";
-import { serializeString } from "../../shared/serializeString.js";
+import { ServerError } from "rusty-motors-shared";
+import { deserializeString } from "rusty-motors-shared";
+import { LegacyMessage } from "rusty-motors-shared";
+import { serializeString } from "rusty-motors-shared";
 // eslint-disable-next-line no-unused-vars
 import { LoginInfoMessage } from "./LoginInfoMessage.js";
 
