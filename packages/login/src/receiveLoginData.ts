@@ -13,8 +13,9 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import { getServerLogger, NPSMessage } from "rusty-motors-shared";
+import { getServerLogger, NPSMessage, SerializedBufferOld, type ServiceResponse } from "rusty-motors-shared";
 import { handleLoginData } from "./internal.js";
+import type { Serializable } from "rusty-motors-shared-packets";
 
 /**
  * Receives login data and handles the login process.
@@ -36,14 +37,16 @@ export async function receiveLoginData({
     }),
 }: {
     connectionId: string;
-    message: NPSMessage;
+    message: Serializable;
     log?: import("pino").Logger;
-}): Promise<import("../../shared/State.js").ServiceResponse> {
+}): Promise<ServiceResponse> {
     try {
         log.debug("Entering login module");
+        const incomingPacket = new SerializedBufferOld();
+        incomingPacket._doDeserialize(message.serialize());
         const response = await handleLoginData({
             connectionId,
-            message,
+            message: incomingPacket,
             log,
         });
         log.debug(`There are ${response.messages.length} messages`);

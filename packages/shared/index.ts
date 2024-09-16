@@ -13,7 +13,7 @@ export { ServerError } from "./src/ServerError.js";
 export { NPSMessage } from "./NPSMessage.js";
 export { OldServerMessage } from "./OldServerMessage.js";
 export { MessageBufferOld } from "./MessageBufferOld.js";
-export { GameMessage } from "./GameMessage.js";
+export { GameMessage } from "./src/GameMessage.js";
 export { serializeString } from "./serializeString.js";
 export {
     McosEncryptionPair,
@@ -28,6 +28,8 @@ export {
     wrapSocket,
     addEncryption,
     getEncryption,
+    McosSession,
+    findSessionByConnectionId,
 } from "./State.js";
 export type { State } from "./State.js";
 export type { OnDataHandler, ServiceResponse } from "./State.js";

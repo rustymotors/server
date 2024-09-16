@@ -14,7 +14,6 @@ export class NetworkMessage extends SerializedBuffer {
     private _messageId: number;
     version: number = 0x101;
     reserved: number = 0x0000;
-    private _checksum: number = 0x00000000;
     constructor(messageId: number, data?: Buffer) {
         super(data);
         this._messageId = messageId;
@@ -45,8 +44,15 @@ export class NetworkMessage extends SerializedBuffer {
         // Skip the length, we already know it
         this.version = buffer.readUInt16BE(4);
         this.reserved = buffer.readUInt16BE(6);
-        this._checksum = buffer.readUInt32BE(8);
+        const checksum = buffer.readUInt32BE(8);
         this._data = buffer.subarray(4, 4 + length);
+
+        if (checksum !== length) {
+            throw new ServerError(
+                `Checksum ${checksum} does not match length ${length}`,
+            );
+        }
+
         return this;
     }
 

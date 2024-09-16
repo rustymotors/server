@@ -17,7 +17,6 @@
 import { randomUUID } from "node:crypto";
 import {
     type OnDataHandler,
-    SerializedBufferOld,
     type ServiceResponse,
     addSocket,
     fetchStateFromDatabase,
@@ -32,6 +31,7 @@ import { Socket } from "node:net";
 import type { Logger } from "pino";
 import { getGatewayServer } from "./GatewayServer.js";
 import { getPortMessageType, UserStatusManager } from "rusty-motors-nps";
+import { BasePacket } from "../../shared-packets/src/BasePacket.js";
 
 /**
  * @typedef {object} OnDataHandlerArgs
@@ -198,9 +198,8 @@ export function onSocketConnection({
             );
 
             // Deserialize the raw message
-            const rawMessage = new SerializedBufferOld()._doDeserialize(
-                incomingDataAsBuffer,
-            );
+            const rawMessage = new BasePacket();
+            rawMessage.deserialize(incomingDataAsBuffer);
 
             // Log the raw message
             log.trace(`Raw message: ${rawMessage.toString()}`);

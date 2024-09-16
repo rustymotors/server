@@ -1,5 +1,5 @@
-import { PersonaRecord } from "../../shared/src/interfaces.js";
-import { ServerError } from "../../shared/src/ServerError.js";
+import type { PersonaRecord } from "rusty-motors-shared";
+import { ServerError } from "rusty-motors-shared";
 import { personaRecords } from "./internal.js";
 
 /**

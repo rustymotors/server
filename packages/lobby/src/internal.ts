@@ -23,6 +23,7 @@ import { LegacyMessage } from "../../shared/LegacyMessage.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
 import { handleTrackingPing } from "./handlers/handleTrackingPing.js";
 import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
+import type { Serializable } from "rusty-motors-shared-packets";
 
 /**
  * Array of supported message handlers
@@ -87,7 +88,7 @@ export async function receiveLobbyData({
     }),
 }: {
     connectionId: string;
-    message: SerializedBufferOld;
+    message: Serializable;
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
@@ -99,7 +100,7 @@ export async function receiveLobbyData({
     let inboundMessage: LegacyMessage | NPSMessage;
 
     // Check data length
-    const dataLength = message.data.length;
+    const dataLength = message.getByteSize();
 
     if (dataLength < 4) {
         throw new ServerError(
@@ -113,9 +114,9 @@ export async function receiveLobbyData({
         inboundMessage = new LegacyMessage();
     }
 
-    inboundMessage._doDeserialize(message.data);
+    inboundMessage._doDeserialize(message.serialize());
 
-    const { data } = message;
+    const data = message.serialize();
     log.debug(
         `Received Lobby packet',
     ${JSON.stringify({
@@ -134,10 +135,13 @@ export async function receiveLobbyData({
         );
     }
 
+    const buff = new SerializedBufferOld();
+    buff._doDeserialize(data);
+
     try {
         const result = await supportedHandler.handler({
             connectionId,
-            message,
+            message: buff,
             log,
         });
         log.debug(`Returning with ${result.messages.length} messages`);

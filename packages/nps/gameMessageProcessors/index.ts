@@ -75,6 +75,7 @@ export const portToMessageTypes = new Map<number, string>([]);
 export function populatePortToMessageTypes(portMap: Map<number, string>): void {
 	portMap.set(7003, "Game");
 	portMap.set(8226, "Game");
+	portMap.set(8227, "Game");
 	portMap.set(8228, "Game");
 	portMap.set(43300, "Server");
 }

@@ -1,8 +1,8 @@
-import { ServerError } from "../../shared/src/ServerError.js";
-import { OldServerMessage } from "../../shared/OldServerMessage.js";
+import { ServerError } from "rusty-motors-shared";
+import { OldServerMessage } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { PlayerInfoMessage } from "./PlayerInfoMessage.js";
-import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
 export async function _getPlayerInfo(
     args: MessageHandlerArgs,

@@ -1,9 +1,10 @@
+import { UserStatusManager } from "rusty-motors-nps";
 import {
-    GameMessage,
+    NPSMessage,
     getServerLogger,
     type ServiceResponse,
 } from "rusty-motors-shared";
-import type { Serializable } from "rusty-motors-shared-packets";
+import { getAsHex, type Serializable } from "rusty-motors-shared-packets";
 
 /**
  * Receive chat data
@@ -24,14 +25,16 @@ async function receiveChatData({
     log.info(`Received chat data from connection ${connectionId}`);
     log.debug(`Message: ${message.toHexString()}`);
 
-    const inboundMessage = new GameMessage(0);
-    inboundMessage.deserialize(message.serialize());
+    const inboundMessage = new NPSMessage();
+    inboundMessage._doDeserialize(message.serialize());
 
-    log.debug(`Deserialized message: ${inboundMessage.toHexString()}`);
+    log.debug(`Deserialized message: ${getAsHex(inboundMessage.serialize())}`);
 
     const id = inboundMessage._header.id;
 
     log.debug(`Message ID: ${id}`);
+
+    const userStatus = UserStatusManager.getUserStatus(connectionId);
 
     throw new Error(
         `Unable to process chat data from connection ${connectionId}, data: ${message.toHexString()}`,

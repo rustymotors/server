@@ -18,7 +18,7 @@ import { receiveTransactionsData } from "rusty-motors-transactions";
 import { onSocketConnection } from "./index.js";
 import { addWebRoutes } from "./web.js";
 import { populateGameMessageProcessors, populatePortToMessageTypes, portToMessageTypes, gameMessageProcessors } from "rusty-motors-nps";
-import { populateServerMessageProcessors } from "rusty-motors-mcots";
+import { receiveChatData } from "rusty-motors-chat";
 
 /**
  * Options for the GatewayServer.
@@ -251,6 +251,7 @@ export class Gateway {
         let state = fetchStateFromDatabase();
 
         state = addOnDataHandler(state, 8226, receiveLoginData);
+        state = addOnDataHandler(state, 8227, receiveChatData);
         state = addOnDataHandler(state, 8228, receivePersonaData);
         state = addOnDataHandler(state, 7003, receiveLobbyData);
         state = addOnDataHandler(state, 43300, receiveTransactionsData);

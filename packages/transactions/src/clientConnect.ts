@@ -1,7 +1,7 @@
 import {
     createCommandEncryptionPair,
     createDataEncryptionPair,
-} from "../../gateway/src/encryption.js";
+} from "rusty-motors-gateway";
 import {
     McosEncryption,
     McosSession,
@@ -9,12 +9,12 @@ import {
     addSession,
     fetchStateFromDatabase,
     getEncryption,
-} from "../../shared/State.js";
-import { OldServerMessage } from "../../shared/OldServerMessage.js";
+} from "rusty-motors-shared";
+import { OldServerMessage } from "rusty-motors-shared";
 import { GenericReply } from "./GenericReplyMessage.js";
 import { TClientConnectMessage } from "./TClientConnectMessage.js";
-import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
-import { fetchSessionKeyByCustomerId } from "../../database/index.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import { fetchSessionKeyByCustomerId } from "rusty-motors-database";
 
 /**
  * @param {MessageHandlerArgs} args

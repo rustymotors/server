@@ -27,6 +27,7 @@ import { OldServerMessage } from "../../shared/OldServerMessage.js";
 import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
 import { ServerMessage } from "../../shared/src/ServerMessage.js";
 import { messageHandlers } from "./handlers.js";
+import type { Serializable } from "rusty-motors-shared-packets";
 
 /**
  *
@@ -145,7 +146,7 @@ export async function receiveTransactionsData({
     }),
 }: {
     connectionId: string;
-    message: SerializedBufferOld;
+    message: Serializable;
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
@@ -158,7 +159,7 @@ export async function receiveTransactionsData({
     // Going to use ServerMessage in this module
 
     const inboundMessage = new OldServerMessage();
-    inboundMessage._doDeserialize(message.data);
+    inboundMessage._doDeserialize(message.serialize());
     log.debug(
         `Received Transaction Server packet: ${inboundMessage.toString()}`,
     );

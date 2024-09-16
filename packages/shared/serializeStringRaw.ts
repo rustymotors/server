@@ -11,7 +11,6 @@ export function serializeStringRaw(
     string: string,
     targetBuffer: Buffer,
     offset: number,
-    length: number,
 ): number {
     const stringToWrite = string;
     targetBuffer.write(stringToWrite, offset, string.length, "utf8");

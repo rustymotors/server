@@ -11,7 +11,6 @@ export class SessionKey extends BaseSerializable {
 
 	constructor({ key, timestamp }: { key?: Buffer; timestamp?: number }) {
 		super();
-		log.debug("SessionKey.constructor");
 		if (isOnlyOneSet(key, timestamp)) {
 			throw new Error("Both key and timestamp must be set if one is set");
 		}
