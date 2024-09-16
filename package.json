@@ -38,7 +38,7 @@
         "fastify": "^4.28.1",
         "lobby": "link:packages/lobby",
         "moment": "^2.29.4",
-        "pino": "^9.3.2",
+        "pino": "^9.4.0",
         "rusty-motors-chat": "link:src/chat",
         "rusty-motors-cli": "link:packages/cli",
         "rusty-motors-connection": "link:packages/connection",
