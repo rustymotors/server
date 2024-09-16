@@ -30,7 +30,7 @@
     "dependencies": {
         "@adminjs/sequelize": "^4.1.1",
         "@databases/pg": "^5.5.0",
-        "@dotenvx/dotenvx": "^1.10.2",
+        "@dotenvx/dotenvx": "^1.14.1",
         "@fastify/sensible": "^5.6.0",
         "@sentry/node": "7.88",
         "@sentry/profiling-node": "^1.3.2",
