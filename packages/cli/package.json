@@ -22,7 +22,6 @@
 		"vitest": "^2.1.1"
 	},
 	"dependencies": {
-		"@sentry/node": "^8.30.0",
 		"@sentry/profiling-node": "8.30.0",
 		"rusty-motors-shared": "^1.0.0",
 		"rusty-motors-shared-packets": "^1.0.0"

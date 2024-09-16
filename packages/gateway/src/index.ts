@@ -17,6 +17,7 @@
 import { randomUUID } from "node:crypto";
 import {
     type OnDataHandler,
+    type ServerLogger,
     type ServiceResponse,
     addSocket,
     fetchStateFromDatabase,
@@ -28,7 +29,6 @@ import { ServerError } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 
 import { Socket } from "node:net";
-import type { Logger } from "pino";
 import { getGatewayServer } from "./GatewayServer.js";
 import { getPortMessageType, UserStatusManager } from "rusty-motors-nps";
 import { BasePacket } from "../../shared-packets/src/BasePacket.js";
@@ -67,7 +67,7 @@ export function socketErrorHandler({
 }: {
     connectionId: string;
     error: NodeJS.ErrnoException;
-    log?: Logger;
+    log?: ServerLogger;
 }) {
     // Handle socket errors
     if (error.code == "ECONNRESET") {
@@ -93,7 +93,7 @@ export function socketEndHandler({
     }),
 }: {
     connectionId: string;
-    log?: Logger;
+    log?: ServerLogger;
 }) {
     log.debug(`Connection ${connectionId} ended`);
 
@@ -116,7 +116,7 @@ export function onSocketConnection({
     }),
 }: {
     incomingSocket: Socket;
-    log?: Logger;
+    log?: ServerLogger;
 }) {
     // Get the local port and remote address
     const { localPort, remoteAddress } = incomingSocket;

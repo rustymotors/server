@@ -22,10 +22,7 @@
 	"author": "",
 	"license": "AGPL-3.0",
 	"dependencies": {
-		"@sentry/node": "^8.30.0",
-		"@sentry/profiling-node": "8.30.0",
 		"fastify": "^4.28.1",
-		"pino": "^9.4.0",
 		"pino-pretty": "^11.2.2"
 	},
 	"directories": {

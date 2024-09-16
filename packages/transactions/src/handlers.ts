@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { OldServerMessage } from "rusty-motors-shared";
+import { OldServerMessage, type ServerLogger } from "rusty-motors-shared";
 import { ServerMessage } from "rusty-motors-shared";
 import { _getArcadeCarInfo } from "./_getArcadeCarInfo.js";
 import { _getGameUrls } from "./_getGameUrls.js";
@@ -34,7 +34,7 @@ import { trackingPing } from "./trackingPing.js";
 export interface MessageHandlerArgs {
     connectionId: string;
     packet: OldServerMessage;
-    log: import("pino").Logger;
+    log: ServerLogger;
 }
 
 export interface MessageHandlerResult {
