@@ -210,7 +210,7 @@ export function onSocketConnection({
             Sentry.startSpan({
                 name: "onDataHandler",
                 op: "onDataHandler",
-            }, async (span) => {
+            }, async () => {
 
             portOnDataHandler({
                 connectionId: newConnectionId,
@@ -247,9 +247,7 @@ export function onSocketConnection({
                         getGatewayServer({}).shutdown();
                     }
                     );
-                }).finally(() =>
-                    span.end(),                    
-                );
+                });
 
             });
         },

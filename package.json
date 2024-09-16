@@ -32,7 +32,7 @@
         "@databases/pg": "^5.5.0",
         "@dotenvx/dotenvx": "^1.10.2",
         "@fastify/sensible": "^5.6.0",
-        "@sentry/node": "8.30.0",
+        "@sentry/node": "^8.30.0",
         "@sentry/profiling-node": "8.30.0",
         "adminjs": "^7.5.2",
         "fastify": "^4.28.1",
