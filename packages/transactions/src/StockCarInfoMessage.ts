@@ -20,7 +20,7 @@
  * @property {StockCar[]} StockCarList
  */
 
-import { MessageNode } from "../../shared/MessageNode.js";
+import { MessageNode } from "rusty-motors-shared";
 
 type StockCar = import("./StockCar.js").StockCar;
 

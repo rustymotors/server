@@ -1,10 +1,10 @@
-import { ServerMessage } from "../../shared/src/ServerMessage.js";
+import { ServerMessage } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import {
 	PlayerRacingHistoryMessage,
 	RacingHistoryRecordEntry,
 } from "./PlayerRacingHistoryMessage.js";
-import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
 export enum RaceType {
 	RACES_TESTDRIVE = 14,

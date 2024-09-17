@@ -23,7 +23,6 @@
 	"license": "AGPL-3.0",
 	"dependencies": {
 		"fastify": "^4.28.1",
-		"pino": "^9.4.0",
 		"pino-pretty": "^11.2.2"
 	},
 	"directories": {

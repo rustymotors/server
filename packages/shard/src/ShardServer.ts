@@ -24,7 +24,7 @@ export function generateShardList(shardHost: string) {
 		80,
 	);
 
-	let _possibleShards = [];
+	let _possibleShards: string[] = [];
 	_possibleShards.push(shardClockTower.formatForShardList());
 
 	const shardTwinPinesMall = new ShardEntry(
@@ -49,7 +49,13 @@ export function generateShardList(shardHost: string) {
 
 	/** @type {string[]} */
 	const activeShardList: string[] = [];
-	activeShardList.push(_possibleShards[0]);
+
+	if (_possibleShards.length === 0) {
+		throw new Error("No shards found");
+	}
+
+
+	activeShardList.push(_possibleShards[0]!);
 
 	return activeShardList.join("\n");
 }

@@ -1,4 +1,4 @@
-import { ServerError } from "./src/ServerError.js";
+import { ServerError } from "./ServerError.js";
 import { MessageHeader } from "./MessageHeader.js";
 import { SerializedBufferOld } from "./SerializedBufferOld.js";
 
@@ -68,7 +68,9 @@ export class MessageBufferOld extends SerializedBufferOld {
 
     /** @param {Buffer} buffer */
     override setBuffer(buffer: Buffer) {
-        return (this.buffer = buffer);
+        this.buffer = buffer;
+
+        return this._buffer;
     }
 
     get buffer() {

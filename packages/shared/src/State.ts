@@ -8,8 +8,9 @@
 // eslint-disable-next-line no-unused-vars
 import { Cipher, Decipher } from "crypto";
 import { Socket } from "node:net";
-import { Logger } from "pino";
+import type { Logger } from "pino";
 import { SerializedBufferOld } from "./SerializedBufferOld.js";
+import { Serializable } from "rusty-motors-shared-packets";
 
 /**
  * @external RawMessage
@@ -178,13 +179,11 @@ export function wrapSocket(
     };
 }
 
-interface OnDataHandlerArgs {
-    args: {
-        connectionId: string;
-        message: SerializedBufferOld;
-        log?: Logger;
-    };
-}
+type OnDataHandlerArgs = {
+    connectionId: string;
+    message: Serializable;
+    log?: Logger;
+};
 /**
  * @requires module:packages/shared/RawMessage
  */
@@ -194,7 +193,9 @@ export interface ServiceResponse {
     messages: SerializedBufferOld[];
 }
 
-export type OnDataHandler = Function;
+export type OnDataHandler = (
+    args: OnDataHandlerArgs,
+) => Promise<ServiceResponse>;
 /**
  * @param {OnDataHandlerArgs} args The arguments for the handler.
  * @returns {ServiceResponse} The

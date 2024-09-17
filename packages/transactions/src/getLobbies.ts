@@ -1,7 +1,7 @@
-import { OldServerMessage } from "../../shared/OldServerMessage.js";
+import { OldServerMessage } from "rusty-motors-shared";
 import { EntryFeePurseMessage, PurseEntry } from "./EntryFeePurseMessage.js";
 import { LobbyInfo, LobbyMessage } from "./LobbyMessage.js";
-import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
 /**
  * @param {MessageHandlerArgs} args

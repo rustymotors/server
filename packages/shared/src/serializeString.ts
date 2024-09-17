@@ -19,3 +19,5 @@ export function serializeString(
     offset += buffer.length;
     return offset;
 }
+
+

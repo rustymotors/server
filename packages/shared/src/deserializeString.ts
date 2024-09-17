@@ -1,4 +1,4 @@
-import { ServerError } from "./src/ServerError.js";
+import { ServerError } from "./ServerError.js";
 
 /**
  * @param {Buffer} buffer

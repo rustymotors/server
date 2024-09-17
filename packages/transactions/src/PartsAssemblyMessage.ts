@@ -1,4 +1,4 @@
-import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
+import { SerializedBufferOld } from "../../shared/src/SerializedBufferOld.js";
 
 export class PartsAssemblyMessage extends SerializedBufferOld {
     _msgNo: number;

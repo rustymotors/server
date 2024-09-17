@@ -1,12 +1,11 @@
 import { Socket, createServer as createSocketServer } from "node:net";
 import FastifySensible from "@fastify/sensible";
 import fastify, { type FastifyInstance } from "fastify";
-import type { Logger } from "pino";
 import { ConsoleThread } from "rusty-motors-cli";
 import { receiveLobbyData } from "rusty-motors-lobby";
 import { receiveLoginData } from "rusty-motors-login";
 import { receivePersonaData } from "../../persona/src/internal.js";
-import { Configuration, getServerConfiguration } from "rusty-motors-shared";
+import { Configuration, getServerConfiguration, type ServerLogger } from "rusty-motors-shared";
 import {
     addOnDataHandler,
     createInitialState,
@@ -18,14 +17,14 @@ import { receiveTransactionsData } from "rusty-motors-transactions";
 import { onSocketConnection } from "./index.js";
 import { addWebRoutes } from "./web.js";
 import { populateGameMessageProcessors, populatePortToMessageTypes, portToMessageTypes, gameMessageProcessors } from "rusty-motors-nps";
-import { populateServerMessageProcessors } from "rusty-motors-mcots";
+import { receiveChatData } from "rusty-motors-chat";
 
 /**
  * Options for the GatewayServer.
  */
 type GatewayOptions = {
     config?: Configuration;
-    log?: Logger;
+    log?: ServerLogger;
     backlogAllowedCount?: number;
     listeningPortList?: number[];
     socketConnectionHandler?: ({
@@ -33,7 +32,7 @@ type GatewayOptions = {
         log,
     }: {
         incomingSocket: Socket;
-        log?: Logger;
+        log?: ServerLogger;
     }) => void;
 };
 
@@ -43,7 +42,7 @@ type GatewayOptions = {
  */
 export class Gateway {
     config: Configuration;
-    log: Logger;
+    log: ServerLogger;
     timer: NodeJS.Timeout | null;
     loopInterval: number;
     status: string;
@@ -56,7 +55,7 @@ export class Gateway {
         log,
     }: {
         incomingSocket: Socket;
-        log?: Logger;
+        log?: ServerLogger;
     }) => void;
     static _instance: Gateway | undefined;
     webServer: import("fastify").FastifyInstance | undefined;
@@ -151,7 +150,7 @@ export class Gateway {
             },
             (err, address) => {
                 if (err) {
-                    this.log.error(err);
+                    this.log.fatal((err as Error).message);
                     process.exit(1);
                 }
                 this.log.info(`Server listening at ${address}`);
@@ -251,6 +250,7 @@ export class Gateway {
         let state = fetchStateFromDatabase();
 
         state = addOnDataHandler(state, 8226, receiveLoginData);
+        state = addOnDataHandler(state, 8227, receiveChatData);
         state = addOnDataHandler(state, 8228, receivePersonaData);
         state = addOnDataHandler(state, 7003, receiveLobbyData);
         state = addOnDataHandler(state, 43300, receiveTransactionsData);
@@ -329,7 +329,7 @@ export function getGatewayServer({
     socketConnectionHandler = onSocketConnection,
 }: {
     config?: Configuration;
-    log?: Logger;
+    log?: ServerLogger;
     backlogAllowedCount?: number;
     listeningPortList?: number[];
     socketConnectionHandler?: ({
@@ -337,7 +337,7 @@ export function getGatewayServer({
         log,
     }: {
         incomingSocket: Socket;
-        log?: Logger;
+        log?: ServerLogger;
     }) => void;
 }): Gateway {
     return Gateway.getInstance({

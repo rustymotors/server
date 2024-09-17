@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { OldServerMessage } from "../../shared/OldServerMessage.js";
-import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
+import { OldServerMessage } from "rusty-motors-shared";
+import { SerializedBufferOld } from "rusty-motors-shared";
 
 export class ListEntry extends SerializedBufferOld {
     constructor() {

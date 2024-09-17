@@ -1,6 +1,6 @@
 import { getServerLogger } from "rusty-motors-shared";
-import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
-import { LegacyMessage } from "../../shared/LegacyMessage.js";
+import { SerializedBufferOld } from "../../shared/src/SerializedBufferOld.js";
+import { LegacyMessage } from "../../shared/src/LegacyMessage.js";
 
 /**
  * Handle game logout

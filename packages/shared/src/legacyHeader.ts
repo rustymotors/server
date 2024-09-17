@@ -1,4 +1,4 @@
-import { ServerError } from "./src/ServerError.js";
+import { ServerError } from "./ServerError.js";
 import { SerializableMixin, AbstractSerializable } from "./messageFactory.js";
 
 /**
@@ -12,7 +12,7 @@ import { SerializableMixin, AbstractSerializable } from "./messageFactory.js";
 export class legacyHeader extends SerializableMixin(AbstractSerializable) {
     _size: number;
     id: number;
-    length: any;
+    length: number;
     constructor() {
         super();
         this._size = 4;

@@ -1,4 +1,5 @@
-import { type Logger, type LoggerOptions, pino } from "pino";
+import { type Logger } from "pino";
+import pino from "pino";
 
 type ServerLoggerOptions = {
     level?: string;
@@ -6,11 +7,19 @@ type ServerLoggerOptions = {
     name?: string;
 };
 
+export type ServerLogger = {
+    fatal: (message: string) => void;
+    error: (message: string) => void;
+    warn: (message: string) => void;
+    info: (message: string) => void;
+    debug: (message: string) => void;
+    trace: (message: string) => void;
+};
+
 /**
  * @static
- * @property {ServerLogger} instance
  */
-export class ServerLogger {
+class SLogger {
     logger: Logger;
     static instance: ServerLogger | undefined;
     /**
@@ -18,9 +27,9 @@ export class ServerLogger {
      * @param {ServerLoggerOptions} options
      */
     constructor(options: ServerLoggerOptions) {
-        this.logger = pino(options);
+        this.logger = pino.default(options);
         this.logger.level = options.level ?? "info";
-        ServerLogger.instance = this;
+        SLogger.instance = this;
     }
 
     /**
@@ -64,21 +73,6 @@ export class ServerLogger {
     trace(message: string) {
         this.logger.trace(message);
     }
-
-    /**
-     * @global
-     * @external pino
-     * @see {@link https://www.npmjs.com/package/pino}
-     */
-
-    /**
-     * @param {module:pino.LoggerOptions} _options
-     * @returns {module:pino.Logger}
-     */
-    child(_options: LoggerOptions): Logger {
-        const child = this.logger;
-        return child;
-    }
 }
 
 /**
@@ -87,18 +81,12 @@ export class ServerLogger {
  * @param {ServerLoggerOptions} options
  * @return {module:pino.Logger}
  */
-export function getServerLogger(options: ServerLoggerOptions): Logger {
-    const logLevel = options && options.level ? options.level : "info";
+export function getServerLogger(options: ServerLoggerOptions): ServerLogger {
+    const logLevel = process.env["MCO_LOG_LEVEL"] ?? "info";    
     const moduleName = options && options.module ? options.module : "unknown";
-    if (typeof ServerLogger.instance === "undefined") {
-        ServerLogger.instance = new ServerLogger({
-            name: "mcos",
-            level: logLevel, // This isn't used by the logger, but it's used by the constructor
-            module: moduleName,
-        });
-    }
-
-    const child = ServerLogger.instance.child(options);
-    child.level = logLevel;
-    return child;
+    SLogger.instance = new SLogger({
+        level: logLevel,
+        module: moduleName,
+    });
+    return SLogger.instance as ServerLogger
 }

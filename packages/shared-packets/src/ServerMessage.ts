@@ -1,8 +1,5 @@
-import { getServerLogger } from "rusty-motors-shared";
 import { BasePacket, Serializable } from "./BasePacket.js";
 import type { IMessage, ISerializable } from "./interfaces.js";
-
-const log = getServerLogger({});
 
 /**
  *
@@ -179,7 +176,8 @@ export class ServerMessage extends Serializable implements IMessage {
 
             return buffer;
         } catch (error) {
-            log.error(`Error serializing ServerMessage: ${error as string}`);
+            const err = new Error('Error serializing ServerMessage');
+            err.cause = error;
             throw error;
         }
     }

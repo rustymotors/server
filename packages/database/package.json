@@ -22,7 +22,6 @@
         "@databases/pg": "^5.5.0",
         "@databases/pg-schema-cli": "^4.4.0",
         "@databases/pg-typed": "^4.4.1",
-        "@sentry/node": "^8.30.0",
         "@types/pg": "^8.11.10",
         "pg": "^8.12.0",
         "pg-hstore": "^2.3.4"

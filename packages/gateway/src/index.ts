@@ -17,7 +17,7 @@
 import { randomUUID } from "node:crypto";
 import {
     type OnDataHandler,
-    SerializedBufferOld,
+    type ServerLogger,
     type ServiceResponse,
     addSocket,
     fetchStateFromDatabase,
@@ -29,9 +29,10 @@ import { ServerError } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 
 import { Socket } from "node:net";
-import type { Logger } from "pino";
 import { getGatewayServer } from "./GatewayServer.js";
 import { getPortMessageType, UserStatusManager } from "rusty-motors-nps";
+import { BasePacket } from "../../shared-packets/src/BasePacket.js";
+import * as Sentry from "@sentry/node";
 
 /**
  * @typedef {object} OnDataHandlerArgs
@@ -66,7 +67,7 @@ export function socketErrorHandler({
 }: {
     connectionId: string;
     error: NodeJS.ErrnoException;
-    log?: Logger;
+    log?: ServerLogger;
 }) {
     // Handle socket errors
     if (error.code == "ECONNRESET") {
@@ -92,7 +93,7 @@ export function socketEndHandler({
     }),
 }: {
     connectionId: string;
-    log?: Logger;
+    log?: ServerLogger;
 }) {
     log.debug(`Connection ${connectionId} ended`);
 
@@ -115,7 +116,7 @@ export function onSocketConnection({
     }),
 }: {
     incomingSocket: Socket;
-    log?: Logger;
+    log?: ServerLogger;
 }) {
     // Get the local port and remote address
     const { localPort, remoteAddress } = incomingSocket;
@@ -198,14 +199,18 @@ export function onSocketConnection({
             );
 
             // Deserialize the raw message
-            const rawMessage = new SerializedBufferOld()._doDeserialize(
-                incomingDataAsBuffer,
-            );
+            const rawMessage = new BasePacket();
+            rawMessage.deserialize(incomingDataAsBuffer);
 
             // Log the raw message
             log.trace(`Raw message: ${rawMessage.toString()}`);
 
             log.debug("Calling onData handler");
+
+            Sentry.startSpan({
+                name: "onDataHandler",
+                op: "onDataHandler",
+            }, async () => {
 
             portOnDataHandler({
                 connectionId: newConnectionId,
@@ -235,10 +240,16 @@ export function onSocketConnection({
                 })
                 .catch((/** @type {Error} */ error: Error) => {
                     log.error(`Error handling data: ${String(error)}`);
-
-                    // Call server shutdown
-                    getGatewayServer({}).shutdown();
+                    Sentry.captureException(error);
+                    Sentry.flush(2000).then(() => {
+                        log.debug("Sentry flushed");
+                        // Call server shutdown
+                        getGatewayServer({}).shutdown();
+                    }
+                    );
                 });
+
+            });
         },
     );
 

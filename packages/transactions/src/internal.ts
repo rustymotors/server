@@ -14,19 +14,20 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getServerConfiguration } from "../../shared/Configuration.js";
+import { getServerConfiguration } from "rusty-motors-shared";
 import {
     fetchStateFromDatabase,
     getEncryption,
     updateEncryption,
-} from "../../shared/State.js";
-import { ServerError } from "../../shared/src/ServerError.js";
+} from "rusty-motors-shared";
+import { ServerError } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 // eslint-disable-next-line no-unused-vars
-import { OldServerMessage } from "../../shared/OldServerMessage.js";
-import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
-import { ServerMessage } from "../../shared/src/ServerMessage.js";
+import { OldServerMessage } from "rusty-motors-shared";
+import { SerializedBufferOld } from "rusty-motors-shared";
+import { ServerMessage } from "rusty-motors-shared";
 import { messageHandlers } from "./handlers.js";
+import type { Serializable } from "rusty-motors-shared-packets";
 
 /**
  *
@@ -145,7 +146,7 @@ export async function receiveTransactionsData({
     }),
 }: {
     connectionId: string;
-    message: SerializedBufferOld;
+    message: Serializable;
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
@@ -158,7 +159,7 @@ export async function receiveTransactionsData({
     // Going to use ServerMessage in this module
 
     const inboundMessage = new OldServerMessage();
-    inboundMessage._doDeserialize(message.data);
+    inboundMessage._doDeserialize(message.serialize());
     log.debug(
         `Received Transaction Server packet: ${inboundMessage.toString()}`,
     );

@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
-import { serializeString } from "../../shared/serializeString.js";
+import { SerializedBufferOld } from "rusty-motors-shared";
+import { serializeString } from "rusty-motors-shared";
 
 /**
  * A message listing the lobbies

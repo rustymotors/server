@@ -1,7 +1,6 @@
-import { serializeString } from "../../core/src/serializationHelpers.js";
-import { ServerError } from "../../shared/src/ServerError.js";
-import { NPSMessage } from "../../shared/NPSMessage.js";
-import { NPSHeader } from "../../shared/NPSHeader.js";
+import { ServerError } from "rusty-motors-shared";
+import { NPSMessage } from "rusty-motors-shared";
+import { NPSHeader } from "rusty-motors-shared";
 
 /**
  *
@@ -342,4 +341,18 @@ export class PersonaMapsMessage extends NPSMessage {
             personaRecords: this._personaRecords,
         })}`;
     }
+}
+
+/**
+ * Serializes a string to a buffer. The buffer will be prefixed with the length of the string.
+ * @param {string} str
+ * @returns {Buffer}
+ */
+export function serializeString(str: string): Buffer {
+	const buf = Buffer.alloc(str.length + 2);
+
+	buf.writeUInt16BE(str.length);
+	buf.write(str, 2);
+
+	return buf;
 }

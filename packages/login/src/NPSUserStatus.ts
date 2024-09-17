@@ -1,10 +1,10 @@
 import { privateDecrypt } from "node:crypto";
 import { readFileSync } from "node:fs";
 
-import { Logger } from "pino";
-import { Configuration } from "../../shared/Configuration.js";
-import { ServerError } from "../../shared/src/ServerError.js";
-import { LegacyMessage } from "../../shared/LegacyMessage.js";
+import type { Logger } from "pino";
+import { Configuration } from "rusty-motors-shared";
+import { ServerError } from "rusty-motors-shared";
+import { LegacyMessage } from "rusty-motors-shared";
 
 /**
  * @typedef {import("../../shared/Configuration.js").Configuration} Configuration

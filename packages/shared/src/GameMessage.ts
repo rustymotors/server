@@ -1,7 +1,7 @@
+import { Serializable } from "rusty-motors-shared-packets";
 import { GameMessageHeader } from "./GameMessageHeader.js";
-import { SerializedBufferOld } from "./SerializedBufferOld.js";
 
-export class GameMessage extends SerializedBufferOld {
+export class GameMessage extends Serializable {
     _header: GameMessageHeader;
     _recordData: Buffer;
     constructor(gameMessageId: number) {
@@ -16,20 +16,20 @@ export class GameMessage extends SerializedBufferOld {
     }
 
     /** @deprecated - Use setRecordData instead */
-    override setBuffer(buffer: Buffer) {
+    setBuffer(buffer: Buffer) {
         this._recordData = Buffer.alloc(buffer.length);
         buffer.copy(this._recordData);
     }
 
     /** @deprecated - Use deserialize instead */
-    override _doDeserialize(buffer: Buffer): SerializedBufferOld {
+    _doDeserialize(buffer: Buffer) {
         this._header._doDeserialize(buffer);
         this._recordData = Buffer.alloc(this._header._gameMessageLength - 4);
         buffer.copy(this._recordData, 0, 8);
         return this;
     }
 
-    deserialize(buffer: Buffer) {
+    override deserialize(buffer: Buffer) {
         this._header._doDeserialize(buffer);
         this._recordData = Buffer.alloc(this._header.length - 4);
         buffer.copy(this._recordData, 0, 8);
@@ -37,7 +37,7 @@ export class GameMessage extends SerializedBufferOld {
     }
 
     /** @deprecated - Use serialize instead */
-    override _doSerialize(): void {
+    _doSerialize(): void {
         this._header._gameMessageLength = 4 + this._recordData.length;
         this._header.length = this._header._gameMessageLength + 4;
         const buffer = Buffer.alloc(this._header.length);

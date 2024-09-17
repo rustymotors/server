@@ -14,15 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getServerConfiguration } from "../../shared/Configuration.js";
+import { getServerConfiguration } from "rusty-motors-shared";
 import { ServerError } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
-import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
-import { NPSMessage } from "../../shared/NPSMessage.js";
-import { LegacyMessage } from "../../shared/LegacyMessage.js";
+import { SerializedBufferOld } from "rusty-motors-shared";
+import { NPSMessage } from "rusty-motors-shared";
+import { LegacyMessage } from "rusty-motors-shared";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
 import { handleTrackingPing } from "./handlers/handleTrackingPing.js";
 import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
+import type { Serializable } from "rusty-motors-shared-packets";
 
 /**
  * Array of supported message handlers
@@ -87,7 +88,7 @@ export async function receiveLobbyData({
     }),
 }: {
     connectionId: string;
-    message: SerializedBufferOld;
+    message: Serializable;
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
@@ -99,7 +100,7 @@ export async function receiveLobbyData({
     let inboundMessage: LegacyMessage | NPSMessage;
 
     // Check data length
-    const dataLength = message.data.length;
+    const dataLength = message.getByteSize();
 
     if (dataLength < 4) {
         throw new ServerError(
@@ -113,9 +114,9 @@ export async function receiveLobbyData({
         inboundMessage = new LegacyMessage();
     }
 
-    inboundMessage._doDeserialize(message.data);
+    inboundMessage._doDeserialize(message.serialize());
 
-    const { data } = message;
+    const data = message.serialize();
     log.debug(
         `Received Lobby packet',
     ${JSON.stringify({
@@ -134,10 +135,13 @@ export async function receiveLobbyData({
         );
     }
 
+    const buff = new SerializedBufferOld();
+    buff._doDeserialize(data);
+
     try {
         const result = await supportedHandler.handler({
             connectionId,
-            message,
+            message: buff,
             log,
         });
         log.debug(`Returning with ${result.messages.length} messages`);

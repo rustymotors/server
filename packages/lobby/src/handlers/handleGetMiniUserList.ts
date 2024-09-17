@@ -1,9 +1,9 @@
-import { getServerConfiguration } from "../../../shared/Configuration.js";
+import { getServerConfiguration } from "rusty-motors-shared";
 import { ServerError } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
-import { GameMessage } from "../../../shared/GameMessage.js";
-import { LegacyMessage } from "../../../shared/LegacyMessage.js";
-import { serializeString } from "../../../shared/serializeString.js";
+import { GameMessage } from "rusty-motors-shared";
+import { LegacyMessage } from "rusty-motors-shared";
+import { serializeString } from "rusty-motors-shared";
 import { UserInfo } from "../UserInfoMessage.js";
 import { channelRecordSize, channels } from "./channels.js";
 

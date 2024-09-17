@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerError } from "../../shared/src/ServerError.js";
+import { ServerError } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 
-import { Logger } from "pino";
-import { getServerConfiguration } from "../../shared/Configuration.js";
-import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
-import { LegacyMessage } from "../../shared/LegacyMessage.js";
+import type { Logger } from "pino";
+import { getServerConfiguration } from "rusty-motors-shared";
+import { SerializedBufferOld } from "rusty-motors-shared";
+import { LegacyMessage } from "rusty-motors-shared";
 import {
     PersonaList,
     PersonaMapsMessage,
@@ -30,6 +30,7 @@ import { _gameLogout } from "./_gameLogout.js";
 import { _getFirstBuddy } from "./_getFirstBuddy.js";
 import { _selectGamePersona } from "./_selectGamePersona.js";
 import { validatePersonaName } from "./handlers/validatePersonaName.js";
+import type { Serializable } from "rusty-motors-shared-packets";
 
 const NAME_BUFFER_SIZE = 30;
 
@@ -278,14 +279,14 @@ export async function receivePersonaData({
     }),
 }: {
     connectionId: string;
-    message: SerializedBufferOld;
+    message: Serializable;
     log?: import("pino").Logger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBufferOld[];
 }> {
     log.level = getServerConfiguration({}).logLevel ?? "info";
-    const { data } = message;
+    const data = message.serialize();
     log.debug(
         `Received Persona packet',
     ${JSON.stringify({
@@ -295,7 +296,7 @@ export async function receivePersonaData({
 
     // The packet needs to be an NPSMessage
     const inboundMessage = new LegacyMessage();
-    inboundMessage._doDeserialize(message.data);
+    inboundMessage._doDeserialize(message.serialize());
 
     const supportedHandler = messageHandlers.find((h) => {
         return h.opCode === inboundMessage._header.id;

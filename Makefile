@@ -35,7 +35,7 @@ test:
 
 
 start:
-	@pnpx tsx --openssl-legacy-provider --env-file=.env server.ts
+	@pnpx tsx --import ./instrument.mjs --openssl-legacy-provider --env-file=.env server.ts
 
 prod_node:
 	docker-compose --file docker-compose.yml up -d --build

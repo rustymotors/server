@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Timestamp } from "../../shared/TimeStamp.js";
-import { SerializedBufferOld } from "../../shared/SerializedBufferOld.js";
-import { serializeStringRaw } from "../../shared/serializeStringRaw.js";
+import { Timestamp } from "rusty-motors-shared";
+import { SerializedBufferOld } from "rusty-motors-shared";
+import { serializeStringRaw } from "rusty-motors-shared";
 
 /**
  * A message listing the player's owned vehicles

@@ -24,6 +24,14 @@ export class LegacyMessage extends SerializableMixin(AbstractSerializable) {
         return this;
     }
 
+    getMessageId() {
+        return this._header.id;
+    }
+
+    setMessageId(id: number) {
+        this._header.id = id;
+    }
+
     deserialize(buffer: Buffer) {
         return this._doDeserialize(buffer);
     }

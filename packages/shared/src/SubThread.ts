@@ -3,22 +3,21 @@
  */
 
 import { EventEmitter } from "node:events";
-import { Logger } from "pino";
-import { getServerLogger } from "./src/log.js";
+import { getServerLogger, type ServerLogger } from "./log.js";
 
 export class SubThread extends EventEmitter {
     name: any;
-    log: any;
+    log: ServerLogger;
     loopInterval: number;
     timer: any;
     /**
      * @param {string} name
-     * @param {module:shared/log.ServerLogger} log
+     * @param {erverLogger} log
      * @param {number} [loopInterval=100]
      */
     constructor(
         name: string,
-        log: Logger = getServerLogger({ module: "SubThread" }),
+        log: ServerLogger = getServerLogger({ module: "SubThread" }),
         loopInterval: number = 100,
     ) {
         super();

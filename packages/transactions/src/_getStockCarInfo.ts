@@ -1,8 +1,8 @@
-import { OldServerMessage } from "../../shared/OldServerMessage.js";
+import { OldServerMessage } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { StockCar } from "./StockCar.js";
 import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
-import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
 /**
  * @param {MessageHandlerArgs} args
