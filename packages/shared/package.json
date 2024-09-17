@@ -22,7 +22,7 @@
 	"author": "",
 	"license": "AGPL-3.0",
 	"dependencies": {
-		"fastify": "^4.28.1",
+		"fastify": "^5.0.0",
 		"pino-pretty": "^11.2.2"
 	},
 	"directories": {
