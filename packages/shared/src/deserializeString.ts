@@ -1,4 +1,3 @@
-import { ServerError } from "./ServerError.js";
 
 /**
  * @param {Buffer} buffer
@@ -13,9 +12,10 @@ export function deserializeString(buffer: Buffer): string {
         const string = stringBuffer.toString("utf8").trim();
         return string;
     } catch (error) {
-        throw ServerError.fromUnknown(
-            error,
+        const err = Error(
             `Error deserializing string from buffer ${buffer.toString("hex")}`,
         );
+        err.cause = error;
+        throw err;
     }
 }

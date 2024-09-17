@@ -1,4 +1,3 @@
-import { ServerError } from "./ServerError.js";
 import { SerializedBuffer } from "./SerializedBuffer.js";
 
 /**
@@ -30,13 +29,13 @@ export class NetworkMessage extends SerializedBuffer {
     }
     override deserialize(buffer: Buffer) {
         if (buffer.length < 12) {
-            throw new ServerError(
+            throw Error(
                 `Unable to get header from buffer, got ${buffer.length}`,
             );
         }
         const length = buffer.readUInt16BE(2);
         if (buffer.length < length) {
-            throw new ServerError(
+            throw Error(
                 `Expected buffer of length ${length}, got ${buffer.length}`,
             );
         }
@@ -48,7 +47,7 @@ export class NetworkMessage extends SerializedBuffer {
         this._data = buffer.subarray(4, 4 + length);
 
         if (checksum !== length) {
-            throw new ServerError(
+            throw Error(
                 `Checksum ${checksum} does not match length ${length}`,
             );
         }

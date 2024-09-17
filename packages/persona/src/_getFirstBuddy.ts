@@ -1,4 +1,4 @@
-import { getServerLogger } from "rusty-motors-shared";
+import { getServerLogger, type ServerLogger } from "rusty-motors-shared";
 import { SerializedBufferOld } from "../../shared/src/SerializedBufferOld.js";
 import { NPSMessage } from "../../shared/src/NPSMessage.js";
 import { LegacyMessage } from "../../shared/src/LegacyMessage.js";
@@ -13,7 +13,7 @@ export async function _getFirstBuddy({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBufferOld[];

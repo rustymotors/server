@@ -2,7 +2,6 @@ import {
     fetchStateFromDatabase,
     findSessionByConnectionId,
 } from "rusty-motors-shared";
-import { ServerError } from "rusty-motors-shared";
 import { OldServerMessage } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { PartsAssemblyMessage } from "./PartsAssemblyMessage.js";
@@ -23,7 +22,7 @@ export async function _getOwnedParts({
     const session = findSessionByConnectionId(state, connectionId);
 
     if (!session) {
-        throw new ServerError("Session not found");
+        throw Error("Session not found");
     }
 
     const ownedPartsMessage = new PartsAssemblyMessage(session.gameId);

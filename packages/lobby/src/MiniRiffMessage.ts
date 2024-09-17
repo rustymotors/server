@@ -1,11 +1,12 @@
-import { ServerError } from "../../shared/src/ServerError.js";
 import {
     LegacyMessage,
-    SerializedBufferOld,
+    SerializedBuffer,
     serializeString,
 } from "rusty-motors-shared";
 
 export class MiniRiffMessage extends LegacyMessage {
+    private _riffList: MiniRiffInfo[] = [];
+
     constructor() {
         super();
         /** @type {MiniRiffInfo[]} */
@@ -21,14 +22,14 @@ export class MiniRiffMessage extends LegacyMessage {
     }
 
     /** @param {MiniRiffInfo} riff */
-    addRiff(riff) {
+    addRiff(riff: MiniRiffInfo) {
         this._riffList.push(riff);
     }
 
     /**
      * @returns {Buffer}
      */
-    serialize() {
+    override serialize() {
         try {
             const neededSize = this.size();
             this._header.length = neededSize + 4;
@@ -44,19 +45,22 @@ export class MiniRiffMessage extends LegacyMessage {
 
             return buffer;
         } catch (error) {
-            throw ServerError.fromUnknown(
-                error,
-                "Error serializing MiniRiffMessage",
-            );
+            const err = Error("Error serializing MiniRiffMessage");
+            err.cause = error;
+            throw err;
         }
     }
 
-    toString() {
+    override toString() {
         return `MiniRiffMessage: ${this._riffList.length} riff(s)`;
     }
 }
 
 export class MiniRiffInfo extends SerializedBuffer {
+    private _riffName: string;
+    private _riffId: number;
+    private _riffPopulation: number;
+
     constructor() {
         super();
         this._riffName = ""; // max 32 bytes
@@ -71,12 +75,12 @@ export class MiniRiffInfo extends SerializedBuffer {
     /**
      * @returns {Buffer}
      */
-    serialize() {
+    override serialize() {
         try {
             const buffer = Buffer.alloc(this.size());
             let offset = 0;
             if (this._riffName.length > 32) {
-                throw new ServerError("Riff name is too long");
+                throw Error("Riff name is too long");
             }
             offset = serializeString(this._riffName, buffer, offset);
 
@@ -86,14 +90,13 @@ export class MiniRiffInfo extends SerializedBuffer {
 
             return buffer;
         } catch (error) {
-            throw ServerError.fromUnknown(
-                error,
-                "Error serializing LoginInfoMessage",
-            );
+            const err = Error("Error serializing MiniRiffInfo");
+            err.cause = error;
+            throw err;
         }
     }
 
-    toString() {
+    override toString() {
         return `MiniRiffInfo: ${this._riffName} (${this._riffId}) - ${this._riffPopulation}`;
     }
 }

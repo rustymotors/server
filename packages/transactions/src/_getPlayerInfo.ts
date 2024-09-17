@@ -1,4 +1,3 @@
-import { ServerError } from "rusty-motors-shared";
 import { OldServerMessage } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { PlayerInfoMessage } from "./PlayerInfoMessage.js";
@@ -28,6 +27,8 @@ export async function _getPlayerInfo(
 
         return { connectionId: args.connectionId, messages: [responsePacket] };
     } catch (error) {
-        throw ServerError.fromUnknown(error, "Error in _getPlayerInfo");
+        const err = Error(`Error in _getPlayerInfo: ${String(error)}`);
+        err.cause = error;
+        throw err;
     }
 }

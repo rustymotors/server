@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getServerConfiguration } from "rusty-motors-shared";
-import { ServerError } from "rusty-motors-shared";
+import { type ServerLogger } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 import { SerializedBufferOld } from "rusty-motors-shared";
 import { NPSMessage } from "rusty-motors-shared";
@@ -46,7 +45,7 @@ export const messageHandlers: {
     handler: (args: {
         connectionId: string;
         message: SerializedBufferOld;
-        log: import("pino").Logger;
+        log: ServerLogger;
     }) => Promise<{
         connectionId: string;
         messages: SerializedBufferOld[];
@@ -89,12 +88,11 @@ export async function receiveLobbyData({
 }: {
     connectionId: string;
     message: Serializable;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBufferOld[];
 }> {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
 
     /** @type {LegacyMessage | NPSMessage} */
     let inboundMessage: LegacyMessage | NPSMessage;
@@ -103,7 +101,7 @@ export async function receiveLobbyData({
     const dataLength = message.getByteSize();
 
     if (dataLength < 4) {
-        throw new ServerError(
+        throw Error(
             `Data length ${dataLength} is too short to deserialize`,
         );
     }
@@ -130,7 +128,7 @@ export async function receiveLobbyData({
 
     if (typeof supportedHandler === "undefined") {
         // We do not yet support this message code
-        throw new ServerError(
+        throw Error(
             `UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
         );
     }
@@ -148,6 +146,10 @@ export async function receiveLobbyData({
         log.debug("Leaving receiveLobbyData");
         return result;
     } catch (error) {
-        throw new ServerError(`Error handling lobby data: ${String(error)}`);
+        const err = Error(
+            `Error handling lobby data: ${String(error)}`,
+        );
+        err.cause = error;
+        throw err;
     }
 }

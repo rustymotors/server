@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerError } from "../../shared/src/ServerError.js";
-import { SerializedBufferOld } from "../../shared/src/SerializedBufferOld.js";
+import { SerializedBufferOld } from "rusty-motors-shared";
 
 /**
  * A message listing the entry fees and purses for each entry fee
@@ -91,7 +90,7 @@ export class PurseEntry extends SerializedBufferOld {
      */
     deserialize(data: Buffer) {
         if (data.length !== this.size()) {
-            throw new ServerError(
+            throw Error(
                 `PurseEntry.deserialize() expected ${this.size()} bytes but got ${
                     data.length
                 } bytes`,

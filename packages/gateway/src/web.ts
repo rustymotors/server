@@ -14,15 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { CastanetResponse } from "../../patch/src/PatchServer.js";
-import { generateShardList } from "../../shard/src/ShardServer.js";
+import { CastanetResponse } from "rusty-motors-patch";
+import { generateShardList } from "rusty-motors-shard";
 import {
     handleGetCert,
     handleGetKey,
     handleGetRegistry,
-} from "../../shard/src/index.js";
+} from "rusty-motors-shard";
 import { getServerConfiguration } from "rusty-motors-shared";
-import { ServerError } from "rusty-motors-shared";
 
 /**
  * Add web routes to the web server
@@ -94,33 +93,21 @@ export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
 
     webServer.get("/ShardList/", (_request, reply) => {
         const config = getServerConfiguration({});
-        if (typeof config.host === "undefined") {
-            throw new ServerError("No host defined in config");
-        }
         return reply.send(generateShardList(config.host));
     });
 
     webServer.get("/cert", (_request, reply) => {
         const config = getServerConfiguration({});
-        if (typeof config.host === "undefined") {
-            throw new ServerError("No host defined in config");
-        }
         return reply.send(handleGetCert(config));
     });
 
     webServer.get("/key", (_request, reply) => {
         const config = getServerConfiguration({});
-        if (typeof config.host === "undefined") {
-            throw new ServerError("No host defined in config");
-        }
         return reply.send(handleGetKey(config));
     });
 
     webServer.get("/registry", (_request, reply) => {
         const config = getServerConfiguration({});
-        if (typeof config.host === "undefined") {
-            throw new ServerError("No host defined in config");
-        }
         return reply.send(handleGetRegistry(config));
     });
 }

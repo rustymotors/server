@@ -1,5 +1,4 @@
-import { getServerConfiguration } from "rusty-motors-shared";
-import { ServerError } from "rusty-motors-shared";
+import { getServerConfiguration, type ServerLogger } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 import { GameMessage } from "rusty-motors-shared";
 import { LegacyMessage } from "rusty-motors-shared";
@@ -22,14 +21,13 @@ export async function handleGetMiniUserList({
     message,
     log = getServerLogger({
         module: "Lobby",
+        level: getServerConfiguration({}).logLevel ?? "info",
     }),
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }) {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
-
     log.debug("Handling NPS_GET_MINI_USER_LIST");
     log.debug(`Received command: ${message._doSerialize().toString("hex")}`);
 
@@ -74,9 +72,10 @@ export async function handleGetMiniUserList({
             message: packetResult,
         };
     } catch (error) {
-        throw ServerError.fromUnknown(
-            error,
-            "Error handling NPS_MINI_USER_LIST",
+        const err = Error(
+            `Error handling NPS_MINI_USER_LIST: ${String(error)}`,
         );
+        err.cause = error;
+        throw err;
     }
 }

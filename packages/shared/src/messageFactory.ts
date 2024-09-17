@@ -8,7 +8,6 @@
  * - RawMessage
  */
 
-import { ServerError } from "./ServerError.js";
 
 /**
  * @abstract
@@ -28,7 +27,7 @@ export class AbstractSerializable {
     }
 
     _doSerialize() {
-        throw new ServerError("Method '_doSerialize()' must be implemented.");
+        throw Error("Method '_doSerialize()' must be implemented.");
     }
 
     /**
@@ -37,7 +36,7 @@ export class AbstractSerializable {
      */
     // eslint-disable-next-line no-unused-vars
     _doDeserialize(_buffer: Buffer): AbstractSerializable {
-        throw new ServerError("Method '_doDeserialize()' must be implemented.");
+        throw Error("Method '_doDeserialize()' must be implemented.");
     }
 
     get data() {
@@ -56,7 +55,7 @@ export class AbstractSerializable {
      * @returns {number}
      */
     static get Size(): number {
-        throw new ServerError("Method 'Size' must be implemented.");
+        throw new Error("Method 'Size' must be implemented.");
     }
 }
 

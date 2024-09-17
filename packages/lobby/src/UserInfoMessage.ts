@@ -1,4 +1,3 @@
-import { ServerError } from "rusty-motors-shared";
 import { deserializeString } from "rusty-motors-shared";
 import { LegacyMessage } from "rusty-motors-shared";
 import { serializeString } from "rusty-motors-shared";
@@ -71,10 +70,11 @@ export class UserInfoMessage extends LegacyMessage {
 
             return this;
         } catch (error) {
-            throw ServerError.fromUnknown(
-                error,
-                "Error deserializing LoginInfoMessage",
+            const err = Error(
+                `Error deserializing UserInfoMessage: ${String(error)}`,
             );
+            err.cause = error;
+            throw err;
         }
     }
 
@@ -94,10 +94,11 @@ export class UserInfoMessage extends LegacyMessage {
 
             return buffer;
         } catch (error) {
-            throw ServerError.fromUnknown(
-                error,
-                "Error serializing LoginInfoMessage",
+            const err = Error(
+                `Error serializing UserInfoMessage: ${String(error)}`,
             );
+            err.cause = error;
+            throw err;
         }
     }
 

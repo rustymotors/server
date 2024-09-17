@@ -1,6 +1,7 @@
 export { SubThread } from "./src/SubThread.js";
 export { NetworkMessage } from "./src/NetworkMessage.js";
-export { ServerLogger, getServerLogger } from "./src/log.js";
+export { getServerLogger } from "./src/log.js";
+export type { ServerLogger } from "./src/log.js";
 export { Configuration, getServerConfiguration } from "./src/Configuration.js";
 export { SerializedBuffer } from "./src/SerializedBuffer.js";
 export { SerializedBufferOld } from "./src/SerializedBufferOld.js";
@@ -10,7 +11,6 @@ export {
     AbstractSerializable,
     SerializableMixin,
 } from "./src/messageFactory.js";
-export { ServerError } from "./src/ServerError.js";
 export { NPSMessage } from "./src/NPSMessage.js";
 export { OldServerMessage } from "./src/OldServerMessage.js";
 export { MessageBufferOld } from "./src/MessageBufferOld.js";

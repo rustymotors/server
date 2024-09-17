@@ -82,11 +82,11 @@ class SLogger {
  * @return {module:pino.Logger}
  */
 export function getServerLogger(options: ServerLoggerOptions): ServerLogger {
-    const logLevel = process.env["MCO_LOG_LEVEL"] ?? "info";    
-    const moduleName = options && options.module ? options.module : "unknown";
+    const logLevel = process.env["MCO_LOG_LEVEL"] ?? "info";   
+    const moduleName = `server.${options ? (options.module ?? options.name) : "unknown"}`;
     SLogger.instance = new SLogger({
         level: logLevel,
-        module: moduleName,
+        name: moduleName,
     });
     return SLogger.instance as ServerLogger
 }

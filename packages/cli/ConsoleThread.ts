@@ -2,7 +2,6 @@ import { emitKeypressEvents } from "node:readline";
 // eslint-disable-next-line no-unused-vars
 import { Gateway } from "rusty-motors-gateway";
 import { SubThread, type ServerLogger } from "rusty-motors-shared";
-import { ServerError } from "rusty-motors-shared";
 
 /**
  * @module ConsoleThread
@@ -27,7 +26,7 @@ export class ConsoleThread extends SubThread {
     }) {
         super("ReadInput", log, 100);
         if (parentThread === undefined) {
-            throw new ServerError(
+            throw Error(
                 "parentThread is undefined when creating ReadInput",
             );
         }

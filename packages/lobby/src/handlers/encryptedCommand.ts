@@ -1,10 +1,9 @@
-import { getServerConfiguration } from "rusty-motors-shared";
+import { type ServerLogger } from "rusty-motors-shared";
 import {
     fetchStateFromDatabase,
     getEncryption,
     updateEncryption,
 } from "rusty-motors-shared";
-import { ServerError } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 import { MessageBufferOld } from "rusty-motors-shared";
 import { SerializedBufferOld } from "rusty-motors-shared";
@@ -63,7 +62,7 @@ async function encryptCmd({
 }: {
     connectionId: string;
     message: LegacyMessage | MessageBufferOld;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     message: LegacyMessage | MessageBufferOld;
@@ -73,7 +72,7 @@ async function encryptCmd({
     const encryption = getEncryption(state, connectionId);
 
     if (typeof encryption === "undefined") {
-        throw new ServerError(
+        throw Error(
             `Unable to locate encryption session for connection id ${connectionId}`,
         );
     }
@@ -113,7 +112,7 @@ async function decryptCmd({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     message: LegacyMessage;
@@ -123,7 +122,7 @@ async function decryptCmd({
     const encryption = getEncryption(state, connectionId);
 
     if (typeof encryption === "undefined") {
-        throw new ServerError(
+        throw Error(
             `Unable to locate encryption session for connection id ${connectionId}`,
         );
     }
@@ -148,7 +147,7 @@ export type NpsCommandHandler = {
     handler: (args: {
         connectionId: string;
         message: LegacyMessage;
-        log: import("pino").Logger;
+        log: ServerLogger;
     }) => Promise<{
         connectionId: string;
         message: LegacyMessage;
@@ -194,12 +193,11 @@ async function handleCommand({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     message: MessageBufferOld | LegacyMessage;
 }> {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
     const incommingRequest = message;
 
     log.debug(
@@ -214,7 +212,7 @@ async function handleCommand({
     const handler = npsCommandHandlers.find((h) => h.opCode === command);
 
     if (typeof handler === "undefined") {
-        throw new ServerError(`Unknown command: ${command}`);
+        throw Error(`Unknown command: ${command}`);
     }
 
     return handler.handler({
@@ -246,12 +244,11 @@ export async function handleEncryptedNPSCommand({
 }: {
     connectionId: string;
     message: SerializedBufferOld;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBufferOld[];
 }> {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
 
     const inboundMessage = new LegacyMessage();
     inboundMessage._doDeserialize(message.data);

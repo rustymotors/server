@@ -1,9 +1,7 @@
 import { privateDecrypt } from "node:crypto";
 import { readFileSync } from "node:fs";
 
-import type { Logger } from "pino";
-import { Configuration } from "rusty-motors-shared";
-import { ServerError } from "rusty-motors-shared";
+import { Configuration, type ServerLogger } from "rusty-motors-shared";
 import { LegacyMessage } from "rusty-motors-shared";
 
 /**
@@ -33,7 +31,7 @@ import { LegacyMessage } from "rusty-motors-shared";
 
 export class NPSUserStatus extends LegacyMessage {
     _config: Configuration;
-    log: Logger;
+    log: ServerLogger;
     sessionKey: string;
     opCode: number;
     contextId: string;
@@ -47,7 +45,7 @@ export class NPSUserStatus extends LegacyMessage {
     constructor(
         packet: Buffer,
         config: Configuration,
-        log: import("pino").Logger,
+        log: ServerLogger,
     ) {
         super();
         this._config = config;
@@ -87,7 +85,7 @@ export class NPSUserStatus extends LegacyMessage {
         // Decrypt the sessionkey
         try {
             if (!this._config.privateKeyFile) {
-                throw new ServerError("No private key file specified");
+                throw Error("No private key file specified");
             }
             const privatekeyContents = readFileSync(
                 this._config.privateKeyFile,
@@ -103,10 +101,10 @@ export class NPSUserStatus extends LegacyMessage {
         } catch (error) {
             this.log.trace(`Session key: ${sessionkeyString.toString("utf8")}`); // 128 bytes
             this.log.trace(`decrypted: ${this.sessionKey}`); // 12 bytes
-            this.log.error(`Error decrypting session key: ${String(error)}`);
-            throw new ServerError(
-                `Unable to extract session key: ${String(error)}`,
-            );
+            this.log.fatal(`Error decrypting session key: ${String(error)}`);
+            const err = new Error("Error decrypting session key");
+            err.cause = error;
+            throw err;
         }
     }
 

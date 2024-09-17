@@ -4,14 +4,13 @@ import fastify, { type FastifyInstance } from "fastify";
 import { ConsoleThread } from "rusty-motors-cli";
 import { receiveLobbyData } from "rusty-motors-lobby";
 import { receiveLoginData } from "rusty-motors-login";
-import { receivePersonaData } from "../../persona/src/internal.js";
+import { receivePersonaData } from "rusty-motors-personas";
 import { Configuration, getServerConfiguration, type ServerLogger } from "rusty-motors-shared";
 import {
     addOnDataHandler,
     createInitialState,
     fetchStateFromDatabase,
 } from "rusty-motors-shared";
-import { ServerError } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 import { receiveTransactionsData } from "rusty-motors-transactions";
 import { onSocketConnection } from "./index.js";
@@ -97,7 +96,7 @@ export class Gateway {
      */
     getWebServer(): FastifyInstance {
         if (this.webServer === undefined) {
-            throw new ServerError("webServer is undefined");
+            throw Error("webServer is undefined");
         }
         return this.webServer;
     }
@@ -108,7 +107,7 @@ export class Gateway {
 
         // Check if there are any listening ports specified
         if (this.listeningPortList.length === 0) {
-            throw new ServerError("No listening ports specified");
+            throw Error("No listening ports specified");
         }
 
         // Mark the GatewayServer as running
@@ -137,7 +136,7 @@ export class Gateway {
         });
 
         if (this.webServer === undefined) {
-            throw new ServerError("webServer is undefined");
+            throw Error("webServer is undefined");
         }
 
         // Start the web server
@@ -192,7 +191,7 @@ export class Gateway {
         }
 
         if (this.webServer === undefined) {
-            throw new ServerError("webServer is undefined");
+            throw Error("webServer is undefined");
         }
         await this.webServer.close();
 
@@ -234,7 +233,7 @@ export class Gateway {
 
         // Register the read thread events
         if (this.readThread === undefined) {
-            throw new ServerError("readThread is undefined");
+            throw Error("readThread is undefined");
         }
         this.consoleEvents.forEach((event) => {
             this.readThread?.on(event, () => {

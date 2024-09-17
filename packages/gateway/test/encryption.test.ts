@@ -8,7 +8,6 @@ import {
 	createInitialState,
 	getEncryption,
 } from "rusty-motors-shared";
-import { ServerError } from "rusty-motors-shared";
 import {
 	createCommandEncryptionPair,
 	createDataEncryptionPair,
@@ -23,7 +22,7 @@ describe("Encryption", () => {
 	beforeAll(() => {
 		testSave = (state?: State) => {
 			if (typeof state === "undefined") {
-				throw new ServerError("State not defined");
+				throw Error("State not defined");
 			}
 			testState = state;
 		};
