@@ -19,8 +19,8 @@
 	"author": "",
 	"license": "AGPL-3.0",
 	"dependencies": {
-		"@fastify/sensible": "^5.6.0",
-		"fastify": "^4.28.1"
+		"@fastify/sensible": "^6.0.0",
+		"fastify": "^5.0.0"
 	},
 	"directories": {
 		"test": "test"
