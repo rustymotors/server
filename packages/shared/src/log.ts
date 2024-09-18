@@ -1,5 +1,6 @@
 import { type Logger } from "pino";
 import pino from "pino";
+import * as Sentry from "@sentry/node";
 
 type ServerLoggerOptions = {
     level?: string;
@@ -21,7 +22,7 @@ export type ServerLogger = {
  */
 class SLogger {
     logger: Logger;
-    static instance: ServerLogger | undefined;
+    static instance: ServerLogger;
     /**
      * Creates an instance of ServerLogger.
      * @param {ServerLoggerOptions} options
@@ -36,8 +37,12 @@ class SLogger {
      * @param {string} message
      */
     fatal(message: string) {
-        this.logger.fatal(message);
-    }
+        this.logger.fatal({
+            message,
+            sentry_trace: Sentry.getTraceData()["sentry-trace"],
+        });
+
+        }
 
     /**
      * @param {string} message

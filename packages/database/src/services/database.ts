@@ -9,7 +9,10 @@ export { sql };
 const createConnectionPool = atdb.default;
 const defineTables = tables.default;
 
-export const db = createConnectionPool(process.env["DATABASE_URL"]);
+export const db = createConnectionPool({
+    connectionString: process.env["DATABASE_URL"],
+    bigIntMode: "bigint",
+});
 
 // You can list whatever tables you actually have here:
 export const {
