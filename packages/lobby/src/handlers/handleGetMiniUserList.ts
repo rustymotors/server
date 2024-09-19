@@ -17,65 +17,61 @@ user1._userName = "User 1";
  */
 
 export async function handleGetMiniUserList({
-    connectionId,
-    message,
-    log = getServerLogger({
-        name: "Lobby",
-        level: getServerConfiguration({}).logLevel ?? "info",
-    }),
+	connectionId,
+	message,
+	log = getServerLogger({
+		name: "Lobby",
+		level: getServerConfiguration({}).logLevel ?? "info",
+	}),
 }: {
-    connectionId: string;
-    message: LegacyMessage;
-    log?: ServerLogger;
+	connectionId: string;
+	message: LegacyMessage;
+	log?: ServerLogger;
 }) {
-    log.debug("Handling NPS_GET_MINI_USER_LIST");
-    log.debug(`Received command: ${message._doSerialize().toString("hex")}`);
+	log.debug("Handling NPS_GET_MINI_USER_LIST");
+	log.debug(`Received command: ${message._doSerialize().toString("hex")}`);
 
-    const outgoingGameMessage = new GameMessage(553);
+	const outgoingGameMessage = new GameMessage(553);
 
-    const resultSize = channelRecordSize * channels.length - 12;
+	const resultSize = channelRecordSize * channels.length - 12;
 
-    const packetContent = Buffer.alloc(resultSize);
+	const packetContent = Buffer.alloc(resultSize);
 
-    let offset = 0;
-    try {
-        // Add the response code
-        packetContent.writeUInt32BE(17, offset);
-        offset += 4; // offset is 8
+	let offset = 0;
+	try {
+		// Add the response code
+		packetContent.writeUInt32BE(17, offset);
+		offset += 4; // offset is 8
 
-        packetContent.writeUInt32BE(1, offset);
-        offset += 4; // offset is 12
+		packetContent.writeUInt32BE(1, offset);
+		offset += 4; // offset is 12
 
-        // Write the count of users
-        packetContent.writeUInt32BE(1, offset);
-        offset += 4; // offset is 16
+		// Write the count of users
+		packetContent.writeUInt32BE(1, offset);
+		offset += 4; // offset is 16
 
-        // write the persona id
-        packetContent.writeUInt32BE(user1._userId, offset);
-        offset += 4; // offset is 20
+		// write the persona id
+		packetContent.writeUInt32BE(user1._userId, offset);
+		offset += 4; // offset is 20
 
-        // write the persona name
-        serializeString(user1._userName, packetContent, offset);
+		// write the persona name
+		serializeString(user1._userName, packetContent, offset);
 
-        outgoingGameMessage.setRecordData(packetContent);
+		outgoingGameMessage.setRecordData(packetContent);
 
-        // Build the packet
-        const packetResult = new LegacyMessage();
-        packetResult._doDeserialize(outgoingGameMessage.serialize());
+		// Build the packet
+		const packetResult = new LegacyMessage();
+		packetResult._doDeserialize(outgoingGameMessage.serialize());
 
-        log.debug(
-            `Sending response: ${packetResult.serialize().toString("hex")}`,
-        );
+		log.debug(`Sending response: ${packetResult.serialize().toString("hex")}`);
 
-        return {
-            connectionId,
-            message: packetResult,
-        };
-    } catch (error) {
-        const err = Error(
-            `Error handling NPS_MINI_USER_LIST: ${String(error)}`,
-        );
-        err.cause = error;
-        throw err;
-    }
+		return {
+			connectionId,
+			message: packetResult,
+		};
+	} catch (error) {
+		const err = Error(`Error handling NPS_MINI_USER_LIST: ${String(error)}`);
+		err.cause = error;
+		throw err;
+	}
 }

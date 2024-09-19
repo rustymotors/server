@@ -11,8 +11,8 @@
 	"type": "module",
 	"scripts": {
 		"check": "tsc",
-		"lint": "eslint .",
-		"format": "npm prettier --write .",
+		"lint": "npx @biomejs/biome lint --write .",
+		"format": "npx @biomejs/biome format --write .",
 		"test": "vitest run --coverage"
 	},
 	"keywords": [],

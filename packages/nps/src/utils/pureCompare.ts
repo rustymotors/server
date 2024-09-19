@@ -1,6 +1,6 @@
 /**
  * Checks if a given number is zero.
- * 
+ *
  * @param n - The number to check.
  * @returns `true` if the number is zero, `false` otherwise.
  */
@@ -11,7 +11,7 @@ export function isZero(n: number): boolean {
 
 /**
  * Checks if a value is undefined.
- * 
+ *
  * @param n - The value to check.
  * @returns `true` if the value is undefined, `false` otherwise.
  */
@@ -44,7 +44,7 @@ export function lessThanOrEqual(a: number, b: number): boolean {
 }
 /**
  * Checks if the first number is greater than the second number.
- * 
+ *
  * @param a - The first number.
  * @param b - The second number.
  * @returns `true` if `a` is greater than `b`, `false` otherwise.
@@ -56,7 +56,7 @@ export function greaterThan(a: number, b: number): boolean {
 
 /**
  * Checks if the first number is greater than or equal to the second number.
- * 
+ *
  * @param a - The first number to compare.
  * @param b - The second number to compare.
  * @returns `true` if `a` is greater than or equal to `b`, `false` otherwise.
@@ -68,7 +68,7 @@ export function greaterThanOrEqual(a: number, b: number): boolean {
 
 /**
  * Checks if both numbers are zero.
- * 
+ *
  * @param a - The first number.
  * @param b - The second number.
  * @returns True if both numbers are zero, false otherwise.

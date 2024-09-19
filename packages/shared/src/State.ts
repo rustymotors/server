@@ -45,105 +45,105 @@ import { Serializable } from "rusty-motors-shared-packets";
  * A pair of encryption ciphers.
  */
 export class McosEncryptionPair {
-    _cipher: Cipher;
-    _decipher: Decipher;
-    /**
-     * Create a new encryption pair.
-     *
-     * This function creates a new encryption pair. It is used to encrypt and
-     * decrypt data sent to and from the client.
-     *
-     * @param {module:crypto.Cipher} cipher The cipher to use for encryption.
-     * @param {module:crypto.Decipher} decipher The decipher to use for decryption.
-     */
-    constructor(cipher: Cipher, decipher: Decipher) {
-        this._cipher = cipher;
-        this._decipher = decipher;
-    }
+	_cipher: Cipher;
+	_decipher: Decipher;
+	/**
+	 * Create a new encryption pair.
+	 *
+	 * This function creates a new encryption pair. It is used to encrypt and
+	 * decrypt data sent to and from the client.
+	 *
+	 * @param {module:crypto.Cipher} cipher The cipher to use for encryption.
+	 * @param {module:crypto.Decipher} decipher The decipher to use for decryption.
+	 */
+	constructor(cipher: Cipher, decipher: Decipher) {
+		this._cipher = cipher;
+		this._decipher = decipher;
+	}
 
-    /**
-     * @param {Buffer} data The data to encrypt.
-     * @returns {Buffer} The encrypted data.
-     */
-    encrypt(data: Buffer): Buffer {
-        return this._cipher.update(data);
-    }
+	/**
+	 * @param {Buffer} data The data to encrypt.
+	 * @returns {Buffer} The encrypted data.
+	 */
+	encrypt(data: Buffer): Buffer {
+		return this._cipher.update(data);
+	}
 
-    /**
-     * @param {Buffer} data The data to decrypt.
-     * @returns {Buffer} The decrypted data.
-     */
-    decrypt(data: Buffer): Buffer {
-        return this._decipher.update(data);
-    }
+	/**
+	 * @param {Buffer} data The data to decrypt.
+	 * @returns {Buffer} The decrypted data.
+	 */
+	decrypt(data: Buffer): Buffer {
+		return this._decipher.update(data);
+	}
 }
 
 /**
  * The encryption settings for a session.
  */
 export class McosEncryption {
-    connectionId: string;
-    _commandEncryptionPair: McosEncryptionPair;
-    _dataEncryptionPair: McosEncryptionPair;
-    /**
-     * Create a new encryption object.
-     *
-     * @param {object} args
-     * @param {string} args.connectionId The connection id of the session that
-     *                                   this encryption is for.
-     * @param {McosEncryptionPair} args.commandEncryptionPair The encryption
-     *                                                        pair for
-     *                                                       command packets.
-     * @param {McosEncryptionPair} args.dataEncryptionPair The encryption pair
-     *                                                    for data packets.
-     */
-    constructor({
-        connectionId,
-        commandEncryptionPair,
-        dataEncryptionPair,
-    }: {
-        connectionId: string;
-        commandEncryptionPair: McosEncryptionPair;
-        dataEncryptionPair: McosEncryptionPair;
-    }) {
-        this.connectionId = connectionId;
-        this._commandEncryptionPair = commandEncryptionPair;
-        this._dataEncryptionPair = dataEncryptionPair;
-    }
+	connectionId: string;
+	_commandEncryptionPair: McosEncryptionPair;
+	_dataEncryptionPair: McosEncryptionPair;
+	/**
+	 * Create a new encryption object.
+	 *
+	 * @param {object} args
+	 * @param {string} args.connectionId The connection id of the session that
+	 *                                   this encryption is for.
+	 * @param {McosEncryptionPair} args.commandEncryptionPair The encryption
+	 *                                                        pair for
+	 *                                                       command packets.
+	 * @param {McosEncryptionPair} args.dataEncryptionPair The encryption pair
+	 *                                                    for data packets.
+	 */
+	constructor({
+		connectionId,
+		commandEncryptionPair,
+		dataEncryptionPair,
+	}: {
+		connectionId: string;
+		commandEncryptionPair: McosEncryptionPair;
+		dataEncryptionPair: McosEncryptionPair;
+	}) {
+		this.connectionId = connectionId;
+		this._commandEncryptionPair = commandEncryptionPair;
+		this._dataEncryptionPair = dataEncryptionPair;
+	}
 
-    get commandEncryption() {
-        return this._commandEncryptionPair;
-    }
+	get commandEncryption() {
+		return this._commandEncryptionPair;
+	}
 
-    get dataEncryption() {
-        return this._dataEncryptionPair;
-    }
+	get dataEncryption() {
+		return this._dataEncryptionPair;
+	}
 }
 
 /**
  * A client session.
  */
 export class McosSession {
-    connectionId: string;
-    gameId: number;
-    /**
-     * Create a new session.
-     *
-     * @param {object} args
-     * @param {string} args.connectionId A unique identifier for this session.
-     * @param {number} args.username The username of the user who owns this
-     *                              session.
-     */
-    constructor({
-        connectionId,
-        gameId,
-    }: {
-        connectionId: string;
-        gameId: number;
-    }) {
-        this.connectionId = connectionId;
-        this.gameId = gameId;
-    }
+	connectionId: string;
+	gameId: number;
+	/**
+	 * Create a new session.
+	 *
+	 * @param {object} args
+	 * @param {string} args.connectionId A unique identifier for this session.
+	 * @param {number} args.username The username of the user who owns this
+	 *                              session.
+	 */
+	constructor({
+		connectionId,
+		gameId,
+	}: {
+		connectionId: string;
+		gameId: number;
+	}) {
+		this.connectionId = connectionId;
+		this.gameId = gameId;
+	}
 }
 
 /**
@@ -158,8 +158,8 @@ export class McosSession {
  * @interface
  */
 interface WrappedSocket {
-    socket: Socket;
-    connectionId: string;
+	socket: Socket;
+	connectionId: string;
 }
 
 /**
@@ -170,31 +170,31 @@ interface WrappedSocket {
  * @returns {WrappedSocket} The wrapped socket.
  */
 export function wrapSocket(
-    socket: Socket,
-    connectionId: string,
+	socket: Socket,
+	connectionId: string,
 ): WrappedSocket {
-    return {
-        socket,
-        connectionId,
-    };
+	return {
+		socket,
+		connectionId,
+	};
 }
 
 type OnDataHandlerArgs = {
-    connectionId: string;
-    message: Serializable;
-    log?: Logger;
+	connectionId: string;
+	message: Serializable;
+	log?: Logger;
 };
 /**
  * @requires module:packages/shared/RawMessage
  */
 
 export interface ServiceResponse {
-    connectionId: string;
-    messages: SerializedBufferOld[];
+	connectionId: string;
+	messages: SerializedBufferOld[];
 }
 
 export type OnDataHandler = (
-    args: OnDataHandlerArgs,
+	args: OnDataHandlerArgs,
 ) => Promise<ServiceResponse>;
 /**
  * @param {OnDataHandlerArgs} args The arguments for the handler.
@@ -218,13 +218,13 @@ export type OnDataHandler = (
  * @interface
  */
 export interface State {
-    filePaths: Record<string, string>;
-    sockets: Record<string, WrappedSocket>;
-    encryptions: Record<string, McosEncryption>;
-    sessions: Record<string, McosSession>;
-    queuedConnections: Record<string, WrappedSocket>;
-    onDataHandlers: Record<string, OnDataHandler>;
-    save: (state?: State) => void;
+	filePaths: Record<string, string>;
+	sockets: Record<string, WrappedSocket>;
+	encryptions: Record<string, McosEncryption>;
+	sessions: Record<string, McosSession>;
+	queuedConnections: Record<string, WrappedSocket>;
+	onDataHandlers: Record<string, OnDataHandler>;
+	save: (state?: State) => void;
 }
 
 /**
@@ -244,28 +244,28 @@ export interface State {
  * @returns The initial state.
  */
 export function createInitialState({
-    saveFunction = saveStateToDatabase,
+	saveFunction = saveStateToDatabase,
 }: {
-    saveFunction?: (state: State) => void;
+	saveFunction?: (state: State) => void;
 }): State {
-    return {
-        filePaths: {},
-        sockets: {},
-        encryptions: {},
-        sessions: {},
-        queuedConnections: {},
-        onDataHandlers: {},
-        save: function (state?: State) {
-            if (typeof state === "undefined") {
-                state = this as State;
-            }
-            if (typeof saveFunction === "undefined") {
-                saveStateToDatabase(state);
-                return;
-            }
-            saveFunction(state);
-        },
-    };
+	return {
+		filePaths: {},
+		sockets: {},
+		encryptions: {},
+		sessions: {},
+		queuedConnections: {},
+		onDataHandlers: {},
+		save: function (state?: State) {
+			if (typeof state === "undefined") {
+				state = this as State;
+			}
+			if (typeof saveFunction === "undefined") {
+				saveStateToDatabase(state);
+				return;
+			}
+			saveFunction(state);
+		},
+	};
 }
 
 /**
@@ -284,17 +284,17 @@ export function createInitialState({
  * @returns {State} The state with the data handler added.
  */
 export function addOnDataHandler(
-    state: State,
-    port: number,
-    handler: OnDataHandler,
+	state: State,
+	port: number,
+	handler: OnDataHandler,
 ): State {
-    const onDataHandlers = state.onDataHandlers;
-    onDataHandlers[port.toString()] = handler;
-    const newState = {
-        ...state,
-        onDataHandlers,
-    };
-    return newState;
+	const onDataHandlers = state.onDataHandlers;
+	onDataHandlers[port.toString()] = handler;
+	const newState = {
+		...state,
+		onDataHandlers,
+	};
+	return newState;
 }
 
 /**
@@ -314,10 +314,10 @@ export function addOnDataHandler(
  *                                                       handler exists
  */
 export function getOnDataHandler(
-    state: State,
-    port: number,
+	state: State,
+	port: number,
 ): OnDataHandler | undefined {
-    return state.onDataHandlers[port.toString()];
+	return state.onDataHandlers[port.toString()];
 }
 
 /**
@@ -333,12 +333,12 @@ export function getOnDataHandler(
  * @returns {State} The state with the socket added.
  */
 export function addSocket(state: State, socket: WrappedSocket): State {
-    const sockets = state.sockets;
-    sockets[socket.connectionId] = socket;
-    return {
-        ...state,
-        sockets,
-    };
+	const sockets = state.sockets;
+	sockets[socket.connectionId] = socket;
+	return {
+		...state,
+		sockets,
+	};
 }
 
 /**
@@ -351,10 +351,10 @@ export function addSocket(state: State, socket: WrappedSocket): State {
  * @returns {WrappedSocket | undefined} The socket with the given connection id, or undefined if no socket
  */
 export function getSocket(
-    state: State,
-    connectionId: string,
+	state: State,
+	connectionId: string,
 ): WrappedSocket | undefined {
-    return state.sockets[connectionId];
+	return state.sockets[connectionId];
 }
 
 /**
@@ -366,7 +366,7 @@ export function getSocket(
  * @returns {Record<string, WrappedSocket>} An array of all the sockets in the state.
  */
 export function getSockets(state: State): Record<string, WrappedSocket> {
-    return state.sockets;
+	return state.sockets;
 }
 
 /**
@@ -382,12 +382,12 @@ export function getSockets(state: State): Record<string, WrappedSocket> {
  * @returns {State} The state with the socket removed.
  */
 export function removeSocket(state: State, connectionId: string): State {
-    const sockets = state.sockets;
-    delete sockets[connectionId];
-    return {
-        ...state,
-        sockets,
-    };
+	const sockets = state.sockets;
+	delete sockets[connectionId];
+	return {
+		...state,
+		sockets,
+	};
 }
 
 /**
@@ -403,15 +403,15 @@ export function removeSocket(state: State, connectionId: string): State {
  * @returns {State} The state with the queued connection added.
  */
 export function addQueuedConnection(
-    state: State,
-    socket: WrappedSocket,
+	state: State,
+	socket: WrappedSocket,
 ): State {
-    const queuedConnections = state.queuedConnections;
-    queuedConnections[socket.connectionId] = socket;
-    return {
-        ...state,
-        queuedConnections,
-    };
+	const queuedConnections = state.queuedConnections;
+	queuedConnections[socket.connectionId] = socket;
+	return {
+		...state,
+		queuedConnections,
+	};
 }
 
 /**
@@ -423,7 +423,7 @@ export function addQueuedConnection(
  * @returns {string[]} An array of all the queued connections in the state.
  */
 export function getQueuedConnections(state: State): string[] {
-    return Object.keys(state.queuedConnections);
+	return Object.keys(state.queuedConnections);
 }
 
 /**
@@ -439,15 +439,15 @@ export function getQueuedConnections(state: State): string[] {
  * @returns {State} The state with the queued connection removed.
  */
 export function removeQueuedConnection(
-    state: State,
-    connectionId: string,
+	state: State,
+	connectionId: string,
 ): State {
-    const queuedConnections = state.queuedConnections;
-    delete queuedConnections[connectionId];
-    return {
-        ...state,
-        queuedConnections,
-    };
+	const queuedConnections = state.queuedConnections;
+	delete queuedConnections[connectionId];
+	return {
+		...state,
+		queuedConnections,
+	};
 }
 
 /**
@@ -463,12 +463,12 @@ export function removeQueuedConnection(
  * @returns {State} - The state with the encryption added.
  */
 export function addEncryption(state: State, encryption: McosEncryption): State {
-    const encryptions = state.encryptions;
-    encryptions[encryption.connectionId] = encryption;
-    return {
-        ...state,
-        encryptions,
-    };
+	const encryptions = state.encryptions;
+	encryptions[encryption.connectionId] = encryption;
+	return {
+		...state,
+		encryptions,
+	};
 }
 
 /**
@@ -481,10 +481,10 @@ export function addEncryption(state: State, encryption: McosEncryption): State {
  * @returns {McosEncryption | undefined} The encryption with the given connection id, or undefined if no encryption
  */
 export function getEncryption(
-    state: State,
-    connectionId: string,
+	state: State,
+	connectionId: string,
 ): McosEncryption | undefined {
-    return state.encryptions[connectionId];
+	return state.encryptions[connectionId];
 }
 
 /**
@@ -500,15 +500,15 @@ export function getEncryption(
  * @returns {State} The state with the encryption updated.
  */
 export function updateEncryption(
-    state: State,
-    encryption: McosEncryption,
+	state: State,
+	encryption: McosEncryption,
 ): State {
-    const encryptions = state.encryptions;
-    encryptions[encryption.connectionId] = encryption;
-    return {
-        ...state,
-        encryptions,
-    };
+	const encryptions = state.encryptions;
+	encryptions[encryption.connectionId] = encryption;
+	return {
+		...state,
+		encryptions,
+	};
 }
 
 /**
@@ -524,12 +524,12 @@ export function updateEncryption(
  * @returns {State} The state with the encryption removed.
  */
 export function removeEncryption(state: State, connectionId: string): State {
-    const encryptions = state.encryptions;
-    delete encryptions[connectionId];
-    return {
-        ...state,
-        encryptions,
-    };
+	const encryptions = state.encryptions;
+	delete encryptions[connectionId];
+	return {
+		...state,
+		encryptions,
+	};
 }
 
 /**
@@ -545,12 +545,12 @@ export function removeEncryption(state: State, connectionId: string): State {
  * @returns {State} The state with the session added.
  */
 export function addSession(state: State, session: McosSession): State {
-    const sessions = state.sessions;
-    sessions[session.connectionId] = session;
-    return {
-        ...state,
-        sessions,
-    };
+	const sessions = state.sessions;
+	sessions[session.connectionId] = session;
+	return {
+		...state,
+		sessions,
+	};
 }
 
 /**
@@ -567,19 +567,19 @@ export function addSession(state: State, session: McosSession): State {
  * @returns {State} The state with the session removed.
  */
 export function removeSession(state: State, connectionId: string): State {
-    const sessions = state.sessions;
-    delete sessions[connectionId];
-    return {
-        ...state,
-        sessions,
-    };
+	const sessions = state.sessions;
+	delete sessions[connectionId];
+	return {
+		...state,
+		sessions,
+	};
 }
 
 export function findSessionByConnectionId(
-    state: State,
-    connectionId: string,
+	state: State,
+	connectionId: string,
 ): McosSession | undefined {
-    return state.sessions[connectionId];
+	return state.sessions[connectionId];
 }
 
 /**
@@ -590,7 +590,7 @@ export function findSessionByConnectionId(
  * @returns {State} The state from the database.
  */
 export function fetchStateFromDatabase(): State {
-    return globalStateDatabase;
+	return globalStateDatabase;
 }
 
 /**
@@ -601,7 +601,7 @@ export function fetchStateFromDatabase(): State {
  * @param {State} state The state to save to the database.
  */
 function saveStateToDatabase(state: State) {
-    globalStateDatabase = state;
+	globalStateDatabase = state;
 }
 
 let globalStateDatabase = createInitialState({});

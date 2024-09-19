@@ -46,7 +46,6 @@ export class SessionKey extends BaseSerializable {
 		// Get the timestamp
 		const timestamp = bytes.readUInt32BE(dataOffset);
 
-
 		return new SessionKey({
 			key,
 			timestamp,

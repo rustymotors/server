@@ -1,8 +1,8 @@
 export {
-    fetchSessionKeyByConnectionId,
-    fetchSessionKeyByCustomerId,
-    updateSessionKey,
-    updateUser,
+	fetchSessionKeyByConnectionId,
+	fetchSessionKeyByCustomerId,
+	updateSessionKey,
+	updateUser,
 } from "./src/DatabaseManager.js";
 export { getWarehouseInventory } from "./src/functions/getWarehouseInventory.js";
 export type { WarehouseInventory } from "./src/functions/getWarehouseInventory.js";

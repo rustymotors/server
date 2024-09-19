@@ -16,14 +16,14 @@
 
 import { randomUUID } from "node:crypto";
 import {
-    type OnDataHandler,
-    type ServerLogger,
-    type ServiceResponse,
-    addSocket,
-    fetchStateFromDatabase,
-    getOnDataHandler,
-    removeSocket,
-    wrapSocket,
+	type OnDataHandler,
+	type ServerLogger,
+	type ServiceResponse,
+	addSocket,
+	fetchStateFromDatabase,
+	getOnDataHandler,
+	removeSocket,
+	wrapSocket,
 } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 
@@ -58,22 +58,22 @@ import * as Sentry from "@sentry/node";
  * Handle socket errors
  */
 export function socketErrorHandler({
-    connectionId,
-    error,
-    log = getServerLogger({
-        name: "socketErrorHandler",
-    }),
+	connectionId,
+	error,
+	log = getServerLogger({
+		name: "socketErrorHandler",
+	}),
 }: {
-    connectionId: string;
-    error: NodeJS.ErrnoException;
-    log?: ServerLogger;
+	connectionId: string;
+	error: NodeJS.ErrnoException;
+	log?: ServerLogger;
 }) {
-    // Handle socket errors
-    if (error.code == "ECONNRESET") {
-        log.debug(`Connection ${connectionId} reset`);
-        return;
-    }
-    throw Error(`Socket error: ${error.message} on connection ${connectionId}`);
+	// Handle socket errors
+	if (error.code == "ECONNRESET") {
+		log.debug(`Connection ${connectionId} reset`);
+		return;
+	}
+	throw Error(`Socket error: ${error.message} on connection ${connectionId}`);
 }
 
 /**
@@ -84,18 +84,18 @@ export function socketErrorHandler({
  * @param {import("pino").Logger} [options.log=getServerLogger({ name: "socketEndHandler" })] The logger to use
  */
 export function socketEndHandler({
-    connectionId,
-    log = getServerLogger({
-        name: "socketEndHandler",
-    }),
+	connectionId,
+	log = getServerLogger({
+		name: "socketEndHandler",
+	}),
 }: {
-    connectionId: string;
-    log?: ServerLogger;
+	connectionId: string;
+	log?: ServerLogger;
 }) {
-    log.debug(`Connection ${connectionId} ended`);
+	log.debug(`Connection ${connectionId} ended`);
 
-    // Remove the socket from the global state
-    removeSocket(fetchStateFromDatabase(), connectionId).save();
+	// Remove the socket from the global state
+	removeSocket(fetchStateFromDatabase(), connectionId).save();
 }
 
 /**
@@ -107,160 +107,152 @@ export function socketEndHandler({
  *
  */
 export function onSocketConnection({
-    incomingSocket,
-    log = getServerLogger({
-        name: "onDataHandler",
-    }),
+	incomingSocket,
+	log = getServerLogger({
+		name: "onDataHandler",
+	}),
 }: {
-    incomingSocket: Socket;
-    log?: ServerLogger;
+	incomingSocket: Socket;
+	log?: ServerLogger;
 }) {
-    // Get the local port and remote address
-    const { localPort, remoteAddress } = incomingSocket;
+	// Get the local port and remote address
+	const { localPort, remoteAddress } = incomingSocket;
 
-    if (localPort === undefined || remoteAddress === undefined) {
-        throw Error("localPort or remoteAddress is undefined");
-    }
+	if (localPort === undefined || remoteAddress === undefined) {
+		throw Error("localPort or remoteAddress is undefined");
+	}
 
-    // This is a new connection so generate a new connection ID
-    const newConnectionId = randomUUID();
+	// This is a new connection so generate a new connection ID
+	const newConnectionId = randomUUID();
 
-    // Wrap the socket and add it to the global state
-    const wrappedSocket = wrapSocket(incomingSocket, newConnectionId);
+	// Wrap the socket and add it to the global state
+	const wrappedSocket = wrapSocket(incomingSocket, newConnectionId);
 
-    // Add the socket to the global state
-    addSocket(fetchStateFromDatabase(), wrappedSocket).save();
+	// Add the socket to the global state
+	addSocket(fetchStateFromDatabase(), wrappedSocket).save();
 
-    // =======================
-    // Handle incoming socket in shadow mode
-    // =======================
+	// =======================
+	// Handle incoming socket in shadow mode
+	// =======================
 
-    try {
-        // Get expected message type
-        const messageType = getPortMessageType(localPort);
-        log.debug(`[${newConnectionId}] Expected message type: ${messageType}`);
+	try {
+		// Get expected message type
+		const messageType = getPortMessageType(localPort);
+		log.debug(`[${newConnectionId}] Expected message type: ${messageType}`);
 
-        switch (messageType) {
-            case "Game": {
-                // Handle game messages
-                // Create a new user status
-                const userStatus = UserStatusManager.newUserStatus();
-                log.debug(`[${newConnectionId}] Created new user status`);
+		switch (messageType) {
+			case "Game": {
+				// Handle game messages
+				// Create a new user status
+				const userStatus = UserStatusManager.newUserStatus();
+				log.debug(`[${newConnectionId}] Created new user status`);
 
-                UserStatusManager.addUserStatus(userStatus);
-                log.debug(`[${newConnectionId}] Added user status to manager`);
+				UserStatusManager.addUserStatus(userStatus);
+				log.debug(`[${newConnectionId}] Added user status to manager`);
 
-                break;
-            }
+				break;
+			}
 
-            case "Server": {
-                // Handle server messages
-                break;
-            }
+			case "Server": {
+				// Handle server messages
+				break;
+			}
 
-            default: {
-                log.warn(`[${newConnectionId}] No message type found`);
-                break;
-            }
-        }
-    } catch (error) {
-        log.error(`[${newConnectionId}] Error handling socket: ${error}`);
-    }
+			default: {
+				log.warn(`[${newConnectionId}] No message type found`);
+				break;
+			}
+		}
+	} catch (error) {
+		log.error(`[${newConnectionId}] Error handling socket: ${error}`);
+	}
 
-    // This is a new TCP socket, so it's probably not using HTTP
-    // Let's look for a port onData handler
-    /** @type {OnDataHandler | undefined} */
-    const portOnDataHandler: OnDataHandler | undefined = getOnDataHandler(
-        fetchStateFromDatabase(),
-        localPort,
-    );
+	// This is a new TCP socket, so it's probably not using HTTP
+	// Let's look for a port onData handler
+	/** @type {OnDataHandler | undefined} */
+	const portOnDataHandler: OnDataHandler | undefined = getOnDataHandler(
+		fetchStateFromDatabase(),
+		localPort,
+	);
 
-    // Throw an error if there is no onData handler
-    if (!portOnDataHandler) {
-        log.warn(`No onData handler for port ${localPort}`);
-        return;
-    }
+	// Throw an error if there is no onData handler
+	if (!portOnDataHandler) {
+		log.warn(`No onData handler for port ${localPort}`);
+		return;
+	}
 
-    incomingSocket.on("error", (error) =>
-        socketErrorHandler({ connectionId: newConnectionId, error }),
-    );
+	incomingSocket.on("error", (error) =>
+		socketErrorHandler({ connectionId: newConnectionId, error }),
+	);
 
-    // Add the data handler to the socket
-    incomingSocket.on(
-        "data",
-        function socketDataHandler(incomingDataAsBuffer: Buffer) {
-            log.trace(
-                `Incoming data on port ${localPort}: ${incomingDataAsBuffer.toString(
-                    "hex",
-                )}`,
-            );
+	// Add the data handler to the socket
+	incomingSocket.on(
+		"data",
+		function socketDataHandler(incomingDataAsBuffer: Buffer) {
+			log.trace(
+				`Incoming data on port ${localPort}: ${incomingDataAsBuffer.toString(
+					"hex",
+				)}`,
+			);
 
-            // Deserialize the raw message
-            const rawMessage = new BasePacket();
-            rawMessage.deserialize(incomingDataAsBuffer);
+			// Deserialize the raw message
+			const rawMessage = new BasePacket();
+			rawMessage.deserialize(incomingDataAsBuffer);
 
-            // Log the raw message
-            log.trace(`Raw message: ${rawMessage.toString()}`);
+			// Log the raw message
+			log.trace(`Raw message: ${rawMessage.toString()}`);
 
-            log.debug("Calling onData handler");
+			log.debug("Calling onData handler");
 
-            Sentry.startSpan(
-                {
-                    name: "onDataHandler",
-                    op: "onDataHandler",
-                },
-                async () => {
-                    portOnDataHandler({
-                        connectionId: newConnectionId,
-                        message: rawMessage,
-                    })
-                        .then((response: ServiceResponse) => {
-                            log.debug("onData handler returned");
-                            const { messages } = response;
+			Sentry.startSpan(
+				{
+					name: "onDataHandler",
+					op: "onDataHandler",
+				},
+				async () => {
+					portOnDataHandler({
+						connectionId: newConnectionId,
+						message: rawMessage,
+					})
+						.then((response: ServiceResponse) => {
+							log.debug("onData handler returned");
+							const { messages } = response;
 
-                            // Log the messages
-                            log.trace(
-                                `Messages: ${messages.map((m) => m.toString())}`,
-                            );
+							// Log the messages
+							log.trace(`Messages: ${messages.map((m) => m.toString())}`);
 
-                            // Serialize the messages
-                            const serializedMessages = messages.map((m) =>
-                                m.serialize(),
-                            );
+							// Serialize the messages
+							const serializedMessages = messages.map((m) => m.serialize());
 
-                            try {
-                                // Send the messages
-                                serializedMessages.forEach((m) => {
-                                    incomingSocket.write(m);
-                                    log.trace(
-                                        `Sent data: ${m.toString("hex")}`,
-                                    );
-                                });
-                            } catch (error) {
-                                log.error(
-                                    `Error sending data: ${String(error)}`,
-                                );
-                            }
-                        })
-                        .catch((error: Error) => {
-                            log.fatal(`Error handling data: ${String(error)}`);
-                            Sentry.captureException(error);
-                            void getGatewayServer({}).stop();
-                            Sentry.flush(200).then(() => {
-                                log.debug("Sentry flushed");
-                                // Call server shutdown
-                                void getGatewayServer({}).shutdown();
-                            });
-                        });
-                },
-            );
-        },
-    );
+							try {
+								// Send the messages
+								serializedMessages.forEach((m) => {
+									incomingSocket.write(m);
+									log.trace(`Sent data: ${m.toString("hex")}`);
+								});
+							} catch (error) {
+								log.error(`Error sending data: ${String(error)}`);
+							}
+						})
+						.catch((error: Error) => {
+							log.fatal(`Error handling data: ${String(error)}`);
+							Sentry.captureException(error);
+							void getGatewayServer({}).stop();
+							Sentry.flush(200).then(() => {
+								log.debug("Sentry flushed");
+								// Call server shutdown
+								void getGatewayServer({}).shutdown();
+							});
+						});
+				},
+			);
+		},
+	);
 
-    log.debug(`Client ${remoteAddress} connected to port ${localPort}`);
+	log.debug(`Client ${remoteAddress} connected to port ${localPort}`);
 
-    if (localPort === 7003) {
-        // Sent ok to login packet
-        incomingSocket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
-    }
+	if (localPort === 7003) {
+		// Sent ok to login packet
+		incomingSocket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
+	}
 }

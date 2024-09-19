@@ -8,44 +8,44 @@ import { RawMessage } from "../../../shared/src/RawMessage.js";
  */
 
 export async function validatePersonaName({
-    connectionId,
-    message,
-    log = getServerLogger({
-        name: "PersonaServer",
-    }),
+	connectionId,
+	message,
+	log = getServerLogger({
+		name: "PersonaServer",
+	}),
 }: {
-    connectionId: string;
-    message: LegacyMessage;
-    log?: ServerLogger;
+	connectionId: string;
+	message: LegacyMessage;
+	log?: ServerLogger;
 }): Promise<{
-    connectionId: string;
-    messages: SerializedBufferOld[];
+	connectionId: string;
+	messages: SerializedBufferOld[];
 }> {
-    log.debug("validatePersonaName called");
-    const requestPacket = message;
-    log.debug(
-        `NPSMsg request object from validatePersonaName ${requestPacket.toString()}`,
-    );
+	log.debug("validatePersonaName called");
+	const requestPacket = message;
+	log.debug(
+		`NPSMsg request object from validatePersonaName ${requestPacket.toString()}`,
+	);
 
-    enum responseCodes {
-        NPS_DUP_USER = 0x20a,
-        NPS_USER_VALID = 0x601,
-    }
+	enum responseCodes {
+		NPS_DUP_USER = 0x20a,
+		NPS_USER_VALID = 0x601,
+	}
 
-    // Build the packet
-    const responsePacket = new RawMessage(responseCodes.NPS_DUP_USER);
-    log.debug(
-        `NPSMsg response object from validatePersonaName
+	// Build the packet
+	const responsePacket = new RawMessage(responseCodes.NPS_DUP_USER);
+	log.debug(
+		`NPSMsg response object from validatePersonaName
       ${JSON.stringify({
-          NPSMsg: responsePacket.toString(),
-      })}`,
-    );
+				NPSMsg: responsePacket.toString(),
+			})}`,
+	);
 
-    const outboundMessage = new SerializedBufferOld();
-    outboundMessage._doDeserialize(responsePacket.serialize());
+	const outboundMessage = new SerializedBufferOld();
+	outboundMessage._doDeserialize(responsePacket.serialize());
 
-    return {
-        connectionId,
-        messages: [outboundMessage],
-    };
+	return {
+		connectionId,
+		messages: [outboundMessage],
+	};
 }

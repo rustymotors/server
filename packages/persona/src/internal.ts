@@ -19,9 +19,9 @@ import { getServerLogger, type ServerLogger } from "rusty-motors-shared";
 import { SerializedBufferOld } from "rusty-motors-shared";
 import { LegacyMessage } from "rusty-motors-shared";
 import {
-    PersonaList,
-    PersonaMapsMessage,
-    PersonaRecord,
+	PersonaList,
+	PersonaMapsMessage,
+	PersonaRecord,
 } from "./PersonaMapsMessage.js";
 import { _gameLogout } from "./_gameLogout.js";
 import { _getFirstBuddy } from "./_getFirstBuddy.js";
@@ -47,51 +47,51 @@ const NAME_BUFFER_SIZE = 30;
  * }>}[]}
  */
 export const messageHandlers: {
-    opCode: number;
-    name: string;
-    handler: (args: {
-        connectionId: string;
-        message: LegacyMessage;
-        log: ServerLogger;
-    }) => Promise<{
-        connectionId: string;
-        messages: SerializedBufferOld[];
-    }>;
+	opCode: number;
+	name: string;
+	handler: (args: {
+		connectionId: string;
+		message: LegacyMessage;
+		log: ServerLogger;
+	}) => Promise<{
+		connectionId: string;
+		messages: SerializedBufferOld[];
+	}>;
 }[] = [
-    {
-        opCode: 1283, // 0x503
-        name: "Game login",
-        handler: _selectGamePersona,
-    },
-    {
-        opCode: 1295, // 0x50F
-        name: "Game logout",
-        handler: _gameLogout,
-    },
-    {
-        opCode: 1330, // 0x532
-        name: "Get persona maps",
-        handler: getPersonaMaps,
-    },
-    {
-        opCode: 1331, // 0x533
-        name: "Validate persona name",
-        handler: validatePersonaName,
-    },
-    {
-        opCode: 1291, // 0x50B
-        name: "Get first buddy",
-        handler: _getFirstBuddy,
-    },
+	{
+		opCode: 1283, // 0x503
+		name: "Game login",
+		handler: _selectGamePersona,
+	},
+	{
+		opCode: 1295, // 0x50F
+		name: "Game logout",
+		handler: _gameLogout,
+	},
+	{
+		opCode: 1330, // 0x532
+		name: "Get persona maps",
+		handler: getPersonaMaps,
+	},
+	{
+		opCode: 1331, // 0x533
+		name: "Validate persona name",
+		handler: validatePersonaName,
+	},
+	{
+		opCode: 1291, // 0x50B
+		name: "Get first buddy",
+		handler: _getFirstBuddy,
+	},
 ];
 
 /**
  * Return string as buffer
  */
 export function generateNameBuffer(name: string, size: number): Buffer {
-    const nameBuffer = Buffer.alloc(size);
-    Buffer.from(name, "utf8").copy(nameBuffer);
-    return nameBuffer;
+	const nameBuffer = Buffer.alloc(size);
+	Buffer.from(name, "utf8").copy(nameBuffer);
+	return nameBuffer;
 }
 
 /**
@@ -100,24 +100,24 @@ export function generateNameBuffer(name: string, size: number): Buffer {
  * @type {import("../../interfaces/index.js").PersonaRecord[]}
  */
 export const personaRecords: import("../../shared/src/interfaces.js").PersonaRecord[] =
-    [
-        {
-            customerId: 2868969472,
-            id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
-            maxPersonas: Buffer.from([0x01]),
-            name: generateNameBuffer("Doc Joe", NAME_BUFFER_SIZE),
-            personaCount: Buffer.from([0x00, 0x01]),
-            shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
-        },
-        {
-            customerId: 5551212, // 0x54 0xB4 0x6C
-            id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
-            maxPersonas: Buffer.from([0x02]),
-            name: generateNameBuffer("Dr Brown", NAME_BUFFER_SIZE),
-            personaCount: Buffer.from([0x00, 0x01]),
-            shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
-        },
-    ];
+	[
+		{
+			customerId: 2868969472,
+			id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
+			maxPersonas: Buffer.from([0x01]),
+			name: generateNameBuffer("Doc Joe", NAME_BUFFER_SIZE),
+			personaCount: Buffer.from([0x00, 0x01]),
+			shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
+		},
+		{
+			customerId: 5551212, // 0x54 0xB4 0x6C
+			id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
+			maxPersonas: Buffer.from([0x02]),
+			name: generateNameBuffer("Dr Brown", NAME_BUFFER_SIZE),
+			personaCount: Buffer.from([0x00, 0x01]),
+			shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
+		},
+	];
 
 /**
  *
@@ -125,12 +125,12 @@ export const personaRecords: import("../../shared/src/interfaces.js").PersonaRec
 //  * @return {Promise<import("../../interfaces/index.js").PersonaRecord[]>}
  */
 async function getPersonasByCustomerId(
-    customerId: number,
+	customerId: number,
 ): Promise<import("../../shared/src/interfaces.js").PersonaRecord[]> {
-    const results = personaRecords.filter(
-        (persona) => persona.customerId === customerId,
-    );
-    return results;
+	const results = personaRecords.filter(
+		(persona) => persona.customerId === customerId,
+	);
+	return results;
 }
 
 /**
@@ -142,14 +142,14 @@ async function getPersonasByCustomerId(
  * @return {Promise<import("../../interfaces/index.js").PersonaRecord[]>}
  */
 async function getPersonaMapsByCustomerId(
-    customerId: number,
+	customerId: number,
 ): Promise<import("../../shared/src/interfaces.js").PersonaRecord[]> {
-    switch (customerId) {
-        case 5551212:
-            return getPersonasByCustomerId(customerId);
-        default:
-            return [];
-    }
+	switch (customerId) {
+		case 5551212:
+			return getPersonasByCustomerId(customerId);
+		default:
+			return [];
+	}
 }
 
 /**
@@ -164,87 +164,85 @@ async function getPersonaMapsByCustomerId(
  * }>}
  */
 async function getPersonaMaps({
-    connectionId,
-    message,
-    log = getServerLogger({ name: "PersonaServer" }),
+	connectionId,
+	message,
+	log = getServerLogger({ name: "PersonaServer" }),
 }: {
-    connectionId: string;
-    message: LegacyMessage;
-    log?: ServerLogger;
+	connectionId: string;
+	message: LegacyMessage;
+	log?: ServerLogger;
 }): Promise<{
-    connectionId: string;
-    messages: SerializedBufferOld[];
+	connectionId: string;
+	messages: SerializedBufferOld[];
 }> {
-    log.debug("_npsGetPersonaMaps...");
+	log.debug("_npsGetPersonaMaps...");
 
-    const requestPacket = message;
-    log.debug(
-        `NPSMsg request object from _npsGetPersonaMaps ${requestPacket
-            ._doSerialize()
-            .toString("hex")} `,
-    );
+	const requestPacket = message;
+	log.debug(
+		`NPSMsg request object from _npsGetPersonaMaps ${requestPacket
+			._doSerialize()
+			.toString("hex")} `,
+	);
 
-    const customerId = requestPacket.data.readUInt32BE(8);
+	const customerId = requestPacket.data.readUInt32BE(8);
 
-    const personas = await getPersonaMapsByCustomerId(customerId);
-    log.debug(`${personas.length} personas found for ${customerId}`);
+	const personas = await getPersonaMapsByCustomerId(customerId);
+	log.debug(`${personas.length} personas found for ${customerId}`);
 
-    const personaMapsMessage = new PersonaMapsMessage();
+	const personaMapsMessage = new PersonaMapsMessage();
 
-    // this is a GLDP_PersonaList::GLDP_PersonaList
+	// this is a GLDP_PersonaList::GLDP_PersonaList
 
-    try {
-        /** @type {PersonaList} */
-        let personaList: PersonaList = new PersonaList();
+	try {
+		/** @type {PersonaList} */
+		let personaList: PersonaList = new PersonaList();
 
-        if (personas.length > 1) {
-            log.warn(
-                `More than one persona found for customer Id: ${customerId}`,
-            );
-        }
+		if (personas.length > 1) {
+			log.warn(`More than one persona found for customer Id: ${customerId}`);
+		}
 
-        personas.forEach((persona) => {
-            const personaRecord = new PersonaRecord();
+		personas.forEach((persona) => {
+			const personaRecord = new PersonaRecord();
 
-            personaRecord.customerId = persona.customerId;
-            personaRecord.personaId = persona.id.readUInt32BE(0);
-            personaRecord.personaName = persona.name.toString("utf8");
-            personaRecord.shardId = persona.shardId.readUInt32BE(0);
-            personaRecord.numberOfGames = personas.length;
+			personaRecord.customerId = persona.customerId;
+			personaRecord.personaId = persona.id.readUInt32BE(0);
+			personaRecord.personaName = persona.name.toString("utf8");
+			personaRecord.shardId = persona.shardId.readUInt32BE(0);
+			personaRecord.numberOfGames = personas.length;
 
-            personaList.addPersonaRecord(personaRecord);
+			personaList.addPersonaRecord(personaRecord);
 
-            log.debug(
-                `Persona record: ${JSON.stringify({
-                    personaRecord: personaRecord.toJSON(),
-                })}`,
-            );
-        });
+			log.debug(
+				`Persona record: ${JSON.stringify({
+					personaRecord: personaRecord.toJSON(),
+				})}`,
+			);
+		});
 
-        personaMapsMessage._header.id = 0x607;
-        personaMapsMessage._personaRecords = personaList;
-        personaMapsMessage.setBuffer(personaList.serialize());
-        log.debug(
-            `PersonaMapsMessage object from _npsGetPersonaMaps',
+		personaMapsMessage._header.id = 0x607;
+		personaMapsMessage._personaRecords = personaList;
+		personaMapsMessage.setBuffer(personaList.serialize());
+		log.debug(
+			`PersonaMapsMessage object from _npsGetPersonaMaps',
             ${JSON.stringify({
-                personaMapsMessage: personaMapsMessage
-                    .serialize()
-                    .toString("hex"),
-            })}`,
-        );
+							personaMapsMessage: personaMapsMessage
+								.serialize()
+								.toString("hex"),
+						})}`,
+		);
 
-        const outboundMessage = new SerializedBufferOld();
-        outboundMessage._doDeserialize(personaMapsMessage.serialize());
+		const outboundMessage = new SerializedBufferOld();
+		outboundMessage._doDeserialize(personaMapsMessage.serialize());
 
-        return {
-            connectionId,
-            messages: [outboundMessage],
-        };
-    } catch (error) {
-        const err = Error(`Error serializing personaMapsMsg`);
-        err.cause = error;
-        throw err;
-    }
+		return {
+			connectionId,
+			messages: [outboundMessage],
+		};
+	} catch (error) {
+		const err = Error(`Error serializing personaMapsMsg`);
+		err.cause = error;
+		throw err;
+	}
 }
 
 /**
@@ -261,52 +259,52 @@ async function getPersonaMaps({
  * @throws {Error} Unknown code was received
  */
 export async function receivePersonaData({
-    connectionId,
-    message,
-    log = getServerLogger({
-        name: "PersonaServer",
-    }),
+	connectionId,
+	message,
+	log = getServerLogger({
+		name: "PersonaServer",
+	}),
 }: {
-    connectionId: string;
-    message: Serializable;
-    log?: ServerLogger;
+	connectionId: string;
+	message: Serializable;
+	log?: ServerLogger;
 }): Promise<{
-    connectionId: string;
-    messages: SerializedBufferOld[];
+	connectionId: string;
+	messages: SerializedBufferOld[];
 }> {
-    const data = message.serialize();
-    log.debug(
-        `Received Persona packet',
+	const data = message.serialize();
+	log.debug(
+		`Received Persona packet',
     ${JSON.stringify({
-        data: data.toString("hex"),
-    })}`,
-    );
+			data: data.toString("hex"),
+		})}`,
+	);
 
-    // The packet needs to be an NPSMessage
-    const inboundMessage = new LegacyMessage();
-    inboundMessage._doDeserialize(message.serialize());
+	// The packet needs to be an NPSMessage
+	const inboundMessage = new LegacyMessage();
+	inboundMessage._doDeserialize(message.serialize());
 
-    const supportedHandler = messageHandlers.find((h) => {
-        return h.opCode === inboundMessage._header.id;
-    });
+	const supportedHandler = messageHandlers.find((h) => {
+		return h.opCode === inboundMessage._header.id;
+	});
 
-    if (typeof supportedHandler === "undefined") {
-        // We do not yet support this message code
-        throw Error(`UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`);
-    }
+	if (typeof supportedHandler === "undefined") {
+		// We do not yet support this message code
+		throw Error(`UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`);
+	}
 
-    try {
-        const result = await supportedHandler.handler({
-            connectionId,
-            message: inboundMessage,
-            log,
-        });
-        log.debug(`Returning with ${result.messages.length} messages`);
-        log.debug("Leaving receivePersonaDatadleData");
-        return result;
-    } catch (error) {
-        const err = Error(`Error handling persona data: ${String(error)}`);
-        err.cause = error;
-        throw err;
-    }
+	try {
+		const result = await supportedHandler.handler({
+			connectionId,
+			message: inboundMessage,
+			log,
+		});
+		log.debug(`Returning with ${result.messages.length} messages`);
+		log.debug("Leaving receivePersonaDatadleData");
+		return result;
+	} catch (error) {
+		const err = Error(`Error handling persona data: ${String(error)}`);
+		err.cause = error;
+		throw err;
+	}
 }

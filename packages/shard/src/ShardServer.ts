@@ -54,7 +54,6 @@ export function generateShardList(shardHost: string) {
 		throw new Error("No shards found");
 	}
 
-
 	activeShardList.push(_possibleShards[0]!);
 
 	return activeShardList.join("\n");

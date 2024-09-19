@@ -1,6 +1,8 @@
 {
 	"$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
-	"organizeImports": { "enabled": true },
+	"organizeImports": {
+		"enabled": true
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {
@@ -11,7 +13,7 @@
 				"noUselessCatch": "error",
 				"noWith": "error",
 				"useArrowFunction": "off",
-				"useLiteralKeys":"off"
+				"useLiteralKeys": "off"
 			},
 			"correctness": {
 				"noConstAssign": "error",
@@ -38,7 +40,9 @@
 				"useValidForDirection": "error",
 				"useYield": "error"
 			},
-			"style": { "useBlockStatements": "off" },
+			"style": {
+				"useBlockStatements": "off"
+			},
 			"suspicious": {
 				"noAssignInExpressions": "error",
 				"noAsyncPromiseExecutor": "error",
@@ -65,6 +69,13 @@
 				"useValidTypeof": "error"
 			}
 		},
-		"ignore": ["**/*.d.ts", "**/dist", "**/out"]
+		"ignore": [
+			"**/*.d.ts",
+			"**/dist",
+			"**/out",
+			"**/node_modules",
+			"**/coverage",
+			"**/__generated__"
+		]
 	}
 }

@@ -8,55 +8,54 @@
  * - RawMessage
  */
 
-
 /**
  * @abstract
  * @property {Buffer} data
  * @property {number} Size
  */
 export class AbstractSerializable {
-    internalBuffer: Buffer;
-    constructor() {
-        if (this.constructor === AbstractSerializable) {
-            throw new TypeError(
-                "Abstract class 'AbstractSerializable' cannot be instantiated directly.",
-            );
-        }
-        /** @private */
-        this.internalBuffer = Buffer.alloc(0);
-    }
+	internalBuffer: Buffer;
+	constructor() {
+		if (this.constructor === AbstractSerializable) {
+			throw new TypeError(
+				"Abstract class 'AbstractSerializable' cannot be instantiated directly.",
+			);
+		}
+		/** @private */
+		this.internalBuffer = Buffer.alloc(0);
+	}
 
-    _doSerialize() {
-        throw Error("Method '_doSerialize()' must be implemented.");
-    }
+	_doSerialize() {
+		throw Error("Method '_doSerialize()' must be implemented.");
+	}
 
-    /**
-     * @param {Buffer} _buffer
-     * @returns {AbstractSerializable}
-     */
-    // eslint-disable-next-line no-unused-vars
-    _doDeserialize(_buffer: Buffer): AbstractSerializable {
-        throw Error("Method '_doDeserialize()' must be implemented.");
-    }
+	/**
+	 * @param {Buffer} _buffer
+	 * @returns {AbstractSerializable}
+	 */
+	// eslint-disable-next-line no-unused-vars
+	_doDeserialize(_buffer: Buffer): AbstractSerializable {
+		throw Error("Method '_doDeserialize()' must be implemented.");
+	}
 
-    get data() {
-        return this.internalBuffer;
-    }
+	get data() {
+		return this.internalBuffer;
+	}
 
-    /**
-     * @param {Buffer} buffer
-     */
-    setBuffer(buffer: Buffer) {
-        this.internalBuffer = Buffer.alloc(buffer.length);
-        this.internalBuffer = buffer;
-    }
+	/**
+	 * @param {Buffer} buffer
+	 */
+	setBuffer(buffer: Buffer) {
+		this.internalBuffer = Buffer.alloc(buffer.length);
+		this.internalBuffer = buffer;
+	}
 
-    /**
-     * @returns {number}
-     */
-    static get Size(): number {
-        throw new Error("Method 'Size' must be implemented.");
-    }
+	/**
+	 * @returns {number}
+	 */
+	static get Size(): number {
+		throw new Error("Method 'Size' must be implemented.");
+	}
 }
 
 /**
@@ -65,22 +64,22 @@ export class AbstractSerializable {
  * @returns {typeof AbstractSerializable}
  */
 export const SerializableMixin = (
-    Base: typeof AbstractSerializable,
+	Base: typeof AbstractSerializable,
 ): typeof AbstractSerializable =>
-    class extends Base {
-        constructor() {
-            super();
-        }
+	class extends Base {
+		constructor() {
+			super();
+		}
 
-        serialize() {
-            return this._doSerialize();
-        }
+		serialize() {
+			return this._doSerialize();
+		}
 
-        /**
-         * @param {Buffer} buffer
-         * @returns {AbstractSerializable}
-         */
-        deserialize(buffer: Buffer): AbstractSerializable {
-            return this._doDeserialize(buffer);
-        }
-    };
+		/**
+		 * @param {Buffer} buffer
+		 * @returns {AbstractSerializable}
+		 */
+		deserialize(buffer: Buffer): AbstractSerializable {
+			return this._doDeserialize(buffer);
+		}
+	};

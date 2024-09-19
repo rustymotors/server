@@ -8,8 +8,8 @@ export { SerializedBufferOld } from "./src/SerializedBufferOld.js";
 export { RawMessage } from "./src/RawMessage.js";
 export { ServerMessage } from "./src/ServerMessage.js";
 export {
-    AbstractSerializable,
-    SerializableMixin,
+	AbstractSerializable,
+	SerializableMixin,
 } from "./src/messageFactory.js";
 export { NPSMessage } from "./src/NPSMessage.js";
 export { OldServerMessage } from "./src/OldServerMessage.js";
@@ -21,21 +21,21 @@ export { serializeStringRaw } from "./src/serializeStringRaw.js";
 export { MessageNode } from "./src/MessageNode.js";
 export { Timestamp } from "./src/TimeStamp.js";
 export {
-    McosEncryptionPair,
-    McosEncryption,
-    addSession,
-    createInitialState,
-    fetchStateFromDatabase,
-    addOnDataHandler,
-    addSocket,
-    getOnDataHandler,
-    removeSocket,
-    wrapSocket,
-    addEncryption,
-    getEncryption,
-    McosSession,
-    findSessionByConnectionId,
-    updateEncryption,
+	McosEncryptionPair,
+	McosEncryption,
+	addSession,
+	createInitialState,
+	fetchStateFromDatabase,
+	addOnDataHandler,
+	addSocket,
+	getOnDataHandler,
+	removeSocket,
+	wrapSocket,
+	addEncryption,
+	getEncryption,
+	McosSession,
+	findSessionByConnectionId,
+	updateEncryption,
 } from "./src/State.js";
 export type { State } from "./src/State.js";
 export type { OnDataHandler, ServiceResponse } from "./src/State.js";
@@ -44,17 +44,17 @@ export { NPSHeader } from "./src/NPSHeader.js";
 export * from "./src/interfaces.js";
 
 export interface KeypressEvent {
-    sequence: string;
-    name: string;
-    ctrl: boolean;
-    meta: boolean;
-    shift: boolean;
+	sequence: string;
+	name: string;
+	ctrl: boolean;
+	meta: boolean;
+	shift: boolean;
 }
 
 export interface ConnectionRecord {
-    customerId: number;
-    connectionId: string;
-    sessionKey: string;
-    sKey: string;
-    contextId: string;
+	customerId: number;
+	connectionId: string;
+	sessionKey: string;
+	sKey: string;
+	contextId: string;
 }

@@ -8,30 +8,30 @@ import { SerializableMixin, AbstractSerializable } from "./messageFactory.js";
  */
 
 export class SerializedBufferOld extends SerializableMixin(
-    AbstractSerializable,
+	AbstractSerializable,
 ) {
-    constructor() {
-        super();
-    }
+	constructor() {
+		super();
+	}
 
-    /**
-     * @param {Buffer} buffer
-     * @returns {SerializedBufferOld}
-     */
-    override _doDeserialize(buffer: Buffer): SerializedBufferOld {
-        this.setBuffer(buffer);
-        return this;
-    }
+	/**
+	 * @param {Buffer} buffer
+	 * @returns {SerializedBufferOld}
+	 */
+	override _doDeserialize(buffer: Buffer): SerializedBufferOld {
+		this.setBuffer(buffer);
+		return this;
+	}
 
-    serialize() {
-        return this.data;
-    }
+	serialize() {
+		return this.data;
+	}
 
-    override toString() {
-        return `SerializedBuffer: ${this.serialize().toString("hex")}`;
-    }
+	override toString() {
+		return `SerializedBuffer: ${this.serialize().toString("hex")}`;
+	}
 
-    size() {
-        return this.data.length;
-    }
+	size() {
+		return this.data.length;
+	}
 }
