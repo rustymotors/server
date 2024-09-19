@@ -11,7 +11,7 @@ export async function validatePersonaName({
     connectionId,
     message,
     log = getServerLogger({
-        module: "PersonaServer",
+        name: "PersonaServer",
     }),
 }: {
     connectionId: string;

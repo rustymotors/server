@@ -157,7 +157,7 @@ async function getPersonaMapsByCustomerId(
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBufferOld[],
@@ -166,7 +166,7 @@ async function getPersonaMapsByCustomerId(
 async function getPersonaMaps({
     connectionId,
     message,
-    log = getServerLogger({ module: "PersonaServer" }),
+    log = getServerLogger({ name: "PersonaServer" }),
 }: {
     connectionId: string;
     message: LegacyMessage;
@@ -253,7 +253,7 @@ async function getPersonaMaps({
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBufferOld} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "PersonaServer" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "PersonaServer" })]
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBufferOld[],
@@ -264,7 +264,7 @@ export async function receivePersonaData({
     connectionId,
     message,
     log = getServerLogger({
-        module: "PersonaServer",
+        name: "PersonaServer",
     }),
 }: {
     connectionId: string;
@@ -292,9 +292,7 @@ export async function receivePersonaData({
 
     if (typeof supportedHandler === "undefined") {
         // We do not yet support this message code
-        throw Error(
-            `UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
-        );
+        throw Error(`UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`);
     }
 
     try {
@@ -307,9 +305,7 @@ export async function receivePersonaData({
         log.debug("Leaving receivePersonaDatadleData");
         return result;
     } catch (error) {
-        const err = Error(
-            `Error handling persona data: ${String(error)}`,
-        );
+        const err = Error(`Error handling persona data: ${String(error)}`);
         err.cause = error;
         throw err;
     }

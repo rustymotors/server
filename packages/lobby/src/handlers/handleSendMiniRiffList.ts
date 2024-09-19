@@ -10,13 +10,13 @@ import { channelRecordSize, channels } from "./channels.js";
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "Lobby" })]
  */
 export async function handleSendMiniRiffList({
     connectionId,
     message,
     log = getServerLogger({
-        module: "Lobby",
+        name: "Lobby",
         level: getServerConfiguration({}).logLevel ?? "info",
     }),
 }: {
@@ -24,7 +24,6 @@ export async function handleSendMiniRiffList({
     message: LegacyMessage;
     log?: ServerLogger;
 }) {
-    
     log.debug("Handling NPS_SEND_MINI_RIFF_LIST");
     log.debug(`Received command: ${message._doSerialize().toString("hex")}`);
 

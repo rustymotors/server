@@ -13,14 +13,14 @@ user1._userName = "User 1";
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "Lobby" })]
  */
 
 export async function handleGetMiniUserList({
     connectionId,
     message,
     log = getServerLogger({
-        module: "Lobby",
+        name: "Lobby",
         level: getServerConfiguration({}).logLevel ?? "info",
     }),
 }: {

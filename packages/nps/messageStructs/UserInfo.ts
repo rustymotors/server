@@ -17,7 +17,7 @@ export class UserInfo extends BaseSerializable {
         this.userData = Buffer.alloc(64);
     }
 
-    serialize(): Buffer {
+    override serialize(): Buffer {
         const buffer = Buffer.alloc(this.getByteSize());
         let offset = 0;
         buffer.writeInt32BE(this.profileId, offset);
@@ -34,10 +34,10 @@ export class UserInfo extends BaseSerializable {
         this.userData.copy(buffer, offset);
         return buffer;
     }
-    getByteSize(): number {
+    override getByteSize(): number {
         return 4 + 2 + this.profileName.length + 1 + 64;
     }
-    toString(): string {
+    override toString(): string {
         return `Profile ID: ${this.profileId},
         Profile Name: ${this.profileName}`;
     }

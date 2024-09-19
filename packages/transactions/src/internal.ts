@@ -89,7 +89,7 @@ async function processInput({
     connectionId,
     packet,
     log = getServerLogger({
-        module: "transactionServer",
+        name: "transactionServer",
     }),
 }: import("./handlers.js").MessageHandlerArgs): Promise<
     import("./handlers.js").MessageHandlerResult
@@ -114,9 +114,7 @@ async function processInput({
             });
             return responsePackets;
         } catch (error) {
-            const err = Error(
-                `Error handling packet: ${String(error)}`,
-            );
+            const err = Error(`Error handling packet: ${String(error)}`);
             err.cause = error;
             throw err;
         }
@@ -131,7 +129,7 @@ async function processInput({
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBufferOld} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "transactionServer" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "transactionServer" })]
  * @returns {Promise<{
  *     connectionId: string,
  *    messages: SerializedBufferOld[]
@@ -141,7 +139,7 @@ export async function receiveTransactionsData({
     connectionId,
     message,
     log = getServerLogger({
-        module: "transactionServer",
+        name: "transactionServer",
         level: getServerConfiguration({}).logLevel ?? "info",
     }),
 }: {
@@ -197,9 +195,7 @@ export async function receiveTransactionsData({
 
             log.debug(`Decrypted message: ${inboundMessage.toString()}`);
         } catch (error) {
-            const err = Error(
-                `Unable to decrypt message: ${String(error)}`,
-            );
+            const err = Error(`Unable to decrypt message: ${String(error)}`);
             err.cause = error;
             throw err;
         }
@@ -287,8 +283,6 @@ export async function receiveTransactionsData({
  */
 export function verifyLength(buffer: Buffer, buffer2: Buffer) {
     if (buffer.length !== buffer2.length) {
-        throw Error(
-            `Length mismatch: ${buffer.length} !== ${buffer2.length}`,
-        );
+        throw Error(`Length mismatch: ${buffer.length} !== ${buffer2.length}`);
     }
 }

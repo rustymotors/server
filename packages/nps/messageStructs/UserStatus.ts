@@ -32,10 +32,10 @@ export class UserStatus extends BaseSerializable {
 		this.gag = new UserAction("gag");
 		this.sessionKey = sessionKey || new SessionKey({});
 	}
-	serialize(): Buffer {
+	override serialize(): Buffer {
 		return this.toBytes();
 	}
-	getByteSize(): number {
+	override getByteSize(): number {
 		return this.getSize();
 	}
 
@@ -153,7 +153,7 @@ export class UserStatus extends BaseSerializable {
 		this.sessionKey = sessionKey;
 	}
 
-	toString(): string {
+	override toString(): string {
 		return `UserStatus:
         Customer ID: ${this.customerId}
         Persona ID: ${this.personaId}

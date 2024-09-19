@@ -4,7 +4,6 @@ import * as Sentry from "@sentry/node";
 
 type ServerLoggerOptions = {
     level?: string;
-    module?: string;
     name?: string;
 };
 
@@ -41,8 +40,7 @@ class SLogger {
             message,
             sentry_trace: Sentry.getTraceData()["sentry-trace"],
         });
-
-        }
+    }
 
     /**
      * @param {string} message
@@ -87,11 +85,11 @@ class SLogger {
  * @return {module:pino.Logger}
  */
 export function getServerLogger(options: ServerLoggerOptions): ServerLogger {
-    const logLevel = process.env["MCO_LOG_LEVEL"] ?? "info";   
-    const moduleName = `server.${options ? (options.module ?? options.name) : "unknown"}`;
+    const logLevel = process.env["MCO_LOG_LEVEL"] ?? "info";
+    const logName = `server.${options ? (options.name ?? "unknown") : "unknown"}`;
     SLogger.instance = new SLogger({
         level: logLevel,
-        name: moduleName,
+        name: logName,
     });
-    return SLogger.instance as ServerLogger
+    return SLogger.instance as ServerLogger;
 }

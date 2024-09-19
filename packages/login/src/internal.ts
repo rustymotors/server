@@ -42,7 +42,7 @@ const userRecords: import("../../shared/src/interfaces.js").UserRecordMini[] = [
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBufferOld} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBufferOld[],
@@ -52,7 +52,7 @@ async function login({
     connectionId,
     message,
     log = getServerLogger({
-        module: "LoginServer",
+        name: "LoginServer",
     }),
 }: {
     connectionId: string;
@@ -195,7 +195,7 @@ export const messageHandlers: {
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBufferOld} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBufferOld[],
@@ -205,7 +205,7 @@ export async function handleLoginData({
     connectionId,
     message,
     log = getServerLogger({
-        module: "handleLoginData",
+        name: "handleLoginData",
     }),
 }: {
     connectionId: string;
@@ -227,9 +227,7 @@ export async function handleLoginData({
 
     if (typeof supportedHandler === "undefined") {
         // We do not yet support this message code
-        throw Error(
-            `UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
-        );
+        throw Error(`UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`);
     }
 
     try {

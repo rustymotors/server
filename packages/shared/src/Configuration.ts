@@ -1,5 +1,5 @@
 import type { Logger } from "pino";
-import { getServerLogger } from "./log.js";
+import { getServerLogger, type ServerLogger } from "./log.js";
 
 /**
  * @module shared/Configuration
@@ -36,7 +36,7 @@ export class Configuration {
         privateKeyFile?: string;
         publicKeyFile?: string;
         logLevel?: string;
-        logger?: Logger;
+        logger?: ServerLogger;
     }) {
         try {
             this.certificateFile = certificateFile;

@@ -39,7 +39,7 @@ import * as Sentry from "@sentry/node";
  * @property {string} args.connectionId The connection id of the socket that
  *                                  received the data.
  * @property {module:packages/shared/RawMessage} args.message The data that was received.
- * @property {module:shared/log.ServerLogger} [args.log=getServerLogger({ module: "gateway" })] The logger to use.
+ * @property {module:shared/log.ServerLogger} [args.log=getServerLogger({ name: "gateway" })] The logger to use.
  *                                                                    response
  *                                                                to the
  *                                                           data.
@@ -61,7 +61,7 @@ export function socketErrorHandler({
     connectionId,
     error,
     log = getServerLogger({
-        module: "socketErrorHandler",
+        name: "socketErrorHandler",
     }),
 }: {
     connectionId: string;
@@ -81,12 +81,12 @@ export function socketErrorHandler({
  *
  * @param {object} options
  * @param {string} options.connectionId The connection ID
- * @param {import("pino").Logger} [options.log=getServerLogger({ module: "socketEndHandler" })] The logger to use
+ * @param {import("pino").Logger} [options.log=getServerLogger({ name: "socketEndHandler" })] The logger to use
  */
 export function socketEndHandler({
     connectionId,
     log = getServerLogger({
-        module: "socketEndHandler",
+        name: "socketEndHandler",
     }),
 }: {
     connectionId: string;
@@ -103,13 +103,13 @@ export function socketEndHandler({
  *
  * @param {object} options
  * @param {Socket} options.incomingSocket The incoming socket
- * @param {Logger} [options.log=getServerLogger({ module: "onDataHandler" })] The logger to use
+ * @param {Logger} [options.log=getServerLogger({ name: "onDataHandler" })] The logger to use
  *
  */
 export function onSocketConnection({
     incomingSocket,
     log = getServerLogger({
-        module: "onDataHandler",
+        name: "onDataHandler",
     }),
 }: {
     incomingSocket: Socket;

@@ -6,7 +6,7 @@ export async function handleTrackingPing({
     connectionId,
     message,
     log = getServerLogger({
-        module: "Lobby",
+        name: "Lobby",
     }),
 }: {
     connectionId: string;

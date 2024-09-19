@@ -19,7 +19,7 @@ async function receiveChatData({
     connectionId: string;
     message: Serializable;
 }): Promise<ServiceResponse> {
-    const log = getServerLogger({ module: "chat" });
+    const log = getServerLogger({ name: "chat" });
 
     log.info(`Received chat data from connection ${connectionId}`);
     log.debug(`Message: ${message.toHexString()}`);

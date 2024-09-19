@@ -47,7 +47,7 @@ export const messageHandlers: {
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage | MessageBuffer} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "Lobby" })]
  * @returns {Promise<{
  * connectionId: string,
  * message: LegacyMessage | MessageBuffer,
@@ -57,7 +57,7 @@ async function encryptCmd({
     connectionId,
     message,
     log = getServerLogger({
-        module: "Lobby",
+        name: "Lobby",
     }),
 }: {
     connectionId: string;
@@ -97,7 +97,7 @@ async function encryptCmd({
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "Lobby" })]
  * @returns {Promise<{
  *  connectionId: string,
  * message: LegacyMessage,
@@ -107,7 +107,7 @@ async function decryptCmd({
     connectionId,
     message,
     log = getServerLogger({
-        module: "Lobby",
+        name: "Lobby",
     }),
 }: {
     connectionId: string;
@@ -178,7 +178,7 @@ const npsCommandHandlers: NpsCommandHandler[] = [
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "Lobby" })]
  * @return {Promise<{
  * connectionId: string,
  * message: MessageBuffer | LegacyMessage,
@@ -188,7 +188,7 @@ async function handleCommand({
     connectionId,
     message,
     log = getServerLogger({
-        module: "Lobby",
+        name: "Lobby",
     }),
 }: {
     connectionId: string;
@@ -228,7 +228,7 @@ async function handleCommand({
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBufferOld} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "Lobby" })]
   * @returns {Promise<{
 *  connectionId: string,
 * messages: SerializedBufferOld[],
@@ -239,7 +239,7 @@ export async function handleEncryptedNPSCommand({
     connectionId,
     message,
     log = getServerLogger({
-        module: "Lobby",
+        name: "Lobby",
     }),
 }: {
     connectionId: string;
@@ -249,7 +249,6 @@ export async function handleEncryptedNPSCommand({
     connectionId: string;
     messages: SerializedBufferOld[];
 }> {
-
     const inboundMessage = new LegacyMessage();
     inboundMessage._doDeserialize(message.data);
 

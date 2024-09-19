@@ -42,7 +42,7 @@ export class MessageBufferOld extends SerializedBufferOld {
      * @param {Buffer} buffer
      */
     set buffer(buffer: Buffer) {
-        // const log = getServerLogger({ module: "MessageBuffer" });
+        // const log = getServerLogger({ name: "MessageBuffer" });
         // log.level = getServerConfiguration({}).logLevel ?? "info";
         this._buffer = Buffer.alloc(buffer.length);
         this._buffer = buffer;
@@ -103,9 +103,7 @@ export class MessageBufferOld extends SerializedBufferOld {
             );
         }
         if (this.messageId <= 0) {
-            throw Error(
-                `Message ID ${this.messageId} is invalid to serialize`,
-            );
+            throw Error(`Message ID ${this.messageId} is invalid to serialize`);
         }
         this._header.serialize().copy(buffer);
         this._buffer.copy(buffer, 4);

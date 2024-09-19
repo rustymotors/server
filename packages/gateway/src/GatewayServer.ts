@@ -5,7 +5,11 @@ import { ConsoleThread } from "rusty-motors-cli";
 import { receiveLobbyData } from "rusty-motors-lobby";
 import { receiveLoginData } from "rusty-motors-login";
 import { receivePersonaData } from "rusty-motors-personas";
-import { Configuration, getServerConfiguration, type ServerLogger } from "rusty-motors-shared";
+import {
+    Configuration,
+    getServerConfiguration,
+    type ServerLogger,
+} from "rusty-motors-shared";
 import {
     addOnDataHandler,
     createInitialState,
@@ -15,7 +19,12 @@ import { getServerLogger } from "rusty-motors-shared";
 import { receiveTransactionsData } from "rusty-motors-transactions";
 import { onSocketConnection } from "./index.js";
 import { addWebRoutes } from "./web.js";
-import { populateGameMessageProcessors, populatePortToMessageTypes, portToMessageTypes, gameMessageProcessors } from "rusty-motors-nps";
+import {
+    populateGameMessageProcessors,
+    populatePortToMessageTypes,
+    portToMessageTypes,
+    gameMessageProcessors,
+} from "rusty-motors-nps";
 import { receiveChatData } from "rusty-motors-chat";
 
 /**
@@ -66,7 +75,7 @@ export class Gateway {
     constructor({
         config = getServerConfiguration({}),
         log = getServerLogger({
-            module: "GatewayServer",
+            name: "GatewayServer",
         }),
         backlogAllowedCount = 0,
         listeningPortList = [],
@@ -241,9 +250,7 @@ export class Gateway {
             });
         });
 
-        this.webServer = fastify({
-            logger: true,
-        });
+        this.webServer = fastify({});
         this.webServer.register(FastifySensible);
 
         let state = fetchStateFromDatabase();
@@ -282,7 +289,7 @@ export class Gateway {
     static getInstance({
         config = undefined,
         log = getServerLogger({
-            module: "GatewayServer",
+            name: "GatewayServer",
         }),
         backlogAllowedCount = 0,
         listeningPortList = [],
@@ -321,7 +328,7 @@ Gateway._instance = undefined;
 export function getGatewayServer({
     config,
     log = getServerLogger({
-        module: "GatewayServer",
+        name: "GatewayServer",
     }),
     backlogAllowedCount = 0,
     listeningPortList: listeningPortList = [],

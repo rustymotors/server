@@ -8,7 +8,7 @@ export async function _setMyUserData({
     connectionId,
     message,
     log = getServerLogger({
-        module: "Lobby",
+        name: "Lobby",
         level: getServerConfiguration({}).logLevel ?? "info",
     }),
 }: {
@@ -24,7 +24,6 @@ export async function _setMyUserData({
         incomingMessage.deserialize(message.serialize());
 
         log.debug(`User ID: ${incomingMessage._userId}`);
-
 
         // Update the user's data
         updateUser({

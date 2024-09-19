@@ -17,7 +17,7 @@ export class SubThread extends EventEmitter {
      */
     constructor(
         name: string,
-        log: ServerLogger = getServerLogger({ module: "SubThread" }),
+        log: ServerLogger = getServerLogger({ name: "SubThread" }),
         loopInterval: number = 100,
     ) {
         super();

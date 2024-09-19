@@ -46,7 +46,7 @@ export async function _npsRequestGameConnectServer({
     connectionId,
     message,
     log = getServerLogger({
-        module: "LoginServer",
+        name: "LoginServer",
     }),
 }: ServiceArgs): Promise<{
     connectionId: string;

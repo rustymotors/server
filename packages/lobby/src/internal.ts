@@ -72,7 +72,7 @@ export const messageHandlers: {
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBufferOld} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "PersonaServer" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "PersonaServer" })]
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBufferOld[],
@@ -83,7 +83,7 @@ export async function receiveLobbyData({
     connectionId,
     message,
     log = getServerLogger({
-        module: "Lobby",
+        name: "Lobby",
     }),
 }: {
     connectionId: string;
@@ -93,7 +93,6 @@ export async function receiveLobbyData({
     connectionId: string;
     messages: SerializedBufferOld[];
 }> {
-
     /** @type {LegacyMessage | NPSMessage} */
     let inboundMessage: LegacyMessage | NPSMessage;
 
@@ -101,9 +100,7 @@ export async function receiveLobbyData({
     const dataLength = message.getByteSize();
 
     if (dataLength < 4) {
-        throw Error(
-            `Data length ${dataLength} is too short to deserialize`,
-        );
+        throw Error(`Data length ${dataLength} is too short to deserialize`);
     }
 
     if (dataLength > 12) {
@@ -128,9 +125,7 @@ export async function receiveLobbyData({
 
     if (typeof supportedHandler === "undefined") {
         // We do not yet support this message code
-        throw Error(
-            `UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
-        );
+        throw Error(`UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`);
     }
 
     const buff = new SerializedBufferOld();
@@ -146,9 +141,7 @@ export async function receiveLobbyData({
         log.debug("Leaving receiveLobbyData");
         return result;
     } catch (error) {
-        const err = Error(
-            `Error handling lobby data: ${String(error)}`,
-        );
+        const err = Error(`Error handling lobby data: ${String(error)}`);
         err.cause = error;
         throw err;
     }
