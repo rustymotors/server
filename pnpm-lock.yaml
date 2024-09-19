@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@adminjs/sequelize':
         specifier: ^4.1.1
-        version: 4.1.1(adminjs@7.8.11(@types/react@18.3.4))(sequelize@6.37.3(pg@8.13.0))
+        version: 4.1.1(adminjs@7.8.13(@types/react@18.3.4))(sequelize@6.37.3)
       '@databases/pg':
         specifier: ^5.5.0
         version: 5.5.0(typescript@5.6.2)
@@ -27,8 +27,8 @@ importers:
         specifier: 8.30.0
         version: 8.30.0
       adminjs:
-        specifier: ^7.5.2
-        version: 7.8.11(@types/react@18.3.4)
+        specifier: ^7.8.13
+        version: 7.8.13(@types/react@18.3.4)
       fastify:
         specifier: ^5.0.0
         version: 5.0.0
@@ -133,10 +133,10 @@ importers:
         specifier: 3.2.12
         version: 3.2.12
       '@typescript-eslint/eslint-plugin':
-        specifier: ^8.5.0
+        specifier: ^8.6.0
         version: 8.6.0(@typescript-eslint/parser@8.6.0(eslint@9.10.0)(typescript@5.6.2))(eslint@9.10.0)(typescript@5.6.2)
       '@typescript-eslint/parser':
-        specifier: ^8.5.0
+        specifier: ^8.6.0
         version: 8.6.0(eslint@9.10.0)(typescript@5.6.2)
       '@vitest/coverage-v8':
         specifier: ^2.1.1
@@ -2656,8 +2656,8 @@ packages:
     resolution: {integrity: sha512-4B/qKCfeE/ODUaAUpSwfzazo5x29WD4r3vXiWsB7I2mSDAihwEqKO+g8GELZUQSSAo5e1XTYh3ZVfLyxBc12nA==}
     engines: {node: '>= 10.0.0'}
 
-  adminjs@7.8.11:
-    resolution: {integrity: sha512-ytrNi1fUOXgMEnGTnsQrAbR1DFJC75SaR3zWUr+SeemriRv89j7jfk4IFXiyXAd+satsRA+v+pTsizJ3ZuC6rQ==}
+  adminjs@7.8.13:
+    resolution: {integrity: sha512-xTmrU9K1VWoIPxHfJnfU8CeFj4f1bZFjyizBntVp0F9dVc8geEaDCOcRIiKbfzrvIk2/Yr5G6z0seLKa4hprIA==}
     engines: {node: '>=16.0.0'}
     hasBin: true
 
@@ -4268,10 +4268,6 @@ packages:
   merge2@1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
     engines: {node: '>= 8'}
-
-  micromatch@4.0.7:
-    resolution: {integrity: sha512-LPP/3KorzCwBxfeUuZmaR6bG2kdeHSbe0P2tY3FLRU4vYrjYz5hI4QZwV0njUx3jeuKe67YukQ1LSPZBKDqO/Q==}
-    engines: {node: '>=8.6'}
 
   micromatch@4.0.8:
     resolution: {integrity: sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==}
@@ -5958,9 +5954,9 @@ snapshots:
       - react-is
       - supports-color
 
-  '@adminjs/sequelize@4.1.1(adminjs@7.8.11(@types/react@18.3.4))(sequelize@6.37.3(pg@8.13.0))':
+  '@adminjs/sequelize@4.1.1(adminjs@7.8.13(@types/react@18.3.4))(sequelize@6.37.3)':
     dependencies:
-      adminjs: 7.8.11(@types/react@18.3.4)
+      adminjs: 7.8.13(@types/react@18.3.4)
       escape-regexp: 0.0.1
       sequelize: 6.37.3(pg@8.13.0)
 
@@ -8512,7 +8508,7 @@ snapshots:
 
   address@1.2.2: {}
 
-  adminjs@7.8.11(@types/react@18.3.4):
+  adminjs@7.8.13(@types/react@18.3.4):
     dependencies:
       '@adminjs/design-system': 4.1.1(@babel/core@7.25.2)(@types/react@18.3.4)(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)
       '@babel/core': 7.25.2
@@ -9498,7 +9494,7 @@ snapshots:
       '@nodelib/fs.walk': 1.2.8
       glob-parent: 5.1.2
       merge2: 1.4.1
-      micromatch: 4.0.7
+      micromatch: 4.0.8
 
   fast-json-stable-stringify@2.1.0: {}
 
@@ -10345,11 +10341,6 @@ snapshots:
   merge-stream@2.0.0: {}
 
   merge2@1.4.1: {}
-
-  micromatch@4.0.7:
-    dependencies:
-      braces: 3.0.3
-      picomatch: 2.3.1
 
   micromatch@4.0.8:
     dependencies:
