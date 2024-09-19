@@ -12,7 +12,8 @@ describe("ConsoleThread", () => {
 			trace: () => vi.fn(),
 			fatal: () => vi.fn(),
 		} as any;
-		new ConsoleThread({ parentThread, log });
+		const instance = new ConsoleThread({ parentThread, log });
+		expect(instance).toBeInstanceOf(ConsoleThread);
 		expect(() => new ConsoleThread({ parentThread, log })).toThrow(
 			"ConsoleThread already exists",
 		);
