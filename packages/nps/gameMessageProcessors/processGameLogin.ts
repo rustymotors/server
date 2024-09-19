@@ -90,7 +90,6 @@ export function unpackUserLoginMessage(message: ISerializable): {
 	// Update the data offset
 	dataOffset += 2 + nextDataLength2;
 
-
 	// Return the session key, game id, and context token
 	return {
 		sessionKey: sessionKeyStructure.getKey(),

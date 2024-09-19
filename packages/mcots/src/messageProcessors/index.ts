@@ -8,39 +8,39 @@ import { processStockCarInfo } from "./processStockCarInfo.js";
 export type ServerSocketCallback = (messages: ServerMessage[]) => void;
 
 export type ServerMessageProcessor = (
-    connectionId: string,
-    message: ServerMessage,
-    socketCallback: ServerSocketCallback,
+	connectionId: string,
+	message: ServerMessage,
+	socketCallback: ServerSocketCallback,
 ) => Promise<void>;
 
 const serverMessageProcessors = new Map<number, ServerMessageProcessor>([]);
 
 export function addServerMessageProcessor(
-    messageId: number,
-    processor: ServerMessageProcessor,
+	messageId: number,
+	processor: ServerMessageProcessor,
 ) {
-    serverMessageProcessors.set(messageId, processor);
+	serverMessageProcessors.set(messageId, processor);
 }
 
 /**
  * Populates the server message processors.
- * 
+ *
  * This function adds various server message processors to handle different types of messages.
  * Each server message processor is associated with a specific message ID and a corresponding processing function.
- * 
+ *
  * @remarks
  * The server message processors are used to process incoming messages from the server and perform the necessary actions based on the message type.
- * 
+ *
  * @example
  * // Add server message processors
  * populateServerMessageProcessors();
  */
 export function populateServerMessageProcessors() {
-    addServerMessageProcessor(105, processServerLogin);
-    addServerMessageProcessor(109, processSetOptions);
-    addServerMessageProcessor(141, processStockCarInfo);
-    addServerMessageProcessor(440, processClientTracking);
-    addServerMessageProcessor(438, processClientConnect);
+	addServerMessageProcessor(105, processServerLogin);
+	addServerMessageProcessor(109, processSetOptions);
+	addServerMessageProcessor(141, processStockCarInfo);
+	addServerMessageProcessor(440, processClientTracking);
+	addServerMessageProcessor(438, processClientConnect);
 }
 
 /**
@@ -50,11 +50,11 @@ export function populateServerMessageProcessors() {
  * @returns The server message processor associated with the given message ID, or `undefined` if no processor is found.
  */
 export function getServerMessageProcessor(
-    messageId: number,
+	messageId: number,
 ): ServerMessageProcessor | undefined {
-    return serverMessageProcessors.get(messageId);
+	return serverMessageProcessors.get(messageId);
 }
 
 export function getServerMessageProcessors() {
-    return serverMessageProcessors;
+	return serverMessageProcessors;
 }

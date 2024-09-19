@@ -16,9 +16,9 @@
 
 import { getServerConfiguration, type ServerLogger } from "rusty-motors-shared";
 import {
-    fetchStateFromDatabase,
-    getEncryption,
-    updateEncryption,
+	fetchStateFromDatabase,
+	getEncryption,
+	updateEncryption,
 } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 import { OldServerMessage } from "rusty-motors-shared";
@@ -34,9 +34,9 @@ import type { Serializable } from "rusty-motors-shared-packets";
  * @return {boolean}
  */
 function isMessageEncrypted(
-    message: OldServerMessage | ServerMessage,
+	message: OldServerMessage | ServerMessage,
 ): boolean {
-    return message._header.flags - 8 >= 0;
+	return message._header.flags - 8 >= 0;
 }
 
 /**
@@ -46,38 +46,38 @@ function isMessageEncrypted(
  * @return {string}
  */
 function _MSG_STRING(messageID: number): string {
-    const messageIds = [
-        { id: 105, name: "MC_LOGIN" }, // 0x69
-        { id: 106, name: "MC_LOGOUT" }, // 0x6a
-        { id: 108, name: "MC_GET_PLAYER_INFO" }, // 0x6c
-        { id: 109, name: "MC_SET_OPTIONS" }, // 0x6d
-        { id: 122, name: "MC_PLAYER_INFO" }, // 0x7a"}
-        { id: 141, name: "MC_STOCK_CAR_INFO" }, // 0x8d
-        { id: 172, name: "MC_GET_OWNED_VEHICLES" }, // 0xac"}
-        { id: 173, name: "MC_OWNED_VEHICLES_LIST" }, // 0xad"}
-        { id: 174, name: "MC_GET_OWNED_PARTS" }, // 0xae"}
-        { id: 213, name: "MC_LOGIN_COMPLETE" }, // 0xd5
-        { id: 264, name: "MC_GET_PLAYER_PHYSICAL" }, // 0x108
-        { id: 265, name: "MC_PLAYER_PHYSICAL_INFO" }, // 0x109
-        { id: 363, name: "MC_GET_GAME_URLS" }, // 0x16b"}
-        { id: 266, name: "MC_UPDATE_PLAYER_PHYSICAL" }, // 0x10a
-        { id: 322, name: "MC_GET_ARCADE_CARS" }, // 0x142"}
-        { id: 324, name: "MC_GET_LOBBIES" }, // 0x144
-        { id: 325, name: "MC_LOBBIES" }, // 0x145
-        { id: 361, name: "MC_GET_PLAYER_RACING_HISTORY" }, // 0x169"}
-        { id: 362, name: "MC_PLAYER_RACING_HISTORY" }, // 0x16a"}
-        { id: 389, name: "MC_GET_MCO_TUNABLES" }, // 0x185"}
-        { id: 391, name: "MC_CLUB_GET_INVITATIONS" }, // 0x187
-        { id: 438, name: "MC_CLIENT_CONNECT_MSG" }, // 0x1b6
-        { id: 440, name: "MC_TRACKING_MSG" },
-    ];
-    const result = messageIds.find((id) => id.id === messageID);
+	const messageIds = [
+		{ id: 105, name: "MC_LOGIN" }, // 0x69
+		{ id: 106, name: "MC_LOGOUT" }, // 0x6a
+		{ id: 108, name: "MC_GET_PLAYER_INFO" }, // 0x6c
+		{ id: 109, name: "MC_SET_OPTIONS" }, // 0x6d
+		{ id: 122, name: "MC_PLAYER_INFO" }, // 0x7a"}
+		{ id: 141, name: "MC_STOCK_CAR_INFO" }, // 0x8d
+		{ id: 172, name: "MC_GET_OWNED_VEHICLES" }, // 0xac"}
+		{ id: 173, name: "MC_OWNED_VEHICLES_LIST" }, // 0xad"}
+		{ id: 174, name: "MC_GET_OWNED_PARTS" }, // 0xae"}
+		{ id: 213, name: "MC_LOGIN_COMPLETE" }, // 0xd5
+		{ id: 264, name: "MC_GET_PLAYER_PHYSICAL" }, // 0x108
+		{ id: 265, name: "MC_PLAYER_PHYSICAL_INFO" }, // 0x109
+		{ id: 363, name: "MC_GET_GAME_URLS" }, // 0x16b"}
+		{ id: 266, name: "MC_UPDATE_PLAYER_PHYSICAL" }, // 0x10a
+		{ id: 322, name: "MC_GET_ARCADE_CARS" }, // 0x142"}
+		{ id: 324, name: "MC_GET_LOBBIES" }, // 0x144
+		{ id: 325, name: "MC_LOBBIES" }, // 0x145
+		{ id: 361, name: "MC_GET_PLAYER_RACING_HISTORY" }, // 0x169"}
+		{ id: 362, name: "MC_PLAYER_RACING_HISTORY" }, // 0x16a"}
+		{ id: 389, name: "MC_GET_MCO_TUNABLES" }, // 0x185"}
+		{ id: 391, name: "MC_CLUB_GET_INVITATIONS" }, // 0x187
+		{ id: 438, name: "MC_CLIENT_CONNECT_MSG" }, // 0x1b6
+		{ id: 440, name: "MC_TRACKING_MSG" },
+	];
+	const result = messageIds.find((id) => id.id === messageID);
 
-    if (typeof result !== "undefined") {
-        return result.name;
-    }
+	if (typeof result !== "undefined") {
+		return result.name;
+	}
 
-    return "Unknown";
+	return "Unknown";
 }
 
 /**
@@ -86,43 +86,43 @@ function _MSG_STRING(messageID: number): string {
  * @returns {Promise<import("./handlers.js").MessageHandlerResult>}
  */
 async function processInput({
-    connectionId,
-    packet,
-    log = getServerLogger({
-        name: "transactionServer",
-    }),
+	connectionId,
+	packet,
+	log = getServerLogger({
+		name: "transactionServer",
+	}),
 }: import("./handlers.js").MessageHandlerArgs): Promise<
-    import("./handlers.js").MessageHandlerResult
+	import("./handlers.js").MessageHandlerResult
 > {
-    const currentMessageNo = packet._msgNo;
-    const currentMessageString = _MSG_STRING(currentMessageNo);
+	const currentMessageNo = packet._msgNo;
+	const currentMessageString = _MSG_STRING(currentMessageNo);
 
-    log.debug(
-        `We are attempting to process a message with id ${currentMessageNo}(${currentMessageString})`,
-    );
+	log.debug(
+		`We are attempting to process a message with id ${currentMessageNo}(${currentMessageString})`,
+	);
 
-    const result = messageHandlers.find(
-        (msg) => msg.name === currentMessageString,
-    );
+	const result = messageHandlers.find(
+		(msg) => msg.name === currentMessageString,
+	);
 
-    if (typeof result !== "undefined") {
-        try {
-            const responsePackets = await result.handler({
-                connectionId,
-                packet,
-                log,
-            });
-            return responsePackets;
-        } catch (error) {
-            const err = Error(`Error handling packet: ${String(error)}`);
-            err.cause = error;
-            throw err;
-        }
-    }
+	if (typeof result !== "undefined") {
+		try {
+			const responsePackets = await result.handler({
+				connectionId,
+				packet,
+				log,
+			});
+			return responsePackets;
+		} catch (error) {
+			const err = Error(`Error handling packet: ${String(error)}`);
+			err.cause = error;
+			throw err;
+		}
+	}
 
-    throw Error(
-        `Message Number Not Handled: ${currentMessageNo} (${currentMessageString}`,
-    );
+	throw Error(
+		`Message Number Not Handled: ${currentMessageNo} (${currentMessageString}`,
+	);
 }
 
 /**
@@ -136,145 +136,134 @@ async function processInput({
  * }>}
  */
 export async function receiveTransactionsData({
-    connectionId,
-    message,
-    log = getServerLogger({
-        name: "transactionServer",
-        level: getServerConfiguration({}).logLevel ?? "info",
-    }),
+	connectionId,
+	message,
+	log = getServerLogger({
+		name: "transactionServer",
+		level: getServerConfiguration({}).logLevel ?? "info",
+	}),
 }: {
-    connectionId: string;
-    message: Serializable;
-    log?: ServerLogger;
+	connectionId: string;
+	message: Serializable;
+	log?: ServerLogger;
 }): Promise<{
-    connectionId: string;
-    messages: SerializedBufferOld[];
+	connectionId: string;
+	messages: SerializedBufferOld[];
 }> {
-    log.debug(`Received Transaction Server packet: ${connectionId}`);
+	log.debug(`Received Transaction Server packet: ${connectionId}`);
 
-    // Going to use ServerMessage in this module
+	// Going to use ServerMessage in this module
 
-    const inboundMessage = new OldServerMessage();
-    inboundMessage._doDeserialize(message.serialize());
-    log.debug(
-        `Received Transaction Server packet: ${inboundMessage.toString()}`,
-    );
+	const inboundMessage = new OldServerMessage();
+	inboundMessage._doDeserialize(message.serialize());
+	log.debug(`Received Transaction Server packet: ${inboundMessage.toString()}`);
 
-    // Is the message encrypted?
-    if (isMessageEncrypted(inboundMessage)) {
-        log.debug("Message is encrypted");
-        // Get the encryyption settings for this connection
-        const state = fetchStateFromDatabase();
+	// Is the message encrypted?
+	if (isMessageEncrypted(inboundMessage)) {
+		log.debug("Message is encrypted");
+		// Get the encryyption settings for this connection
+		const state = fetchStateFromDatabase();
 
-        const encryptionSettings = getEncryption(state, connectionId);
+		const encryptionSettings = getEncryption(state, connectionId);
 
-        if (typeof encryptionSettings === "undefined") {
-            throw Error(
-                `Unable to locate encryption settings for connection ${connectionId}`,
-            );
-        }
+		if (typeof encryptionSettings === "undefined") {
+			throw Error(
+				`Unable to locate encryption settings for connection ${connectionId}`,
+			);
+		}
 
-        // log the old buffer
-        log.debug(`Encrypted buffer: ${inboundMessage.data.toString("hex")}`);
+		// log the old buffer
+		log.debug(`Encrypted buffer: ${inboundMessage.data.toString("hex")}`);
 
-        try {
-            const decryptedMessage = encryptionSettings.dataEncryption.decrypt(
-                inboundMessage.data,
-            );
-            updateEncryption(state, encryptionSettings).save();
+		try {
+			const decryptedMessage = encryptionSettings.dataEncryption.decrypt(
+				inboundMessage.data,
+			);
+			updateEncryption(state, encryptionSettings).save();
 
-            // Verify the length of the message
-            verifyLength(inboundMessage.data, decryptedMessage);
+			// Verify the length of the message
+			verifyLength(inboundMessage.data, decryptedMessage);
 
-            // Assuming the message was decrypted successfully, update the buffer
-            log.debug(`Decrypted buffer: ${decryptedMessage.toString("hex")}`);
+			// Assuming the message was decrypted successfully, update the buffer
+			log.debug(`Decrypted buffer: ${decryptedMessage.toString("hex")}`);
 
-            inboundMessage.setBuffer(decryptedMessage);
-            inboundMessage._header.flags -= 8;
-            inboundMessage.updateMsgNo();
+			inboundMessage.setBuffer(decryptedMessage);
+			inboundMessage._header.flags -= 8;
+			inboundMessage.updateMsgNo();
 
-            log.debug(`Decrypted message: ${inboundMessage.toString()}`);
-        } catch (error) {
-            const err = Error(`Unable to decrypt message: ${String(error)}`);
-            err.cause = error;
-            throw err;
-        }
-    }
+			log.debug(`Decrypted message: ${inboundMessage.toString()}`);
+		} catch (error) {
+			const err = Error(`Unable to decrypt message: ${String(error)}`);
+			err.cause = error;
+			throw err;
+		}
+	}
 
-    log.debug("Calling processInput()");
-    const response = await processInput({
-        connectionId,
-        packet: inboundMessage,
-        log,
-    });
+	log.debug("Calling processInput()");
+	const response = await processInput({
+		connectionId,
+		packet: inboundMessage,
+		log,
+	});
 
-    // Loop through the outbound messages and encrypt them
-    const outboundMessages: SerializedBufferOld[] = [];
+	// Loop through the outbound messages and encrypt them
+	const outboundMessages: SerializedBufferOld[] = [];
 
-    response.messages.forEach((outboundMessage) => {
-        log.debug(`Outbound message: ${outboundMessage.toString()}`);
+	response.messages.forEach((outboundMessage) => {
+		log.debug(`Outbound message: ${outboundMessage.toString()}`);
 
-        if (isMessageEncrypted(outboundMessage)) {
-            const state = fetchStateFromDatabase();
+		if (isMessageEncrypted(outboundMessage)) {
+			const state = fetchStateFromDatabase();
 
-            const encryptionSettings = getEncryption(state, connectionId);
+			const encryptionSettings = getEncryption(state, connectionId);
 
-            if (typeof encryptionSettings === "undefined") {
-                throw Error(
-                    `Unable to locate encryption settings for connection ${connectionId}`,
-                );
-            }
+			if (typeof encryptionSettings === "undefined") {
+				throw Error(
+					`Unable to locate encryption settings for connection ${connectionId}`,
+				);
+			}
 
-            // log the old buffer
-            log.debug(
-                `Outbound buffer: ${outboundMessage.data.toString("hex")}`,
-            );
+			// log the old buffer
+			log.debug(`Outbound buffer: ${outboundMessage.data.toString("hex")}`);
 
-            try {
-                const encryptedMessage =
-                    encryptionSettings.dataEncryption.encrypt(
-                        outboundMessage.data,
-                    );
-                updateEncryption(state, encryptionSettings).save();
+			try {
+				const encryptedMessage = encryptionSettings.dataEncryption.encrypt(
+					outboundMessage.data,
+				);
+				updateEncryption(state, encryptionSettings).save();
 
-                // Verify the length of the message
-                verifyLength(outboundMessage.data, encryptedMessage);
+				// Verify the length of the message
+				verifyLength(outboundMessage.data, encryptedMessage);
 
-                // Assuming the message was decrypted successfully, update the buffer
+				// Assuming the message was decrypted successfully, update the buffer
 
-                log.debug(
-                    `Encrypted buffer: ${encryptedMessage.toString("hex")}`,
-                );
+				log.debug(`Encrypted buffer: ${encryptedMessage.toString("hex")}`);
 
-                outboundMessage.setBuffer(encryptedMessage);
+				outboundMessage.setBuffer(encryptedMessage);
 
-                log.debug(`Encrypted message: ${outboundMessage.toString()}`);
+				log.debug(`Encrypted message: ${outboundMessage.toString()}`);
 
-                const outboundRawMessage = new SerializedBufferOld();
-                outboundRawMessage.setBuffer(outboundMessage.serialize());
-                log.debug(
-                    `Encrypted message: ${outboundRawMessage.toString()}`,
-                );
-                outboundMessages.push(outboundRawMessage);
-            } catch (error) {
-                const err = Error(
-                    `Unable to encrypt message: ${String(error)}`,
-                );
-                err.cause = error;
-                throw err;
-            }
-        } else {
-            const outboundRawMessage = new SerializedBufferOld();
-            outboundRawMessage.setBuffer(outboundMessage.serialize());
-            log.debug(`Outbound message: ${outboundRawMessage.toString()}`);
-            outboundMessages.push(outboundRawMessage);
-        }
-    });
+				const outboundRawMessage = new SerializedBufferOld();
+				outboundRawMessage.setBuffer(outboundMessage.serialize());
+				log.debug(`Encrypted message: ${outboundRawMessage.toString()}`);
+				outboundMessages.push(outboundRawMessage);
+			} catch (error) {
+				const err = Error(`Unable to encrypt message: ${String(error)}`);
+				err.cause = error;
+				throw err;
+			}
+		} else {
+			const outboundRawMessage = new SerializedBufferOld();
+			outboundRawMessage.setBuffer(outboundMessage.serialize());
+			log.debug(`Outbound message: ${outboundRawMessage.toString()}`);
+			outboundMessages.push(outboundRawMessage);
+		}
+	});
 
-    return {
-        connectionId,
-        messages: outboundMessages,
-    };
+	return {
+		connectionId,
+		messages: outboundMessages,
+	};
 }
 
 /**
@@ -282,7 +271,7 @@ export async function receiveTransactionsData({
  * @param {Buffer} buffer2
  */
 export function verifyLength(buffer: Buffer, buffer2: Buffer) {
-    if (buffer.length !== buffer2.length) {
-        throw Error(`Length mismatch: ${buffer.length} !== ${buffer2.length}`);
-    }
+	if (buffer.length !== buffer2.length) {
+		throw Error(`Length mismatch: ${buffer.length} !== ${buffer2.length}`);
+	}
 }

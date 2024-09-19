@@ -166,5 +166,4 @@ export class UserStatus extends BaseSerializable {
 	toHex(): string {
 		return this.toBytes().toString("hex");
 	}
-
 }

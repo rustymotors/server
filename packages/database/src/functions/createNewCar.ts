@@ -1,16 +1,16 @@
-import { eq } from 'drizzle-orm';
-import { getDatabase } from 'rusty-motors-database';
+import { eq } from "drizzle-orm";
+import { getDatabase } from "rusty-motors-database";
 import {
-    brandedPart as brandedPartSchema,
-    part as partSchema,
-    player as playerSchema,
-    stockAssembly as stockAssemblySchema,
-    stockVehicleAttributes as stockVehicleAttributesSchema,
-    tunables as tunablesSchema,
-    warehouse as warehouseSchema,
-} from 'rusty-motors-schema';
-import { getServerLogger } from 'rusty-motors-shared';
-import { transferPartAssembly } from './transferPartAssembly';
+	brandedPart as brandedPartSchema,
+	part as partSchema,
+	player as playerSchema,
+	stockAssembly as stockAssemblySchema,
+	stockVehicleAttributes as stockVehicleAttributesSchema,
+	tunables as tunablesSchema,
+	warehouse as warehouseSchema,
+} from "rusty-motors-schema";
+import { getServerLogger } from "rusty-motors-shared";
+import { transferPartAssembly } from "./transferPartAssembly";
 /**
  * Create a new car
  *
@@ -25,7 +25,7 @@ import { transferPartAssembly } from './transferPartAssembly';
  *
  * @param {number} lotOwnerId
  * @param {number} brandedPartId
- * @param {number} skinId
+ * @param {number} _skinId
  * @param {number} playerId
  * @param {number} tradeInId
  * @returns {Promise<number>} The new car's ID
@@ -50,251 +50,244 @@ import { transferPartAssembly } from './transferPartAssembly';
  * @throws {Error} If the sale cannot be recorded
  */
 export async function createNewCar(
-    lotOwnerId: number,
-    brandedPartId: number,
-    skinId: number,
-    playerId: number,
-    tradeInId: number
+	lotOwnerId: number,
+	brandedPartId: number,
+	_skinId: number,
+	playerId: number,
+	tradeInId: number,
 ): Promise<number> {
-    const log = getServerLogger();
-    log.setName('createNewCar');
+	const log = getServerLogger({ name: "createNewCar" });
 
-    log.debug(`Creating new car for player ${playerId}`);
-    let currentAbstractCarId = 0;
-    let currentPartId = 0;
-    let currentParentPartId = 0;
-    let currentBrandedPartId = 0;
-    let currentAttachmentPointId = 0;
-    let currentMaxItemWear = 0;
-    let currentRetailPrice = 0;
-    let scrapyardLotId = 0;
-    let tradeInValue = 0;
-    let cost = 0;
-    let rc = 0;
-    let dealOfTheDayBrandedPartId = 0;
-    let dealOfTheDayDiscount = 0;
-    let ownerID = 0;
-    let retailPrice = 0;
-    let maxItemWear = 0;
-    let tradeInPartCount = 0;
-    let carPartCount = 0;
-    let currectPartCounter = 0;
-    let carClass = 0;
+	log.debug(`Creating new car for player ${playerId}`);
+	let currentAbstractCarId = 0;
+	let currentPartId = 0;
+	let currentParentPartId = 0;
+	let currentBrandedPartId = 0;
+	let currentAttachmentPointId = 0;
+	let currentMaxItemWear = 0;
+	let currentRetailPrice = 0;
+	let scrapyardLotId = 0;
+	let tradeInValue = 0;
+	let cost = 0;
+	let rc = 0;
+	let dealOfTheDayBrandedPartId = 0;
+	let dealOfTheDayDiscount = 0;
+	let ownerID = 0;
+	let retailPrice = 0;
+	let maxItemWear = 0;
+	let tradeInPartCount = 0;
+	let carPartCount = 0;
+	let currectPartCounter = 0;
+	let carClass = 0;
 
-    type record = {
-        partId: number;
-        parentPartId: number;
-        brandedPartId: number;
-        attachmentPointId: number;
-        abstractPartTypeId: number;
-        parentAbstractPartTypeId: number;
-        maxItemWear: number;
-        retailPrice: number;
-    };
+	type record = {
+		partId: number;
+		parentPartId: number;
+		brandedPartId: number;
+		attachmentPointId: number;
+		abstractPartTypeId: number;
+		parentAbstractPartTypeId: number;
+		maxItemWear: number;
+		retailPrice: number;
+	};
 
-    const partRecords: record[] = [];
+	const partRecords: record[] = [];
 
-    const db = getDatabase();
+	const db = getDatabase();
 
-    const parts = await db
-        .select()
-        .from(stockAssemblySchema)
-        .where(eq(brandedPartSchema.brandedPartId, brandedPartId));
+	const parts = await db
+		.select()
+		.from(stockAssemblySchema)
+		.where(eq(brandedPartSchema.brandedPartId, brandedPartId));
 
-    if (parts.length === 0) {
-        throw Error(`Branded part ${brandedPartId} not found`);
-    }
+	if (parts.length === 0) {
+		throw Error(`Branded part ${brandedPartId} not found`);
+	}
 
-    await db.transaction(async (tx) => {
-        log.debug('Transaction started');
+	await db.transaction(async (tx) => {
+		log.debug("Transaction started");
 
-        let tradeInValue = 0;
-        let scrapyardLotId = 0;
-        let dealOfTheDayBrandedPartId: number | null = null;
-        let dealOfTheDayDiscount = 0;
-        let ownerID = 0;
-        let retailPrice = 0;
-        let maxItemWear = 0;
-        let tradeInPartCount = 0;
-        let carPartCount = 0;
+		let tradeInValue = 0;
+		let scrapyardLotId = 0;
+		let dealOfTheDayBrandedPartId: number | null = null;
+		let dealOfTheDayDiscount = 0;
+		let ownerID = 0;
+		let retailPrice = 0;
+		let maxItemWear = 0;
+		let tradeInPartCount = 0;
+		let carPartCount = 0;
 
-        dealOfTheDayBrandedPartId = await tx
-            .select({
-                brandedPartId: warehouseSchema.brandedPartId,
-            })
-            .from(warehouseSchema)
-            .where(eq(warehouseSchema.playerId, lotOwnerId))
-            .limit(1)
-            .then((result) => {
-                return result[0]?.brandedPartId ?? null;
-            });
+		dealOfTheDayBrandedPartId = await tx
+			.select({
+				brandedPartId: warehouseSchema.brandedPartId,
+			})
+			.from(warehouseSchema)
+			.where(eq(warehouseSchema.playerId, lotOwnerId))
+			.limit(1)
+			.then((result) => {
+				return result[0]?.brandedPartId ?? null;
+			});
 
-        if (!dealOfTheDayBrandedPartId) {
-            log.debug('Deal of the day not found');
-        }
+		if (!dealOfTheDayBrandedPartId) {
+			log.debug("Deal of the day not found");
+		}
 
-        const lotExists: boolean = await tx
-            .select({
-                playerID: warehouseSchema.playerId,
-            })
-            .from(warehouseSchema)
-            .where(eq(warehouseSchema.playerId, lotOwnerId))
-            .limit(1)
-            .then((result) => {
-                return !!result[0];
-            });
+		const lotExists: boolean = await tx
+			.select({
+				playerID: warehouseSchema.playerId,
+			})
+			.from(warehouseSchema)
+			.where(eq(warehouseSchema.playerId, lotOwnerId))
+			.limit(1)
+			.then((result) => {
+				return !!result[0];
+			});
 
-        if (!lotExists) {
-            tx.rollback();
-            throw new Error(`Lot owner ${lotOwnerId} not found`);
-        }
+		if (!lotExists) {
+			tx.rollback();
+			throw new Error(`Lot owner ${lotOwnerId} not found`);
+		}
 
-        if (tradeInId) {
-            const validTradeIn = await tx
-                .select({
-                    ownerID: partSchema.ownerId,
-                })
-                .from(partSchema)
-                .where(eq(partSchema.partId, tradeInId))
-                .limit(1)
-                .then((result) => {
-                    return result[0]?.ownerID === playerId;
-                });
+		if (tradeInId) {
+			const validTradeIn = await tx
+				.select({
+					ownerID: partSchema.ownerId,
+				})
+				.from(partSchema)
+				.where(eq(partSchema.partId, tradeInId))
+				.limit(1)
+				.then((result) => {
+					return result[0]?.ownerID === playerId;
+				});
 
-            if (!validTradeIn) {
-                tx.rollback();
-                throw new Error(
-                    `Trade-in ${tradeInId} not owned by player ${playerId}`
-                );
-            }
+			if (!validTradeIn) {
+				tx.rollback();
+				throw new Error(
+					`Trade-in ${tradeInId} not owned by player ${playerId}`,
+				);
+			}
 
-            tradeInValue = await tx
-                .select({
-                    scrapValue: partSchema.scrapValue,
-                })
-                .from(partSchema)
-                .where(eq(partSchema.partId, tradeInId))
-                .limit(1)
-                .then((result) => {
-                    return result[0]?.scrapValue ?? 0;
-                });
+			tradeInValue = await tx
+				.select({
+					scrapValue: partSchema.scrapValue,
+				})
+				.from(partSchema)
+				.where(eq(partSchema.partId, tradeInId))
+				.limit(1)
+				.then((result) => {
+					return result[0]?.scrapValue ?? 0;
+				});
 
-            if (!tradeInValue) {
-                tx.rollback();
-                throw new Error(
-                    `Trade-in value not found for part ${tradeInId}`
-                );
-            }
+			if (!tradeInValue) {
+				tx.rollback();
+				throw new Error(`Trade-in value not found for part ${tradeInId}`);
+			}
 
-            const scrapyardLotFound = await tx
-                .select({
-                    playerID: warehouseSchema.playerId,
-                })
-                .from(warehouseSchema)
-                .where(eq(warehouseSchema.playerId, scrapyardLotId))
-                .then((result) => {
-                    return !!result[0];
-                });
+			const scrapyardLotFound = await tx
+				.select({
+					playerID: warehouseSchema.playerId,
+				})
+				.from(warehouseSchema)
+				.where(eq(warehouseSchema.playerId, scrapyardLotId))
+				.then((result) => {
+					return !!result[0];
+				});
 
-            if (!scrapyardLotFound) {
-                tx.rollback();
-                throw new Error(`Scrapyard lot ${scrapyardLotId} not found`);
-            }
+			if (!scrapyardLotFound) {
+				tx.rollback();
+				throw new Error(`Scrapyard lot ${scrapyardLotId} not found`);
+			}
 
-            try {
-                const resultOfScrap = await transferPartAssembly(
-                    tradeInId,
-                    scrapyardLotId
-                );
-            } catch (error) {
-                log.error(`Error scrapping trade-in ${tradeInId}: ${error}`);
-                tx.rollback();
-                throw error;
-            }
+			try {
+				const resultOfScrap = await transferPartAssembly(
+					tradeInId,
+					scrapyardLotId,
+				);
+			} catch (error) {
+				log.error(`Error scrapping trade-in ${tradeInId}: ${error}`);
+				tx.rollback();
+				throw error;
+			}
 
-            // Get the owner
+			// Get the owner
 
-            const newOwner = await tx
-                .select()
-                .from(playerSchema)
-                .where(eq(playerSchema.playerId, playerId))
-                .limit(1)
-                .then((result) => {
-                    return result[0];
-                });
+			const newOwner = await tx
+				.select()
+				.from(playerSchema)
+				.where(eq(playerSchema.playerId, playerId))
+				.limit(1)
+				.then((result) => {
+					return result[0];
+				});
 
-            if (!newOwner) {
-                log.error(`Player ${playerId} not found`);
-                tx.rollback();
-                throw new Error(`Player ${playerId} not found`);
-            }
+			if (!newOwner) {
+				log.error(`Player ${playerId} not found`);
+				tx.rollback();
+				throw new Error(`Player ${playerId} not found`);
+			}
 
-            const oldBankBalance = newOwner.bankBalance;
+			const oldBankBalance = newOwner.bankBalance;
 
-            if (oldBankBalance === null) {
-                log.error(`Error getting bank balance for player ${playerId}`);
-                tx.rollback();
-                throw new Error(
-                    `Error getting bank balance for player ${playerId}`
-                );
-            }
+			if (oldBankBalance === null) {
+				log.error(`Error getting bank balance for player ${playerId}`);
+				tx.rollback();
+				throw new Error(`Error getting bank balance for player ${playerId}`);
+			}
 
-            if (tradeInValue > 0) {
-                const newbankBalance = oldBankBalance + tradeInValue;
-                try {
-                    await tx
-                        .update(playerSchema)
-                        .set({
-                            bankBalance: newbankBalance,
-                        })
-                        .where(eq(playerSchema.playerId, playerId));
-                } catch (error) {
-                    log.error(
-                        `Error adding trade-in value to player ${playerId}: ${error}`
-                    );
-                    tx.rollback();
-                    throw new Error(
-                        `Error adding trade-in value to player ${playerId}: ${error}`
-                    );
-                }
-            }
+			if (tradeInValue > 0) {
+				const newbankBalance = oldBankBalance + tradeInValue;
+				try {
+					await tx
+						.update(playerSchema)
+						.set({
+							bankBalance: newbankBalance,
+						})
+						.where(eq(playerSchema.playerId, playerId));
+				} catch (error) {
+					log.error(
+						`Error adding trade-in value to player ${playerId}: ${error}`,
+					);
+					tx.rollback();
+					throw new Error(
+						`Error adding trade-in value to player ${playerId}: ${error}`,
+					);
+				}
+			}
 
-            // Old car trade-in complete
-        }
+			// Old car trade-in complete
+		}
 
-        const result = await tx
-            .select({
-                carClass: stockVehicleAttributesSchema.carClass,
-                retailPrice: stockVehicleAttributesSchema.retailPrice,
-            })
-            .from(stockVehicleAttributesSchema)
-            .where(
-                eq(stockVehicleAttributesSchema.brandedPartId, brandedPartId)
-            )
-            .limit(1);
+		const result = await tx
+			.select({
+				carClass: stockVehicleAttributesSchema.carClass,
+				retailPrice: stockVehicleAttributesSchema.retailPrice,
+			})
+			.from(stockVehicleAttributesSchema)
+			.where(eq(stockVehicleAttributesSchema.brandedPartId, brandedPartId))
+			.limit(1);
 
-        if (typeof result[0] === 'undefined') {
-            tx.rollback();
-            throw new Error(`Car ${brandedPartId} out of stock`);
-        }
+		if (typeof result[0] === "undefined") {
+			tx.rollback();
+			throw new Error(`Car ${brandedPartId} out of stock`);
+		}
 
-        carClass = result[0].carClass;
-        retailPrice = result[0].retailPrice;
+		carClass = result[0].carClass;
+		retailPrice = result[0].retailPrice;
 
-        if (dealOfTheDayBrandedPartId === brandedPartId) {
-            dealOfTheDayDiscount = await tx
-                .select({
-                    discount: tunablesSchema.dealOfTheDayDiscount,
-                })
-                .from(tunablesSchema)
-                .limit(1)
-                .then((result) => {
-                    return result[0]?.discount ?? 0;
-                });
-        }
+		if (dealOfTheDayBrandedPartId === brandedPartId) {
+			dealOfTheDayDiscount = await tx
+				.select({
+					discount: tunablesSchema.dealOfTheDayDiscount,
+				})
+				.from(tunablesSchema)
+				.limit(1)
+				.then((result) => {
+					return result[0]?.discount ?? 0;
+				});
+		}
 
-        log.debug('Transaction committed');
-    });
-    log.resetName();
-    return Promise.resolve(0);
+		log.debug("Transaction committed");
+	});
+	log.resetName();
+	return Promise.resolve(0);
 }

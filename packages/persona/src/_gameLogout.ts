@@ -15,43 +15,43 @@ import { LegacyMessage } from "../../shared/src/LegacyMessage.js";
  */
 
 export async function _gameLogout({
-    connectionId,
-    message,
-    log = getServerLogger({
-        name: "PersonaServer",
-    }),
+	connectionId,
+	message,
+	log = getServerLogger({
+		name: "PersonaServer",
+	}),
 }: {
-    connectionId: string;
-    message: LegacyMessage;
-    log?: ServerLogger;
+	connectionId: string;
+	message: LegacyMessage;
+	log?: ServerLogger;
 }): Promise<{
-    connectionId: string;
-    messages: SerializedBufferOld[];
+	connectionId: string;
+	messages: SerializedBufferOld[];
 }> {
-    log.debug("_npsLogoutGameUser...");
-    const requestPacket = message;
-    log.debug(
-        `NPSMsg request object from _npsLogoutGameUser',
+	log.debug("_npsLogoutGameUser...");
+	const requestPacket = message;
+	log.debug(
+		`NPSMsg request object from _npsLogoutGameUser',
       ${JSON.stringify({
-          NPSMsg: requestPacket.toString(),
-      })}`,
-    );
+				NPSMsg: requestPacket.toString(),
+			})}`,
+	);
 
-    // Build the packet
-    const responsePacket = new LegacyMessage();
-    responsePacket._header.id = 519;
-    log.debug(
-        `NPSMsg response object from _npsLogoutGameUser',
+	// Build the packet
+	const responsePacket = new LegacyMessage();
+	responsePacket._header.id = 519;
+	log.debug(
+		`NPSMsg response object from _npsLogoutGameUser',
       ${JSON.stringify({
-          NPSMsg: responsePacket.toString(),
-      })}`,
-    );
+				NPSMsg: responsePacket.toString(),
+			})}`,
+	);
 
-    const outboundMessage = new SerializedBufferOld();
-    outboundMessage._doDeserialize(responsePacket._doSerialize());
+	const outboundMessage = new SerializedBufferOld();
+	outboundMessage._doDeserialize(responsePacket._doSerialize());
 
-    return {
-        connectionId,
-        messages: [outboundMessage],
-    };
+	return {
+		connectionId,
+		messages: [outboundMessage],
+	};
 }

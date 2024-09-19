@@ -25,15 +25,15 @@ const _users: Map<number, Buffer> = new Map();
 * @throws {Error} If the user record is not found
  */
 export async function updateUser(user: {
-    userId: number;
-    userData: Buffer;
+	userId: number;
+	userData: Buffer;
 }): Promise<void> {
-    try {
-        _users.set(user.userId, user.userData);
-        return Promise.resolve();
-    } catch (error) {
-        throw Error(`Error updating user: ${String(error)}`);
-    }
+	try {
+		_users.set(user.userId, user.userData);
+		return Promise.resolve();
+	} catch (error) {
+		throw Error(`Error updating user: ${String(error)}`);
+	}
 }
 
 /**
@@ -42,15 +42,15 @@ export async function updateUser(user: {
  * @throws {Error} If the session key is not found
  */
 export async function fetchSessionKeyByCustomerId(
-    customerId: number,
+	customerId: number,
 ): Promise<ConnectionRecord> {
-    const record = _sessions.find((session) => {
-        return session.customerId === customerId;
-    });
-    if (typeof record === "undefined") {
-        throw Error(`Session key not found for customer ${customerId}`);
-    }
-    return Promise.resolve(record);
+	const record = _sessions.find((session) => {
+		return session.customerId === customerId;
+	});
+	if (typeof record === "undefined") {
+		throw Error(`Session key not found for customer ${customerId}`);
+	}
+	return Promise.resolve(record);
 }
 
 /**
@@ -63,26 +63,26 @@ export async function fetchSessionKeyByCustomerId(
  * @returns {Promise<void>}
  */
 export async function updateSessionKey(
-    customerId: number,
-    sessionKey: string,
-    contextId: string,
-    connectionId: string,
+	customerId: number,
+	sessionKey: string,
+	contextId: string,
+	connectionId: string,
 ): Promise<void> {
-    const sKey = sessionKey.slice(0, 16);
+	const sKey = sessionKey.slice(0, 16);
 
-    const updatedSession: ConnectionRecord = {
-        customerId,
-        sessionKey,
-        sKey,
-        contextId,
-        connectionId,
-    };
-    const record = _sessions.findIndex((session) => {
-        return session.customerId === customerId;
-    });
+	const updatedSession: ConnectionRecord = {
+		customerId,
+		sessionKey,
+		sKey,
+		contextId,
+		connectionId,
+	};
+	const record = _sessions.findIndex((session) => {
+		return session.customerId === customerId;
+	});
 
-    _sessions.splice(record, 1, updatedSession);
-    return Promise.resolve();
+	_sessions.splice(record, 1, updatedSession);
+	return Promise.resolve();
 }
 
 /**
@@ -93,13 +93,13 @@ export async function updateSessionKey(
  * @throws {Error} If the session key is not found
  */
 export async function fetchSessionKeyByConnectionId(
-    connectionId: string,
+	connectionId: string,
 ): Promise<ConnectionRecord> {
-    const record = _sessions.find((session) => {
-        return session.connectionId === connectionId;
-    });
-    if (typeof record === "undefined") {
-        throw Error(`Session key not found for connection ${connectionId}`);
-    }
-    return Promise.resolve(record);
+	const record = _sessions.find((session) => {
+		return session.connectionId === connectionId;
+	});
+	if (typeof record === "undefined") {
+		throw Error(`Session key not found for connection ${connectionId}`);
+	}
+	return Promise.resolve(record);
 }

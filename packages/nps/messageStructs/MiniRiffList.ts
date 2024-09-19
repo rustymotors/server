@@ -44,7 +44,7 @@ export class MiniRiffInfo extends BaseSerializable {
 
 export class MiniRiffList extends BaseSerializable {
 	private riffs: MiniRiffInfo[] = [];
-	
+
 	override serialize(): Buffer {
 		return this.toBytes();
 	}

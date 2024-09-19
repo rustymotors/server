@@ -45,7 +45,7 @@ export function newEncryptionSession({
 }): EncryptionSession {
 	/**
 	 * Create a new encryption session
-	 * 
+	 *
 	 * While insecure, the use of DES is required for compatibility with the game
 	 */
 	const gameCipher = createCipheriv(
@@ -56,7 +56,7 @@ export function newEncryptionSession({
 	gameCipher.setAutoPadding(false);
 	/**
 	 * Create a new decryption session
-	 * 
+	 *
 	 * While insecure, the use of DES is required for compatibility with the game
 	 */
 	const gameDecipher = createDecipheriv(

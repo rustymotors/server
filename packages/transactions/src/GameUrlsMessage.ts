@@ -22,79 +22,79 @@ import { serializeString } from "rusty-motors-shared";
  * This is the body of a MessageNode
  */
 export class GameUrlsMessage extends SerializedBufferOld {
-    _msgNo: number;
-    _urlCount: number;
-    _shouldExpectMoreMessages: boolean;
-    _urlList: GameUrl[];
-    constructor() {
-        super();
-        this._msgNo = 0; // 2 bytes
-        this._urlCount = 0; // 2 bytes
-        this._shouldExpectMoreMessages = false; // 1 byte
-        /** @type {GameUrl[]} */
-        this._urlList = []; // 563 bytes each
-    }
+	_msgNo: number;
+	_urlCount: number;
+	_shouldExpectMoreMessages: boolean;
+	_urlList: GameUrl[];
+	constructor() {
+		super();
+		this._msgNo = 0; // 2 bytes
+		this._urlCount = 0; // 2 bytes
+		this._shouldExpectMoreMessages = false; // 1 byte
+		/** @type {GameUrl[]} */
+		this._urlList = []; // 563 bytes each
+	}
 
-    override size() {
-        return 5 + this._urlList.length * 563;
-    }
+	override size() {
+		return 5 + this._urlList.length * 563;
+	}
 
-    /**
-     * Add a lobby to the list
-     * @param {GameUrl} lobby
-     */
-    addURL(lobby: GameUrl) {
-        this._urlList.push(lobby);
-        this._urlCount++;
-    }
+	/**
+	 * Add a lobby to the list
+	 * @param {GameUrl} lobby
+	 */
+	addURL(lobby: GameUrl) {
+		this._urlList.push(lobby);
+		this._urlCount++;
+	}
 
-    override serialize() {
-        const neededSize = 4 + this._urlList.length * 563;
-        const buffer = Buffer.alloc(neededSize);
-        let offset = 0; // offset is 0
-        buffer.writeUInt16LE(this._msgNo, offset);
-        offset += 2; // offset is 2
-        buffer.writeUInt16LE(this._urlCount, offset);
-        offset += 2; // offset is 4
-        buffer.writeUInt8(this._shouldExpectMoreMessages ? 1 : 0, offset);
-        offset += 1; // offset is 5
-        for (const url of this._urlList) {
-            url.serialize().copy(buffer, offset);
-            offset += url.size();
-        }
-        // offset is now 4 + this._lobbyList.length * 563
-        return buffer;
-    }
+	override serialize() {
+		const neededSize = 4 + this._urlList.length * 563;
+		const buffer = Buffer.alloc(neededSize);
+		let offset = 0; // offset is 0
+		buffer.writeUInt16LE(this._msgNo, offset);
+		offset += 2; // offset is 2
+		buffer.writeUInt16LE(this._urlCount, offset);
+		offset += 2; // offset is 4
+		buffer.writeUInt8(this._shouldExpectMoreMessages ? 1 : 0, offset);
+		offset += 1; // offset is 5
+		for (const url of this._urlList) {
+			url.serialize().copy(buffer, offset);
+			offset += url.size();
+		}
+		// offset is now 4 + this._lobbyList.length * 563
+		return buffer;
+	}
 
-    override toString() {
-        return `GameUrlsMessage: msgNo=${this._msgNo} urlCount=${this._urlCount} shouldExpectMoreMessages=${this._shouldExpectMoreMessages} urlList=${this._urlList}`;
-    }
+	override toString() {
+		return `GameUrlsMessage: msgNo=${this._msgNo} urlCount=${this._urlCount} shouldExpectMoreMessages=${this._shouldExpectMoreMessages} urlList=${this._urlList}`;
+	}
 }
 
 export class GameUrl extends SerializedBufferOld {
-    _urlId: number;
-    urlRef: string;
-    constructor() {
-        super();
-        this._urlId = 0; // 4 bytes
-        this.urlRef = ""; // 4 + this.urlRef.length bytes
-    }
+	_urlId: number;
+	urlRef: string;
+	constructor() {
+		super();
+		this._urlId = 0; // 4 bytes
+		this.urlRef = ""; // 4 + this.urlRef.length bytes
+	}
 
-    override size() {
-        return 8 + this.urlRef.length;
-    }
+	override size() {
+		return 8 + this.urlRef.length;
+	}
 
-    override serialize() {
-        const buffer = Buffer.alloc(this.size());
-        let offset = 0; // offset is 0
-        buffer.writeUInt32LE(this._urlId, offset);
-        offset += 4; // offset is 4
-        serializeString(this.urlRef, buffer, offset);
+	override serialize() {
+		const buffer = Buffer.alloc(this.size());
+		let offset = 0; // offset is 0
+		buffer.writeUInt32LE(this._urlId, offset);
+		offset += 4; // offset is 4
+		serializeString(this.urlRef, buffer, offset);
 
-        return buffer;
-    }
+		return buffer;
+	}
 
-    override toString() {
-        return `GameUrl: urlId=${this._urlId} urlRef=${this.urlRef}`;
-    }
+	override toString() {
+		return `GameUrl: urlId=${this._urlId} urlRef=${this.urlRef}`;
+	}
 }

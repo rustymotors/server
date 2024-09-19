@@ -8,37 +8,37 @@ import { NPSHeader } from "./NPSHeader.js";
  */
 
 export class NPSMessage extends SerializableMixin(AbstractSerializable) {
-    _header: NPSHeader;
-    constructor() {
-        super();
-        this._header = new NPSHeader();
-    }
+	_header: NPSHeader;
+	constructor() {
+		super();
+		this._header = new NPSHeader();
+	}
 
-    /**
-     * @param {Buffer} buffer
-     * @returns {NPSMessage}
-     */
-    override _doDeserialize(buffer: Buffer): NPSMessage {
-        this._header._doDeserialize(buffer);
-        this.setBuffer(buffer.subarray(this._header._size));
-        return this;
-    }
+	/**
+	 * @param {Buffer} buffer
+	 * @returns {NPSMessage}
+	 */
+	override _doDeserialize(buffer: Buffer): NPSMessage {
+		this._header._doDeserialize(buffer);
+		this.setBuffer(buffer.subarray(this._header._size));
+		return this;
+	}
 
-    serialize() {
-        const buffer = Buffer.alloc(this._header.length);
-        this._header._doSerialize().copy(buffer);
-        this.data.copy(buffer, this._header._size);
-        return buffer;
-    }
+	serialize() {
+		const buffer = Buffer.alloc(this._header.length);
+		this._header._doSerialize().copy(buffer);
+		this.data.copy(buffer, this._header._size);
+		return buffer;
+	}
 
-    size() {
-        return this._header.length + this.data.length;
-    }
+	size() {
+		return this._header.length + this.data.length;
+	}
 
-    override toString() {
-        return `NPSMessage: ${JSON.stringify({
-            header: this._header.toString(),
-            data: this.data.toString("hex"),
-        })}`;
-    }
+	override toString() {
+		return `NPSMessage: ${JSON.stringify({
+			header: this._header.toString(),
+			data: this.data.toString("hex"),
+		})}`;
+	}
 }

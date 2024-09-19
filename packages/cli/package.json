@@ -10,8 +10,8 @@
 	"type": "module",
 	"scripts": {
 		"check": "tsc",
-		"lint": "eslint .",
-		"format": "npx prettier --write .",
+		"lint": "npx @biomejs/biome lint --write .",
+		"format": "npx @biomejs/biome format --write .",
 		"test": "vitest run --coverage"
 	},
 	"keywords": [],

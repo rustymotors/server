@@ -12,7 +12,7 @@ export default defineConfig({
 				"ecosystem.config.js",
 				"migrate.ts",
 				"packages/**/*.d.ts",
-				"vite.config.ts"
+				"vite.config.ts",
 			],
 			reporter: ["lcov", "text", "cobertura"],
 		},

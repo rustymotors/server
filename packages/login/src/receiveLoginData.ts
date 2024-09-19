@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import {
-    getServerLogger,
-    NPSMessage,
-    SerializedBufferOld,
-    type ServiceResponse,
+	getServerLogger,
+	NPSMessage,
+	SerializedBufferOld,
+	type ServiceResponse,
 } from "rusty-motors-shared";
 import { handleLoginData } from "./internal.js";
 import type { Serializable } from "rusty-motors-shared-packets";
@@ -35,32 +35,32 @@ import type { Serializable } from "rusty-motors-shared-packets";
  * @throws {Error} If there was an error in the login service.
  */
 export async function receiveLoginData({
-    connectionId,
-    message,
-    log = getServerLogger({
-        name: "LoginServer",
-    }),
+	connectionId,
+	message,
+	log = getServerLogger({
+		name: "LoginServer",
+	}),
 }: {
-    connectionId: string;
-    message: Serializable;
-    log?: import("pino").Logger;
+	connectionId: string;
+	message: Serializable;
+	log?: import("pino").Logger;
 }): Promise<ServiceResponse> {
-    try {
-        log.debug("Entering login module");
-        const incomingPacket = new SerializedBufferOld();
-        incomingPacket._doDeserialize(message.serialize());
-        const response = await handleLoginData({
-            connectionId,
-            message: incomingPacket,
-            log,
-        });
-        log.debug(`There are ${response.messages.length} messages`);
-        log.debug("Exiting login module");
-        return response;
-    } catch (error) {
-        const err = new Error(
-            `There was an error in the login service: ${String(error)}`,
-        );
-        throw err;
-    }
+	try {
+		log.debug("Entering login module");
+		const incomingPacket = new SerializedBufferOld();
+		incomingPacket._doDeserialize(message.serialize());
+		const response = await handleLoginData({
+			connectionId,
+			message: incomingPacket,
+			log,
+		});
+		log.debug(`There are ${response.messages.length} messages`);
+		log.debug("Exiting login module");
+		return response;
+	} catch (error) {
+		const err = new Error(
+			`There was an error in the login service: ${String(error)}`,
+		);
+		throw err;
+	}
 }

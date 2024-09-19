@@ -2,7 +2,7 @@ import { greaterThanOrEqual } from "./pureCompare.js";
 
 /**
  * Retrieves a word from a buffer at the specified offset.
- * 
+ *
  * @param bytes - The buffer containing the word.
  * @param offset - The offset at which to retrieve the word.
  * @param isLE - Indicates whether the word is in little-endian format.
@@ -15,7 +15,7 @@ export function getWord(bytes: Buffer, offset: number, isLE: boolean): number {
 
 /**
  * Retrieves a dword from the given buffer at the specified offset.
- * 
+ *
  * @param bytes - The buffer containing the dword.
  * @param offset - The offset at which the dword is located.
  * @param isLE - Indicates whether the buffer is in little-endian format.

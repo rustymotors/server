@@ -1,11 +1,8 @@
 {
 	"extends": "../../tsconfig.base.json",
-    "compilerOptions": {
+	"compilerOptions": {
 		"incremental": true,
-        "composite": true
+		"composite": true
 	},
-	"include": [
-		"index.ts",
-		"src"
-	]
+	"include": ["index.ts", "src"]
 }

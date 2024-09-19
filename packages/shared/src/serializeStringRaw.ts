@@ -8,13 +8,13 @@
  */
 
 export function serializeStringRaw(
-    string: string,
-    targetBuffer: Buffer,
-    offset: number,
-    length?: number,
+	string: string,
+	targetBuffer: Buffer,
+	offset: number,
+	length?: number,
 ): number {
-    const stringToWrite = string;
-    targetBuffer.write(stringToWrite, offset, length ?? string.length, "utf8");
-    offset += stringToWrite.length;
-    return offset;
+	const stringToWrite = string;
+	targetBuffer.write(stringToWrite, offset, length ?? string.length, "utf8");
+	offset += stringToWrite.length;
+	return offset;
 }
