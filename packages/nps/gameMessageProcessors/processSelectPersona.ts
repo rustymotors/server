@@ -9,8 +9,8 @@ const log = getServerLogger({
 });
 
 export async function processSelectPersona(
-    connectionId: string,
-    userStatus: UserStatus,
+    _connectionId: string,
+    _userStatus: UserStatus,
     message: GameMessage,
     socketCallback: GameSocketCallback,
 ): Promise<void> {
