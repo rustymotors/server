@@ -66,4 +66,4 @@ coverage:
                 removed_code_behavior: adjust_base
 
 fixes:
-  - "packages/::/"
+  - "/::packages/"
