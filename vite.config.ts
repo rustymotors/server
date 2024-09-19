@@ -15,5 +15,8 @@ export default defineConfig({
             ],
             reporter: ["lcov", "text", "cobertura"],
         },
+        reporters: ["junit", "default", "hanging-process"],
+		outputFile: "mcos.junit.xml",
+		pool: "forks",
     },
 });
