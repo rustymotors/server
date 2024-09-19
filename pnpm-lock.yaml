@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@adminjs/sequelize':
         specifier: ^4.1.1
-        version: 4.1.1(adminjs@7.8.13(@types/react@18.3.4))(sequelize@6.37.3(pg@8.13.0))
+        version: 4.1.1(adminjs@7.8.13(@types/react@18.3.4))(sequelize@6.37.3)
       '@databases/pg':
         specifier: ^5.5.0
         version: 5.5.0(typescript@5.6.2)
@@ -36,7 +36,7 @@ importers:
         specifier: link:packages/lobby
         version: link:packages/lobby
       moment:
-        specifier: ^2.29.4
+        specifier: ^2.30.1
         version: 2.30.1
       pino:
         specifier: ^9.4.0
@@ -94,7 +94,7 @@ importers:
         version: link:packages/transactions
       sequelize:
         specifier: ^6.37.3
-        version: 6.37.3(pg@8.13.0)
+        version: 6.37.3
       sqlite:
         specifier: ^5.1.1
         version: 5.1.1
@@ -6170,11 +6170,11 @@ snapshots:
       - react-is
       - supports-color
 
-  '@adminjs/sequelize@4.1.1(adminjs@7.8.13(@types/react@18.3.4))(sequelize@6.37.3(pg@8.13.0))':
+  '@adminjs/sequelize@4.1.1(adminjs@7.8.13(@types/react@18.3.4))(sequelize@6.37.3)':
     dependencies:
       adminjs: 7.8.13(@types/react@18.3.4)
       escape-regexp: 0.0.1
-      sequelize: 6.37.3(pg@8.13.0)
+      sequelize: 6.37.3
 
   '@ampproject/remapping@2.3.0':
     dependencies:
@@ -11732,7 +11732,7 @@ snapshots:
 
   sequelize-pool@7.1.0: {}
 
-  sequelize@6.37.3(pg@8.13.0):
+  sequelize@6.37.3:
     dependencies:
       '@types/debug': 4.1.12
       '@types/validator': 13.12.0
@@ -11750,8 +11750,6 @@ snapshots:
       uuid: 8.3.2
       validator: 13.12.0
       wkx: 0.5.0
-    optionalDependencies:
-      pg: 8.13.0
     transitivePeerDependencies:
       - supports-color
 
