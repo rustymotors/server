@@ -19,7 +19,8 @@
     "test:all": "pnpm run -r --stream test",
     "types:db": "pnpm --filter=rusty-motors-database run types:db",
     "types": "dotenvx run -- pnpm run types:db",
-    "migrate": "pg-migrations apply --directory migrations    "
+    "migrate": "pg-migrations apply --directory migrations    ",
+    "prepare": "husky"
   },
   "files": [
     "README.md",
@@ -62,6 +63,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.1",
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
     "@databases/pg-migrations": "^5.0.3",
     "@databases/pg-test": "^3.1.2",
     "@sentry/cli": "^2.36.1",
