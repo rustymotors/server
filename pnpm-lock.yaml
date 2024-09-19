@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@adminjs/sequelize':
         specifier: ^4.1.1
-        version: 4.1.1(adminjs@7.8.13(@types/react@18.3.4))(sequelize@6.37.3(pg@8.13.0))
+        version: 4.1.1(adminjs@7.8.13(@types/react@18.3.4))(sequelize@6.37.3)
       '@databases/pg':
         specifier: ^5.5.0
         version: 5.5.0(typescript@5.6.2)
@@ -94,7 +94,7 @@ importers:
         version: link:packages/transactions
       sequelize:
         specifier: ^6.37.3
-        version: 6.37.3(pg@8.13.0)
+        version: 6.37.3
       sqlite:
         specifier: ^5.1.1
         version: 5.1.1
@@ -133,8 +133,8 @@ importers:
         specifier: ^22.5.5
         version: 22.5.5
       '@types/sinon':
-        specifier: 17.0.2
-        version: 17.0.2
+        specifier: 17.0.3
+        version: 17.0.3
       '@types/sinon-chai':
         specifier: 3.2.12
         version: 3.2.12
@@ -2555,8 +2555,8 @@ packages:
   '@types/sinon-chai@3.2.12':
     resolution: {integrity: sha512-9y0Gflk3b0+NhQZ/oxGtaAJDvRywCa5sIyaVnounqLvmf93yBF4EgIRspePtkMs3Tr844nCclYMlcCNmLCvjuQ==}
 
-  '@types/sinon@17.0.2':
-    resolution: {integrity: sha512-Zt6heIGsdqERkxctIpvN5Pv3edgBrhoeb3yHyxffd4InN0AX2SVNKSrhdDZKGQICVOxWP/q4DyhpfPNMSrpIiA==}
+  '@types/sinon@17.0.3':
+    resolution: {integrity: sha512-j3uovdn8ewky9kRBG19bOwaZbexJu/XjtkHyjvUgt4xfPFz18dcORIMqnYh66Fx3Powhcr85NT5+er3+oViapw==}
 
   '@types/sinonjs__fake-timers@8.1.5':
     resolution: {integrity: sha512-mQkU2jY8jJEF7YHjHvsQO8+3ughTL1mcnn96igfhONmR+fUPSKIkefQYpSe8bsly2Ep7oQbn/6VG5/9/0qcArQ==}
@@ -6170,11 +6170,11 @@ snapshots:
       - react-is
       - supports-color
 
-  '@adminjs/sequelize@4.1.1(adminjs@7.8.13(@types/react@18.3.4))(sequelize@6.37.3(pg@8.13.0))':
+  '@adminjs/sequelize@4.1.1(adminjs@7.8.13(@types/react@18.3.4))(sequelize@6.37.3)':
     dependencies:
       adminjs: 7.8.13(@types/react@18.3.4)
       escape-regexp: 0.0.1
-      sequelize: 6.37.3(pg@8.13.0)
+      sequelize: 6.37.3
 
   '@ampproject/remapping@2.3.0':
     dependencies:
@@ -8616,9 +8616,9 @@ snapshots:
   '@types/sinon-chai@3.2.12':
     dependencies:
       '@types/chai': 4.3.19
-      '@types/sinon': 17.0.2
+      '@types/sinon': 17.0.3
 
-  '@types/sinon@17.0.2':
+  '@types/sinon@17.0.3':
     dependencies:
       '@types/sinonjs__fake-timers': 8.1.5
 
@@ -11732,7 +11732,7 @@ snapshots:
 
   sequelize-pool@7.1.0: {}
 
-  sequelize@6.37.3(pg@8.13.0):
+  sequelize@6.37.3:
     dependencies:
       '@types/debug': 4.1.12
       '@types/validator': 13.12.0
@@ -11750,8 +11750,6 @@ snapshots:
       uuid: 8.3.2
       validator: 13.12.0
       wkx: 0.5.0
-    optionalDependencies:
-      pg: 8.13.0
     transitivePeerDependencies:
       - supports-color
 
