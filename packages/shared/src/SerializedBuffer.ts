@@ -1,4 +1,3 @@
-import { ServerError } from "./ServerError.js";
 import { BaseSerialized } from "./BaseSerialized.js";
 
 /**
@@ -12,14 +11,18 @@ export class SerializedBuffer extends BaseSerialized {
             this._data.copy(buffer, 2);
             return buffer;
         } catch (error) {
-            throw ServerError.fromUnknown(error, "Unable to serialize buffer");
+            const err = Error(
+                `Error serializing buffer: ${String(error)}`,
+            );
+            err.cause = error;
+            throw err;
         }
     }
     override deserialize(buffer: Buffer): SerializedBuffer {
         try {
             const length = buffer.readUInt16BE(0);
             if (buffer.length < 2 + length) {
-                throw new ServerError(
+                throw Error(
                     `Expected buffer of length ${2 + length}, got ${
                         buffer.length
                     }`,
@@ -28,10 +31,11 @@ export class SerializedBuffer extends BaseSerialized {
             this._data = buffer.subarray(2, 2 + length);
             return this;
         } catch (error) {
-            throw ServerError.fromUnknown(
-                error,
-                "Unable to deserialize buffer",
+            const err = Error(
+                `Error deserializing buffer: ${String(error)}`,
             );
+            err.cause = error;
+            throw err;
         }
     }
 }

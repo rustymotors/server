@@ -1,4 +1,4 @@
-import { getServerLogger } from "rusty-motors-shared";
+import { getServerLogger, type ServerLogger } from "rusty-motors-shared";
 import { SerializedBufferOld } from "../../shared/src/SerializedBufferOld.js";
 import { LegacyMessage } from "../../shared/src/LegacyMessage.js";
 
@@ -7,7 +7,7 @@ import { LegacyMessage } from "../../shared/src/LegacyMessage.js";
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBufferOld[],
@@ -18,12 +18,12 @@ export async function _selectGamePersona({
     connectionId,
     message,
     log = getServerLogger({
-        module: "PersonaServer",
+        name: "PersonaServer",
     }),
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBufferOld[];

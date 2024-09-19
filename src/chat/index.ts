@@ -1,4 +1,3 @@
-import { UserStatusManager } from "rusty-motors-nps";
 import {
     NPSMessage,
     getServerLogger,
@@ -20,7 +19,7 @@ async function receiveChatData({
     connectionId: string;
     message: Serializable;
 }): Promise<ServiceResponse> {
-    const log = getServerLogger({});
+    const log = getServerLogger({ name: "chat" });
 
     log.info(`Received chat data from connection ${connectionId}`);
     log.debug(`Message: ${message.toHexString()}`);
@@ -34,16 +33,11 @@ async function receiveChatData({
 
     log.debug(`Message ID: ${id}`);
 
-    const userStatus = UserStatusManager.getUserStatus(connectionId);
+    // const userStatus = UserStatusManager.getUserStatus(connectionId);
 
     throw new Error(
         `Unable to process chat data from connection ${connectionId}, data: ${message.toHexString()}`,
     );
-
-    return {
-        connectionId,
-        messages: [],
-    };
 }
 
 export { receiveChatData };

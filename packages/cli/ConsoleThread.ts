@@ -2,7 +2,6 @@ import { emitKeypressEvents } from "node:readline";
 // eslint-disable-next-line no-unused-vars
 import { Gateway } from "rusty-motors-gateway";
 import { SubThread, type ServerLogger } from "rusty-motors-shared";
-import { ServerError } from "rusty-motors-shared";
 
 /**
  * @module ConsoleThread
@@ -12,11 +11,12 @@ import { ServerError } from "rusty-motors-shared";
  * Console thread
  */
 export class ConsoleThread extends SubThread {
+    static _instance: ConsoleThread;
     parentThread: Gateway;
     /**
      * @param {object} options
      * @param {Gateway} options.parentThread The parent thread
-     * @param {import("pino").Logger} options.log The logger
+     * @param {ServerLogger} options.log The logger
      */
     constructor({
         parentThread,
@@ -26,12 +26,17 @@ export class ConsoleThread extends SubThread {
         log: ServerLogger;
     }) {
         super("ReadInput", log, 100);
+        if (ConsoleThread._instance !== undefined) {
+            throw Error("ConsoleThread already exists");
+        }
+
         if (parentThread === undefined) {
-            throw new ServerError(
+            throw Error(
                 "parentThread is undefined when creating ReadInput",
             );
         }
         this.parentThread = parentThread;
+        ConsoleThread._instance = this;
     }
 
     /** @param {import("../interfaces/index.js").KeypressEvent} key */

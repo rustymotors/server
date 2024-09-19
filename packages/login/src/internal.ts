@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getServerConfiguration } from "rusty-motors-shared";
-import { ServerError } from "rusty-motors-shared";
+import { getServerConfiguration, type ServerLogger } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 import { SerializedBufferOld } from "rusty-motors-shared";
 import { NPSMessage } from "rusty-motors-shared";
@@ -43,7 +42,7 @@ const userRecords: import("../../shared/src/interfaces.js").UserRecordMini[] = [
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBufferOld} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBufferOld[],
@@ -53,12 +52,12 @@ async function login({
     connectionId,
     message,
     log = getServerLogger({
-        module: "LoginServer",
+        name: "LoginServer",
     }),
 }: {
     connectionId: string;
     message: SerializedBufferOld;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBufferOld[];
@@ -93,10 +92,9 @@ async function login({
 
     if (typeof userRecord === "undefined") {
         // We were not able to locate the user's record
-        const err = new ServerError(
+        throw Error(
             `Unable to locate a user record for the context id: ${contextId}`,
         );
-        throw err;
     }
 
     // Save sessionkey in database under customerId
@@ -107,9 +105,10 @@ async function login({
         contextId,
         connectionId,
     ).catch((error) => {
-        const err = new ServerError(
+        const err = Error(
             `Unable to update session key in the database: ${String(error)}`,
         );
+        err.cause = error;
         throw err;
     });
 
@@ -176,7 +175,7 @@ export const messageHandlers: {
     handler: (args: {
         connectionId: string;
         message: SerializedBufferOld;
-        log: import("pino").Logger;
+        log: ServerLogger;
     }) => Promise<{
         connectionId: string;
         messages: SerializedBufferOld[];
@@ -196,7 +195,7 @@ export const messageHandlers: {
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBufferOld} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBufferOld[],
@@ -206,17 +205,16 @@ export async function handleLoginData({
     connectionId,
     message,
     log = getServerLogger({
-        module: "handleLoginData",
+        name: "handleLoginData",
     }),
 }: {
     connectionId: string;
     message: SerializedBufferOld;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBufferOld[];
 }> {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
     log.debug(`Received Login Server packet: ${connectionId}`);
 
     // The packet needs to be an NPSMessage
@@ -229,9 +227,7 @@ export async function handleLoginData({
 
     if (typeof supportedHandler === "undefined") {
         // We do not yet support this message code
-        throw new ServerError(
-            `UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
-        );
+        throw Error(`UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`);
     }
 
     try {
@@ -244,6 +240,8 @@ export async function handleLoginData({
         log.debug("Leaving handleLoginData");
         return result;
     } catch (error) {
-        throw new ServerError(`Error handling login data: ${String(error)}`);
+        const err = Error(`Error handling login data: ${String(error)}`);
+        err.cause = error;
+        throw err;
     }
 }

@@ -1,9 +1,9 @@
 import { type Logger } from "pino";
 import pino from "pino";
+import * as Sentry from "@sentry/node";
 
 type ServerLoggerOptions = {
     level?: string;
-    module?: string;
     name?: string;
 };
 
@@ -21,7 +21,7 @@ export type ServerLogger = {
  */
 class SLogger {
     logger: Logger;
-    static instance: ServerLogger | undefined;
+    static instance: ServerLogger;
     /**
      * Creates an instance of ServerLogger.
      * @param {ServerLoggerOptions} options
@@ -36,7 +36,10 @@ class SLogger {
      * @param {string} message
      */
     fatal(message: string) {
-        this.logger.fatal(message);
+        this.logger.fatal({
+            message,
+            sentry_trace: Sentry.getTraceData()["sentry-trace"],
+        });
     }
 
     /**
@@ -82,11 +85,11 @@ class SLogger {
  * @return {module:pino.Logger}
  */
 export function getServerLogger(options: ServerLoggerOptions): ServerLogger {
-    const logLevel = process.env["MCO_LOG_LEVEL"] ?? "info";    
-    const moduleName = options && options.module ? options.module : "unknown";
+    const logLevel = process.env["MCO_LOG_LEVEL"] ?? "info";
+    const logName = `server.${options ? (options.name ?? "unknown") : "unknown"}`;
     SLogger.instance = new SLogger({
         level: logLevel,
-        module: moduleName,
+        name: logName,
     });
-    return SLogger.instance as ServerLogger
+    return SLogger.instance as ServerLogger;
 }

@@ -1,14 +1,11 @@
 import { getServerLogger } from "rusty-motors-shared";
-import {
-    NPSMessage,
-    SerializedBuffer,
-} from "rusty-motors-shared";
+import { NPSMessage, SerializedBuffer } from "rusty-motors-shared";
 
 /**
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBuffer} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "Lobby" })]
  * @returns {Promise<{
  *  connectionId: string
  * messages: SerializedBuffer[],
@@ -19,7 +16,7 @@ export async function _npsHeartbeat({
     // @ts-ignore
     message, // eslint-disable-line no-unused-vars
     log = getServerLogger({
-        module: "_npsHeartbeat",
+        name: "_npsHeartbeat",
     }),
 }) {
     const packetContent = Buffer.alloc(8);

@@ -1,4 +1,3 @@
-import { ServerError } from "./ServerError.js";
 import { SerializableMixin, AbstractSerializable } from "./messageFactory.js";
 
 /**
@@ -36,7 +35,7 @@ export class serverHeader extends SerializableMixin(AbstractSerializable) {
      */
     override _doDeserialize(buffer: Buffer): serverHeader {
         if (buffer.length < this._size) {
-            throw new ServerError(
+            throw new Error(
                 `Buffer length ${buffer.length} is too short to deserialize`,
             );
         }
@@ -47,9 +46,9 @@ export class serverHeader extends SerializableMixin(AbstractSerializable) {
             this.sequence = buffer.readInt32LE(6);
             this.flags = buffer.readInt8(10);
         } catch (error) {
-            throw new ServerError(
-                `Error deserializing buffer: ${String(error)}`,
-            );
+            const err = Error("Error deserializing buffer");
+            err.cause = error;
+            throw err;
         }
         return this;
     }
@@ -64,11 +63,6 @@ export class serverHeader extends SerializableMixin(AbstractSerializable) {
     }
 
     override toString() {
-        return `ServerHeader: ${JSON.stringify({
-            length: this.length,
-            mcoSig: this.mcoSig,
-            sequence: this.sequence,
-            flags: this.flags,
-        })}`;
+        return `ServerHeader: length=${this.length}, mcoSig=${this.mcoSig}, sequence=${this.sequence}, flags=${this.flags}`;
     }
 }

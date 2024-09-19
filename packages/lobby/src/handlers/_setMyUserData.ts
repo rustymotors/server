@@ -1,23 +1,21 @@
-import { getServerConfiguration } from "rusty-motors-shared";
-import { ServerError } from "rusty-motors-shared";
+import { getServerConfiguration, type ServerLogger } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 import { LegacyMessage } from "rusty-motors-shared";
 import { UserInfo } from "../UserInfoMessage.js";
-import { updateUser } from "../../../database/index.js";
+import { updateUser } from "rusty-motors-database";
 
 export async function _setMyUserData({
     connectionId,
     message,
     log = getServerLogger({
-        module: "Lobby",
+        name: "Lobby",
+        level: getServerConfiguration({}).logLevel ?? "info",
     }),
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }) {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
-
     try {
         log.debug("Handling NPS_SET_MY_USER_DATA");
         log.debug(`Received command: ${message.serialize().toString("hex")}`);
@@ -26,7 +24,6 @@ export async function _setMyUserData({
         incomingMessage.deserialize(message.serialize());
 
         log.debug(`User ID: ${incomingMessage._userId}`);
-
 
         // Update the user's data
         updateUser({
@@ -48,9 +45,10 @@ export async function _setMyUserData({
             message: packetResult,
         };
     } catch (error) {
-        throw ServerError.fromUnknown(
-            error,
-            "Error handling NPS_SET_MY_USER_DATA",
+        const err = Error(
+            `Error handling NPS_SET_MY_USER_DATA: ${String(error)}`,
         );
+        err.cause = error;
+        throw err;
     }
 }

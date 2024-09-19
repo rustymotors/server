@@ -1,4 +1,3 @@
-import { ServerError } from "./ServerError.js";
 import { legacyHeader } from "./legacyHeader.js";
 
 /**
@@ -27,7 +26,7 @@ export class GameMessageHeader extends legacyHeader {
 
     deserialize(buffer: Buffer) {
         if (buffer.length < 8) {
-            throw new ServerError(
+            throw Error(
                 `Buffer length ${buffer.length} is too short to deserialize`,
             );
         }
@@ -38,9 +37,11 @@ export class GameMessageHeader extends legacyHeader {
             this._gameMessageId = buffer.readInt16BE(4);
             this._gameMessageLength = buffer.readInt16BE(6);
         } catch (error) {
-            throw new ServerError(
+            const err = new Error(
                 `Error deserializing buffer: ${String(error)}`,
             );
+            err.cause = error;
+            throw err;
         }
         return this;
     }

@@ -1,8 +1,10 @@
-import { SerializedBufferOld } from "rusty-motors-shared";
 
 /**
  * @module interfaces
  */
+
+import type { ServerLogger } from "./log.js";
+import type { SerializedBufferOld } from "./SerializedBufferOld.js";
 
 export const name = "interfaces";
 
@@ -72,7 +74,7 @@ export interface RaceLobbyRecord {
 export interface ServiceArgs {
     connectionId: string;
     message: SerializedBufferOld;
-    log: import("pino").Logger;
+    log: ServerLogger;
 }
 
 export interface KeypressEvent {

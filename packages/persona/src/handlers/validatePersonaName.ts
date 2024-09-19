@@ -1,4 +1,4 @@
-import { getServerLogger } from "rusty-motors-shared";
+import { getServerLogger, type ServerLogger } from "rusty-motors-shared";
 import { SerializedBufferOld } from "../../../shared/src/SerializedBufferOld.js";
 import { LegacyMessage } from "../../../shared/src/LegacyMessage.js";
 import { RawMessage } from "../../../shared/src/RawMessage.js";
@@ -11,12 +11,12 @@ export async function validatePersonaName({
     connectionId,
     message,
     log = getServerLogger({
-        module: "PersonaServer",
+        name: "PersonaServer",
     }),
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBufferOld[];

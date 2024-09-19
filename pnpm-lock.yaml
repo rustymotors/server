@@ -41,6 +41,9 @@ importers:
       pino:
         specifier: ^9.4.0
         version: 9.4.0
+      pino-pretty:
+        specifier: ^11.2.2
+        version: 11.2.2
       rusty-motors-chat:
         specifier: link:src/chat
         version: link:src/chat
@@ -68,12 +71,18 @@ importers:
       rusty-motors-nps:
         specifier: link:packages/nps
         version: link:packages/nps
+      rusty-motors-patch:
+        specifier: link:packages/patch
+        version: link:packages/patch
       rusty-motors-personas:
         specifier: link:packages/persona
         version: link:packages/persona
       rusty-motors-sessions:
         specifier: link:packages/sessions
         version: link:packages/sessions
+      rusty-motors-shard:
+        specifier: link:packages/shard
+        version: link:packages/shard
       rusty-motors-shared:
         specifier: link:packages/shared
         version: link:packages/shared

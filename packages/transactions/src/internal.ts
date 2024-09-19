@@ -14,15 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getServerConfiguration } from "rusty-motors-shared";
+import { getServerConfiguration, type ServerLogger } from "rusty-motors-shared";
 import {
     fetchStateFromDatabase,
     getEncryption,
     updateEncryption,
 } from "rusty-motors-shared";
-import { ServerError } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
-// eslint-disable-next-line no-unused-vars
 import { OldServerMessage } from "rusty-motors-shared";
 import { SerializedBufferOld } from "rusty-motors-shared";
 import { ServerMessage } from "rusty-motors-shared";
@@ -91,7 +89,7 @@ async function processInput({
     connectionId,
     packet,
     log = getServerLogger({
-        module: "transactionServer",
+        name: "transactionServer",
     }),
 }: import("./handlers.js").MessageHandlerArgs): Promise<
     import("./handlers.js").MessageHandlerResult
@@ -116,14 +114,13 @@ async function processInput({
             });
             return responsePackets;
         } catch (error) {
-            const err = new ServerError(
-                `Error handling packet: ${String(error)}`,
-            );
+            const err = Error(`Error handling packet: ${String(error)}`);
+            err.cause = error;
             throw err;
         }
     }
 
-    throw new ServerError(
+    throw Error(
         `Message Number Not Handled: ${currentMessageNo} (${currentMessageString}`,
     );
 }
@@ -132,7 +129,7 @@ async function processInput({
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBufferOld} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "transactionServer" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "transactionServer" })]
  * @returns {Promise<{
  *     connectionId: string,
  *    messages: SerializedBufferOld[]
@@ -142,18 +139,17 @@ export async function receiveTransactionsData({
     connectionId,
     message,
     log = getServerLogger({
-        module: "transactionServer",
+        name: "transactionServer",
+        level: getServerConfiguration({}).logLevel ?? "info",
     }),
 }: {
     connectionId: string;
     message: Serializable;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBufferOld[];
 }> {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
-
     log.debug(`Received Transaction Server packet: ${connectionId}`);
 
     // Going to use ServerMessage in this module
@@ -173,7 +169,7 @@ export async function receiveTransactionsData({
         const encryptionSettings = getEncryption(state, connectionId);
 
         if (typeof encryptionSettings === "undefined") {
-            throw new ServerError(
+            throw Error(
                 `Unable to locate encryption settings for connection ${connectionId}`,
             );
         }
@@ -199,9 +195,9 @@ export async function receiveTransactionsData({
 
             log.debug(`Decrypted message: ${inboundMessage.toString()}`);
         } catch (error) {
-            throw new ServerError(
-                `Unable to decrypt message: ${String(error)}`,
-            );
+            const err = Error(`Unable to decrypt message: ${String(error)}`);
+            err.cause = error;
+            throw err;
         }
     }
 
@@ -224,7 +220,7 @@ export async function receiveTransactionsData({
             const encryptionSettings = getEncryption(state, connectionId);
 
             if (typeof encryptionSettings === "undefined") {
-                throw new ServerError(
+                throw Error(
                     `Unable to locate encryption settings for connection ${connectionId}`,
                 );
             }
@@ -261,9 +257,11 @@ export async function receiveTransactionsData({
                 );
                 outboundMessages.push(outboundRawMessage);
             } catch (error) {
-                throw new ServerError(
+                const err = Error(
                     `Unable to encrypt message: ${String(error)}`,
                 );
+                err.cause = error;
+                throw err;
             }
         } else {
             const outboundRawMessage = new SerializedBufferOld();
@@ -285,8 +283,6 @@ export async function receiveTransactionsData({
  */
 export function verifyLength(buffer: Buffer, buffer2: Buffer) {
     if (buffer.length !== buffer2.length) {
-        throw new ServerError(
-            `Length mismatch: ${buffer.length} !== ${buffer2.length}`,
-        );
+        throw Error(`Length mismatch: ${buffer.length} !== ${buffer2.length}`);
     }
 }

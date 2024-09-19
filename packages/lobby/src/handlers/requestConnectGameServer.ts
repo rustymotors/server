@@ -1,5 +1,5 @@
 import { getPersonasByPersonaId } from "rusty-motors-personas";
-import { getServerLogger } from "rusty-motors-shared";
+import { getServerLogger, type ServiceArgs } from "rusty-motors-shared";
 import { LoginInfoMessage } from "../LoginInfoMessage.js";
 
 import {
@@ -12,7 +12,6 @@ import {
     fetchStateFromDatabase,
     getEncryption,
 } from "rusty-motors-shared";
-import { ServerError } from "rusty-motors-shared";
 import { SerializedBufferOld } from "rusty-motors-shared";
 import { UserInfoMessage } from "../UserInfoMessage.js";
 import { fetchSessionKeyByCustomerId } from "rusty-motors-database";
@@ -47,9 +46,9 @@ export async function _npsRequestGameConnectServer({
     connectionId,
     message,
     log = getServerLogger({
-        module: "LoginServer",
+        name: "LoginServer",
     }),
-}: import("../../../shared/src/interfaces.js").ServiceArgs): Promise<{
+}: ServiceArgs): Promise<{
     connectionId: string;
     messages: SerializedBufferOld[];
 }> {
@@ -67,7 +66,7 @@ export async function _npsRequestGameConnectServer({
         id: inboundMessage._userId,
     });
     if (typeof personas[0] === "undefined") {
-        const err = new ServerError("No personas found.");
+        const err = Error("No personas found.");
         throw err;
     }
 
@@ -79,17 +78,10 @@ export async function _npsRequestGameConnectServer({
 
     if (!existingEncryption) {
         // Set the encryption keys on the lobby connection
-        const keys = await fetchSessionKeyByCustomerId(customerId).catch(
-            (/** @type {unknown} */ error: unknown) => {
-                throw new ServerError(
-                    `Unable to fetch session key for customerId ${customerId.toString()}: ${String(
-                        error,
-                    )}`,
-                );
-            },
-        );
+        const keys = await fetchSessionKeyByCustomerId(customerId);
+
         if (keys === undefined) {
-            throw new ServerError("Error fetching session keys!");
+            throw Error("Error fetching session keys!");
         }
 
         // We have the session keys, set them on the connection
@@ -110,7 +102,9 @@ export async function _npsRequestGameConnectServer({
 
             addEncryption(state, newEncryption).save();
         } catch (error) {
-            throw new ServerError(`Error creating encryption: ${error}`);
+            const err = Error(`Error creating encryption`);
+            err.cause = error;
+            throw err;
         }
     }
 

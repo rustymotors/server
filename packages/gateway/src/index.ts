@@ -25,13 +25,12 @@ import {
     removeSocket,
     wrapSocket,
 } from "rusty-motors-shared";
-import { ServerError } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 
 import { Socket } from "node:net";
 import { getGatewayServer } from "./GatewayServer.js";
 import { getPortMessageType, UserStatusManager } from "rusty-motors-nps";
-import { BasePacket } from "../../shared-packets/src/BasePacket.js";
+import { BasePacket } from "rusty-motors-shared-packets";
 import * as Sentry from "@sentry/node";
 
 /**
@@ -40,7 +39,7 @@ import * as Sentry from "@sentry/node";
  * @property {string} args.connectionId The connection id of the socket that
  *                                  received the data.
  * @property {module:packages/shared/RawMessage} args.message The data that was received.
- * @property {module:shared/log.ServerLogger} [args.log=getServerLogger({ module: "gateway" })] The logger to use.
+ * @property {module:shared/log.ServerLogger} [args.log=getServerLogger({ name: "gateway" })] The logger to use.
  *                                                                    response
  *                                                                to the
  *                                                           data.
@@ -62,7 +61,7 @@ export function socketErrorHandler({
     connectionId,
     error,
     log = getServerLogger({
-        module: "socketErrorHandler",
+        name: "socketErrorHandler",
     }),
 }: {
     connectionId: string;
@@ -74,9 +73,7 @@ export function socketErrorHandler({
         log.debug(`Connection ${connectionId} reset`);
         return;
     }
-    throw new ServerError(
-        `Socket error: ${error.message} on connection ${connectionId}`,
-    );
+    throw Error(`Socket error: ${error.message} on connection ${connectionId}`);
 }
 
 /**
@@ -84,12 +81,12 @@ export function socketErrorHandler({
  *
  * @param {object} options
  * @param {string} options.connectionId The connection ID
- * @param {import("pino").Logger} [options.log=getServerLogger({ module: "socketEndHandler" })] The logger to use
+ * @param {import("pino").Logger} [options.log=getServerLogger({ name: "socketEndHandler" })] The logger to use
  */
 export function socketEndHandler({
     connectionId,
     log = getServerLogger({
-        module: "socketEndHandler",
+        name: "socketEndHandler",
     }),
 }: {
     connectionId: string;
@@ -106,13 +103,13 @@ export function socketEndHandler({
  *
  * @param {object} options
  * @param {Socket} options.incomingSocket The incoming socket
- * @param {Logger} [options.log=getServerLogger({ module: "onDataHandler" })] The logger to use
+ * @param {Logger} [options.log=getServerLogger({ name: "onDataHandler" })] The logger to use
  *
  */
 export function onSocketConnection({
     incomingSocket,
     log = getServerLogger({
-        module: "onDataHandler",
+        name: "onDataHandler",
     }),
 }: {
     incomingSocket: Socket;
@@ -122,7 +119,7 @@ export function onSocketConnection({
     const { localPort, remoteAddress } = incomingSocket;
 
     if (localPort === undefined || remoteAddress === undefined) {
-        throw new ServerError("localPort or remoteAddress is undefined");
+        throw Error("localPort or remoteAddress is undefined");
     }
 
     // This is a new connection so generate a new connection ID
@@ -207,49 +204,56 @@ export function onSocketConnection({
 
             log.debug("Calling onData handler");
 
-            Sentry.startSpan({
-                name: "onDataHandler",
-                op: "onDataHandler",
-            }, async () => {
+            Sentry.startSpan(
+                {
+                    name: "onDataHandler",
+                    op: "onDataHandler",
+                },
+                async () => {
+                    portOnDataHandler({
+                        connectionId: newConnectionId,
+                        message: rawMessage,
+                    })
+                        .then((response: ServiceResponse) => {
+                            log.debug("onData handler returned");
+                            const { messages } = response;
 
-            portOnDataHandler({
-                connectionId: newConnectionId,
-                message: rawMessage,
-            })
-                .then((response: ServiceResponse) => {
-                    log.debug("onData handler returned");
-                    const { messages } = response;
+                            // Log the messages
+                            log.trace(
+                                `Messages: ${messages.map((m) => m.toString())}`,
+                            );
 
-                    // Log the messages
-                    log.trace(`Messages: ${messages.map((m) => m.toString())}`);
+                            // Serialize the messages
+                            const serializedMessages = messages.map((m) =>
+                                m.serialize(),
+                            );
 
-                    // Serialize the messages
-                    const serializedMessages = messages.map((m) =>
-                        m.serialize(),
-                    );
-
-                    try {
-                        // Send the messages
-                        serializedMessages.forEach((m) => {
-                            incomingSocket.write(m);
-                            log.trace(`Sent data: ${m.toString("hex")}`);
+                            try {
+                                // Send the messages
+                                serializedMessages.forEach((m) => {
+                                    incomingSocket.write(m);
+                                    log.trace(
+                                        `Sent data: ${m.toString("hex")}`,
+                                    );
+                                });
+                            } catch (error) {
+                                log.error(
+                                    `Error sending data: ${String(error)}`,
+                                );
+                            }
+                        })
+                        .catch((error: Error) => {
+                            log.fatal(`Error handling data: ${String(error)}`);
+                            Sentry.captureException(error);
+                            void getGatewayServer({}).stop();
+                            Sentry.flush(200).then(() => {
+                                log.debug("Sentry flushed");
+                                // Call server shutdown
+                                void getGatewayServer({}).shutdown();
+                            });
                         });
-                    } catch (error) {
-                        log.error(`Error sending data: ${String(error)}`);
-                    }
-                })
-                .catch((/** @type {Error} */ error: Error) => {
-                    log.error(`Error handling data: ${String(error)}`);
-                    Sentry.captureException(error);
-                    Sentry.flush(2000).then(() => {
-                        log.debug("Sentry flushed");
-                        // Call server shutdown
-                        getGatewayServer({}).shutdown();
-                    }
-                    );
-                });
-
-            });
+                },
+            );
         },
     );
 

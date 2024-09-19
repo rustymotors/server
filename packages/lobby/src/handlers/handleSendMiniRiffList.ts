@@ -1,5 +1,4 @@
-import { getServerConfiguration } from "rusty-motors-shared";
-import { ServerError } from "rusty-motors-shared";
+import { getServerConfiguration, type ServerLogger } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 import { GameMessage } from "rusty-motors-shared";
 import { LegacyMessage } from "rusty-motors-shared";
@@ -11,21 +10,20 @@ import { channelRecordSize, channels } from "./channels.js";
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "Lobby" })]
  */
 export async function handleSendMiniRiffList({
     connectionId,
     message,
     log = getServerLogger({
-        module: "Lobby",
+        name: "Lobby",
+        level: getServerConfiguration({}).logLevel ?? "info",
     }),
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }) {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
-
     log.debug("Handling NPS_SEND_MINI_RIFF_LIST");
     log.debug(`Received command: ${message._doSerialize().toString("hex")}`);
 
@@ -65,9 +63,10 @@ export async function handleSendMiniRiffList({
             message: packetResult,
         };
     } catch (error) {
-        throw ServerError.fromUnknown(
-            error,
-            "Error handling NPS_SEND_MINI_RIFF_LIST",
+        const err = Error(
+            `Error handling NPS_SEND_MINI_RIFF_LIST: ${String(error)}`,
         );
+        err.cause = error;
+        throw err;
     }
 }

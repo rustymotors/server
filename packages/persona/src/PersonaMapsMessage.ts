@@ -1,4 +1,3 @@
-import { ServerError } from "rusty-motors-shared";
 import { NPSMessage } from "rusty-motors-shared";
 import { NPSHeader } from "rusty-motors-shared";
 
@@ -156,9 +155,11 @@ export class PersonaRecord {
             // buffer.writeUInt16BE(this.personaLevel, offset); // 2
             // offset += 2; // offset = 1292
         } catch (error) {
-            throw new ServerError(
+            const err = Error(
                 `Error serializing PersonaRecord buffer: ${String(error)}`,
             );
+            err.cause = error;
+            throw err;
         }
         return buffer;
     }
@@ -236,14 +237,14 @@ export class PersonaList {
         try {
             let offset = 0;
             if (!this._personaRecords) {
-                throw new ServerError("PersonaRecords is undefined");
+                throw Error("PersonaRecords is undefined");
             }
             for (const personaRecord of this._personaRecords) {
                 personaRecord.serialize().copy(buffer, offset);
                 offset += PersonaRecord.size();
             }
         } catch (error) {
-            throw new ServerError(
+            throw Error(
                 `Error serializing PersonaList buffer: ${String(error)}`,
             );
         }
@@ -295,10 +296,11 @@ export class PersonaMapsMessage extends NPSMessage {
             this.raw = buffer;
             return this;
         } catch (error) {
-            throw ServerError.fromUnknown(
-                error,
-                "Error deserializing PersonaMapsMessage",
+            const err = Error(
+                `Error deserializing PersonaMapsMessage: ${String(error)}`,
             );
+            err.cause = error;
+            throw err;
         }
     }
 
@@ -308,7 +310,7 @@ export class PersonaMapsMessage extends NPSMessage {
     override serialize(): Buffer {
         try {
             if (!this._personaRecords) {
-                throw new ServerError("PersonaRecords is undefined");
+                throw Error("PersonaRecords is undefined");
             }
             this._header.length =
                 NPSHeader.size() + 2 + this._personaRecords.size();
@@ -321,10 +323,11 @@ export class PersonaMapsMessage extends NPSMessage {
             this.data.copy(buffer, NPSHeader.size() + 2);
             return buffer;
         } catch (error) {
-            throw ServerError.fromUnknown(
-                error,
-                "Error serializing PersonaMapsMessage",
+            const err = Error(
+                `Error serializing PersonaMapsMessage: ${String(error)}`,
             );
+            err.cause = error;
+            throw err;
         }
     }
 

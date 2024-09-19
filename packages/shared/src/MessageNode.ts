@@ -1,4 +1,3 @@
-import { ServerError } from "./ServerError.js";
 import { SerializedBufferOld } from "./SerializedBufferOld.js";
 
 export class MessageNode {
@@ -48,7 +47,7 @@ export class MessageNode {
     deserialize(packet: Buffer) {
         const length = packet.readInt16LE(0);
         if (length !== packet.length) {
-            throw new ServerError(
+            throw Error(
                 `[MessageNode] Length of packet ${length.toString()} does not match length of buffer ${packet.length.toString()}`,
             );
         }
@@ -82,7 +81,7 @@ export class MessageNode {
         packet.writeInt8(this.flags, offset);
         offset += 1;
         if (typeof this.data === "undefined") {
-            throw new ServerError("MessageNode data is undefined");
+            throw Error("MessageNode data is undefined");
         }
         this.data.copy(packet, offset);
         return packet;

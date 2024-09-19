@@ -1,4 +1,3 @@
-import { ServerError } from "./ServerError.js";
 import { MessageHeader } from "./MessageHeader.js";
 import { SerializedBufferOld } from "./SerializedBufferOld.js";
 
@@ -43,7 +42,7 @@ export class MessageBufferOld extends SerializedBufferOld {
      * @param {Buffer} buffer
      */
     set buffer(buffer: Buffer) {
-        // const log = getServerLogger({ module: "MessageBuffer" });
+        // const log = getServerLogger({ name: "MessageBuffer" });
         // log.level = getServerConfiguration({}).logLevel ?? "info";
         this._buffer = Buffer.alloc(buffer.length);
         this._buffer = buffer;
@@ -88,7 +87,7 @@ export class MessageBufferOld extends SerializedBufferOld {
     deserialize(buffer: Buffer): MessageBufferOld {
         this._header.deserialize(buffer.subarray(0, 8));
         if (buffer.length < 4 + this._header.messageLength) {
-            throw new ServerError(
+            throw Error(
                 `Buffer length ${buffer.length} is too short to deserialize`,
             );
         }
@@ -99,14 +98,12 @@ export class MessageBufferOld extends SerializedBufferOld {
     override serialize() {
         const buffer = Buffer.alloc(4 + this._buffer.length);
         if (this.buffer.length < 0) {
-            throw new ServerError(
+            throw Error(
                 `Buffer length ${this.buffer.length} is too short to serialize`,
             );
         }
         if (this.messageId <= 0) {
-            throw new ServerError(
-                `Message ID ${this.messageId} is invalid to serialize`,
-            );
+            throw Error(`Message ID ${this.messageId} is invalid to serialize`);
         }
         this._header.serialize().copy(buffer);
         this._buffer.copy(buffer, 4);

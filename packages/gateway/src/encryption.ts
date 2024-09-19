@@ -16,7 +16,6 @@
 
 import { createCipheriv, createDecipheriv, getCiphers } from "node:crypto";
 import { McosEncryptionPair } from "rusty-motors-shared";
-import { ServerError } from "rusty-motors-shared";
 
 /**
  * This function creates a new encryption pair for use with the game server
@@ -25,27 +24,26 @@ import { ServerError } from "rusty-motors-shared";
  * @returns {McosEncryptionPair} The encryption pair
  */
 export function createCommandEncryptionPair(key: string): McosEncryptionPair {
-	if (key.length < 16) {
-		const err = new ServerError("Key too short");
-		throw err;
-	}
+    if (key.length < 16) {
+        throw Error("Key too short");
+    }
 
-	const sKey = key.slice(0, 16);
+    const sKey = key.slice(0, 16);
 
-	// Deepcode ignore HardcodedSecret: This uses an empty IV
-	const desIV = Buffer.alloc(8);
+    // Deepcode ignore HardcodedSecret: This uses an empty IV
+    const desIV = Buffer.alloc(8);
 
-	const gsCipher = createCipheriv("des-cbc", Buffer.from(sKey, "hex"), desIV);
-	gsCipher.setAutoPadding(false);
+    const gsCipher = createCipheriv("des-cbc", Buffer.from(sKey, "hex"), desIV);
+    gsCipher.setAutoPadding(false);
 
-	const gsDecipher = createDecipheriv(
-		"des-cbc",
-		Buffer.from(sKey, "hex"),
-		desIV,
-	);
-	gsDecipher.setAutoPadding(false);
+    const gsDecipher = createDecipheriv(
+        "des-cbc",
+        Buffer.from(sKey, "hex"),
+        desIV,
+    );
+    gsDecipher.setAutoPadding(false);
 
-	return new McosEncryptionPair(gsCipher, gsDecipher);
+    return new McosEncryptionPair(gsCipher, gsDecipher);
 }
 
 /**
@@ -56,18 +54,17 @@ export function createCommandEncryptionPair(key: string): McosEncryptionPair {
  * @throws Error if the key is too short
  */
 export function createDataEncryptionPair(key: string): McosEncryptionPair {
-	if (key.length < 16) {
-		const err = new ServerError("Key too short");
-		throw err;
-	}
+    if (key.length < 16) {
+        throw Error("Key too short");
+    }
 
-	const stringKey = Buffer.from(key, "hex");
+    const stringKey = Buffer.from(key, "hex");
 
-	// File deepcode ignore InsecureCipher: RC4 is the encryption algorithum used here, file deepcode ignore HardcodedSecret: A blank IV is used here
-	const tsCipher = createCipheriv("rc4", stringKey.subarray(0, 16), "");
-	const tsDecipher = createDecipheriv("rc4", stringKey.subarray(0, 16), "");
+    // File deepcode ignore InsecureCipher: RC4 is the encryption algorithum used here, file deepcode ignore HardcodedSecret: A blank IV is used here
+    const tsCipher = createCipheriv("rc4", stringKey.subarray(0, 16), "");
+    const tsDecipher = createDecipheriv("rc4", stringKey.subarray(0, 16), "");
 
-	return new McosEncryptionPair(tsCipher, tsDecipher);
+    return new McosEncryptionPair(tsCipher, tsDecipher);
 }
 
 /**
@@ -77,13 +74,8 @@ export function createDataEncryptionPair(key: string): McosEncryptionPair {
  * @throws Error if the server does not support the legacy ciphers
  */
 export function verifyLegacyCipherSupport() {
-	const cipherList = getCiphers();
-	if (!cipherList.includes("des-cbc")) {
-		const err = new ServerError("DES-CBC cipher not available");
-		throw err;
-	}
-	if (!cipherList.includes("rc4")) {
-		const err = new ServerError("RC4 cipher not available");
-		throw err;
-	}
+    const cipherList = getCiphers();
+    if (!cipherList.includes("des-cbc") || !cipherList.includes("rc4")) {
+        throw Error("Legacy ciphers not available");
+    }
 }

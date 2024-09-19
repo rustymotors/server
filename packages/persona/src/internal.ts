@@ -14,11 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerError } from "rusty-motors-shared";
-import { getServerLogger } from "rusty-motors-shared";
+import { getServerLogger, type ServerLogger } from "rusty-motors-shared";
 
-import type { Logger } from "pino";
-import { getServerConfiguration } from "rusty-motors-shared";
 import { SerializedBufferOld } from "rusty-motors-shared";
 import { LegacyMessage } from "rusty-motors-shared";
 import {
@@ -55,7 +52,7 @@ export const messageHandlers: {
     handler: (args: {
         connectionId: string;
         message: LegacyMessage;
-        log: Logger;
+        log: ServerLogger;
     }) => Promise<{
         connectionId: string;
         messages: SerializedBufferOld[];
@@ -160,7 +157,7 @@ async function getPersonaMapsByCustomerId(
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBufferOld[],
@@ -169,11 +166,11 @@ async function getPersonaMapsByCustomerId(
 async function getPersonaMaps({
     connectionId,
     message,
-    log = getServerLogger({ module: "PersonaServer" }),
+    log = getServerLogger({ name: "PersonaServer" }),
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBufferOld[];
@@ -244,16 +241,8 @@ async function getPersonaMaps({
             messages: [outboundMessage],
         };
     } catch (error) {
-        if (error instanceof Error) {
-            const err = new ServerError(
-                `Error serializing personaMapsMsg: ${error.message}`,
-            );
-            throw err;
-        }
-
-        const err = new ServerError(
-            "Error serializing personaMapsMsg, error unknonw",
-        );
+        const err = Error(`Error serializing personaMapsMsg`);
+        err.cause = error;
         throw err;
     }
 }
@@ -264,7 +253,7 @@ async function getPersonaMaps({
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBufferOld} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "PersonaServer" })]
+ * @param {import("pino").Logger} [args.log=getServerLogger({ name: "PersonaServer" })]
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBufferOld[],
@@ -275,17 +264,16 @@ export async function receivePersonaData({
     connectionId,
     message,
     log = getServerLogger({
-        module: "PersonaServer",
+        name: "PersonaServer",
     }),
 }: {
     connectionId: string;
     message: Serializable;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBufferOld[];
 }> {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
     const data = message.serialize();
     log.debug(
         `Received Persona packet',
@@ -304,9 +292,7 @@ export async function receivePersonaData({
 
     if (typeof supportedHandler === "undefined") {
         // We do not yet support this message code
-        throw new ServerError(
-            `UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
-        );
+        throw Error(`UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`);
     }
 
     try {
@@ -319,9 +305,8 @@ export async function receivePersonaData({
         log.debug("Leaving receivePersonaDatadleData");
         return result;
     } catch (error) {
-        throw ServerError.fromUnknown(
-            error,
-            `Error handling persona data: ${String(error)}`,
-        );
+        const err = Error(`Error handling persona data: ${String(error)}`);
+        err.cause = error;
+        throw err;
     }
 }
