@@ -94,7 +94,7 @@ importers:
         version: link:packages/transactions
       sequelize:
         specifier: ^6.37.3
-        version: 6.37.3
+        version: 6.37.3(pg@8.13.0)
       sqlite:
         specifier: ^5.1.1
         version: 5.1.1
@@ -189,12 +189,6 @@ importers:
       '@sentry/profiling-node':
         specifier: 8.30.0
         version: 8.30.0
-      rusty-motors-shared:
-        specifier: ^1.0.0
-        version: link:../shared
-      rusty-motors-shared-packets:
-        specifier: ^1.0.0
-        version: link:../shared-packets
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 2.1.1
@@ -5964,7 +5958,7 @@ snapshots:
     dependencies:
       adminjs: 7.8.13(@types/react@18.3.4)
       escape-regexp: 0.0.1
-      sequelize: 6.37.3
+      sequelize: 6.37.3(pg@8.13.0)
 
   '@ampproject/remapping@2.3.0':
     dependencies:
@@ -11305,7 +11299,7 @@ snapshots:
 
   sequelize-pool@7.1.0: {}
 
-  sequelize@6.37.3:
+  sequelize@6.37.3(pg@8.13.0):
     dependencies:
       '@types/debug': 4.1.12
       '@types/validator': 13.12.0
@@ -11323,6 +11317,8 @@ snapshots:
       uuid: 8.3.2
       validator: 13.12.0
       wkx: 0.5.0
+    optionalDependencies:
+      pg: 8.13.0
     transitivePeerDependencies:
       - supports-color
 
