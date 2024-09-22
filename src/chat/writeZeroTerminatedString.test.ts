@@ -59,4 +59,12 @@ describe("writeZeroTerminatedString", () => {
 		expect(buffer.readUInt8(offset + value.length)).toBe(0);
 		expect(newOffset).toBe(offset + value.length + 1);
 	});
+
+	it("should handle buffer overflow", () => {
+		const buffer = Buffer.alloc(10);
+		const offset = 5;
+		const value = "toolong";  // 7 chars + null terminator > remaining 5 bytes
+
+		expect(() => writeZeroTerminatedString(buffer, offset, value)).toThrow();
+	});
 });
