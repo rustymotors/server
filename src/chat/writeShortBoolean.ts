@@ -10,5 +10,8 @@ export function writeShortBooleanBE(
 	offset: number,
 	value: boolean,
 ): void {
+	if (offset < 0 || offset + 2 > buffer.length) {
+		throw new RangeError('Attempt to write outside buffer bounds');
+	}
 	buffer.writeUInt16BE(value ? 1 : 0, offset);
 }
