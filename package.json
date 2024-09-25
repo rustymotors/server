@@ -73,7 +73,7 @@
     "@types/chai": "4.3.20",
     "@types/node": "^22.6.1",
     "@types/sinon": "17.0.3",
-    "@types/sinon-chai": "3.2.12",
+    "@types/sinon-chai": "4.0.0",
     "@typescript-eslint/eslint-plugin": "^8.7.0",
     "@typescript-eslint/parser": "^8.7.0",
     "@vitest/coverage-v8": "^2.1.1",
