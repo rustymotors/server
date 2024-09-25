@@ -127,8 +127,8 @@ importers:
         specifier: ^20.1.4
         version: 20.1.4
       '@types/chai':
-        specifier: 4.3.20
-        version: 4.3.20
+        specifier: 5.0.0
+        version: 5.0.0
       '@types/node':
         specifier: ^22.6.1
         version: 22.6.1
@@ -2487,8 +2487,8 @@ packages:
   '@tsconfig/node20@20.1.4':
     resolution: {integrity: sha512-sqgsT69YFeLWf5NtJ4Xq/xAF8p4ZQHlmGW74Nu2tD4+g5fAsposc4ZfaaPixVu4y01BEiDCWLRDCvDM5JOsRxg==}
 
-  '@types/chai@4.3.20':
-    resolution: {integrity: sha512-/pC9HAB5I/xMlc5FP77qjCnI16ChlJfW0tGa0IUcFn38VJrTV6DeZ60NU5KZBtaOZqjdpwTWohz5HU1RrhiYxQ==}
+  '@types/chai@5.0.0':
+    resolution: {integrity: sha512-+DwhEHAaFPPdJ2ral3kNHFQXnTfscEEFsUxzD+d7nlcLrFK23JtNjH71RGasTcHb88b4vVi4mTyfpf8u2L8bdA==}
 
   '@types/connect@3.4.36':
     resolution: {integrity: sha512-P63Zd/JUGq+PdrM1lv0Wv5SBYeA2+CORvbrXbngriYY0jzLUWfQMQQxOhjONEz/wlHOAxOdY7CY65rgQdTjq2w==}
@@ -8562,7 +8562,7 @@ snapshots:
 
   '@tsconfig/node20@20.1.4': {}
 
-  '@types/chai@4.3.20': {}
+  '@types/chai@5.0.0': {}
 
   '@types/connect@3.4.36':
     dependencies:
@@ -8653,7 +8653,7 @@ snapshots:
 
   '@types/sinon-chai@3.2.12':
     dependencies:
-      '@types/chai': 4.3.20
+      '@types/chai': 5.0.0
       '@types/sinon': 17.0.3
 
   '@types/sinon@17.0.3':
