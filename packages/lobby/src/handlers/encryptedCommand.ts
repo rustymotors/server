@@ -188,7 +188,7 @@ async function handleCommand({
 	connectionId,
 	message,
 	log = getServerLogger({
-		name: "Lobby",
+		name: "lobby.handleCommand",
 	}),
 }: {
 	connectionId: string;
@@ -264,6 +264,14 @@ export async function handleEncryptedNPSCommand({
 		message: (await decipheredMessage).message,
 		log,
 	});
+
+	if ((await response).message === null) {
+		log.debug("No response to send");
+		return {
+			connectionId,
+			messages: [],
+		};
+	}
 
 	// Encipher
 	const encryptedResponse = encryptCmd({

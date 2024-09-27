@@ -1,23 +1,20 @@
-import type { PersonaRecord } from "rusty-motors-shared";
 import { personaRecords } from "./internal.js";
-
-/**
- *
- * @param {number} id
- * @return {Promise<import("../../interfaces/index.js").PersonaRecord[]>}
- */
+import type { PersonaRecord } from "./PersonaMapsMessage.js";
 
 export async function getPersonasByPersonaId({
-	id,
+	personaId
 }: {
-	id: number;
-}): Promise<PersonaRecord[]> {
+	personaId: number;
+}): Promise<Pick<
+PersonaRecord,
+"customerId" | "personaId" | "personaName" | "shardId"
+>[]> {
 	const results = personaRecords.filter((persona) => {
-		const match = id === persona.id.readInt32BE(0);
+		const match = personaId === persona.personaId;
 		return match;
 	});
 	if (results.length === 0) {
-		const err = Error(`Unable to locate a persona for id: ${id}`);
+		const err = Error(`Unable to locate a persona for id: ${personaId}`);
 		throw err;
 	}
 

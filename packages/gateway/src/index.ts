@@ -189,6 +189,7 @@ export function onSocketConnection({
 	incomingSocket.on(
 		"data",
 		function socketDataHandler(incomingDataAsBuffer: Buffer) {
+			
 			log.trace(
 				`Incoming data on port ${localPort}: ${incomingDataAsBuffer.toString(
 					"hex",

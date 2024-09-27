@@ -28,8 +28,7 @@ import { _getFirstBuddy } from "./_getFirstBuddy.js";
 import { _selectGamePersona } from "./_selectGamePersona.js";
 import { validatePersonaName } from "./handlers/validatePersonaName.js";
 import type { Serializable } from "rusty-motors-shared-packets";
-
-const NAME_BUFFER_SIZE = 30;
+import { getPersonaInfo } from "./handlers/getPersonaInfo.js";
 
 /**
  * Array of supported message handlers
@@ -69,6 +68,11 @@ export const messageHandlers: {
 		handler: _gameLogout,
 	},
 	{
+		opCode: 1305, // 0x519
+		name: "Get persona info",
+		handler: getPersonaInfo,
+	},
+	{
 		opCode: 1330, // 0x532
 		name: "Get persona maps",
 		handler: getPersonaMaps,
@@ -97,36 +101,37 @@ export function generateNameBuffer(name: string, size: number): Buffer {
 /**
  * All personas
  * NOTE: Currently we only support one persona per customer
- * @type {import("../../interfaces/index.js").PersonaRecord[]}
+ * @type {PersonaRecord[]}
  */
-export const personaRecords: import("../../shared/src/interfaces.js").PersonaRecord[] =
-	[
-		{
-			customerId: 2868969472,
-			id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
-			maxPersonas: Buffer.from([0x01]),
-			name: generateNameBuffer("Doc Joe", NAME_BUFFER_SIZE),
-			personaCount: Buffer.from([0x00, 0x01]),
-			shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
-		},
-		{
-			customerId: 5551212, // 0x54 0xB4 0x6C
-			id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
-			maxPersonas: Buffer.from([0x02]),
-			name: generateNameBuffer("Dr Brown", NAME_BUFFER_SIZE),
-			personaCount: Buffer.from([0x00, 0x01]),
-			shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
-		},
-	];
+export const personaRecords: Pick<
+	PersonaRecord,
+	"customerId" | "personaId" | "personaName" | "shardId"
+>[] = [
+	{
+		customerId: 2868969472,
+		personaId: 1,
+		personaName: "Molly",
+		shardId: 44,
+	},
+	{
+		customerId: 5551212, // 0x54 0xB4 0x6C
+		personaId: 8675309,
+		personaName: "Dr Brown",
+		shardId: 44,
+	},
+];
 
 /**
  *
  * @param {number} customerId
-//  * @return {Promise<import("../../interfaces/index.js").PersonaRecord[]>}
+//  * @return {Promise<PersonaRecord[]>}
  */
 async function getPersonasByCustomerId(
 	customerId: number,
-): Promise<import("../../shared/src/interfaces.js").PersonaRecord[]> {
+): Promise<Pick<
+PersonaRecord,
+"customerId" | "personaId" | "personaName" | "shardId"
+>[]> {
 	const results = personaRecords.filter(
 		(persona) => persona.customerId === customerId,
 	);
@@ -143,7 +148,10 @@ async function getPersonasByCustomerId(
  */
 async function getPersonaMapsByCustomerId(
 	customerId: number,
-): Promise<import("../../shared/src/interfaces.js").PersonaRecord[]> {
+): Promise<Pick<
+PersonaRecord,
+"customerId" | "personaId" | "personaName" | "shardId"
+>[]> {
 	switch (customerId) {
 		case 5551212:
 			return getPersonasByCustomerId(customerId);
@@ -205,9 +213,9 @@ async function getPersonaMaps({
 			const personaRecord = new PersonaRecord();
 
 			personaRecord.customerId = persona.customerId;
-			personaRecord.personaId = persona.id.readUInt32BE(0);
-			personaRecord.personaName = persona.name.toString("utf8");
-			personaRecord.shardId = persona.shardId.readUInt32BE(0);
+			personaRecord.personaId = persona.personaId;
+			personaRecord.personaName = persona.personaName;
+			personaRecord.shardId = persona.shardId;
 			personaRecord.numberOfGames = personas.length;
 
 			personaList.addPersonaRecord(personaRecord);
@@ -307,4 +315,13 @@ export async function receivePersonaData({
 		err.cause = error;
 		throw err;
 	}
+}
+
+export function personaToString(persona: Partial<PersonaRecord>): string {
+	return "".concat(
+		`PersonaRecord: customerId=${persona.customerId}, `,
+		`personaId=${persona.personaId}, `,
+		`name=${persona.personaName}, `,
+		`shardId=${persona.shardId}`,
+	);
 }

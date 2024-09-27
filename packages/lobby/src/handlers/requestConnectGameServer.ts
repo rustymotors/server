@@ -63,7 +63,7 @@ export async function _npsRequestGameConnectServer({
 	log.debug(`LoginInfoMessage: ${inboundMessage.toString()}`);
 
 	const personas = await getPersonasByPersonaId({
-		id: inboundMessage._userId,
+		personaId: inboundMessage._userId,
 	});
 	if (typeof personas[0] === "undefined") {
 		const err = Error("No personas found.");

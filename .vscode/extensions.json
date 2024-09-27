@@ -1,7 +1,6 @@
 {
 	"recommendations": [
 		"ms-azuretools.vscode-docker",
-		"esbenp.prettier-vscode",
 		"ms-vscode.makefile-tools",
 		"usernamehw.errorlens",
 		"biomejs.biome"
