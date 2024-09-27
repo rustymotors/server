@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@adminjs/sequelize':
         specifier: ^4.1.1
-        version: 4.1.1(adminjs@7.8.13(@types/react@18.3.4))(sequelize@6.37.3)
+        version: 4.1.1(adminjs@7.8.13(@types/react@18.3.4))(sequelize@6.37.3(pg@8.13.0))
       '@databases/pg':
         specifier: ^5.5.0
         version: 5.5.0(typescript@5.6.2)
@@ -94,7 +94,7 @@ importers:
         version: link:packages/transactions
       sequelize:
         specifier: ^6.37.3
-        version: 6.37.3
+        version: 6.37.3(pg@8.13.0)
       sqlite:
         specifier: ^5.1.1
         version: 5.1.1
@@ -422,6 +422,26 @@ importers:
       '@sentry/profiling-node':
         specifier: 8.32.0
         version: 8.32.0
+    devDependencies:
+      add:
+        specifier: ^2.0.6
+        version: 2.0.6
+      vitest:
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.7.3)
+
+  src/socket:
+    dependencies:
+      '@sentry/profiling-node':
+        specifier: 8.32.0
+        version: 8.32.0
+    devDependencies:
+      add:
+        specifier: ^2.0.6
+        version: 2.0.6
+      vitest:
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.7.3)
 
 packages:
 
@@ -2751,6 +2771,9 @@ packages:
 
   add-stream@1.0.0:
     resolution: {integrity: sha512-qQLMr+8o0WC4FZGQTcJiKBVC59JylcPSrTtk6usvmIDFUOCKegapy1VHQwRbFMOFyb/inzUVqHs+eMYKDM1YeQ==}
+
+  add@2.0.6:
+    resolution: {integrity: sha512-j5QzrmsokwWWp6kUcJQySpbG+xfOBqqKnup3OIk1pz+kB/80SLorZ9V8zHFLO92Lcd+hbvq8bT+zOGoPkmBV0Q==}
 
   address@1.2.2:
     resolution: {integrity: sha512-4B/qKCfeE/ODUaAUpSwfzazo5x29WD4r3vXiWsB7I2mSDAihwEqKO+g8GELZUQSSAo5e1XTYh3ZVfLyxBc12nA==}
@@ -6200,11 +6223,11 @@ snapshots:
       - react-is
       - supports-color
 
-  '@adminjs/sequelize@4.1.1(adminjs@7.8.13(@types/react@18.3.4))(sequelize@6.37.3)':
+  '@adminjs/sequelize@4.1.1(adminjs@7.8.13(@types/react@18.3.4))(sequelize@6.37.3(pg@8.13.0))':
     dependencies:
       adminjs: 7.8.13(@types/react@18.3.4)
       escape-regexp: 0.0.1
-      sequelize: 6.37.3
+      sequelize: 6.37.3(pg@8.13.0)
 
   '@ampproject/remapping@2.3.0':
     dependencies:
@@ -8889,6 +8912,8 @@ snapshots:
   acorn@8.12.1: {}
 
   add-stream@1.0.0: {}
+
+  add@2.0.6: {}
 
   address@1.2.2: {}
 
@@ -11789,7 +11814,7 @@ snapshots:
 
   sequelize-pool@7.1.0: {}
 
-  sequelize@6.37.3:
+  sequelize@6.37.3(pg@8.13.0):
     dependencies:
       '@types/debug': 4.1.12
       '@types/validator': 13.12.0
@@ -11807,6 +11832,8 @@ snapshots:
       uuid: 8.3.2
       validator: 13.12.0
       wkx: 0.5.0
+    optionalDependencies:
+      pg: 8.13.0
     transitivePeerDependencies:
       - supports-color
 
