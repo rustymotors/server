@@ -102,7 +102,7 @@ export function unpackUserLoginMessage(message: ISerializable): {
  * This is the initial connection to the Login server
  */
 export async function processGameLogin(
-	connectionId: string,
+	_connectionId: string,
 	userStatus: UserStatus,
 	message: GameMessage,
 	socketCallback: GameSocketCallback,

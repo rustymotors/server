@@ -1,7 +1,4 @@
-import { getServerLogger } from "rusty-motors-shared";
 import { ServerMessagePayload } from "rusty-motors-shared-packets";
-
-const log = getServerLogger();
 
 export class LoginCompleteMessage extends ServerMessagePayload {
 	private _serverTime: number = 0; // 4 bytes
@@ -68,8 +65,9 @@ export class LoginCompleteMessage extends ServerMessagePayload {
 
 			return this;
 		} catch (error) {
-			log.error(`Error deserializing LoginCompleteMessage: ${error as string}`);
-			throw error;
+			const err = Error(`Error deserializing LoginCompleteMessage`);
+			err.cause = error;
+			throw err;
 		}
 	}
 
@@ -163,7 +161,7 @@ export class LoginCompleteMessage extends ServerMessagePayload {
 		return this._data;
 	}
 
-	toString(): string {
+	override toString(): string {
 		return `LoginCompleteMessage {serverTime: ${this._serverTime}, firstTime: ${this._firstTime}, paycheckWaiting: ${this._paycheckWaiting}, clubInvitesWaiting: ${this._clubInvitesWaiting}, tallyInProgress: ${this.tallyInProgress}, secondsUntilShutdown: ${this._secondsUntilShutdown}, shardGNP: ${this._shardGNP}, shardCarsSold: ${this._shardCarsSold}, shardAverageSalaries: ${this._shardAverageSalaries}, shardAverageCarsOwned: ${this._shardAverageCarsOwned}, shardAverageLevel: ${this._shardAverageLevel}, cookie: ${this._cookie}, nextTallyDate: ${this._nextTallyDate}, nextPaycheckDate: ${this._nextPaycheckDate}}`;
 	}
 

@@ -44,15 +44,6 @@ export interface GameMessageOpCode {
 	module: "Lobby" | "Login";
 }
 
-export interface PersonaRecord {
-	customerId: number;
-	id: Buffer;
-	maxPersonas: Buffer;
-	name: Buffer;
-	personaCount: Buffer;
-	shardId: Buffer;
-}
-
 export interface UserRecordMini {
 	contextId: string;
 	customerId: number;

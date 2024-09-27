@@ -259,6 +259,7 @@ export class Gateway {
 		state = addOnDataHandler(state, 8227, receiveChatData);
 		state = addOnDataHandler(state, 8228, receivePersonaData);
 		state = addOnDataHandler(state, 7003, receiveLobbyData);
+		state = addOnDataHandler(state, 9000, receiveChatData);
 		state = addOnDataHandler(state, 43300, receiveTransactionsData);
 
 		state.save();
