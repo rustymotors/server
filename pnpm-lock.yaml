@@ -422,6 +422,13 @@ importers:
       '@sentry/profiling-node':
         specifier: 8.32.0
         version: 8.32.0
+    devDependencies:
+      add:
+        specifier: ^2.0.6
+        version: 2.0.6
+      vitest:
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.7.4)
 
 packages:
 
@@ -2751,6 +2758,9 @@ packages:
 
   add-stream@1.0.0:
     resolution: {integrity: sha512-qQLMr+8o0WC4FZGQTcJiKBVC59JylcPSrTtk6usvmIDFUOCKegapy1VHQwRbFMOFyb/inzUVqHs+eMYKDM1YeQ==}
+
+  add@2.0.6:
+    resolution: {integrity: sha512-j5QzrmsokwWWp6kUcJQySpbG+xfOBqqKnup3OIk1pz+kB/80SLorZ9V8zHFLO92Lcd+hbvq8bT+zOGoPkmBV0Q==}
 
   address@1.2.2:
     resolution: {integrity: sha512-4B/qKCfeE/ODUaAUpSwfzazo5x29WD4r3vXiWsB7I2mSDAihwEqKO+g8GELZUQSSAo5e1XTYh3ZVfLyxBc12nA==}
@@ -8889,6 +8899,8 @@ snapshots:
   acorn@8.12.1: {}
 
   add-stream@1.0.0: {}
+
+  add@2.0.6: {}
 
   address@1.2.2: {}
 

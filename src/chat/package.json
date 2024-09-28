@@ -7,7 +7,10 @@
     }
   },
   "scripts": {
-    "test": "echo \"Error: no tests yet\" && exit 0"
+    "check": "tsc",
+    "lint": "npx @biomejs/biome lint --write .",
+    "format": "npx @biomejs/biome format --write .",
+    "test": "pnpm node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage"
   },
   "type": "module",
   "keywords": [],
@@ -16,5 +19,9 @@
   "description": "",
   "dependencies": {
     "@sentry/profiling-node": "8.32.0"
+  },
+  "devDependencies": {
+    "add": "^2.0.6",
+    "vitest": "^2.1.1"
   }
 }
