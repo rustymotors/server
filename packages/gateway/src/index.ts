@@ -29,49 +29,7 @@ import { getGatewayServer } from "./GatewayServer.js";
 import { getPortMessageType, UserStatusManager } from "rusty-motors-nps";
 import { BasePacket } from "rusty-motors-shared-packets";
 import * as Sentry from "@sentry/node";
-
-/**
- * @typedef {object} OnDataHandlerArgs
- * @property {object} args
- * @property {string} args.connectionId The connection id of the socket that
- *                                  received the data.
- * @property {module:packages/shared/RawMessage} args.message The data that was received.
- * @property {module:shared/log.ServerLogger} [args.log=getServerLogger({ name: "gateway" })] The logger to use.
- *                                                                    response
- *                                                                to the
- *                                                           data.
- */
-
-/**
- * @typedef {function} OnDataHandler
- * @param {OnDataHandlerArgs} args The arguments for the handler.
- * @returns {ServiceResponse} The
- *                                                                     response
- *                                                                  to the
- *                                                            data.
- */
-
-/**
- * Handle socket errors
- */
-export function socketErrorHandler({
-	connectionId,
-	error,
-	log = getServerLogger({
-		name: "socketErrorHandler",
-	}),
-}: {
-	connectionId: string;
-	error: NodeJS.ErrnoException;
-	log?: ServerLogger;
-}) {
-	// Handle socket errors
-	if (error.code == "ECONNRESET") {
-		log.debug(`Connection ${connectionId} reset`);
-		return;
-	}
-	throw Error(`Socket error: ${error.message} on connection ${connectionId}`);
-}
+import { socketErrorHandler } from "./socketErrorHandler.js";
 
 /**
  * Handle the end of a socket connection
@@ -179,7 +137,6 @@ export function onSocketConnection({
 	incomingSocket.on(
 		"data",
 		function socketDataHandler(incomingDataAsBuffer: Buffer) {
-			
 			log.trace(
 				`Incoming data on port ${localPort}: ${incomingDataAsBuffer.toString(
 					"hex",
