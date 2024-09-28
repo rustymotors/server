@@ -430,6 +430,19 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1(@types/node@22.7.4)
 
+  src/socket:
+    dependencies:
+      '@sentry/profiling-node':
+        specifier: 8.32.0
+        version: 8.32.0
+    devDependencies:
+      add:
+        specifier: ^2.0.6
+        version: 2.0.6
+      vitest:
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.7.4)
+
 packages:
 
   '@adminjs/design-system@4.1.1':
