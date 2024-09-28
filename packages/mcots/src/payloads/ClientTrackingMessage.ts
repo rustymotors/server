@@ -1,7 +1,7 @@
 import { getServerLogger } from "rusty-motors-shared";
 import { ServerMessagePayload } from "rusty-motors-shared-packets";
 
-const log = getServerLogger();
+const log = getServerLogger({});
 
 export class ClientTrackingMessage extends ServerMessagePayload {
 	private _type: number = 0; // 2 bytes

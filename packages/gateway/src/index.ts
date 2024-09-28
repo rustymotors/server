@@ -144,7 +144,12 @@ export function onSocketConnection({
 			);
 
 			// Deserialize the raw message
-			const rawMessage = new BasePacket();
+			const rawMessage = new BasePacket({
+				connectionId: socket.id,
+				messageId: 0,
+				messageSequence: 0,
+				messageSource: "",
+			});
 			rawMessage.deserialize(incomingDataAsBuffer);
 
 			// Log the raw message

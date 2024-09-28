@@ -8,7 +8,7 @@
 // eslint-disable-next-line no-unused-vars
 import { Cipher, Decipher } from "crypto";
 import { SerializedBufferOld } from "./SerializedBufferOld.js";
-import { Serializable } from "rusty-motors-shared-packets";
+import { BufferSerializer } from "rusty-motors-shared-packets";
 import type { ServerLogger } from "./log.js";
 
 /**
@@ -142,7 +142,7 @@ export class McosSession {
 
 type OnDataHandlerArgs = {
 	connectionId: string;
-	message: Serializable;
+	message: BufferSerializer;
 	log?: ServerLogger;
 };
 

@@ -4,28 +4,6 @@ import { handleEncryptedNPSCommand } from "./encryptedCommand.js";
 import { _npsHeartbeat } from "./heartbeat.js";
 import { _npsRequestGameConnectServer } from "./requestConnectGameServer.js";
 
-/**
- * @typedef {object} ServiceArgs
- * @property {string} connectionId
- * @property {SerializedBufferOld} message
- * @property {import("pino").Logger} log
- */
-
-/**
- * @typedef {object} ServiceResponse
- * @property {string} connectionId
- * @property {SerializedBufferOld[] } messages
- */
-
-/**
- * @exports
- * @typedef {object} GameMessageHandler
- * @property {number} opCode
- * @property {string} name
- * @property {function(ServiceArgs): Promise<ServiceResponse>} handler
- */
-
-/** @type {GameMessageHandler[]} */
 export const handlerMap = [
 	{
 		opCode: 100,

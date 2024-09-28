@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ClientConnectionMessage } from "./ClientConnectMessage";
+import { ClientConnectionMessage } from "./ClientConnectMessage.js";
 
 describe("ClientConnectionMessage", () => {
 	it("should deserialize the data correctly", () => {

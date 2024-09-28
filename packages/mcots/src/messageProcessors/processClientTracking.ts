@@ -1,16 +1,17 @@
 import { ClientTrackingMessage } from "rusty-motors-mcots";
 import { getServerLogger } from "rusty-motors-shared";
-import type { ServerMessage } from "rusty-motors-shared-packets";
+import type { ServerPacket } from "rusty-motors-shared-packets";
 import type { ServerSocketCallback } from "./index.js";
 
-const log = getServerLogger();
+const log = getServerLogger({
+	name: "processClientTracking",
+});
 
 export async function processClientTracking(
-	connectionId: string,
-	message: ServerMessage,
+	_connectionId: string,
+	message: ServerPacket,
 	socketCallback: ServerSocketCallback,
 ) {
-	log.setName("processClientTracking");
 
 	log.debug(`Processing client tracking message`);
 
@@ -24,7 +25,6 @@ export async function processClientTracking(
 
 	// Do something with the tracking data
 
-	log.resetName();
 	void socketCallback([]);
 
 	return Promise.resolve();

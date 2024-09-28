@@ -1,10 +1,14 @@
-import { BasePacket, Serializable } from "./BasePacket.js";
-import type { IMessage, ISerializable } from "./interfaces.js";
+import { BasePacket } from "./BasePacket.js";
+import { BufferSerializer } from "./BufferSerializer.js";
+import type { SerializableInterface, SerializableMessage } from "./types.js";
 
 /**
  *
  */
-export class ServerMessageHeader extends BasePacket {
+export class ServerMessageHeader
+	extends BufferSerializer
+	implements SerializableInterface
+{
 	// All fields are little-endian
 	private length: number = 0; // 2 bytes
 	private signature: string = ""; // 4 bytes
@@ -90,10 +94,10 @@ export class ServerMessageHeader extends BasePacket {
 }
 
 export class ServerMessagePayload
-	extends Serializable
-	implements ISerializable
+	extends BufferSerializer
+	implements SerializableInterface
 {
-	protected messageId: number = 0; // 2 bytes
+	public messageId: number = 0; // 2 bytes
 
 	override getByteSize(): number {
 		return 2 + this._data.length;
@@ -126,19 +130,19 @@ export class ServerMessagePayload
 	}
 }
 
-export class ServerMessage extends Serializable implements IMessage {
-	header: ServerMessageHeader;
+export class ServerPacket extends BasePacket implements SerializableMessage {
+	protected override header: ServerMessageHeader;
 	data: ServerMessagePayload;
 
 	constructor(messageId: number) {
-		super();
+		super({});
 		this.header = new ServerMessageHeader();
 		this.data = new ServerMessagePayload().setMessageId(messageId);
 	}
-	getDataBuffer(): Buffer {
+	override getDataBuffer(): Buffer {
 		return this.data.serialize();
 	}
-	setDataBuffer(data: Buffer): ServerMessage {
+	override setDataBuffer(data: Buffer): ServerPacket {
 		this.data.deserialize(data);
 		return this;
 	}
@@ -147,32 +151,55 @@ export class ServerMessage extends Serializable implements IMessage {
 		return this.header.getByteSize() + this.data.getByteSize();
 	}
 
+	setSequence(sequence: number): ServerPacket {
+		this.header.setSequence(sequence);
+		return this;
+	}
+
+	setLength(length: number): ServerPacket {
+		this.header.setLength(length);
+		return this;
+	}
+
+	setSignature(signature: string): ServerPacket {
+		this.header.setSignature(signature);
+		return this;
+	}
+
+	setPayloadEncryption(encrypted: boolean): ServerPacket {
+		this.header.setPayloadEncryption(encrypted);
+		return this;
+	}
+
+	getMessageId(): number {
+		return this.data.getMessageId();
+	}
+
+	getLength(): number {
+		return this.header.getLength();
+	}
+
+	getSequence(): number {
+		return this.header.getSequence();
+	}
+
+	isPayloadEncrypted(): boolean {
+		return this.header.isPayloadEncrypted();
+	}
+
+	isValidSignature(): boolean {
+		return this.header.isValidSignature();
+	}
+
 	override serialize(): Buffer {
 		try {
-			if (this.header.getSequence() === 0) {
-				throw new Error(
-					"ServerMessage sequence is 0, it must be set to a non-zero value before serializing",
-				);
-			}
+			this.ensureNonZeroSequence();
 
-			if (!this.header.isValidSignature()) {
-				throw new Error(
-					"ServerMessage signature is invalid, it must be set to 'TOMC' before serializing",
-				);
-			}
-
-			if (this.header.getByteSize() === 0) {
-				throw new Error(
-					"ServerMessage header byte size is 0, it must be set before serializing",
-				);
-			}
+			this.ensureValidSignature();
 
 			const buffer = Buffer.alloc(this.getByteSize());
-			const headerBuffer = this.header.serialize();
-			const dataBuffer = this.getDataBuffer();
-
-			headerBuffer.copy(buffer);
-			dataBuffer.copy(buffer, this.header.getDataOffset());
+			this.header.serialize().copy(buffer);
+			this.data.serialize().copy(buffer, this.header.getByteSize());
 
 			return buffer;
 		} catch (error) {
@@ -181,7 +208,24 @@ export class ServerMessage extends Serializable implements IMessage {
 			throw error;
 		}
 	}
-	override deserialize(data: Buffer): ServerMessage {
+
+	private ensureValidSignature() {
+		if (!this.header.isValidSignature()) {
+			throw new Error(
+				"ServerMessage signature is invalid, it must be set to 'TOMC' before serializing",
+			);
+		}
+	}
+
+	private ensureNonZeroSequence() {
+		if (this.header.getSequence() === 0) {
+			throw new Error(
+				"ServerMessage sequence is 0, it must be set to a non-zero value before serializing",
+			);
+		}
+	}
+
+	override deserialize(data: Buffer): ServerPacket {
 		this._assertEnoughData(data, this.header.getByteSize());
 
 		this.header.deserialize(data);

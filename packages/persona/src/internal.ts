@@ -27,7 +27,7 @@ import { _gameLogout } from "./_gameLogout.js";
 import { _getFirstBuddy } from "./_getFirstBuddy.js";
 import { _selectGamePersona } from "./_selectGamePersona.js";
 import { validatePersonaName } from "./handlers/validatePersonaName.js";
-import type { Serializable } from "rusty-motors-shared-packets";
+import type { BufferSerializer } from "rusty-motors-shared-packets";
 import { getPersonaInfo } from "./handlers/getPersonaInfo.js";
 
 /**
@@ -128,10 +128,9 @@ export const personaRecords: Pick<
  */
 async function getPersonasByCustomerId(
 	customerId: number,
-): Promise<Pick<
-PersonaRecord,
-"customerId" | "personaId" | "personaName" | "shardId"
->[]> {
+): Promise<
+	Pick<PersonaRecord, "customerId" | "personaId" | "personaName" | "shardId">[]
+> {
 	const results = personaRecords.filter(
 		(persona) => persona.customerId === customerId,
 	);
@@ -148,10 +147,9 @@ PersonaRecord,
  */
 async function getPersonaMapsByCustomerId(
 	customerId: number,
-): Promise<Pick<
-PersonaRecord,
-"customerId" | "personaId" | "personaName" | "shardId"
->[]> {
+): Promise<
+	Pick<PersonaRecord, "customerId" | "personaId" | "personaName" | "shardId">[]
+> {
 	switch (customerId) {
 		case 5551212:
 			return getPersonasByCustomerId(customerId);
@@ -274,7 +272,7 @@ export async function receivePersonaData({
 	}),
 }: {
 	connectionId: string;
-	message: Serializable;
+	message: BufferSerializer;
 	log?: ServerLogger;
 }): Promise<{
 	connectionId: string;

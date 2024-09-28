@@ -1,7 +1,9 @@
 import { getServerLogger } from "rusty-motors-shared";
 import { ServerMessagePayload } from "rusty-motors-shared-packets";
 
-const log = getServerLogger();
+const log = getServerLogger({
+	name: "LoginMessage",
+});
 
 export class LoginMessage extends ServerMessagePayload {
 	private _customerId: number = 0; // 4 bytes

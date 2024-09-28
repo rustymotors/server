@@ -1,6 +1,6 @@
 import { getServerLogger } from "rusty-motors-shared";
 import { ServerMessagePayload } from "rusty-motors-shared-packets";
-import { readStringFromBuffer } from "./utils";
+import { readStringFromBuffer } from "./utils.js";
 
 const log = getServerLogger({});
 
@@ -66,7 +66,7 @@ export class ClientConnectionMessage extends ServerMessagePayload {
 		return this._clientVersion;
 	}
 
-	toString(): string {
+	override toString(): string {
 		return `ClientConnectionMessage {customerId: ${this._customerId}, personaId: ${this._personaId}, customerName: ${this._customerName}, personaName: ${this._personaName}, clientVersion: ${this._clientVersion}}`;
 	}
 }

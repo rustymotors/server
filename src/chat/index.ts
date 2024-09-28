@@ -3,7 +3,7 @@ import {
 	SerializedBufferOld,
 	type ServiceResponse,
 } from "rusty-motors-shared";
-import { type Serializable } from "rusty-motors-shared-packets";
+import { type BufferSerializer } from "rusty-motors-shared-packets";
 import { ChatMessage } from "./ChatMessage.js";
 import {
 	handleListInGameEmailsMessage,
@@ -27,7 +27,7 @@ async function receiveChatData({
 	message,
 }: {
 	connectionId: string;
-	message: Serializable;
+	message: BufferSerializer;
 }): Promise<ServiceResponse> {
 	const log = getServerLogger({ name: "chat.receiveChatData" });
 

@@ -150,7 +150,7 @@ export type NpsCommandHandler = {
 		log: ServerLogger;
 	}) => Promise<{
 		connectionId: string;
-		message: LegacyMessage;
+		message: LegacyMessage | null;
 	}>;
 };
 
@@ -196,7 +196,7 @@ async function handleCommand({
 	log?: ServerLogger;
 }): Promise<{
 	connectionId: string;
-	message: MessageBufferOld | LegacyMessage;
+	message: MessageBufferOld | LegacyMessage | null;
 }> {
 	const incommingRequest = message;
 
@@ -253,19 +253,19 @@ export async function handleEncryptedNPSCommand({
 	inboundMessage._doDeserialize(message.data);
 
 	// Decipher
-	const decipheredMessage = decryptCmd({
+	const decipheredMessage = await decryptCmd({
 		connectionId,
 		message: inboundMessage,
 		log,
 	});
 
-	const response = handleCommand({
+	const response = await handleCommand({
 		connectionId,
-		message: (await decipheredMessage).message,
+		message: decipheredMessage.message,
 		log,
 	});
 
-	if ((await response).message === null) {
+	if (response.message === null) {
 		log.debug("No response to send");
 		return {
 			connectionId,
@@ -276,7 +276,7 @@ export async function handleEncryptedNPSCommand({
 	// Encipher
 	const encryptedResponse = encryptCmd({
 		connectionId,
-		message: (await response).message,
+		message: response.message,
 		log,
 	});
 
