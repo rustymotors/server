@@ -1,20 +1,10 @@
 import { getServerLogger } from "rusty-motors-shared";
 import { NPSMessage, SerializedBuffer } from "rusty-motors-shared";
 
-/**
- * @param {object} args
- * @param {string} args.connectionId
- * @param {SerializedBuffer} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ name: "Lobby" })]
- * @returns {Promise<{
- *  connectionId: string
- * messages: SerializedBuffer[],
- * }>}
- */
 export async function _npsHeartbeat({
 	connectionId,
-	// @ts-ignore
-	message, // eslint-disable-line no-unused-vars
+	// biome-ignore lint/correctness/noUnusedVariables: <explanation>
+	message, 
 	log = getServerLogger({
 		name: "_npsHeartbeat",
 	}),
@@ -28,7 +18,7 @@ export async function _npsHeartbeat({
 	log.debug(packetResult.toString());
 
 	const outboundMessage = new SerializedBuffer();
-	outboundMessage._doDeserialize(packetResult.serialize());
+	outboundMessage.deserialize(packetResult.serialize());
 
 	return {
 		connectionId,

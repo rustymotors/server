@@ -1,12 +1,14 @@
 import { getServerLogger } from "rusty-motors-shared";
 import {
-	Serializable,
+	BufferSerializer,
 	ServerMessagePayload,
 } from "rusty-motors-shared-packets";
 
-const log = getServerLogger();
+const log = getServerLogger({
+	name: "StockCar",
+});
 
-export class StockCar extends Serializable {
+export class StockCar extends BufferSerializer {
 	private brandedPartId: number = 0; // 4 bytes
 	private retailPrice: number = 0; // 4 bytes
 	private isDealOfTheDay: number = 0; // 2 bytes
@@ -41,7 +43,7 @@ export class StockCar extends Serializable {
 		this.isDealOfTheDay = isDealOfTheDay ? 1 : 0;
 	}
 
-	toString(): string {
+	override toString(): string {
 		return `StockCar: ${this.brandedPartId}, ${this.retailPrice}, ${this.isDealOfTheDay}`;
 	}
 }
@@ -116,7 +118,7 @@ export class StockCarInfo extends ServerMessagePayload {
 		this._moreCars = moreCars ? 1 : 0;
 	}
 
-	toString(): string {
+	override toString(): string {
 		return `StockCarInfo: ${this._cars.length} cars, ${this._starterCash} starter cash, ${this._dealerId} dealerId, ${this._brandId} brandId`;
 	}
 }

@@ -22,7 +22,7 @@ import { LegacyMessage } from "rusty-motors-shared";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
 import { handleTrackingPing } from "./handlers/handleTrackingPing.js";
 import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
-import type { Serializable } from "rusty-motors-shared-packets";
+import type { BufferSerializer } from "rusty-motors-shared-packets";
 
 /**
  * Array of supported message handlers
@@ -87,7 +87,7 @@ export async function receiveLobbyData({
 	}),
 }: {
 	connectionId: string;
-	message: Serializable;
+	message: BufferSerializer;
 	log?: ServerLogger;
 }): Promise<{
 	connectionId: string;

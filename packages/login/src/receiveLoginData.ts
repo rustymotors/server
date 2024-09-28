@@ -20,7 +20,7 @@ import {
 	type ServiceResponse,
 } from "rusty-motors-shared";
 import { handleLoginData } from "./internal.js";
-import type { Serializable } from "rusty-motors-shared-packets";
+import type { BufferSerializer } from "rusty-motors-shared-packets";
 
 /**
  * Receives login data and handles the login process.
@@ -42,7 +42,7 @@ export async function receiveLoginData({
 	}),
 }: {
 	connectionId: string;
-	message: Serializable;
+	message: BufferSerializer;
 	log?: import("pino").Logger;
 }): Promise<ServiceResponse> {
 	try {

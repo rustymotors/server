@@ -1,7 +1,9 @@
 import { getServerLogger } from "rusty-motors-shared";
 import { ServerMessagePayload } from "rusty-motors-shared-packets";
 
-const log = getServerLogger();
+const log = getServerLogger({
+	name: "SetOptionsMessage",
+});
 
 export class SetOptionsMessage extends ServerMessagePayload {
 	private _lpCode: number = 0; // 2 bytes
@@ -68,7 +70,7 @@ export class SetOptionsMessage extends ServerMessagePayload {
 		return this._carNumbers;
 	}
 
-	toString() {
+	override toString() {
 		return `SetOptionsMessage: lpCode=${this._lpCode}, lpText=${this._lpText}, carInfoSettings=${this._carInfoSettings}, carNumbers=${JSON.stringify(this._carNumbers)}`;
 	}
 }

@@ -25,7 +25,7 @@ import { OldServerMessage } from "rusty-motors-shared";
 import { SerializedBufferOld } from "rusty-motors-shared";
 import { ServerMessage } from "rusty-motors-shared";
 import { messageHandlers } from "./handlers.js";
-import type { Serializable } from "rusty-motors-shared-packets";
+import type { BufferSerializer } from "rusty-motors-shared-packets";
 
 /**
  *
@@ -144,7 +144,7 @@ export async function receiveTransactionsData({
 	}),
 }: {
 	connectionId: string;
-	message: Serializable;
+	message: BufferSerializer;
 	log?: ServerLogger;
 }): Promise<{
 	connectionId: string;

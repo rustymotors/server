@@ -1,15 +1,15 @@
-import type { ServerMessage } from "rusty-motors-shared-packets";
+import type { ServerPacket } from "rusty-motors-shared-packets";
 import { processClientConnect } from "./processClientConnect.js";
 import { processClientTracking } from "./processClientTracking.js";
 import { processServerLogin } from "./processServerLogin.js";
 import { processSetOptions } from "./processSetOptions.js";
 import { processStockCarInfo } from "./processStockCarInfo.js";
 
-export type ServerSocketCallback = (messages: ServerMessage[]) => void;
+export type ServerSocketCallback = (messages: ServerPacket[]) => void;
 
 export type ServerMessageProcessor = (
 	connectionId: string,
-	message: ServerMessage,
+	message: ServerPacket,
 	socketCallback: ServerSocketCallback,
 ) => Promise<void>;
 

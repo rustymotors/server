@@ -5,7 +5,13 @@
  * @type {TNPS_COMMAND_MAP[]}
  */
 
-import { GameMessageOpCode } from "../../interfaces/index.js";
+/**
+ * Commands from the game client to the game server
+ * @export
+ * @readonly
+ * @type {TNPS_COMMAND_MAP[]}
+ */
+import type { GameMessageOpCode } from "rusty-motors-shared";
 
 export const NPS_LOBBYCLIENT_COMMANDS: GameMessageOpCode[] = [
 	{ name: "NPS_LOGIN", value: 256, module: "Lobby" },

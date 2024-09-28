@@ -7,14 +7,16 @@ import {
 } from "rusty-motors-mcots";
 import { UserStatusManager } from "rusty-motors-nps";
 import { getServerLogger } from "rusty-motors-shared";
-import { ServerMessage } from "rusty-motors-shared-packets";
+import { ServerPacket } from "rusty-motors-shared-packets";
 import { sendSuccess } from "./sendSuccess.js";
 
-const log = getServerLogger({});
+const log = getServerLogger({
+	name: "processClientConnect",
+});
 
 export async function processClientConnect(
 	connectionId: string,
-	message: ServerMessage,
+	message: ServerPacket,
 	socketCallback: ServerSocketCallback,
 ): Promise<void> {
 	log.debug(`Processing client connect request: ${message.toString()}`);
@@ -63,7 +65,6 @@ export async function processClientConnect(
 
 		sendSuccess(message, socketCallback);
 
-		log.resetName();
 		return Promise.resolve();
 	} catch (error) {
 		if (error instanceof ErrorNoKey) {

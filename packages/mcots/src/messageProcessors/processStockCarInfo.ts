@@ -5,32 +5,33 @@ import {
 import { StockCarInfo, StockCar } from "rusty-motors-mcots";
 import { getServerLogger } from "rusty-motors-shared";
 import {
-	ServerGenericRequest,
-	ServerMessage,
+	GenericRequestPayload,
+	ServerPacket,
 } from "rusty-motors-shared-packets";
 import type { ServerSocketCallback } from "./index.js";
 
-const log = getServerLogger();
+const log = getServerLogger({
+	name: "processStockCarInfo",
+});
 
 // 1300 544f4d43 01 00000000 8d00 [08000000 00000000]
 
 export async function processStockCarInfo(
-	connectionId: string,
-	message: ServerMessage,
+	_connectionId: string,
+	message: ServerPacket,
 	socketCallback: ServerSocketCallback,
 ): Promise<void> {
-	log.setName("processStockCarInfo");
 	try {
 		log.debug(`Processing stock car info message`);
 
-		const request = new ServerGenericRequest().deserialize(
+		const request = new GenericRequestPayload().deserialize(
 			message.data.serialize(),
 		);
 
 		log.debug(`Received stock car info request: ${request.toString()}`);
 
-		const lotOwnerId = request.getData().readUInt32LE();
-		const brandId = request.getData2().readUInt32LE();
+		const lotOwnerId = request.data;
+		const brandId = request.data2;
 
 		log.debug(`Lot owner ID: ${lotOwnerId} Brand ID: ${brandId}`);
 
@@ -50,7 +51,7 @@ export async function processStockCarInfo(
 		responsePacket.setDealerId(lotOwnerId);
 		responsePacket.setBrandId(brandId);
 
-		const response = new ServerMessage(141);
+		const response = new ServerPacket(141);
 
 		if (inventoryCars.inventory.length > StockCarInfo.MAX_CARS_PER_MESSAGE) {
 			log.error(
@@ -90,9 +91,8 @@ export async function processStockCarInfo(
 
 		responsePacket.setMoreCars(false);
 
-		response.setData(responsePacket);
-		response.populateHeader(message.header.getSequence());
-		log.resetName();
+		response.setDataBuffer(responsePacket.serialize());
+		response.setSequence(message.messageSequence);
 		return socketCallback([response]);
 	} catch (error) {
 		log.error(`Error processing stock car info: ${error as string}`);

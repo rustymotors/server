@@ -1,7 +1,7 @@
-import { Serializable } from "rusty-motors-shared-packets";
+import { BufferSerializer } from "rusty-motors-shared-packets";
 import { GameMessageHeader } from "./GameMessageHeader.js";
 
-export class GameMessage extends Serializable {
+export class GameMessage extends BufferSerializer {
 	_header: GameMessageHeader;
 	_recordData: Buffer;
 	constructor(gameMessageId: number) {
