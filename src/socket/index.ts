@@ -22,7 +22,7 @@ export function newSocket(socket: Socket): ConnectedSocket {
 	const connectedSocket = new ConnectedSocket_() as ConnectedSocket;
 	sockets.set(connectedSocket.id, connectedSocket);
 	socket.on("data", (data) => {
-		connectedSocket.data = Buffer.concat([connectedSocket.data, data]);
+		connectedSocket.data = data;
 	});
 	socket.on("close", () => {
 		sockets.delete(connectedSocket.id);

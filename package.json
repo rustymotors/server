@@ -56,6 +56,7 @@
     "rusty-motors-shard": "link:packages/shard",
     "rusty-motors-shared": "link:packages/shared",
     "rusty-motors-shared-packets": "link:packages/shared-packets",
+    "rusty-motors-socket": "link:src/socket",
     "rusty-motors-transactions": "link:packages/transactions",
     "sequelize": "^6.37.3",
     "sqlite": "^5.1.1",

@@ -14,18 +14,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { randomUUID } from "node:crypto";
 import {
 	type OnDataHandler,
 	type ServerLogger,
 	type ServiceResponse,
-	addSocket,
 	fetchStateFromDatabase,
 	getOnDataHandler,
-	removeSocket,
-	wrapSocket,
 } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
+import { newSocket } from "rusty-motors-socket";
 
 import { Socket } from "node:net";
 import { getGatewayServer } from "./GatewayServer.js";
@@ -83,20 +80,20 @@ export function socketErrorHandler({
  * @param {string} options.connectionId The connection ID
  * @param {import("pino").Logger} [options.log=getServerLogger({ name: "socketEndHandler" })] The logger to use
  */
-export function socketEndHandler({
-	connectionId,
-	log = getServerLogger({
-		name: "socketEndHandler",
-	}),
-}: {
-	connectionId: string;
-	log?: ServerLogger;
-}) {
-	log.debug(`Connection ${connectionId} ended`);
+// export function socketEndHandler({
+// 	connectionId,
+// 	log = getServerLogger({
+// 		name: "socketEndHandler",
+// 	}),
+// }: {
+// 	connectionId: string;
+// 	log?: ServerLogger;
+// }) {
+// 	log.debug(`Connection ${connectionId} ended`);
 
-	// Remove the socket from the global state
-	removeSocket(fetchStateFromDatabase(), connectionId).save();
-}
+// 	// Remove the socket from the global state
+// 	removeSocket(fetchStateFromDatabase(), connectionId).save();
+// }
 
 /**
  * Handle incoming TCP connections
@@ -122,14 +119,7 @@ export function onSocketConnection({
 		throw Error("localPort or remoteAddress is undefined");
 	}
 
-	// This is a new connection so generate a new connection ID
-	const newConnectionId = randomUUID();
-
-	// Wrap the socket and add it to the global state
-	const wrappedSocket = wrapSocket(incomingSocket, newConnectionId);
-
-	// Add the socket to the global state
-	addSocket(fetchStateFromDatabase(), wrappedSocket).save();
+	const socket = newSocket(incomingSocket);
 
 	// =======================
 	// Handle incoming socket in shadow mode
@@ -138,17 +128,17 @@ export function onSocketConnection({
 	try {
 		// Get expected message type
 		const messageType = getPortMessageType(localPort);
-		log.debug(`[${newConnectionId}] Expected message type: ${messageType}`);
+		log.debug(`[${socket.id}] Expected message type: ${messageType}`);
 
 		switch (messageType) {
 			case "Game": {
 				// Handle game messages
 				// Create a new user status
 				const userStatus = UserStatusManager.newUserStatus();
-				log.debug(`[${newConnectionId}] Created new user status`);
+				log.debug(`[${socket.id}] Created new user status`);
 
 				UserStatusManager.addUserStatus(userStatus);
-				log.debug(`[${newConnectionId}] Added user status to manager`);
+				log.debug(`[${socket.id}] Added user status to manager`);
 
 				break;
 			}
@@ -159,12 +149,12 @@ export function onSocketConnection({
 			}
 
 			default: {
-				log.warn(`[${newConnectionId}] No message type found`);
+				log.warn(`[${socket.id}] No message type found`);
 				break;
 			}
 		}
 	} catch (error) {
-		log.error(`[${newConnectionId}] Error handling socket: ${error}`);
+		log.error(`[${socket.id}] Error handling socket: ${error}`);
 	}
 
 	// This is a new TCP socket, so it's probably not using HTTP
@@ -182,7 +172,7 @@ export function onSocketConnection({
 	}
 
 	incomingSocket.on("error", (error) =>
-		socketErrorHandler({ connectionId: newConnectionId, error }),
+		socketErrorHandler({ connectionId: socket.id, error }),
 	);
 
 	// Add the data handler to the socket
@@ -212,7 +202,7 @@ export function onSocketConnection({
 				},
 				async () => {
 					portOnDataHandler({
-						connectionId: newConnectionId,
+						connectionId: socket.id,
 						message: rawMessage,
 					})
 						.then((response: ServiceResponse) => {

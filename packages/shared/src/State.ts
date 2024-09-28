@@ -7,15 +7,9 @@
 
 // eslint-disable-next-line no-unused-vars
 import { Cipher, Decipher } from "crypto";
-import { Socket } from "node:net";
-import type { Logger } from "pino";
 import { SerializedBufferOld } from "./SerializedBufferOld.js";
 import { Serializable } from "rusty-motors-shared-packets";
-
-/**
- * @external RawMessage
- * @see {@link "packages/shared/messageFactory.js.RawMessage"}
- */
+import type { ServerLogger } from "./log.js";
 
 /**
  * State management for the gateway server.
@@ -146,47 +140,11 @@ export class McosSession {
 	}
 }
 
-/**
- * @external net
- * @see {@link https://nodejs.org/api/net.html}
- */
-
-/**
- * A wrapped socket.
- *
- * This is a socket that has been wrapped with a connection id.
- * @interface
- */
-interface WrappedSocket {
-	socket: Socket;
-	connectionId: string;
-}
-
-/**
- * Wrap a socket with a connection id.
- *
- * @param {module:NetConnectOpts.Socket} socket The socket to wrap.
- * @param {string} connectionId The connection id to wrap the socket with.
- * @returns {WrappedSocket} The wrapped socket.
- */
-export function wrapSocket(
-	socket: Socket,
-	connectionId: string,
-): WrappedSocket {
-	return {
-		socket,
-		connectionId,
-	};
-}
-
 type OnDataHandlerArgs = {
 	connectionId: string;
 	message: Serializable;
-	log?: Logger;
+	log?: ServerLogger;
 };
-/**
- * @requires module:packages/shared/RawMessage
- */
 
 export interface ServiceResponse {
 	connectionId: string;
@@ -219,10 +177,10 @@ export type OnDataHandler = (
  */
 export interface State {
 	filePaths: Record<string, string>;
-	sockets: Record<string, WrappedSocket>;
+	// sockets: Record<string, WrappedSocket>;
 	encryptions: Record<string, McosEncryption>;
 	sessions: Record<string, McosSession>;
-	queuedConnections: Record<string, WrappedSocket>;
+	// queuedConnections: Record<string, WrappedSocket>;
 	onDataHandlers: Record<string, OnDataHandler>;
 	save: (state?: State) => void;
 }
@@ -250,10 +208,10 @@ export function createInitialState({
 }): State {
 	return {
 		filePaths: {},
-		sockets: {},
+		// sockets: {},
 		encryptions: {},
 		sessions: {},
-		queuedConnections: {},
+		// queuedConnections: {},
 		onDataHandlers: {},
 		save: function (state?: State) {
 			if (typeof state === "undefined") {
@@ -318,136 +276,6 @@ export function getOnDataHandler(
 	port: number,
 ): OnDataHandler | undefined {
 	return state.onDataHandlers[port.toString()];
-}
-
-/**
- * Add a socket to the state.
- *
- * This function adds a socket to the state.
- * The returned state is a new state object, and the original state is not
- * modified. You should then call the save function on the new state to update
- * the database.
- *
- * @param {State} state The state to add the socket to.
- * @param {WrappedSocket} socket The socket to add to the state.
- * @returns {State} The state with the socket added.
- */
-export function addSocket(state: State, socket: WrappedSocket): State {
-	const sockets = state.sockets;
-	sockets[socket.connectionId] = socket;
-	return {
-		...state,
-		sockets,
-	};
-}
-
-/**
- * Get a socket from the state.
- *
- * This function gets a socket from the state.
- *
- * @param {State} state The state to get the socket from.
- * @param {string} connectionId The connection id of the socket to get.
- * @returns {WrappedSocket | undefined} The socket with the given connection id, or undefined if no socket
- */
-export function getSocket(
-	state: State,
-	connectionId: string,
-): WrappedSocket | undefined {
-	return state.sockets[connectionId];
-}
-
-/**
- * Get all the sockets from the state.
- *
- * This function gets all the sockets from the state.
- *
- * @param {State} state The state to get the sockets from.
- * @returns {Record<string, WrappedSocket>} An array of all the sockets in the state.
- */
-export function getSockets(state: State): Record<string, WrappedSocket> {
-	return state.sockets;
-}
-
-/**
- * Remove a socket from the state.
- *
- * This function removes a socket from the state.
- * The returned state is a new state object, and the original state is not
- * modified. You should then call the save function on the new state to update
- * the database.
- *
- * @param {State} state The state to remove the socket from.
- * @param {string} connectionId The connection id of the socket to remove.
- * @returns {State} The state with the socket removed.
- */
-export function removeSocket(state: State, connectionId: string): State {
-	const sockets = state.sockets;
-	delete sockets[connectionId];
-	return {
-		...state,
-		sockets,
-	};
-}
-
-/**
- * Add a queued connection to the state.
- *
- * This function adds a queued connection to the state.
- * The returned state is a new state object, and the original state is not
- * modified. You should then call the save function on the new state to update
- * the database.
- *
- * @param {State} state The state to add the queued connection to.
- * @param {WrappedSocket} socket The queued connection to add to the state.
- * @returns {State} The state with the queued connection added.
- */
-export function addQueuedConnection(
-	state: State,
-	socket: WrappedSocket,
-): State {
-	const queuedConnections = state.queuedConnections;
-	queuedConnections[socket.connectionId] = socket;
-	return {
-		...state,
-		queuedConnections,
-	};
-}
-
-/**
- * Get queued connections from the state.
- *
- * This function gets all the queued connections from the state.
- *
- * @param {State} state The state to get the queued connections from.
- * @returns {string[]} An array of all the queued connections in the state.
- */
-export function getQueuedConnections(state: State): string[] {
-	return Object.keys(state.queuedConnections);
-}
-
-/**
- * Remove a queued connection from the state.
- *
- * This function removes a queued connection from the state.
- * The returned state is a new state object, and the original state is not
- * modified. You should then call the save function on the new state to update
- * the database.
- *
- * @param {State} state The state to remove the queued connection from.
- * @param {string} connectionId The connection id of the queued connection to remove.
- * @returns {State} The state with the queued connection removed.
- */
-export function removeQueuedConnection(
-	state: State,
-	connectionId: string,
-): State {
-	const queuedConnections = state.queuedConnections;
-	delete queuedConnections[connectionId];
-	return {
-		...state,
-		queuedConnections,
-	};
 }
 
 /**
