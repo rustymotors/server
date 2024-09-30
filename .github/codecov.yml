@@ -58,6 +58,12 @@ component_management:
               - packages/core/**
               - packages/gateway/**
               - packages/shared/**
+        - component_id: components_team2
+          name: Team 2
+          paths:
+              - packages/nps/**
+              - packages/socket/**
+              - packages/shared/**
 
 coverage:
     status:
