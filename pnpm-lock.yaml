@@ -15,8 +15,8 @@ importers:
         specifier: ^5.5.0
         version: 5.5.0(typescript@5.6.2)
       '@dotenvx/dotenvx':
-        specifier: ^1.14.2
-        version: 1.14.2
+        specifier: ^1.15.0
+        version: 1.15.0
       '@fastify/sensible':
         specifier: ^6.0.1
         version: 6.0.1
@@ -1314,8 +1314,8 @@ packages:
   '@databases/with-container@2.1.1':
     resolution: {integrity: sha512-iHsOn/6ElWuGpcytgNh9ZAvFd78G0ikOMWj0DtMTB4fXVqRA5uYZpLpLv/fvwL895xT7VTbVA6HV3YoY0yuQUg==}
 
-  '@dotenvx/dotenvx@1.14.2':
-    resolution: {integrity: sha512-88lviNO27WUGpZ/ya1VF7AseiWsCl1YRnm9pNYp7pIOZyu/gXM11wpJ8/DViV6oxSkrF4mi3ZalmaukHj5F8Ow==}
+  '@dotenvx/dotenvx@1.15.0':
+    resolution: {integrity: sha512-hde8JZV6Czmyil4eorWwN+fJmbdGYzQfDC2OdyM8VooSdRM0SGHD03WVVp5NiVd5oVNFa3yJ2E61Hntar3pMJg==}
     hasBin: true
 
   '@emotion/babel-plugin@11.12.0':
@@ -3541,6 +3541,7 @@ packages:
   eslint@8.57.0:
     resolution: {integrity: sha512-dZ6+mexnaTIbSBZWgou51U6OmzIhYM2VcNdtiTtI7qPNZm35Akpr0f6vtw3w1Kmn5PYo+tZVfh13WrhpS6oLqQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   eslint@9.12.0:
@@ -7416,7 +7417,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@dotenvx/dotenvx@1.14.2':
+  '@dotenvx/dotenvx@1.15.0':
     dependencies:
       commander: 11.1.0
       dotenv: 16.4.5
