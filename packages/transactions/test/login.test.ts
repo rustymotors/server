@@ -8,6 +8,7 @@ describe("login", () => {
 		// arrange
 		const connectionId = "test";
 		const incomingMessage = new OldServerMessage();
+		incomingMessage._header.sequence = 1;
 		const imcommingBuffer = Buffer.from(JSON.stringify(incomingMessage));
 		incomingMessage.setBuffer(imcommingBuffer);
 		const log = getServerLogger({});

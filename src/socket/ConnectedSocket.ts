@@ -13,6 +13,12 @@ export type ConnectedSocket = {
 	 * The length of the data array.
 	 */
 	length: number;
+
+	/**
+	 * The local port of the connected socket.
+	 */
+	port: number;
+
 	/**
 	 * Indicates whether there is any data available.
 	 */
@@ -32,22 +38,32 @@ export type ConnectedSocket = {
 	 * @param data - The buffer containing the data to be emitted.
 	 */
 	write(data: Buffer): void;
+
+	/**
+	 * Reads a specified number of bytes from the data buffer without removing them.
+	 * @param length  - The number of bytes to peek from the buffer. If not provided, peeks all available data.
+	 */
+	peek(length?: number): Buffer;
 	/**
 	 * Adds a one-time listener function for the specified event.
 	 * @param event  - The event to listen for.
 	 * @param listener  - The callback function to be executed when the event is emitted.
 	 */
-	on(event: "data", listener: (data: Buffer) => void): void;
+	on(event: "inData", listener: (data: Buffer) => void): void;
+	on(event: "outData", listener: (data: Buffer) => void): void;
+	on(event: "error", listener: (error: Error) => void): void;
 };
 
 export class ConnectedSocket_ extends EventEmitter implements ConnectedSocket {
 	readonly id: string;
+	readonly port: number;
 
 	private _data: Buffer = Buffer.alloc(0);
 
-	constructor() {
+	constructor(port: number) {
 		super();
 		this.id = randomUUID();
+		this.port = port;
 	}
 
 	/**
@@ -75,6 +91,7 @@ export class ConnectedSocket_ extends EventEmitter implements ConnectedSocket {
 	 */
 	set data(data: Buffer) {
 		this._data = Buffer.concat([this._data, data]);
+		this.emit("inData", data);
 	}
 
 	/**
@@ -99,7 +116,21 @@ export class ConnectedSocket_ extends EventEmitter implements ConnectedSocket {
 	 * @param data - The buffer containing the data to be emitted.
 	 */
 	write(data: Buffer): void {
-		this.emit("data", data);
+		this.emit("outData", data);
+	}
+
+	/**
+	 * Reads a specified number of bytes from the data buffer without removing them.
+	 *
+	 * @param [length] - The number of bytes to peek from the buffer. If not provided, peeks all available data.
+	 * @returns A Buffer containing the peeked bytes.
+	 */
+	peek(length = this._data.length): Buffer {
+		if (this._data.length < length) {
+			length = this._data.length;
+		}
+		const peekedBuffer = Buffer.alloc(length);
+		this._data.copy(peekedBuffer, 0, 0, length);
+		return peekedBuffer;
 	}
 }
-

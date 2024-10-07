@@ -1,49 +1,38 @@
-import type { Connection } from "rusty-motors-connection";
+// import type { Connection } from "rusty-motors-connection";
 
-export class ClientConnectionManager {
-	static _instance: ClientConnectionManager;
+// export class ClientConnectionManager {
+// 	static _instance: ClientConnectionManager;
 
-	static getInstance() {
-		if (!ClientConnectionManager._instance) {
-			ClientConnectionManager._instance = new ClientConnectionManager();
-		}
-		return ClientConnectionManager._instance;
-	}
-	private _connections: Map<string, Connection> = new Map();
+// 	static getInstance() {
+// 		if (!ClientConnectionManager._instance) {
+// 			ClientConnectionManager._instance = new ClientConnectionManager();
+// 		}
+// 		return ClientConnectionManager._instance;
+// 	}
+// 	private _connections: Map<string, Connection> = new Map();
 
-	public addConnection(connection: Connection) {
-		this._connections.set(connection.id, connection);
-	}
+// 	public removeConnection(connectionId: string) {
+// 		this._connections.delete(connectionId);
+// 	}
 
-	public removeConnection(connectionId: string) {
-		this._connections.delete(connectionId);
-	}
+// 	public getConnection(connectionId: string): Connection | undefined {
+// 		return this._connections.get(connectionId);
+// 	}
 
-	public getConnection(connectionId: string): Connection | undefined {
-		return this._connections.get(connectionId);
-	}
+// 	public getConnections(): Connection[] {
+// 		return Array.from(this._connections.values());
+// 	}
 
-	public getConnections(): Connection[] {
-		return Array.from(this._connections.values());
-	}
+// 	public clearConnections() {
+// 		this._connections.clear();
+// 	}
 
-	public clearConnections() {
-		this._connections.clear();
-	}
+// 	static removeConnection(connectionId: string) {
+// 		ClientConnectionManager.getInstance().removeConnection(connectionId);
+// 	}
 
-	static addConnection(connection: Connection) {
-		ClientConnectionManager.getInstance().addConnection(connection);
-	}
+// 	static getConnection(connectionId: string): Connection | undefined {
+// 		return ClientConnectionManager.getInstance().getConnection(connectionId);
+// 	}
 
-	static removeConnection(connectionId: string) {
-		ClientConnectionManager.getInstance().removeConnection(connectionId);
-	}
-
-	static getConnection(connectionId: string): Connection | undefined {
-		return ClientConnectionManager.getInstance().getConnection(connectionId);
-	}
-
-	static getConnections(): Connection[] {
-		return ClientConnectionManager.getInstance().getConnections();
-	}
-}
+// }

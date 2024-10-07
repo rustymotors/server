@@ -92,7 +92,7 @@ export async function processStockCarInfo(
 		responsePacket.setMoreCars(false);
 
 		response.setDataBuffer(responsePacket.serialize());
-		response.setSequence(message.messageSequence);
+		response.setSequence(message.sequence);
 		return socketCallback([response]);
 	} catch (error) {
 		log.error(`Error processing stock car info: ${error as string}`);

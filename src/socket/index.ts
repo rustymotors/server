@@ -19,7 +19,7 @@ const sockets = new Map<string, ConnectedSocket>();
  * - Listens for data events on the `ConnectedSocket` and writes the data back to the provided socket.
  */
 export function newSocket(socket: Socket): ConnectedSocket {
-	const connectedSocket = new ConnectedSocket_() as ConnectedSocket;
+	const connectedSocket = new ConnectedSocket_(socket.localPort ?? 0) as ConnectedSocket;
 	sockets.set(connectedSocket.id, connectedSocket);
 	socket.on("data", (data) => {
 		connectedSocket.data = data;
@@ -27,8 +27,11 @@ export function newSocket(socket: Socket): ConnectedSocket {
 	socket.on("close", () => {
 		sockets.delete(connectedSocket.id);
 	});
-	connectedSocket.on("data", (data) => {
+	connectedSocket.on("outData", (data) => {
 		socket.write(data);
+	});
+	socket.on("error", (error) => {
+		socketErrorHandler({ error });
 	});
 	return connectedSocket;
 }
@@ -41,4 +44,25 @@ export function newSocket(socket: Socket): ConnectedSocket {
  */
 export function getSocket(id: string): ConnectedSocket | undefined {
 	return sockets.get(id);
+}
+
+/**
+ * Handles socket errors by checking the error message.
+ * If the error message is "read ECONNRESET", it indicates that the client has disconnected,
+ * and the function will return without throwing an error.
+ * For any other error messages, the function will throw the error.
+ *
+ * @param arg0 - An object containing the error.
+ * @param arg0.error - The error object to be handled.
+ * @throws Will throw the error if the error message is not "read ECONNRESET".
+ */
+function socketErrorHandler(arg0: { error: Error }) {
+	const { error } = arg0;
+
+	if (error.message === "read ECONNRESET") {
+		// The client has disconnected
+		return;
+	}
+
+	throw error;
 }

@@ -34,4 +34,8 @@ export class SerializedBufferOld extends SerializableMixin(
 	size() {
 		return this.data.length;
 	}
+
+	toHexString() {
+		return this.data.toString("hex");
+	}
 }

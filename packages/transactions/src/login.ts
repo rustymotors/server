@@ -1,7 +1,11 @@
 import { OldServerMessage } from "rusty-motors-shared";
-import { GenericReplyMessage } from "./GenericReplyMessage.js";
-import { TLoginMessage } from "./TLoginMessage.js";
+
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import {
+	LoginCompletePayload,
+	LoginPayload,
+	ServerPacket,
+} from "rusty-motors-shared-packets";
 
 /**
  * @param {MessageHandlerArgs} args
@@ -12,21 +16,55 @@ export async function login({
 	packet,
 	log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
+	// Normalize the packet
+	const incomingPacket = new ServerPacket(0);
+	incomingPacket.deserialize(packet.serialize());
+
+	log.debug(
+		`[${connectionId}] Received LoginMessage: ${incomingPacket.toString()}`,
+	);
+
 	// Read the inbound packet
-	const loginMessage = new TLoginMessage();
-	loginMessage.deserialize(packet.serialize());
-	log.debug(`Received LoginMessage: ${loginMessage.toString()}`);
+	const loginMessage = new LoginPayload();
+	loginMessage.deserialize(packet.data);
+	log.debug(
+		`[${connectionId}] Received LoginMessage: ${loginMessage.toString()}`,
+	);
 
 	// Create new response packet
-	const pReply = new GenericReplyMessage();
-	pReply.msgNo = 213;
-	pReply.msgReply = 105;
-	const responsePacket = new OldServerMessage();
-	responsePacket._header.sequence = packet._header.sequence;
-	responsePacket._header.flags = 8;
-	responsePacket.setBuffer(pReply.serialize());
+	const response = new LoginCompletePayload();
+	response.messageId = 213;
+	response.serverTime = Math.floor(Date.now() / 1000);
+	response.firstTime = true;
+	response.clubInvitesWaiting = false;
+	response.paycheckWaiting = true;
+	response.shardAverageCarsOwned = 3;
+	response.shardAveragePlayerLevel = 5;
+	response.shardGNP = 830;
 
-	log.debug(`Response: ${responsePacket.toString()}`);
+	log.debug(
+		`[${connectionId}] Sending LoginCompleteMessage: ${response.toString()}`,
+	);
+
+	// Send response packet
+
+	// Normalize the packet
+
+	const outgoingPacket = new ServerPacket(response.messageId);
+	outgoingPacket.deserialize(response.serialize());
+	outgoingPacket.setSequence(incomingPacket.getSequence());
+	outgoingPacket.setPayloadEncryption(true);
+	outgoingPacket.setSignature("TOMC");
+
+	log.debug(`[${connectionId}] Sending response: ${outgoingPacket.toString()}`);
+
+	log.debug(
+		`[${connectionId}] Sending response: ${outgoingPacket.serialize().toString("hex")}`,
+	);
+
+	const responsePacket = new OldServerMessage();
+	responsePacket._header.sequence = incomingPacket.getSequence();
+	responsePacket._doDeserialize(outgoingPacket.serialize());
 
 	return { connectionId, messages: [responsePacket] };
 }

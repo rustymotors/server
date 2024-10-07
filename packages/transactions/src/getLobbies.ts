@@ -1,7 +1,11 @@
-import { OldServerMessage } from "rusty-motors-shared";
+import { getServerLogger, OldServerMessage } from "rusty-motors-shared";
 import { EntryFeePurseMessage, PurseEntry } from "./EntryFeePurseMessage.js";
 import { LobbyInfo, LobbyMessage } from "./LobbyMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+
+const log = getServerLogger({
+	name: "transactions.getLobbies",
+});
 
 /**
  * @param {MessageHandlerArgs} args
@@ -11,11 +15,10 @@ import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 async function _getLobbies({
 	connectionId,
 	packet,
-	log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
-	log.debug("In _getLobbies...");
+	log.debug(`[${connectionId}] Received getLobbies packet ${packet.toString()}`);
 
-	log.debug(`Received Message: ${packet.toString()}`);
+	log.debug(`[${connectionId}] Sending lobbies response...`);
 
 	// Create new response packet
 	const lobbiesResponsePacket = new OldServerMessage();
@@ -27,16 +30,16 @@ async function _getLobbies({
 	lobbyResponse._shouldExpectMoreMessages = false;
 
 	const lobby = new LobbyInfo();
-	lobby._lobbyId = 1;
-	lobby._lobbyName = "Lobby 1";
+	lobby._lobbyId = 2;
+	lobby._lobbyName = "LOBBY";
 	lobby._topDog = "Drazi Crendraven";
+	lobby._maxNumberPlayers = 8;
 
-	log.debug(`Logging LobbyInfo: ${lobby.serialize().toString("hex")}`);
+	log.debug(`[${connectionId}] Sending lobby: ${lobby.toString()}`);
 
 	lobbyResponse.addLobby(lobby);
 
-	log.debug(
-		`Logging LobbyMessage: ${lobbyResponse.serialize().toString("hex")}`,
+	log.debug(`[${connectionId}] Sending lobbyResponse: ${lobbyResponse.toString()}`
 	);
 
 	lobbiesResponsePacket.setBuffer(lobbyResponse.serialize());
@@ -51,11 +54,7 @@ async function _getLobbies({
 	perseEntryResponse._shouldExpectMoreMessages = false;
 	perseEntryResponse.addEntry(purseEntry);
 
-	log.debug(
-		`Logging EntryFeePurseMessage: ${perseEntryResponse
-			.serialize()
-			.toString("hex")}`,
-	);
+	log.debug(`[${connectionId}] Sending purseEntryResponse: ${perseEntryResponse.toString()}`);
 
 	const perseEntriesResponsePacket = new OldServerMessage();
 	perseEntriesResponsePacket._header.sequence = packet._header.sequence;

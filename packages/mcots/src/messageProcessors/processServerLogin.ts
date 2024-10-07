@@ -1,7 +1,8 @@
-import { LoginCompleteMessage, LoginMessage } from "rusty-motors-mcots";
 import { getServerLogger } from "rusty-motors-shared";
 import { ServerPacket } from "rusty-motors-shared-packets";
 import type { ServerSocketCallback } from "./index.js";
+import { LoginMessage } from "../payloads/LoginMessage.js";
+import { LoginCompleteMessage } from "../payloads/LoginCompleteMessage.js";
 
 const log = getServerLogger({
 	name: "processServerLogin",
@@ -28,7 +29,7 @@ export async function processServerLogin(
 	// Send response packet
 	const responsePacket = new ServerPacket(response.getMessageId());
 	responsePacket.setDataBuffer(response.serialize());
-	responsePacket.setSequence(message.messageSequence);
+	responsePacket.setSequence(message.sequence);
 
 	socketCallback([responsePacket]);
 	return Promise.resolve();

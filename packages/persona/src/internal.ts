@@ -109,14 +109,20 @@ export const personaRecords: Pick<
 >[] = [
 	{
 		customerId: 2868969472,
-		personaId: 1,
+		personaId: 20,
 		personaName: "Molly",
 		shardId: 44,
 	},
 	{
 		customerId: 5551212, // 0x54 0xB4 0x6C
-		personaId: 8675309,
+		personaId: 21,
 		personaName: "Dr Brown",
+		shardId: 44,
+	},
+	{
+		customerId: 0,
+		personaId: 22,
+		personaName: "Admin",
 		shardId: 44,
 	},
 ];
@@ -279,12 +285,8 @@ export async function receivePersonaData({
 	messages: SerializedBufferOld[];
 }> {
 	const data = message.serialize();
-	log.debug(
-		`Received Persona packet',
-    ${JSON.stringify({
-			data: data.toString("hex"),
-		})}`,
-	);
+	log.debug(`[${connectionId}] Entering receivePersonaData`);
+	log.debug(`[${connectionId}] Received persona data: ${data.toString("hex")}`);
 
 	// The packet needs to be an NPSMessage
 	const inboundMessage = new LegacyMessage();
@@ -296,7 +298,9 @@ export async function receivePersonaData({
 
 	if (typeof supportedHandler === "undefined") {
 		// We do not yet support this message code
-		throw Error(`UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`);
+		throw Error(
+			`[connectionId}] UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
+		);
 	}
 
 	try {
@@ -305,12 +309,14 @@ export async function receivePersonaData({
 			message: inboundMessage,
 			log,
 		});
-		log.debug(`Returning with ${result.messages.length} messages`);
-		log.debug("Leaving receivePersonaDatadleData");
+		log.debug(
+			`[${connectionId}] Returning with ${result.messages.length} messages`,
+		);
 		return result;
 	} catch (error) {
-		const err = Error(`Error handling persona data: ${String(error)}`);
-		err.cause = error;
+		const err = Error(`[${connectionId}] Error handling persona data`, {
+			cause: error,
+		});
 		throw err;
 	}
 }

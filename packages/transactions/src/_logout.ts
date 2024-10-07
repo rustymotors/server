@@ -11,6 +11,7 @@ export async function _logout({
 	packet,
 	log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
+	log.debug(`[${connectionId}] Logout request: ${packet.toHexString()}`);
 	// Create new response packet
 	const pReply = new GenericReplyMessage();
 	pReply.msgNo = 101;
@@ -20,7 +21,7 @@ export async function _logout({
 	rPacket._header.flags = 8;
 	rPacket.setBuffer(pReply.serialize());
 
-	log.debug(`Logout: ${rPacket.toString()}`);
+	log.debug(`[${connectionId}] Logout response: ${rPacket.toHexString()}`);
 
 	return { connectionId, messages: [rPacket] };
 }

@@ -30,6 +30,7 @@ import { clientConnect } from "./clientConnect.js";
 import { getLobbies } from "./getLobbies.js";
 import { login } from "./login.js";
 import { trackingPing } from "./trackingPing.js";
+import { _buyCarFromDealer } from "./_buyCarFromDealer.js";
 
 export interface MessageHandlerArgs {
 	connectionId: string;
@@ -104,4 +105,8 @@ export const messageHandlers: MessageHandler[] = [
 		name: "MC_GET_PLAYER_RACING_HISTORY",
 		handler: _getPlayerRaceHistory,
 	},
+	{
+		name: "MC_PURCHASE_STOCK_CAR",
+		handler: _buyCarFromDealer,
+	}
 ];

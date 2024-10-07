@@ -15,11 +15,11 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import {
 	getServerLogger,
-	NPSMessage,
 	SerializedBufferOld,
+	type ServerLogger,
 	type ServiceResponse,
 } from "rusty-motors-shared";
-import { handleLoginData } from "./internal.js";
+import { handleLoginData } from "./handleLoginData.js";
 import type { BufferSerializer } from "rusty-motors-shared-packets";
 
 /**
@@ -43,10 +43,10 @@ export async function receiveLoginData({
 }: {
 	connectionId: string;
 	message: BufferSerializer;
-	log?: import("pino").Logger;
+	log?: ServerLogger;
 }): Promise<ServiceResponse> {
 	try {
-		log.debug("Entering login module");
+		log.debug(`[${connectionId}] Entering login module`);
 		const incomingPacket = new SerializedBufferOld();
 		incomingPacket._doDeserialize(message.serialize());
 		const response = await handleLoginData({
@@ -54,12 +54,14 @@ export async function receiveLoginData({
 			message: incomingPacket,
 			log,
 		});
-		log.debug(`There are ${response.messages.length} messages`);
-		log.debug("Exiting login module");
+		log.debug(
+			`[${connectionId}] Exiting login module ${response.messages.length} messages`,
+		);
 		return response;
 	} catch (error) {
 		const err = new Error(
-			`There was an error in the login service: ${String(error)}`,
+			`[${connectionId}] Error in login service: ${(error as Error).message}`,
+			{ cause: error },
 		);
 		throw err;
 	}

@@ -14,7 +14,7 @@
  * @property {Buffer} data2
  */
 
-import { SerializedBufferOld } from "../../shared/src/SerializedBufferOld.js";
+import { SerializedBufferOld } from "rusty-motors-shared";
 
 export class GenericReply extends SerializedBufferOld {
 	msgNo: number;
@@ -140,8 +140,8 @@ export class GenericReplyMessage extends SerializedBufferOld {
 		let offset = 0;
 		packet.writeInt16LE(this.msgNo, offset);
 		offset += 2;
-		// packet.writeInt16LE(this.msgReply, offset);
-		// offset += 2;
+		packet.writeInt16LE(this.msgReply, offset);
+		offset += 2;
 		this.result.copy(packet, offset);
 		offset += 4;
 		this.data.copy(packet, offset);
@@ -172,5 +172,12 @@ export class GenericReplyMessage extends SerializedBufferOld {
 					data: this.data.toString("hex"),
 					tdata2: this.data2.toString("hex"),
 				})}`;
+	}
+
+	/**
+	 * @return {string}
+	 */
+	override toString(): string {
+		return `GenericReplyMessage: msgNo=${this.msgNo} msgReply=${this.msgReply} result=${this.result.readInt32LE()} data=${this.data.readInt32LE()} data2=${this.data2.readInt32LE()}`;
 	}
 }

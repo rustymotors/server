@@ -1,28 +1,32 @@
 import { ServerMessagePayload } from "./ServerMessagePayload.js";
 
-export class GenericRequestPayload extends ServerMessagePayload {
-	data: number = 0;
-	data2: number = 0;
+export class GenericReplyPayload extends ServerMessagePayload {
+	msgReply: number = 0; // 2 bytes
+	result: number = 0; // 4 bytes
+	data: number = 0; // 4 bytes
+	data2: number = 0; // 4 bytes
 
 	constructor() {
 		super();
 	}
 
 	override getByteSize(): number {
-		return 10;
+		return 16;
 	}
 
 	override serialize(): Buffer {
 		const buffer = Buffer.alloc(this.getByteSize());
 
 		buffer.writeUInt16LE(this.messageId, 0);
-		buffer.writeUInt32LE(this.data, 2);
-		buffer.writeUInt32LE(this.data2, 6);
+		buffer.writeUInt16LE(this.msgReply, 2);
+		buffer.writeUInt32LE(this.result, 4);
+		buffer.writeUInt32LE(this.data, 8);
+		buffer.writeUInt32LE(this.data2, 12);
 
 		return buffer;
 	}
 
-	override deserialize(data: Buffer): GenericRequestPayload {
+	override deserialize(data: Buffer): GenericReplyPayload {
 		this._assertEnoughData(data, 10);
 
 		this.messageId = data.readUInt16LE(0);

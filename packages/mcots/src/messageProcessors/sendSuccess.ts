@@ -1,20 +1,17 @@
-import {
-	ServerGenericResponse,
-	ServerMessage,
-} from "rusty-motors-shared-packets";
+import { GenericReplyPayload, ServerPacket } from "rusty-motors-shared-packets";
 import type { ServerSocketCallback } from "./index.js";
 
 export function sendSuccess(
-	message: ServerMessage,
+	message: ServerPacket,
 	socketCallback: ServerSocketCallback,
 ) {
-	const pReply = new ServerGenericResponse();
+	const pReply = new GenericReplyPayload();
 	pReply.setMessageId(101);
-	pReply.setMsgReply(438);
+	pReply.msgReply = 438;
 
-	const response = new ServerMessage(101);
-	response.setData(pReply);
-	response.populateHeader(message.getSequence());
+	const response = new ServerPacket(101);
+	response.setDataBuffer(pReply.serialize());
+	response.setSequence(message.sequence);
 
 	socketCallback([response]);
 }
