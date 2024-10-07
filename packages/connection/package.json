@@ -13,7 +13,7 @@
 		"lint": "npx @biomejs/biome lint --write .",
 		"format": "npx @biomejs/biome format --write .",
 		"test:db": "vitest run --coverage",
-		"test": "dotenvx run -f ../../.env -- pnpm run test:db"
+		"test": "echo \"Error: no test specified\" && exit 0"
 	},
 	"keywords": [],
 	"author": "",

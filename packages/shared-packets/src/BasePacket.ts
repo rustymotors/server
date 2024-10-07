@@ -1,10 +1,13 @@
 import { BufferSerializer } from "./BufferSerializer.js";
 import type { SerializableInterface, SerializableMessage } from "./types.js";
 
-export class BasePacket extends BufferSerializer implements SerializableMessage {
+export class BasePacket
+	extends BufferSerializer
+	implements SerializableMessage
+{
 	connectionId: string;
 	messageId: number;
-	messageSequence: number;
+	sequence: number;
 	messageSource: string;
 
 	protected override _data: Buffer = Buffer.alloc(0);
@@ -13,18 +16,18 @@ export class BasePacket extends BufferSerializer implements SerializableMessage 
 	constructor({
 		connectionId = "",
 		messageId = 0,
-		messageSequence = 0,
+		sequence = 0,
 		messageSource = "",
 	}) {
 		super();
 		this.connectionId = connectionId;
 		this.messageId = messageId;
-		this.messageSequence = messageSequence;
+		this.sequence = sequence;
 		this.messageSource = messageSource;
 	}
 
 	override toString(): string {
-		return `Connection ID: ${this.connectionId}, Message ID: ${this.messageId}, Message Sequence: ${this.messageSequence}, Message Source: ${this.messageSource}`;
+		return `Connection ID: ${this.connectionId}, Message ID: ${this.messageId}, Message Sequence: ${this.sequence}, Message Source: ${this.messageSource}`;
 	}
 	override serialize(): Buffer {
 		return Buffer.concat([this.header.serialize(), this._data]);

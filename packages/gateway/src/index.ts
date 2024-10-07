@@ -22,7 +22,7 @@ import {
 	getOnDataHandler,
 } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
-import { newSocket } from "rusty-motors-socket";
+import { newSocket, type ConnectedSocket } from "rusty-motors-socket";
 
 import { Socket } from "node:net";
 import { getGatewayServer } from "./GatewayServer.js";
@@ -115,97 +115,118 @@ export function onSocketConnection({
 		log.error(`[${socket.id}] Error handling socket: ${error}`);
 	}
 
-	// This is a new TCP socket, so it's probably not using HTTP
-	// Let's look for a port onData handler
-	/** @type {OnDataHandler | undefined} */
-	const portOnDataHandler: OnDataHandler | undefined = getOnDataHandler(
-		fetchStateFromDatabase(),
-		localPort,
-	);
 
-	// Throw an error if there is no onData handler
-	if (!portOnDataHandler) {
-		log.warn(`No onData handler for port ${localPort}`);
-		return;
-	}
 
-	incomingSocket.on("error", (error) =>
+	socket.on("error", (error) =>
 		socketErrorHandler({ connectionId: socket.id, error }),
 	);
 
 	// Add the data handler to the socket
-	incomingSocket.on(
-		"data",
-		function socketDataHandler(incomingDataAsBuffer: Buffer) {
-			log.trace(
-				`Incoming data on port ${localPort}: ${incomingDataAsBuffer.toString(
-					"hex",
-				)}`,
-			);
+	socket.on("inData", (data) => {
+		socketDataHandler(socket, data, log);
+	});
 
-			// Deserialize the raw message
-			const rawMessage = new BasePacket({
-				connectionId: socket.id,
-				messageId: 0,
-				messageSequence: 0,
-				messageSource: "",
-			});
-			rawMessage.deserialize(incomingDataAsBuffer);
-
-			// Log the raw message
-			log.trace(`Raw message: ${rawMessage.toString()}`);
-
-			log.debug("Calling onData handler");
-
-			Sentry.startSpan(
-				{
-					name: "onDataHandler",
-					op: "onDataHandler",
-				},
-				async () => {
-					portOnDataHandler({
-						connectionId: socket.id,
-						message: rawMessage,
-					})
-						.then((response: ServiceResponse) => {
-							log.debug("onData handler returned");
-							const { messages } = response;
-
-							// Log the messages
-							log.trace(`Messages: ${messages.map((m) => m.toString())}`);
-
-							// Serialize the messages
-							const serializedMessages = messages.map((m) => m.serialize());
-
-							try {
-								// Send the messages
-								serializedMessages.forEach((m) => {
-									incomingSocket.write(m);
-									log.trace(`Sent data: ${m.toString("hex")}`);
-								});
-							} catch (error) {
-								log.error(`Error sending data: ${String(error)}`);
-							}
-						})
-						.catch((error: Error) => {
-							log.fatal(`Error handling data: ${String(error)}`);
-							Sentry.captureException(error);
-							void getGatewayServer({}).stop();
-							Sentry.flush(200).then(() => {
-								log.debug("Sentry flushed");
-								// Call server shutdown
-								void getGatewayServer({}).shutdown();
-							});
-						});
-				},
-			);
-		},
+	log.debug(
+		`[${socket.id}] Socket connection established on port ${localPort} from ${remoteAddress}`,
 	);
-
-	log.debug(`Client ${remoteAddress} connected to port ${localPort}`);
 
 	if (localPort === 7003) {
 		// Sent ok to login packet
-		incomingSocket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
+		socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
 	}
+}
+
+function socketDataHandler(
+	socket: ConnectedSocket,
+	incomingDataAsBuffer: Buffer,
+	log: ServerLogger,
+) {
+	log.trace(
+		`[${socket.id}] Received data: ${incomingDataAsBuffer.toString("hex")}`,
+	);
+
+		// This is a new TCP socket, so it's probably not using HTTP
+	// Let's look for a port onData handler
+	/** @type {OnDataHandler | undefined} */
+	const portOnDataHandler: OnDataHandler | undefined = getOnDataHandler(
+		fetchStateFromDatabase(),
+		socket.port,
+	);
+
+	// If there is no onData handler, log a warning and return
+	if (!portOnDataHandler) {
+		log.warn(`[${socket.id}] No onData handler found for port ${socket.port}`);
+		log.warn(`[${socket.id}] Received data: ${socket.peek().toString("hex")}`);
+		return;
+	}
+
+	// Deserialize the raw message
+	const rawMessage = new BasePacket({
+		connectionId: socket.id,
+		messageId: 0,
+		messageSequence: 0,
+		messageSource: "",
+	});
+	rawMessage.deserialize(incomingDataAsBuffer);
+
+	// Log the raw message
+	log.trace(`[${socket.id}] Raw message: ${rawMessage.toHexString()}`);
+
+	log.debug(`[${socket.id}] Handling data with ${portOnDataHandler.name}`);
+
+	Sentry.startSpan(
+		{
+			name: "onDataHandler",
+			op: "onDataHandler",
+		},
+		async () => {
+			portOnDataHandler({
+				connectionId: socket.id,
+				message: rawMessage,
+			})
+				.then((response: ServiceResponse) => {
+					log.debug(
+						`[${socket.id}] Data handler returned with ${response.messages.length} messages`,
+					);
+					const { messages } = response;
+
+					// Log the messages
+					log.trace(
+						`[${socket.id}] Messages: ${messages.map((m) => m.toString()).join(", ")}`,
+					);
+
+					// Serialize the messages
+					const serializedMessages = messages.map((m) => m.serialize());
+
+					try {
+						// Send the messages
+						serializedMessages.forEach((m) => {
+							socket.write(m);
+							log.trace(`[${socket.id}] Sent message: ${m.toString("hex")}`);
+						});
+					} catch (error) {
+						const err = new Error(
+							`[${socket.id}] Error sending messages: ${(error as Error).message}`,
+							{ cause: error },
+						);
+						throw err;
+					}
+				})
+				.catch((error: Error) => {
+					const err = new Error(`[${socket.id}] Error in onData handler: ${error.message}`, {
+						cause: error,
+					});
+					log.fatal(`${err.message}`);
+					const id = Sentry.captureException(err);
+					console.trace(error);
+					log.fatal(`Sentry event ID: ${id}`);
+					void getGatewayServer({}).stop();
+					Sentry.flush(200).then(() => {
+						log.debug("Sentry flushed");
+						// Call server shutdown
+						void getGatewayServer({}).shutdown();
+					});
+				});
+		},
+	);
 }

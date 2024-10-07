@@ -1,51 +1,24 @@
-import { ServerMessage } from "rusty-motors-shared";
+import { getServerLogger, ServerMessage } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import {
 	PlayerRacingHistoryMessage,
 	RacingHistoryRecordEntry,
 } from "./PlayerRacingHistoryMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import { getRacingHistoryRecords } from "./database/racingHistoryRecords.js";
+import { GenericReplyPayload } from "rusty-motors-shared-packets";
 
-export enum RaceType {
-	RACES_TESTDRIVE = 14,
-	RACES_SIM_STREET = 16,
-	RACES_SIM_PRO = 17,
-	RACES_SIM_DRAG = 18,
-	RACES_SIM_TIMETRIAL = 19,
-
-	RACES_ARC_STUNT = 23,
-	RACES_ARC_TIMETRIAL = 25,
-	RACES_TRADEWINDOW = 26,
-}
-
-export type RacingHistoryRecord = {
-	raceType: RaceType; // 4 bytes
-	numberOfRacesEntered: number; // 4 bytes
-	numberOfRacesFinished: number; // 4 bytes
-	numberOfRacesWon: number; // 4 bytes
-	numberOfCarsWon: number; // 4 bytes
-	numberOfCarsLost: number; // 4 bytes
-	numberOfChampionshipsWon: number; // 4 bytes
-	cashWon: number; // 4 bytes
-};
-const racingHistoryRecords: RacingHistoryRecord[] = [
-	{
-		raceType: RaceType.RACES_TESTDRIVE,
-		numberOfRacesEntered: 0,
-		numberOfRacesFinished: 0,
-		numberOfRacesWon: 0,
-		numberOfCarsWon: 0,
-		numberOfCarsLost: 0,
-		numberOfChampionshipsWon: 0,
-		cashWon: 0,
-	},
-];
+const log = getServerLogger({
+	name: "transactions/_getPlayerRaceHistory",
+});
 
 export async function _getPlayerRaceHistory({
 	connectionId,
 	packet,
 	log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
+	log.debug(`[${connectionId}] Handling _getPlayerRaceHistory...`);
+
 	const getPlayerRaceHistoryMessage = new GenericRequestMessage();
 	getPlayerRaceHistoryMessage.deserialize(packet.data);
 
@@ -55,23 +28,32 @@ export async function _getPlayerRaceHistory({
 
 	log.debug(`Player ID: ${playerId}`);
 
+	const racingHistoryRecords = getRacingHistoryRecords(playerId);
+
+	const reply = new GenericReplyPayload();
+	reply.messageId = 0x101; // MC_SUCCESS
+	reply.msgReply = 362; // 0x16A
+
 	const playerRacingHistoryMessage = new PlayerRacingHistoryMessage();
 	playerRacingHistoryMessage._msgId = 362;
 	playerRacingHistoryMessage._userId = playerId;
+	playerRacingHistoryMessage._numRaces = racingHistoryRecords.length;
 
-	for (const record of racingHistoryRecords) {
-		const recordEntry = new RacingHistoryRecordEntry();
-		recordEntry.raceType = record.raceType;
-		recordEntry.numberOfRacesEntered = record.numberOfRacesEntered;
-		recordEntry.numberOfRacesFinished = record.numberOfRacesFinished;
-		recordEntry.numberOfRacesWon = record.numberOfRacesWon;
-		recordEntry.numberOfCarsWon = record.numberOfCarsWon;
-		recordEntry.numberOfCarsLost = record.numberOfCarsLost;
-		recordEntry.numberOfChampionshipsWon = record.numberOfChampionshipsWon;
-		recordEntry.cashWon = record.cashWon;
+	// for (const record of racingHistoryRecords) {
+	// 	const recordEntry = new RacingHistoryRecordEntry();
+	// 	recordEntry.raceType = record.raceType;
+	// 	recordEntry.numberOfRacesEntered = record.numberOfRacesEntered;
+	// 	recordEntry.numberOfRacesFinished = record.numberOfRacesFinished;
+	// 	recordEntry.numberOfRacesWon = record.numberOfRacesWon;
+	// 	recordEntry.numberOfCarsWon = record.numberOfCarsWon;
+	// 	recordEntry.numberOfCarsLost = record.numberOfCarsLost;
+	// 	recordEntry.numberOfChampionshipsWon = record.numberOfChampionshipsWon;
+	// 	recordEntry.cashWon = record.cashWon;
 
-		playerRacingHistoryMessage.addRecord(recordEntry);
-	}
+	// 	playerRacingHistoryMessage.addRecord(recordEntry);
+	// }
+
+	playerRacingHistoryMessage._expectMore = false;
 
 	const responsePacket = new ServerMessage(
 		packet._header.sequence,

@@ -7,7 +7,7 @@ describe("BasePacket", () => {
 		const packet = new BasePacket({});
 		expect(packet.connectionId).toBe("");
 		expect(packet.messageId).toBe(0);
-		expect(packet.messageSequence).toBe(0);
+		expect(packet.sequence).toBe(0);
 		expect(packet.messageSource).toBe("");
 		expect(packet.getDataBuffer()).toEqual(Buffer.alloc(0));
 	});
@@ -16,12 +16,12 @@ describe("BasePacket", () => {
 		const packet = new BasePacket({
 			connectionId: "123",
 			messageId: 1,
-			messageSequence: 2,
+			sequence: 2,
 			messageSource: "source",
 		});
 		expect(packet.connectionId).toBe("123");
 		expect(packet.messageId).toBe(1);
-		expect(packet.messageSequence).toBe(2);
+		expect(packet.sequence).toBe(2);
 		expect(packet.messageSource).toBe("source");
 	});
 

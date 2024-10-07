@@ -13,7 +13,7 @@ export interface SerializableMessage extends SerializableInterface {
 	connectionId: string;
 
 	messageId: number;
-	messageSequence: number;
+	sequence: number;
 	messageSource: string;
 
 	getDataBuffer(): Buffer;

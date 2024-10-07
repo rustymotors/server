@@ -1,6 +1,6 @@
 import { getServerLogger, type ServerLogger } from "rusty-motors-shared";
-import { SerializedBufferOld } from "../../shared/src/SerializedBufferOld.js";
-import { LegacyMessage } from "../../shared/src/LegacyMessage.js";
+import { SerializedBufferOld } from "rusty-motors-shared";
+import { LegacyMessage } from "rusty-motors-shared";
 
 /**
  * Handle game logout
@@ -18,7 +18,7 @@ export async function _gameLogout({
 	connectionId,
 	message,
 	log = getServerLogger({
-		name: "PersonaServer",
+		name: "persona",
 	}),
 }: {
 	connectionId: string;
@@ -28,24 +28,14 @@ export async function _gameLogout({
 	connectionId: string;
 	messages: SerializedBufferOld[];
 }> {
-	log.debug("_npsLogoutGameUser...");
+	log.debug(`[${connectionId}] _gameLogout`);
 	const requestPacket = message;
-	log.debug(
-		`NPSMsg request object from _npsLogoutGameUser',
-      ${JSON.stringify({
-				NPSMsg: requestPacket.toString(),
-			})}`,
-	);
+	log.debug(`[${connectionId}] _npsLogoutGameUser request: ${requestPacket.toHexString()}`);
 
 	// Build the packet
 	const responsePacket = new LegacyMessage();
 	responsePacket._header.id = 519;
-	log.debug(
-		`NPSMsg response object from _npsLogoutGameUser',
-      ${JSON.stringify({
-				NPSMsg: responsePacket.toString(),
-			})}`,
-	);
+	log.debug(`[${connectionId}] _npsLogoutGameUser response: ${responsePacket.toHexString()}`);
 
 	const outboundMessage = new SerializedBufferOld();
 	outboundMessage._doDeserialize(responsePacket._doSerialize());

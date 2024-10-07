@@ -11,7 +11,7 @@ import {
 	getEncryption,
 } from "rusty-motors-shared";
 import { OldServerMessage } from "rusty-motors-shared";
-import { GenericReply } from "./GenericReplyMessage.js";
+import { GenericReply, GenericReplyMessage } from "./GenericReplyMessage.js";
 import { TClientConnectMessage } from "./TClientConnectMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 import { fetchSessionKeyByCustomerId } from "rusty-motors-database";
@@ -85,7 +85,7 @@ export async function clientConnect({
 	log.debug(`cust: ${customerId} ID: ${personaId} Name: ${personaName}`);
 
 	// Create new response packet
-	const pReply = new GenericReply();
+	const pReply = new GenericReplyMessage();
 	pReply.msgNo = 101;
 	pReply.msgReply = newMessage._msgNo;
 

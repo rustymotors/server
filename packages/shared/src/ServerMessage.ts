@@ -87,4 +87,8 @@ export class ServerMessage extends SerializedBuffer {
 	public set flags(value: number) {
 		this._flags = value;
 	}
+
+	toHexString(): string {
+		return this.serialize().toString("hex");
+	}
 }

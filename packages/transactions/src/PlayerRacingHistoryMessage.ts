@@ -3,20 +3,19 @@ import { SerializedBufferOld } from "rusty-motors-shared";
 export class PlayerRacingHistoryMessage extends SerializedBufferOld {
 	_msgId: number; // 2 bytes
 	_userId: number; // 4 bytes
+	_numRaces: number; // 2 bytes
 	_expectMore: boolean; // 1 byte
+	
 	_raceHistoryRecords: RacingHistoryRecordEntry[]; // 32 bytes each
 
 	constructor() {
 		super();
-		this._msgId = 0;
-		this._userId = 0;
-		this._expectMore = false;
+		this._msgId = 0; // 2 bytes
+		this._userId = 0; // 4 bytes
+		this._numRaces = 0;
+		this._expectMore = false; 
 		this._raceHistoryRecords = [];
 		// total: 39 bytes + 32 bytes * numRaces
-	}
-
-	get _numRaces(): number {
-		return this._raceHistoryRecords.length ?? 0;
 	}
 
 	override size(): number {
@@ -79,6 +78,10 @@ export class PlayerRacingHistoryMessage extends SerializedBufferOld {
 		}
 
 		return result;
+	}
+
+	override toString(): string {
+		return this.asString();
 	}
 }
 

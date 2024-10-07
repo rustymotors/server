@@ -68,4 +68,8 @@ export class LegacyMessage extends SerializableMixin(AbstractSerializable) {
 			data: super.data.toString("hex"),
 		})}`;
 	}
+
+	toHexString() {
+		return this.serialize().toString("hex");
+	}
 }

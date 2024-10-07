@@ -14,7 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getServerConfiguration, type ServerLogger } from "rusty-motors-shared";
+import {
+	getServerConfiguration,
+	type ServerLogger,
+	type UserRecordMini,
+} from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 import { SerializedBufferOld } from "rusty-motors-shared";
 import { NPSMessage } from "rusty-motors-shared";
@@ -22,8 +26,7 @@ import { NetworkMessage } from "rusty-motors-shared";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { updateSessionKey } from "rusty-motors-database";
 
-/** @type {import("../../interfaces/index.js").UserRecordMini[]} */
-const userRecords: import("../../shared/src/interfaces.js").UserRecordMini[] = [
+const userRecords: UserRecordMini[] = [
 	{
 		contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
 		customerId: 0x0012808b,
@@ -64,24 +67,19 @@ async function login({
 }> {
 	const data = message.serialize();
 
-	log.debug(`Received login packet: ${connectionId}`);
+	log.debug(`[${connectionId}] Entering login`);
 
-	log.debug("Requesting NPSUserStatus packet");
+	log.debug(`[${connectionId}] Creating NPSUserStatus object`);
 	const userStatus = new NPSUserStatus(data, getServerConfiguration({}), log);
-	log.debug("NPSUserStatus packet creation success");
+	log.debug(`[${connectionId}] NPSUserStatus object created`);
 
-	log.debug("Requesting Key extraction");
+	log.debug(`[${connectionId}] Extracting session key from packet`);
 	userStatus.extractSessionKeyFromPacket(data);
-	log.debug("Key extraction success");
+	log.debug(`[${connectionId}] Session key extracted`);
 
 	const { contextId, sessionKey } = userStatus;
 
-	log.debug(
-		`UserStatus object from _userLogin,
-      ${JSON.stringify({
-				userStatus: userStatus.toJSON(),
-			})}`,
-	);
+	log.debug(`[${connectionId}] Context ID: ${contextId}`);
 	userStatus.dumpPacket();
 
 	// Load the customer record by contextId
@@ -93,12 +91,12 @@ async function login({
 	if (typeof userRecord === "undefined") {
 		// We were not able to locate the user's record
 		throw Error(
-			`Unable to locate a user record for the context id: ${contextId}`,
+			`[${connectionId}] Unable to locate user record for contextId: ${contextId}`,
 		);
 	}
 
 	// Save sessionkey in database under customerId
-	log.debug("Preparing to update session key in db");
+	log.debug(`[${connectionId}] Updating session key in the database`);
 	await updateSessionKey(
 		userRecord.customerId,
 		sessionKey ?? "",
@@ -106,13 +104,13 @@ async function login({
 		connectionId,
 	).catch((error) => {
 		const err = Error(
-			`Unable to update session key in the database: ${String(error)}`,
+			`[${connectionId}] Error updating session key in the database`,
+			{ cause: error },
 		);
-		err.cause = error;
 		throw err;
 	});
 
-	log.debug("Session key updated");
+	log.debug(`[${connectionId}] Creating outbound message`);
 
 	const outboundMessage = new NetworkMessage(0x601);
 
@@ -135,14 +133,15 @@ async function login({
 	// Set the packet content in the outbound message
 	outboundMessage.data = packetContent;
 
-	log.debug("Returning login response");
-	log.debug(`Outbound message: ${outboundMessage.asHex()}`);
+	log.debug(
+		`[${connectionId}] Outbound message: ${outboundMessage.toHexString()}`,
+	);
 
 	const outboundMessage2 = new SerializedBufferOld();
 	outboundMessage2._doDeserialize(outboundMessage.serialize());
 
 	log.debug(
-		`Outbound message 2: ${outboundMessage2.serialize().toString("hex")}`,
+		`[${connectionId}] Outbound message2: ${outboundMessage2.toHexString()}`,
 	);
 
 	// Update the data buffer
@@ -150,7 +149,9 @@ async function login({
 		connectionId,
 		messages: [outboundMessage2, outboundMessage2],
 	};
-	log.debug("Leaving login");
+	log.debug(
+		`[${connectionId}] Leaving login with ${response.messages.length} messages`,
+	);
 	return response;
 }
 
@@ -215,7 +216,7 @@ export async function handleLoginData({
 	connectionId: string;
 	messages: SerializedBufferOld[];
 }> {
-	log.debug(`Received Login Server packet: ${connectionId}`);
+	log.debug(`[${connectionId}] Entering handleLoginData`);
 
 	// The packet needs to be an NPSMessage
 	const inboundMessage = new NPSMessage();
@@ -227,7 +228,9 @@ export async function handleLoginData({
 
 	if (typeof supportedHandler === "undefined") {
 		// We do not yet support this message code
-		throw Error(`UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`);
+		throw Error(
+			`[${connectionId}] UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
+		);
 	}
 
 	try {
@@ -236,12 +239,14 @@ export async function handleLoginData({
 			message,
 			log,
 		});
-		log.debug(`Returning with ${result.messages.length} messages`);
-		log.debug("Leaving handleLoginData");
+		log.debug(
+			`[${connectionId}] Leaving handleLoginData with ${result.messages.length} messages`,
+		);
 		return result;
 	} catch (error) {
-		const err = Error(`Error handling login data: ${String(error)}`);
-		err.cause = error;
+		const err = Error(`[${connectionId}] Error in login service`, {
+			cause: error,
+		});
 		throw err;
 	}
 }

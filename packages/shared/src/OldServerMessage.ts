@@ -58,4 +58,8 @@ export class OldServerMessage extends SerializedBufferOld {
 			data: this.data.toString("hex"),
 		})}`;
 	}
+
+	toHexString() {
+		return this.serialize().toString("hex");
+	}
 }

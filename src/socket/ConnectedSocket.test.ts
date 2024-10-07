@@ -1,26 +1,30 @@
 import { describe, it, expect, vi } from "vitest";
 import { Buffer } from "node:buffer";
-import {ConnectedSocket_, type ConnectedSocket} from "./ConnectedSocket.js";
+import { ConnectedSocket_ } from "./ConnectedSocket.js";
 
 describe("ConnectedSocket_", () => {
 	it("should generate a unique id on creation", () => {
-		const socket = new ConnectedSocket_();
+		const port = 1234;
+		const socket = new ConnectedSocket_(port);
 		expect(socket.id).toBeDefined();
 		expect(typeof socket.id).toBe("string");
 	});
 
 	it("should have initial length of 0", () => {
-		const socket = new ConnectedSocket_();
+		const port = 1234;
+		const socket = new ConnectedSocket_(port);
 		expect(socket.length).toBe(0);
 	});
 
 	it("should initially have no data", () => {
-		const socket = new ConnectedSocket_();
+		const port = 1234;
+		const socket = new ConnectedSocket_(port);
 		expect(socket.hasData).toBe(false);
 	});
 
 	it("should set and concatenate data correctly", () => {
-		const socket = new ConnectedSocket_() as ConnectedSocket;
+		const port = 1234;
+		const socket = new ConnectedSocket_(port);
 		const data1 = Buffer.from("Hello");
 		const data2 = Buffer.from("World");
 
@@ -34,21 +38,23 @@ describe("ConnectedSocket_", () => {
 	});
 
 	it("should read the correct amount of data", () => {
-		const socket = new ConnectedSocket_();
+		const port = 1234;
+		const socket = new ConnectedSocket_(port);
 		const data = Buffer.from("HelloWorld");
-        socket.data = data;
+		socket.data = data;
 
-        expect(socket.read(5).toString()).toBe("Hello");
-        expect(socket.read(5).toString()).toBe("World");
-        expect(socket.read(5).toString()).toBe("");
+		expect(socket.read(5).toString()).toBe("Hello");
+		expect(socket.read(5).toString()).toBe("World");
+		expect(socket.read(5).toString()).toBe("");
 	});
 
-	it("should emit data event on write", () => {
-		const socket = new ConnectedSocket_();
+	it("should emit outData event on write", () => {
+		const port = 1234;
+		const socket = new ConnectedSocket_(port);
 		const data = Buffer.from("HelloWorld");
 		const listener = vi.fn();
 
-		socket.on("data", listener);
+		socket.on("outData", listener);
 		socket.write(data);
 
 		expect(listener).toHaveBeenCalledWith(data);

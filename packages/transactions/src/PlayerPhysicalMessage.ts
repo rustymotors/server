@@ -33,13 +33,13 @@ export class PlayerPhysicalMessage extends SerializedBufferOld {
 		offset += 4;
 		buffer.writeUInt32LE(this._bodytype, offset);
 		offset += 4;
-		buffer.writeUInt32LE(this._hairColor, offset);
+		buffer.writeInt32LE(this._hairColor, offset);
 		offset += 4;
-		buffer.writeUInt32LE(this._skinColor, offset);
+		buffer.writeInt32LE(this._skinColor, offset);
 		offset += 4;
-		buffer.writeUInt32LE(this._shirtColor, offset);
+		buffer.writeInt32LE(this._shirtColor, offset);
 		offset += 4;
-		buffer.writeUInt32LE(this._pantsColor, offset);
+		buffer.writeInt32LE(this._pantsColor, offset);
 
 		return buffer;
 	}

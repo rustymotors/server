@@ -64,4 +64,8 @@ export class NetworkMessage extends SerializedBuffer {
 	override asHex(): string {
 		return this.serialize().toString("hex");
 	}
+
+	toHexString() {
+		return this.asHex();
+	}
 }
