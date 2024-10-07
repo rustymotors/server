@@ -19,7 +19,7 @@ import {
 	type ServerLogger,
 	type ServiceResponse,
 } from "rusty-motors-shared";
-import { handleLoginData } from "./internal.js";
+import { handleLoginData } from "./handleLoginData.js";
 import type { BufferSerializer } from "rusty-motors-shared-packets";
 
 /**
@@ -54,12 +54,14 @@ export async function receiveLoginData({
 			message: incomingPacket,
 			log,
 		});
-		log.debug(`[${connectionId}] Exiting login module ${response.messages.length} messages`);
+		log.debug(
+			`[${connectionId}] Exiting login module ${response.messages.length} messages`,
+		);
 		return response;
 	} catch (error) {
 		const err = new Error(
 			`[${connectionId}] Error in login service: ${(error as Error).message}`,
-			{cause: error},
+			{ cause: error },
 		);
 		throw err;
 	}
