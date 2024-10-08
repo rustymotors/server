@@ -15,8 +15,8 @@ importers:
         specifier: ^5.5.0
         version: 5.5.0(typescript@5.6.2)
       '@dotenvx/dotenvx':
-        specifier: ^1.15.0
-        version: 1.15.0
+        specifier: ^1.16.0
+        version: 1.16.0
       '@fastify/sensible':
         specifier: ^6.0.1
         version: 6.0.1
@@ -1308,8 +1308,8 @@ packages:
   '@databases/with-container@2.1.1':
     resolution: {integrity: sha512-iHsOn/6ElWuGpcytgNh9ZAvFd78G0ikOMWj0DtMTB4fXVqRA5uYZpLpLv/fvwL895xT7VTbVA6HV3YoY0yuQUg==}
 
-  '@dotenvx/dotenvx@1.15.0':
-    resolution: {integrity: sha512-hde8JZV6Czmyil4eorWwN+fJmbdGYzQfDC2OdyM8VooSdRM0SGHD03WVVp5NiVd5oVNFa3yJ2E61Hntar3pMJg==}
+  '@dotenvx/dotenvx@1.16.0':
+    resolution: {integrity: sha512-KnyCmcHQ5wK+nJD9KaBxdeFavxj6QCVVEvJDSqs50qsEbdnCaoDu2FB1/HXxVxcyCJpUy25hAQqfrJEOvNbdKA==}
     hasBin: true
 
   '@emotion/babel-plugin@11.12.0':
@@ -7411,7 +7411,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@dotenvx/dotenvx@1.15.0':
+  '@dotenvx/dotenvx@1.16.0':
     dependencies:
       commander: 11.1.0
       dotenv: 16.4.5
