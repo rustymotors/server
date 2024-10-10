@@ -74,7 +74,7 @@ async function routeInitialMessage(
 	// Route the initial message to the appropriate handler
 	// Messages may be encrypted, this will be handled by the handler
 
-	console.log(
+	log.debug(
 		`Routing message for port ${port}: ${initialPacket.toHexString()}`,
 	);
 	let responses: SerializableInterface[] = [];
