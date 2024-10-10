@@ -36,6 +36,11 @@ export class GamePacket extends BasePacket implements SerializableMessage {
 	override getDataBuffer(): Buffer {
 		return this.data.serialize();
 	}
+
+	getVersion(): number {
+		return this.header.getVersion();
+	}
+
 	override setDataBuffer(data: Buffer): GamePacket {
 		if (this.data.getByteSize() > 2) {
 			throw new Error(
@@ -63,7 +68,7 @@ export class GamePacket extends BasePacket implements SerializableMessage {
 	}
 
 	getMessageId(): number {
-		return this.data.getMessageId();
+		return this.header.getId();
 	}
 
 	getLength(): number {

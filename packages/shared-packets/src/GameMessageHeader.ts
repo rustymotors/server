@@ -73,7 +73,7 @@ export class GameMessageHeader
 	}
 
 	override serialize(): Buffer {
-		return this.version === 0 ? this.serializeV0() : this.serializeV1();
+		return this.version === 257 ? this.serializeV1() : this.serializeV0();
 	}
 
 	private deserializeV0(data: Buffer): void {
@@ -96,10 +96,10 @@ export class GameMessageHeader
 			);
 		}
 
-		if (this.version === 0) {
-			this.deserializeV0(data);
-		} else {
+		if (this.version === 257) {
 			this.deserializeV1(data);
+		} else {
+			this.deserializeV0(data);
 		}
 	}
 
@@ -124,5 +124,4 @@ export class GameMessageHeader
 	override toString(): string {
 		return `GameMessageHeader {id: ${this.id}, length: ${this.length}, version: ${this.version}}`;
 	}
-
 }
