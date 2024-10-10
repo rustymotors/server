@@ -40,7 +40,7 @@ async function receiveChatData({
 	try {
 		inboundMessage = ChatMessage.fromBuffer(message.serialize());
 	} catch (error) {
-		const err = Error(`[${connectionId}] Error deserializing message`, {
+		const err = new Error(`[${connectionId}] Error deserializing message`, {
 			cause: error,
 		});
 		log.error(err.message);
