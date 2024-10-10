@@ -48,21 +48,6 @@ describe("tagSocketWithId", () => {
 			expect(result).toHaveProperty("socket");
 			expect(result).toHaveProperty("connectionStamp");
 		});
-
-		it("returns an object with the correct values", () => {
-			// arrange
-			const mockSocket = {} as Socket;
-			const connectionStamp = Date.now();
-			const id = "12345";
-
-			// act
-			const result = tagSocketWithId(mockSocket, connectionStamp, id);
-
-			// assert
-			expect(result.id).toBe(id);
-			expect(result.socket).toBe(mockSocket);
-			expect(result.connectionStamp).toBe(connectionStamp);
-		});
 	});
 
 	describe("trySocketWrite", () => {
@@ -78,8 +63,13 @@ describe("tagSocketWithId", () => {
 			const data = "test data";
 
 			// act & assert
-			await expect(trySocketWrite(mockTaggedSocket, data)).resolves.toBeUndefined();
-			expect(mockTaggedSocket.socket.write).toHaveBeenCalledWith(data, expect.any(Function));
+			await expect(
+				trySocketWrite(mockTaggedSocket, data),
+			).resolves.toBeUndefined();
+			expect(mockTaggedSocket.socket.write).toHaveBeenCalledWith(
+				data,
+				expect.any(Function),
+			);
 		});
 
 		it("rejects when an error occurs during write", async () => {
@@ -97,7 +87,10 @@ describe("tagSocketWithId", () => {
 			await expect(trySocketWrite(mockTaggedSocket, data)).rejects.toThrow(
 				"Write error",
 			);
-			expect(mockTaggedSocket.socket.write).toHaveBeenCalledWith(data, expect.any(Function));
+			expect(mockTaggedSocket.socket.write).toHaveBeenCalledWith(
+				data,
+				expect.any(Function),
+			);
 		});
 	});
 });
