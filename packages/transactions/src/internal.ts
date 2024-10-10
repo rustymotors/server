@@ -116,7 +116,7 @@ export async function receiveTransactionsData({
 
 	// Normalize the message
 
-	const inboundMessage = new ServerPacket(0);
+	const inboundMessage = new ServerPacket();
 	inboundMessage.deserialize(message.serialize());
 
 	log.debug(
@@ -168,7 +168,7 @@ export async function receiveTransactionsData({
 	response.messages.forEach((message) => {
 		log.debug(`[${connectionId}] Processing outbound message`);
 
-		const outboundMessage = new ServerPacket(0);
+		const outboundMessage = new ServerPacket();
 		outboundMessage.deserialize(message.serialize());
 
 		if (outboundMessage.isPayloadEncrypted()) {

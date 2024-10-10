@@ -51,7 +51,8 @@ export async function processStockCarInfo(
 		responsePacket.setDealerId(lotOwnerId);
 		responsePacket.setBrandId(brandId);
 
-		const response = new ServerPacket(141);
+		const response = new ServerPacket();
+		response.setMessageId(141);
 
 		if (inventoryCars.inventory.length > StockCarInfo.MAX_CARS_PER_MESSAGE) {
 			log.error(

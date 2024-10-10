@@ -17,7 +17,7 @@ export async function login({
 	log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
 	// Normalize the packet
-	const incomingPacket = new ServerPacket(0);
+	const incomingPacket = new ServerPacket();
 	incomingPacket.deserialize(packet.serialize());
 
 	log.debug(
