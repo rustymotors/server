@@ -44,7 +44,9 @@ async function notFoundRouter({
 		console.error(`[${taggedSocket.id}] Socket error: ${error}`);
 	});
 	taggedSocket.socket.end();
-	log.error(`[${taggedSocket.id}] No router found for port ${taggedSocket.socket.localPort}`);
+	log.error(
+		`[${taggedSocket.id}] No router found for port ${taggedSocket.socket.localPort}`,
+	);
 }
 /**
  * Retrieves the router function associated with a given port.
@@ -55,6 +57,9 @@ async function notFoundRouter({
  */
 
 export function getPortRouter(port: number): PortRouter {
+	if (!Number.isInteger(port) || port < 0 || port > 65535) {
+		throw new Error(`Invalid port number: ${port}`);
+	}
 	const router = portRouters.get(port);
 	if (typeof router === "undefined") {
 		return notFoundRouter;
