@@ -1,7 +1,7 @@
 export interface Serializable {
 	data: Buffer;
 	serialize(): Buffer;
-	deserialize(buffer: Buffer): Serializable;
+	deserialize<T extends Serializable>(buffer: Buffer): T;
 	length: number;
 	toString(): string;
 	asHex(): string;
@@ -30,7 +30,7 @@ export class BaseSerialized implements Serializable {
 		throw Error("Not implemented");
 	}
 
-	deserialize(_buffer: Buffer): Serializable {
+	deserialize<T extends Serializable>(_buffer: Buffer): T {
 		throw Error("Not implemented");
 	}
 

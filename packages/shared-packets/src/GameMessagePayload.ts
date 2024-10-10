@@ -1,17 +1,16 @@
 import { BufferSerializer } from "./BufferSerializer.js";
 import type { SerializableInterface } from "./types.js";
 
-export class ServerMessagePayload
+export class GameMessagePayload
 	extends BufferSerializer
 	implements SerializableInterface
 {
 	public messageId: number = 0; // 2 bytes
-	
-	private previousMessageId: number = 0; // Not serialized
+
 	private isEncrypted: boolean = false; // Not serialized
 
-	static copy(payload: ServerMessagePayload): ServerMessagePayload {
-		const newPayload = new ServerMessagePayload();
+	static copy(payload: GameMessagePayload): GameMessagePayload {
+		const newPayload = new GameMessagePayload();
 		newPayload.messageId = payload.messageId;
 		newPayload._data = Buffer.from(payload._data);
 		return newPayload;
@@ -29,7 +28,7 @@ export class ServerMessagePayload
 		return buffer;
 	}
 
-	override deserialize(data: Buffer): ServerMessagePayload {
+	override deserialize(data: Buffer): GameMessagePayload {
 		this._assertEnoughData(data, 2);
 
 		this.messageId = data.readUInt16LE(0);
@@ -42,17 +41,8 @@ export class ServerMessagePayload
 		return this.messageId;
 	}
 
-	setMessageId(messageId: number): ServerMessagePayload {
+	setMessageId(messageId: number): GameMessagePayload {
 		this.messageId = messageId;
-		return this;
-	}
-
-	getPreviousMessageId(): number {
-		return this.previousMessageId;
-	}
-
-	setPreviousMessageId(previousMessageId: number): ServerMessagePayload {
-		this.previousMessageId = previousMessageId;
 		return this;
 	}
 
@@ -60,7 +50,7 @@ export class ServerMessagePayload
 		return this.isEncrypted;
 	}
 
-	setEncrypted(encrypted: boolean): ServerMessagePayload {
+	setPayloadEncryption(encrypted: boolean): GameMessagePayload {
 		this.isEncrypted = encrypted;
 		return this;
 	}

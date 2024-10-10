@@ -57,7 +57,7 @@ export interface ConnectionRecord {
 }
 
 // Function to convert ARGB to 32-bit integer
-function argbToInt(alpha: number, red: number, green: number, blue: number) {
+export function argbToInt(alpha: number, red: number, green: number, blue: number) {
 	return (
 		((alpha & 0xff) << 24) |
 		((red & 0xff) << 16) |
@@ -67,7 +67,7 @@ function argbToInt(alpha: number, red: number, green: number, blue: number) {
 }
 
 // Function to convert 32-bit integer to ARGB
-function intToArgb(int: number) {
+export function intToArgb(int: number) {
 	return {
 		alpha: (int >> 24) & 0xff,
 		red: (int >> 16) & 0xff,

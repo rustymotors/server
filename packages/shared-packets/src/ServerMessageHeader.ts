@@ -15,6 +15,19 @@ export class ServerMessageHeader
 	private sequence: number = 0; // 4 bytes
 	private flags: number = 0; // 1
 
+	constructor() {
+		super();
+	}
+
+	static copy(header: ServerMessageHeader): ServerMessageHeader {
+		const newHeader = new ServerMessageHeader();
+		newHeader.length = header.length;
+		newHeader.signature = header.signature;
+		newHeader.sequence = header.sequence;
+		newHeader.flags = header.flags;
+		return newHeader;
+	}
+
 	getDataOffset(): number {
 		return 11;
 	}

@@ -14,7 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getServerConfiguration, type ServerLogger } from "rusty-motors-shared";
+import {
+	getServerConfiguration,
+	McosEncryption,
+	SerializedBufferOld,
+	type ServerLogger,
+	type State,
+} from "rusty-motors-shared";
 import {
 	fetchStateFromDatabase,
 	getEncryption,
@@ -22,43 +28,34 @@ import {
 } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 import { OldServerMessage } from "rusty-motors-shared";
-import { SerializedBufferOld } from "rusty-motors-shared";
-import { ServerMessage } from "rusty-motors-shared";
-import { messageHandlers } from "./handlers.js";
-import type { BufferSerializer } from "rusty-motors-shared-packets";
+import { messageHandlers, type MessageHandlerResult } from "./handlers.js";
+import {
+	ServerPacket,
+	type BufferSerializer,
+} from "rusty-motors-shared-packets";
 import { _MSG_STRING } from "./_MSG_STRING.js";
 
 /**
- *
- *
- * @param {ServerMessage} message
- * @return {boolean}
- */
-function isMessageEncrypted(
-	message: OldServerMessage | ServerMessage,
-): boolean {
-	return message._header.flags - 8 >= 0;
-}
-
-/**
  * Route or process MCOTS commands
- * @param {import("./handlers.js").MessageHandlerArgs} args
- * @returns {Promise<import("./handlers.js").MessageHandlerResult>}
+ * @param {MessageHandlerArgs} args
+ * @returns {Promise<MessageHandlerResult>}
  */
 async function processInput({
 	connectionId,
-	packet,
+	inboundMessage,
 	log = getServerLogger({
 		name: "transactionServer",
 	}),
-}: import("./handlers.js").MessageHandlerArgs): Promise<
-	import("./handlers.js").MessageHandlerResult
-> {
-	const currentMessageNo = packet._msgNo;
+}: {
+	connectionId: string;
+	inboundMessage: ServerPacket;
+	log?: ServerLogger;
+}): Promise<MessageHandlerResult> {
+	const currentMessageNo = inboundMessage.getMessageId();
 	const currentMessageString = _MSG_STRING(currentMessageNo);
 
 	log.debug(
-		`[${connectionId}] Processing message: ${currentMessageNo} (${currentMessageString}), sequence: ${packet._header.sequence}`,
+		`[${connectionId}] Processing message: ${currentMessageNo} (${currentMessageString}), sequence: ${inboundMessage.getSequence()}`,
 	);
 
 	const result = messageHandlers.find(
@@ -66,6 +63,10 @@ async function processInput({
 	);
 
 	if (typeof result !== "undefined") {
+		// Turn this into an OldServerMessage for compatibility
+		const packet = new OldServerMessage();
+		packet._doDeserialize(inboundMessage.serialize());
+
 		try {
 			const responsePackets = await result.handler({
 				connectionId,
@@ -74,9 +75,9 @@ async function processInput({
 			});
 			return responsePackets;
 		} catch (error) {
-			const err = Error(`[${connectionId}] Error processing message`,
-				{ cause: error }
-			);
+			const err = Error(`[${connectionId}] Error processing message`, {
+				cause: error,
+			});
 			throw err;
 		}
 	}
@@ -100,7 +101,7 @@ export async function receiveTransactionsData({
 	connectionId,
 	message,
 	log = getServerLogger({
-		name: "transactionServer",
+		name: "transactionServer.receiveTransactionsData",
 		level: getServerConfiguration({}).logLevel ?? "info",
 	}),
 }: {
@@ -113,16 +114,19 @@ export async function receiveTransactionsData({
 }> {
 	log.debug(`[${connectionId}] Entering transaction module`);
 
-	// Going to use ServerMessage in this module
+	// Normalize the message
 
-	const inboundMessage = new OldServerMessage();
-	inboundMessage._doDeserialize(message.serialize());
+	const inboundMessage = new ServerPacket(0);
+	inboundMessage.deserialize(message.serialize());
+
 	log.debug(
 		`[${connectionId}] Received message: ${inboundMessage.toHexString()}`,
 	);
 
+	let decryptedMessage: ServerPacket;
+
 	// Is the message encrypted?
-	if (isMessageEncrypted(inboundMessage)) {
+	if (inboundMessage.isPayloadEncrypted()) {
 		log.debug(`[${connectionId}] Message is encrypted`);
 		// Get the encryyption settings for this connection
 		const state = fetchStateFromDatabase();
@@ -135,51 +139,39 @@ export async function receiveTransactionsData({
 
 		// log the old buffer
 		log.debug(
-			`[${connectionId}] Inbound buffer: ${inboundMessage.data.toString("hex")}`,
+			`[${connectionId}] Inbound buffer: ${inboundMessage.data.toHexString()}`,
 		);
 
-		try {
-			const decryptedMessage = encryptionSettings.dataEncryption.decrypt(
-				inboundMessage.data,
-			);
-			updateEncryption(state, encryptionSettings).save();
-
-			// Verify the length of the message
-			verifyLength(inboundMessage.data, decryptedMessage);
-
-			// Assuming the message was decrypted successfully, update the buffer
-			log.debug(
-				`[${connectionId}] Decrypted buffer: ${decryptedMessage.toString("hex")}`,
-			);
-
-			inboundMessage.setBuffer(decryptedMessage);
-			inboundMessage._header.flags -= 8;
-			inboundMessage.updateMsgNo();
-
-			log.debug(
-				`[${connectionId}] Decrypted message: ${inboundMessage.toHexString()}`,
-			);
-		} catch (error) {
-			const err = Error(`[${connectionId}] Unable to decrypt message`, {
-				cause: error,
-			});
-			throw err;
-		}
+		decryptedMessage = decryptMessage(
+			encryptionSettings,
+			inboundMessage,
+			state,
+			log,
+			connectionId,
+		);
+	} else {
+		log.debug(`[${connectionId}] Message is not encrypted`);
+		decryptedMessage = inboundMessage;
 	}
+
+	// Process the message
 
 	const response = await processInput({
 		connectionId,
-		packet: inboundMessage,
+		inboundMessage: decryptedMessage,
 		log,
 	});
 
 	// Loop through the outbound messages and encrypt them
-	const outboundMessages: SerializedBufferOld[] = [];
+	const outboundMessages: ServerPacket[] = [];
 
-	response.messages.forEach((outboundMessage) => {
+	response.messages.forEach((message) => {
 		log.debug(`[${connectionId}] Processing outbound message`);
 
-		if (isMessageEncrypted(outboundMessage)) {
+		const outboundMessage = new ServerPacket(0);
+		outboundMessage.deserialize(message.serialize());
+
+		if (outboundMessage.isPayloadEncrypted()) {
 			const state = fetchStateFromDatabase();
 
 			const encryptionSettings = getEncryption(state, connectionId);
@@ -190,49 +182,22 @@ export async function receiveTransactionsData({
 
 			// log the old buffer
 			log.debug(
-				`[${connectionId}] Outbound buffer: ${outboundMessage.data.toString("hex")}`,
+				`[${connectionId}] Outbound buffer: ${outboundMessage.data.toHexString()}`,
 			);
 
-			try {
-				const encryptedMessage = encryptionSettings.dataEncryption.encrypt(
-					outboundMessage.data,
-				);
-				updateEncryption(state, encryptionSettings).save();
-
-				// Verify the length of the message
-				verifyLength(outboundMessage.data, encryptedMessage);
-
-				// Assuming the message was decrypted successfully, update the buffer
-
-				log.debug(
-					`[${connectionId}] Encrypted buffer: ${encryptedMessage.toString("hex")}`,
-				);
-
-				outboundMessage.setBuffer(encryptedMessage);
-
-				log.debug(
-					`[${connectionId}] Encrypted message: ${outboundMessage.toHexString()}`,
-				);
-
-				const outboundRawMessage = new SerializedBufferOld();
-				outboundRawMessage.setBuffer(outboundMessage.serialize());
-				log.debug(
-					`[${connectionId}] Outbound message: ${outboundRawMessage.toHexString()}`,
-				);
-				outboundMessages.push(outboundRawMessage);
-			} catch (error) {
-				const err = Error(`[${connectionId}] Unable to encrypt message`, {
-					cause: error,
-				});
-				throw err;
-			}
+			const encryptedMessage = encryptOutboundMessage(
+				encryptionSettings,
+				outboundMessage,
+				state,
+				log,
+				connectionId,
+			);
+			outboundMessages.push(encryptedMessage);
 		} else {
-			const outboundRawMessage = new SerializedBufferOld();
-			outboundRawMessage.setBuffer(outboundMessage.serialize());
 			log.debug(
-				`[${connectionId}] Outbound message: ${outboundRawMessage.toHexString()}`,
+				`[${connectionId}] Outbound message: ${outboundMessage.toHexString()}`,
 			);
-			outboundMessages.push(outboundRawMessage);
+			outboundMessages.push(outboundMessage);
 		}
 	});
 
@@ -240,10 +205,107 @@ export async function receiveTransactionsData({
 		`[${connectionId}] Exiting transaction module with ${outboundMessages.length} messages`,
 	);
 
+	// Convert the outbound messages to SerializedBufferOld
+	const outboundMessagesSerialized = outboundMessages.map((message) => {
+		const serialized = new SerializedBufferOld();
+		serialized._doDeserialize(message.serialize());
+		return serialized;
+	});
+
 	return {
 		connectionId,
-		messages: outboundMessages,
+		messages: outboundMessagesSerialized,
 	};
+}
+
+/**
+ * Decrypts an inbound message using the provided encryption settings and updates the state.
+ *
+ * @param encryptionSettings - The encryption settings to use for decryption.
+ * @param inboundMessage - The message to be decrypted.
+ * @param state - The current state of the server.
+ * @param log - The logger instance to use for logging. Defaults to a server logger with the name "transactionServer.decryptMessage".
+ * @param connectionId - The ID of the connection associated with the message.
+ * @returns The decrypted message as a `ServerPacket`.
+ * @throws Will throw an error if the message cannot be decrypted.
+ */
+function decryptMessage(
+	encryptionSettings: McosEncryption,
+	inboundMessage: ServerPacket,
+	state: State,
+	log: ServerLogger = getServerLogger({
+		name: "transactionServer.decryptMessage",
+	}),
+	connectionId: string,
+): ServerPacket {
+	try {
+		const decryptedMessage = encryptionSettings.dataEncryption.decrypt(
+			inboundMessage.data.serialize(),
+		);
+		updateEncryption(state, encryptionSettings).save();
+
+		// Verify the length of the message
+		verifyLength(inboundMessage.data.serialize(), decryptedMessage);
+
+		// Assuming the message was decrypted successfully, update the buffer
+		log.debug(
+			`[${connectionId}] Decrypted buffer: ${decryptedMessage.toString("hex")}`,
+		);
+
+		const outboundMessage = ServerPacket.copy(inboundMessage, decryptedMessage);
+		outboundMessage.setPayloadEncryption(false);
+
+		log.debug(
+			`[${connectionId}] Decrypted message: ${inboundMessage.toHexString()}`,
+		);
+
+		return outboundMessage;
+	} catch (error) {
+		const err = Error(`[${connectionId}] Unable to decrypt message`, {
+			cause: error,
+		});
+		throw err;
+	}
+}
+
+function encryptOutboundMessage(
+	encryptionSettings: McosEncryption,
+	unencryptedMessage: ServerPacket,
+	state: State,
+	log: ServerLogger,
+	connectionId: string,
+): ServerPacket {
+	try {
+		const encryptedMessage = encryptionSettings.dataEncryption.encrypt(
+			unencryptedMessage.data.serialize(),
+		);
+		updateEncryption(state, encryptionSettings).save();
+
+		// Verify the length of the message
+		verifyLength(unencryptedMessage.data.serialize(), encryptedMessage);
+
+		// Assuming the message was decrypted successfully, update the buffer
+		log.debug(
+			`[${connectionId}] Encrypted buffer: ${encryptedMessage.toString("hex")}`,
+		);
+
+		const outboundMessage = ServerPacket.copy(
+			unencryptedMessage,
+			encryptedMessage,
+		);
+		outboundMessage.setPayloadEncryption(true);
+
+		log.debug(
+			`[${connectionId}] Encrypted message: ${outboundMessage.toHexString()}`,
+		);
+
+		return outboundMessage;
+	} catch (error) {
+		const err = Error(`[${connectionId}] Unable to encrypt message`, {
+			cause: error,
+		});
+		throw err;
+	}
 }
 
 /**

@@ -4,7 +4,6 @@ export {
 	updateSessionKey,
 	updateUser,
 } from "./src/DatabaseManager.js";
-export { getWarehouseInventory } from "./src/functions/getWarehouseInventory.js";
 export type { WarehouseInventory } from "./src/functions/getWarehouseInventory.js";
 export * from "./src/services/database.js";
 import * as DatabaseSchema from "./src/__generated__/schema.json";

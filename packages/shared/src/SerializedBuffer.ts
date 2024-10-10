@@ -1,4 +1,4 @@
-import { BaseSerialized } from "./BaseSerialized.js";
+import { BaseSerialized, type Serializable } from "./BaseSerialized.js";
 
 /**
  * A serialized buffer, prefixed with its 2-byte length.
@@ -16,7 +16,7 @@ export class SerializedBuffer extends BaseSerialized {
 			throw err;
 		}
 	}
-	override deserialize(buffer: Buffer): SerializedBuffer {
+	override deserialize<T extends Serializable>(buffer: Buffer): T {
 		try {
 			const length = buffer.readUInt16BE(0);
 			if (buffer.length < 2 + length) {
@@ -25,7 +25,7 @@ export class SerializedBuffer extends BaseSerialized {
 				);
 			}
 			this._data = buffer.subarray(2, 2 + length);
-			return this;
+			return this as unknown as T;
 		} catch (error) {
 			const err = Error(`Error deserializing buffer: ${String(error)}`);
 			err.cause = error;

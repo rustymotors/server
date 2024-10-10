@@ -1,3 +1,4 @@
+import type { Serializable } from "./BaseSerialized.js";
 import { SerializedBuffer } from "./SerializedBuffer.js";
 
 /**
@@ -16,7 +17,7 @@ export class RawMessage extends SerializedBuffer {
 		this._data.copy(buffer, 4);
 		return buffer;
 	}
-	override deserialize(buffer: Buffer) {
+	override deserialize<T extends Serializable>(buffer: Buffer): T {
 		if (buffer.length < 4) {
 			throw Error(`Unable to get header from buffer, got ${buffer.length}`);
 		}
@@ -26,7 +27,7 @@ export class RawMessage extends SerializedBuffer {
 		}
 		this._messageId = buffer.readUInt16BE(0);
 		this._data = buffer.subarray(4, 4 + length);
-		return this;
+		return this as unknown as T;
 	}
 
 	get messageId(): number {

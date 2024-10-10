@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { BasePacket } from "./BasePacket.js";
-import { BufferSerializer } from "./BufferSerializer.js";
+import { BasePacket } from "../src/BasePacket.js";
+import { BufferSerializer } from "../src/BufferSerializer.js";
 
 describe("BasePacket", () => {
 	it("should initialize with default values", () => {

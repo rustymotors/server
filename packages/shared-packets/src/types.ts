@@ -18,6 +18,9 @@ export interface SerializableMessage extends SerializableInterface {
 
 	getDataBuffer(): Buffer;
 	setDataBuffer(data: Buffer): void;
+
+	toString(): string;
+	toHexString(): string;
 }
 
 export enum MessageSources {

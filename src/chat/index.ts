@@ -10,6 +10,7 @@ import {
 	handleReceiveEmailMessage,
 } from "./inGameEmails.js";
 import { bufferToHexString } from "./toHexString.js";
+import * as Sentry from "@sentry/node";
 
 const handlers = new Map<number, (message: ChatMessage) => Buffer[]>();
 handlers.set(0x0524, handleReceiveEmailMessage);
@@ -34,8 +35,21 @@ async function receiveChatData({
 	log.info(`Received chat data from connection ${connectionId}`);
 	log.debug(`Message: ${message.toHexString()}`);
 
-	const inboundMessage = ChatMessage.fromBuffer(message.serialize());
-
+	let inboundMessage: ChatMessage;
+	
+	try {
+		inboundMessage = ChatMessage.fromBuffer(message.serialize());
+	} catch (error) {
+		const err = Error(`[${connectionId}] Error deserializing message`, {
+			cause: error,
+		});
+		log.error(err.message);
+		Sentry.captureException(err);
+		return {
+			connectionId,
+			messages: [],
+		};
+	}
 	log.debug(`Deserialized message: ${inboundMessage.toString()}`);
 
 	const id = inboundMessage.messageId;

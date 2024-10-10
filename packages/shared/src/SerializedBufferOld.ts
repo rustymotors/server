@@ -1,3 +1,4 @@
+import type { SerializableInterface } from "rusty-motors-shared-packets";
 import { SerializableMixin, AbstractSerializable } from "./messageFactory.js";
 
 /**
@@ -8,8 +9,8 @@ import { SerializableMixin, AbstractSerializable } from "./messageFactory.js";
  */
 
 export class SerializedBufferOld extends SerializableMixin(
-	AbstractSerializable,
-) {
+	AbstractSerializable, 
+) implements SerializableInterface {
 	constructor() {
 		super();
 	}
@@ -23,6 +24,10 @@ export class SerializedBufferOld extends SerializableMixin(
 		return this;
 	}
 
+	deserialize(data: Buffer): void {
+		this.setBuffer(data);		
+	}
+
 	serialize() {
 		return this.data;
 	}
@@ -33,6 +38,10 @@ export class SerializedBufferOld extends SerializableMixin(
 
 	size() {
 		return this.data.length;
+	}
+
+	getByteSize() {
+		return this.size();
 	}
 
 	toHexString() {

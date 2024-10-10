@@ -1,4 +1,11 @@
-import { cloth_white, cloth_yellow, getServerLogger, hair_red, OldServerMessage, skin_pale } from "rusty-motors-shared";
+import {
+	cloth_white,
+	cloth_yellow,
+	getServerLogger,
+	hair_red,
+	OldServerMessage,
+	skin_pale,
+} from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { PlayerPhysicalMessage } from "./PlayerPhysicalMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
@@ -13,7 +20,9 @@ export async function _getPlayerPhysical({
 	const getPlayerPhysicalMessage = new GenericRequestMessage();
 	getPlayerPhysicalMessage.deserialize(packet.data);
 
-	log.debug(`[${connectionId}] Received GenericRequestMessage: ${getPlayerPhysicalMessage.toString()}`);
+	log.debug(
+		`[${connectionId}] Received GenericRequestMessage: ${getPlayerPhysicalMessage.toString()}`,
+	);
 
 	const playerId = getPlayerPhysicalMessage.data.readUInt32LE(0);
 
@@ -26,7 +35,9 @@ export async function _getPlayerPhysical({
 	playerPhysicalMessage._shirtColor = cloth_white;
 	playerPhysicalMessage._pantsColor = cloth_yellow;
 
-	log.debug(`[${connectionId}] Sending PlayerPhysicalMessage: ${playerPhysicalMessage.toString()}`);
+	log.debug(
+		`[${connectionId}] Sending PlayerPhysicalMessage: ${playerPhysicalMessage.toString()}`,
+	);
 
 	const responsePacket = new OldServerMessage();
 	responsePacket._header.sequence = packet._header.sequence;

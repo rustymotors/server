@@ -1,6 +1,6 @@
 import { Socket, createServer as createSocketServer } from "node:net";
 import FastifySensible from "@fastify/sensible";
-import fastify, { type FastifyInstance } from "fastify";
+import fastify from "fastify";
 import { ConsoleThread } from "rusty-motors-cli";
 import { receiveLobbyData } from "rusty-motors-lobby";
 import { receiveLoginData } from "rusty-motors-login";
@@ -9,6 +9,7 @@ import {
 	Configuration,
 	getServerConfiguration,
 	type ServerLogger,
+	type State,
 } from "rusty-motors-shared";
 import {
 	addOnDataHandler,
@@ -26,23 +27,10 @@ import {
 	gameMessageProcessors,
 } from "rusty-motors-nps";
 import { receiveChatData } from "rusty-motors-chat";
-
-/**
- * Options for the GatewayServer.
- */
-type GatewayOptions = {
-	config?: Configuration;
-	log?: ServerLogger;
-	backlogAllowedCount?: number;
-	listeningPortList?: number[];
-	socketConnectionHandler?: ({
-		incomingSocket,
-		log,
-	}: {
-		incomingSocket: Socket;
-		log?: ServerLogger;
-	}) => void;
-};
+import type { GatewayOptions } from "./types.js";
+import { addPortRouter } from "./portRouters.js";
+import { npsPortRouter } from "./npsPortRouter.js";
+import { mcotsPortRouter } from "./mcotsPortRouter.js";
 
 /**
  * Gateway server
@@ -100,24 +88,12 @@ export class Gateway {
 		Gateway._instance = this;
 	}
 
-	/**
-	 * @return {FastifyInstance}
-	 */
-	getWebServer(): FastifyInstance {
-		if (this.webServer === undefined) {
-			throw Error("webServer is undefined");
-		}
-		return this.webServer;
-	}
-
 	start() {
 		this.log.debug("Starting GatewayServer in start()");
 		this.log.info("Server starting");
 
 		// Check if there are any listening ports specified
-		if (this.listeningPortList.length === 0) {
-			throw Error("No listening ports specified");
-		}
+		this.ensureListeningPortsSpecified();
 
 		// Mark the GatewayServer as running
 		this.log.debug("Marking GatewayServer as running");
@@ -127,23 +103,13 @@ export class Gateway {
 		this.init();
 
 		this.listeningPortList.forEach(async (port) => {
-			const server = createSocketServer((s) => {
-				this.socketconnection({
-					incomingSocket: s,
-					log: this.log,
-				});
-			});
-
-			// Listen on the specified port
-
-			server.listen(port, "0.0.0.0", this.backlogAllowedCount, () => {
-				this.log.debug(`Listening on port ${port}`);
-			});
-
-			// Add the server to the list of servers
-			this.activeServers.push(server);
+			this.startNewServer(port);
 		});
 
+		this.startWebServer();
+	}
+
+	private startWebServer() {
 		if (this.webServer === undefined) {
 			throw Error("webServer is undefined");
 		}
@@ -164,6 +130,29 @@ export class Gateway {
 				this.log.info(`Server listening at ${address}`);
 			},
 		);
+	}
+
+	private ensureListeningPortsSpecified() {
+		if (this.listeningPortList.length === 0) {
+			throw Error("No listening ports specified");
+		}
+	}
+
+	private startNewServer(port: number) {
+		const server = createSocketServer((s) => {
+			this.socketconnection({
+				incomingSocket: s,
+				log: this.log,
+			});
+		});
+
+		// Listen on the specified port
+		server.listen(port, "0.0.0.0", this.backlogAllowedCount, () => {
+			this.log.debug(`Listening on port ${port}`);
+		});
+
+		// Add the server to the list of servers
+		this.activeServers.push(server);
 	}
 
 	async restart() {
@@ -190,19 +179,7 @@ export class Gateway {
 		this.status = "stopping";
 
 		// Stop the servers
-		this.activeServers.forEach((server) => {
-			server.close();
-		});
-
-		// Stop the read thread
-		if (this.readThread !== undefined) {
-			this.readThread.stop();
-		}
-
-		if (this.webServer === undefined) {
-			throw Error("webServer is undefined");
-		}
-		await this.webServer.close();
+		await this.shutdownServers();
 
 		// Stop the timer
 		if (this.timer !== null) {
@@ -216,6 +193,22 @@ export class Gateway {
 		// Reset the global state
 		this.log.debug("Resetting the global state");
 		createInitialState({}).save();
+	}
+
+	private async shutdownServers() {
+		this.activeServers.forEach((server) => {
+			server.close();
+		});
+
+		// Stop the read thread
+		if (this.readThread !== undefined) {
+			this.readThread.stop();
+		}
+
+		if (this.webServer === undefined) {
+			throw Error("webServer is undefined");
+		}
+		await this.webServer.close();
 	}
 
 	/**
@@ -253,19 +246,11 @@ export class Gateway {
 		this.webServer = fastify({});
 		this.webServer.register(FastifySensible);
 
-		let state = fetchStateFromDatabase();
-
-		state = addOnDataHandler(state, 8226, receiveLoginData);
-		state = addOnDataHandler(state, 8227, receiveChatData);
-		state = addOnDataHandler(state, 8228, receivePersonaData);
-		state = addOnDataHandler(state, 7003, receiveLobbyData);
-		state = addOnDataHandler(state, 9000, receiveChatData);
-		state = addOnDataHandler(state, 43300, receiveTransactionsData);
-
-		state.save();
-
-		populatePortToMessageTypes(portToMessageTypes);
-		populateGameMessageProcessors(gameMessageProcessors);
+		addPortRouter(8226, npsPortRouter);
+		addPortRouter(8227, npsPortRouter);
+		addPortRouter(8228, npsPortRouter);
+		addPortRouter(7003, npsPortRouter);
+		addPortRouter(43300, mcotsPortRouter);
 
 		this.log.debug("GatewayServer initialized");
 	}
@@ -319,6 +304,26 @@ export class Gateway {
 
 /** @type {Gateway | undefined} */
 Gateway._instance = undefined;
+
+/**
+ * Registers various data handlers to the provided state.
+ *
+ * This function adds handlers for different types of data, such as login data,
+ * chat data, persona data, lobby data, and transaction data. Each handler is
+ * associated with a specific code.
+ *
+ * @param state - The initial state to which the data handlers will be added.
+ * @returns The updated state with all the data handlers registered.
+ */
+function registerDataHandlers(state: State) {
+	state = addOnDataHandler(state, 8226, receiveLoginData);
+	state = addOnDataHandler(state, 8227, receiveChatData);
+	state = addOnDataHandler(state, 8228, receivePersonaData);
+	state = addOnDataHandler(state, 7003, receiveLobbyData);
+	state = addOnDataHandler(state, 9000, receiveChatData);
+	state = addOnDataHandler(state, 43300, receiveTransactionsData);
+	return state;
+}
 
 /**
  * Get a singleton instance of GatewayServer

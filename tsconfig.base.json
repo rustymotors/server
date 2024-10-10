@@ -1,12 +1,16 @@
 {
     "compilerOptions": {
-        "incremental": true,
-        "target": "ES2022",
-        "module": "NodeNext",
         "lib": [
-            "ES2022"
+            "es2023"
         ],
-        "moduleResolution": "NodeNext",
+        "module": "node16",
+        "target": "es2022",
+        "moduleResolution": "node16",
+        "allowUnusedLabels": false,
+        "allowUnreachableCode": false,
+        "exactOptionalPropertyTypes": true,
+        "checkJs": true,
+        "incremental": true,
         "noImplicitOverride": true,
         "noImplicitAny": true,
         "strictNullChecks": true,

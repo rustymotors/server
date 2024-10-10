@@ -1,3 +1,4 @@
+import type { Serializable } from "./BaseSerialized.js";
 import { SerializedBuffer } from "./SerializedBuffer.js";
 
 class HeaderShim {
@@ -46,7 +47,7 @@ export class ServerMessage extends SerializedBuffer {
 		this._data.copy(buffer, 11);
 		return buffer;
 	}
-	override deserialize(buffer: Buffer) {
+	override deserialize<T extends Serializable>(buffer: Buffer): T {
 		if (buffer.length < 11) {
 			throw Error(`Unable to get header from buffer, got ${buffer.length}`);
 		}
@@ -58,7 +59,7 @@ export class ServerMessage extends SerializedBuffer {
 		this._sequence = buffer.readInt32LE(6);
 		this._flags = buffer.readInt8(10);
 		this._data = buffer.subarray(11, 11 + length);
-		return this;
+		return this as unknown as T;
 	}
 
 	override get data(): Buffer {
