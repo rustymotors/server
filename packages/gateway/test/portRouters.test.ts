@@ -142,5 +142,40 @@ describe("clearPortRouters", () => {
 		expect(retrievedRouter2).toBeInstanceOf(Function);
 		expect(retrievedRouter2.name).toBe("notFoundRouter");
 	});
+
+	describe("addPortRouter", () => {
+		it("should throw an error if the port number is not an integer", () => {
+			// arrange
+			const port = 8080.5;
+			const mockRouter = vi.fn().mockResolvedValue(undefined);
+
+			// act & assert
+			expect(() => addPortRouter(port, mockRouter)).toThrow(
+				`Invalid port number: ${port}`
+			);
+		});
+
+		it("should throw an error if the port number is negative", () => {
+			// arrange
+			const port = -1;
+			const mockRouter = vi.fn().mockResolvedValue(undefined);
+
+			// act & assert
+			expect(() => addPortRouter(port, mockRouter)).toThrow(
+				`Invalid port number: ${port}`
+			);
+		});
+
+		it("should throw an error if the port number is greater than 65535", () => {
+			// arrange
+			const port = 65536;
+			const mockRouter = vi.fn().mockResolvedValue(undefined);
+
+			// act & assert
+			expect(() => addPortRouter(port, mockRouter)).toThrow(
+				`Invalid port number: ${port}`
+			);
+		});
+	});
 });
 });

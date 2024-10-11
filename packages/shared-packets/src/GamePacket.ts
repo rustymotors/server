@@ -97,12 +97,14 @@ export class GamePacket extends BasePacket implements SerializableMessage {
 		this._assertEnoughData(data, 6);
 
 		const version = this.identifyVersion(data);
-		console.log("version", version);
 		this.header.setVersion(version);
 
 		this._assertEnoughData(data, this.header.getByteSize());
 
 		this.header.deserialize(data);
+
+		this._assertEnoughData(data, this.header.getLength());
+
 		this.data.deserialize(data.subarray(this.header.getByteSize()));
 
 		return this;

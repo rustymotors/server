@@ -71,22 +71,42 @@ describe("GamePacket", () => {
 		);
 	});
 
-	it("should throw error if data is insufficient for full packet", () => {
-		const buffer = Buffer.alloc(10); // Less than required for full packet
+	it("should throw error if checksum is incorrect for v1 packet", () => {
+		const buffer = Buffer.alloc(26);
+		buffer.writeUInt16BE(1234, 0); // Message ID
+		buffer.writeUInt16BE(11, 2); // Length
 		buffer.writeUInt16BE(0x101, 4); // Version
+		buffer.writeUInt32BE(26, 8); // Checksum
+		buffer.write("test data", 12); // Data
+
+		buffer.writeUInt32BE(0, 8); // Incorrect checksum
 
 		const packet = new GamePacket();
 		expect(() => packet.deserialize(buffer)).toThrow(
-			"Data is too short. Expected at least 12 bytes, got 10 bytes",
+			"Checksum mismatch. Expected 11, got 0",
+		);
+	});
+
+	it("should throw error if data is insufficient for full v1 packet", () => {
+		const buffer = Buffer.alloc(25); // 1 byte less than required for v1 packet
+		buffer.writeUInt16BE(1234, 0); // Message ID
+		buffer.writeUInt16BE(26, 2);  // Length
+		buffer.writeUInt16BE(0x101, 4); // Version
+		buffer.writeUInt32BE(26, 8); // Checksum
+	
+		const packet = new GamePacket();
+		expect(() => packet.deserialize(buffer)).toThrow(
+			"Data is too short. Expected at least 26 bytes, got 25 bytes"
 		);
 	});
 
 	it("should identify version v1 correctly", () => {
 		const buffer = Buffer.alloc(15);
-		buffer.writeUInt16BE(11, 0); // Length
+		buffer.writeUInt16BE(1234, 0); // Message ID
+		buffer.writeUInt16BE(11, 2); // Length
 		buffer.writeUInt16BE(0x101, 4); // Version
-		buffer.writeUInt16BE(1234, 6); // Message ID
-		buffer.write("test data", 8, "utf8"); // Data
+		buffer.writeUInt32BE(11, 8); // Checksum
+		buffer.write("test data", 12, "utf8"); // Data
 
 		const packet = new GamePacket();
 		packet.deserialize(buffer);
