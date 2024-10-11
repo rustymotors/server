@@ -1,16 +1,14 @@
 import { describe, it, expect, vi } from "vitest";
-import { socketErrorHandler } from "./socketErrorHandler.js";
+import { socketErrorHandler } from "../src/socketErrorHandler.js";
 import { type ServerLogger } from "rusty-motors-shared";
 
 describe("socketErrorHandler", () => {
-
 	it("should log a debug message when error code is ECONNRESET", () => {
 		const connectionId = "12345";
 		const error = { code: "ECONNRESET" } as NodeJS.ErrnoException;
-        const mockLogger = {
-            debug: vi.fn(),
-        } as unknown as ServerLogger;
-    
+		const mockLogger = {
+			debug: vi.fn(),
+		} as unknown as ServerLogger;
 
 		socketErrorHandler({ connectionId, error, log: mockLogger });
 
@@ -25,14 +23,12 @@ describe("socketErrorHandler", () => {
 			code: "EUNKNOWN",
 			message: "Unknown error",
 		} as NodeJS.ErrnoException;
-        const mockLogger = {
-            debug: vi.fn(),
-        } as unknown as ServerLogger;
-    
+		const mockLogger = {
+			debug: vi.fn(),
+		} as unknown as ServerLogger;
 
 		expect(() =>
 			socketErrorHandler({ connectionId, error, log: mockLogger }),
 		).toThrow(`Socket error: ${error.message} on connection ${connectionId}`);
 	});
-
 });
