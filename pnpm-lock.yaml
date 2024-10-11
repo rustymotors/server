@@ -21,11 +21,11 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
       '@sentry/node':
-        specifier: ^8.33.1
-        version: 8.33.1
+        specifier: ^8.34.0
+        version: 8.34.0
       '@sentry/profiling-node':
-        specifier: 8.33.1
-        version: 8.33.1
+        specifier: 8.34.0
+        version: 8.34.0
       adminjs:
         specifier: ^7.8.13
         version: 7.8.13(@types/react@18.3.4)
@@ -196,8 +196,8 @@ importers:
   packages/cli:
     dependencies:
       '@sentry/profiling-node':
-        specifier: 8.33.1
-        version: 8.33.1
+        specifier: 8.34.0
+        version: 8.34.0
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 2.1.2
@@ -285,8 +285,8 @@ importers:
   packages/mcots:
     dependencies:
       '@sentry/profiling-node':
-        specifier: 8.33.1
-        version: 8.33.1
+        specifier: 8.34.0
+        version: 8.34.0
       short-unique-id:
         specifier: ^5.2.0
         version: 5.2.0
@@ -301,8 +301,8 @@ importers:
   packages/nps:
     dependencies:
       '@sentry/profiling-node':
-        specifier: 8.33.1
-        version: 8.33.1
+        specifier: 8.34.0
+        version: 8.34.0
       short-unique-id:
         specifier: ^5.2.0
         version: 5.2.0
@@ -317,8 +317,8 @@ importers:
   packages/patch:
     dependencies:
       '@sentry/profiling-node':
-        specifier: 8.33.1
-        version: 8.33.1
+        specifier: 8.34.0
+        version: 8.34.0
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 2.1.2
@@ -330,8 +330,8 @@ importers:
   packages/persona:
     dependencies:
       '@sentry/profiling-node':
-        specifier: 8.33.1
-        version: 8.33.1
+        specifier: 8.34.0
+        version: 8.34.0
       short-unique-id:
         specifier: ^5.2.0
         version: 5.2.0
@@ -346,8 +346,8 @@ importers:
   packages/sessions:
     dependencies:
       '@sentry/profiling-node':
-        specifier: 8.33.1
-        version: 8.33.1
+        specifier: 8.34.0
+        version: 8.34.0
       short-unique-id:
         specifier: ^5.2.0
         version: 5.2.0
@@ -362,8 +362,8 @@ importers:
   packages/shard:
     dependencies:
       '@sentry/profiling-node':
-        specifier: 8.33.1
-        version: 8.33.1
+        specifier: 8.34.0
+        version: 8.34.0
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 2.1.2
@@ -391,8 +391,8 @@ importers:
   packages/shared-packets:
     dependencies:
       '@sentry/profiling-node':
-        specifier: 8.33.1
-        version: 8.33.1
+        specifier: 8.34.0
+        version: 8.34.0
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 2.1.2
@@ -404,8 +404,8 @@ importers:
   packages/transactions:
     dependencies:
       '@sentry/profiling-node':
-        specifier: 8.33.1
-        version: 8.33.1
+        specifier: 8.34.0
+        version: 8.34.0
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 2.1.2
@@ -417,8 +417,8 @@ importers:
   src/chat:
     dependencies:
       '@sentry/profiling-node':
-        specifier: 8.33.1
-        version: 8.33.1
+        specifier: 8.34.0
+        version: 8.34.0
     devDependencies:
       add:
         specifier: ^2.0.6
@@ -430,8 +430,8 @@ importers:
   src/socket:
     dependencies:
       '@sentry/profiling-node':
-        specifier: 8.33.1
-        version: 8.33.1
+        specifier: 8.34.0
+        version: 8.34.0
     devDependencies:
       add:
         specifier: ^2.0.6
@@ -2253,16 +2253,16 @@ packages:
     engines: {node: '>= 10'}
     hasBin: true
 
-  '@sentry/core@8.33.1':
-    resolution: {integrity: sha512-3SS41suXLFzxL3OQvTMZ6q92ZapELVq2l2SoWlZopcamWhog2Ru0dp2vkunq97kFHb2TzKRTlFH4+4gbT8SJug==}
+  '@sentry/core@8.34.0':
+    resolution: {integrity: sha512-adrXCTK/zsg5pJ67lgtZqdqHvyx6etMjQW3P82NgWdj83c8fb+zH+K79Z47pD4zQjX0ou2Ws5nwwi4wJbz4bfA==}
     engines: {node: '>=14.18'}
 
-  '@sentry/node@8.33.1':
-    resolution: {integrity: sha512-0Xmlrl5nU5Bx6YybaIfztyOIiIXW5X64vcK0u94Sg4uHcDO7YvEbhflKjp669ds2I6ZQ/czqxnaAY8gM6P2SCA==}
+  '@sentry/node@8.34.0':
+    resolution: {integrity: sha512-Q7BPp7Y8yCcwD620xoziWSOuPi/PCIdttkczvB0BGzBRYh2s702h+qNusRijRpVNZmzmYOo9m1x7Y1O/b8/v2A==}
     engines: {node: '>=14.18'}
 
-  '@sentry/opentelemetry@8.33.1':
-    resolution: {integrity: sha512-D2aE2G0DUHLLnfbOXrTjiNJKAs/RZfOBJMidI4fC2AIwqCmrp55Aex4dRq4hxd8MPLR92Kt/ikHeJxlzWB15KA==}
+  '@sentry/opentelemetry@8.34.0':
+    resolution: {integrity: sha512-WS91L+HVKGVIzOgt0szGp+24iKOs86BZsAHGt0HWnMR4kqWP6Ak+TLvqWDCxnuzniZMxdewDGA8p5hrBAPsmsA==}
     engines: {node: '>=14.18'}
     peerDependencies:
       '@opentelemetry/api': ^1.9.0
@@ -2271,17 +2271,17 @@ packages:
       '@opentelemetry/sdk-trace-base': ^1.26.0
       '@opentelemetry/semantic-conventions': ^1.27.0
 
-  '@sentry/profiling-node@8.33.1':
-    resolution: {integrity: sha512-mpgcqT/yUyWiRKjHFJ6UMjNmMgAYK4aeaMQDL7P61y5mrVxfK9vRQbKuXdP9XiyiZe06j1PSskiBEA2S1cDVJQ==}
+  '@sentry/profiling-node@8.34.0':
+    resolution: {integrity: sha512-Ta8GWhmKBIo43WeKVwE1YVMBhNb7e7py5pZXlsfEmZ4wL+UZw4Ed0Yf5FEr3LfwiyLkHzpFiq8clxEK1O6DcSg==}
     engines: {node: '>=14.18'}
     hasBin: true
 
-  '@sentry/types@8.33.1':
-    resolution: {integrity: sha512-GjoAMvwtpIemoF/IiwZ7A60g4nQv3qwzR21GvJqDVUoKD0e8pv9OLX+HyXoUat4wEDGSuDUcUyUKD2G+od73QA==}
+  '@sentry/types@8.34.0':
+    resolution: {integrity: sha512-zLRc60CzohGCo6zNsNeQ9JF3SiEeRE4aDCP9fDDdIVCOKovS+mn1rtSip0qd0Vp2fidOu0+2yY0ALCz1A3PJSQ==}
     engines: {node: '>=14.18'}
 
-  '@sentry/utils@8.33.1':
-    resolution: {integrity: sha512-uzuYpiiJuFY3N4WNHMBWUQX5oNv2t/TbG0OHRp3Rr7yeu+HSfD542TIp9/gMZ+G0Cxd8AmVO3wkKIFbk0TL4Qg==}
+  '@sentry/utils@8.34.0':
+    resolution: {integrity: sha512-W1KoRlFUjprlh3t86DZPFxLfM6mzjRzshVfMY7vRlJFymBelJsnJ3A1lPeBZM9nCraOSiw6GtOWu6k5BAkiGIg==}
     engines: {node: '>=14.18'}
 
   '@sinclair/typebox@0.27.8':
@@ -8293,12 +8293,12 @@ snapshots:
       - encoding
       - supports-color
 
-  '@sentry/core@8.33.1':
+  '@sentry/core@8.34.0':
     dependencies:
-      '@sentry/types': 8.33.1
-      '@sentry/utils': 8.33.1
+      '@sentry/types': 8.34.0
+      '@sentry/utils': 8.34.0
 
-  '@sentry/node@8.33.1':
+  '@sentry/node@8.34.0':
     dependencies:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/context-async-hooks': 1.25.1(@opentelemetry/api@1.9.0)
@@ -8330,41 +8330,41 @@ snapshots:
       '@opentelemetry/sdk-trace-base': 1.26.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/semantic-conventions': 1.27.0
       '@prisma/instrumentation': 5.19.1
-      '@sentry/core': 8.33.1
-      '@sentry/opentelemetry': 8.33.1(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.26.0(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.53.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.26.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.27.0)
-      '@sentry/types': 8.33.1
-      '@sentry/utils': 8.33.1
+      '@sentry/core': 8.34.0
+      '@sentry/opentelemetry': 8.34.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.26.0(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.53.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.26.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.27.0)
+      '@sentry/types': 8.34.0
+      '@sentry/utils': 8.34.0
       import-in-the-middle: 1.11.0
     transitivePeerDependencies:
       - supports-color
 
-  '@sentry/opentelemetry@8.33.1(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.26.0(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.53.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.26.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.27.0)':
+  '@sentry/opentelemetry@8.34.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.26.0(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.53.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.26.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.27.0)':
     dependencies:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/core': 1.26.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/instrumentation': 0.53.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-trace-base': 1.26.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/semantic-conventions': 1.27.0
-      '@sentry/core': 8.33.1
-      '@sentry/types': 8.33.1
-      '@sentry/utils': 8.33.1
+      '@sentry/core': 8.34.0
+      '@sentry/types': 8.34.0
+      '@sentry/utils': 8.34.0
 
-  '@sentry/profiling-node@8.33.1':
+  '@sentry/profiling-node@8.34.0':
     dependencies:
-      '@sentry/core': 8.33.1
-      '@sentry/node': 8.33.1
-      '@sentry/types': 8.33.1
-      '@sentry/utils': 8.33.1
+      '@sentry/core': 8.34.0
+      '@sentry/node': 8.34.0
+      '@sentry/types': 8.34.0
+      '@sentry/utils': 8.34.0
       detect-libc: 2.0.3
       node-abi: 3.67.0
     transitivePeerDependencies:
       - supports-color
 
-  '@sentry/types@8.33.1': {}
+  '@sentry/types@8.34.0': {}
 
-  '@sentry/utils@8.33.1':
+  '@sentry/utils@8.34.0':
     dependencies:
-      '@sentry/types': 8.33.1
+      '@sentry/types': 8.34.0
 
   '@sinclair/typebox@0.27.8': {}
 
