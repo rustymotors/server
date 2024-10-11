@@ -5,15 +5,13 @@ export class ServerMessagePayload
 	extends BufferSerializer
 	implements SerializableInterface
 {
-	public messageId: number = 0; // 2 bytes
-	
+	private messageId: number = 0; // 2 bytes	
 	private previousMessageId: number = 0; // Not serialized
 	private isEncrypted: boolean = false; // Not serialized
 
 	static copy(payload: ServerMessagePayload): ServerMessagePayload {
 		const newPayload = new ServerMessagePayload();
-		newPayload.messageId = payload.messageId;
-		newPayload._data = Buffer.from(payload._data);
+		newPayload.deserialize(payload.serialize());
 		return newPayload;
 	}
 

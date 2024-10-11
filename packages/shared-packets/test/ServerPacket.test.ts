@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Buffer } from "buffer";
-import { ServerMessagePayload } from "./ServerMessagePayload.js";
-import { ServerPacket } from "./ServerPacket.js";
+import { ServerMessagePayload } from "../src/ServerMessagePayload.js";
+import { ServerPacket } from "../src/ServerPacket.js";
 
 describe("ServerMessagePayload", () => {
 	it("should serialize correctly", () => {
@@ -108,7 +108,9 @@ describe("ServerMessagePayload", () => {
 			packet.setPayloadEncryption(true);
 
 			const str = packet.toString();
-			expect(str).toBe("ServerPacket {length: 11, sequence: 5678, messageId: 1234}");
+			expect(str).toBe(
+				"ServerPacket {length: 11, sequence: 5678, messageId: 1234}",
+			);
 		});
 	});
 });

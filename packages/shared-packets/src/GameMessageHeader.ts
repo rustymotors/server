@@ -2,9 +2,12 @@ import { BufferSerializer } from "./BufferSerializer.js";
 import type { SerializableInterface } from "./types.js";
 
 /**
- *
+ * Represents the header of a game message.
+ * The header contains the message ID, the length of the message data, 
+ * and the version of the message.
+ * 
+ * This is a big-endian structure.
  */
-
 export class GameMessageHeader
 	extends BufferSerializer
 	implements SerializableInterface

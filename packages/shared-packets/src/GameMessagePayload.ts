@@ -9,7 +9,7 @@ export class GameMessagePayload
 
 	static copy(payload: GameMessagePayload): GameMessagePayload {
 		const newPayload = new GameMessagePayload();
-		newPayload._data = Buffer.from(payload._data);
+		newPayload.deserialize(payload.serialize());
 		return newPayload;
 	}
 

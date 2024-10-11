@@ -20,14 +20,14 @@ export class GamePacket extends BasePacket implements SerializableMessage {
 	 * @returns A new `ServerPacket` instance with the same message ID and header as the original,
 	 *          and either the deserialized new data or a copy of the original data.
 	 */
-	static copy(originalPacket: GamePacket, newData: Buffer): GamePacket {
+	static copy(originalPacket: GamePacket, newData?: Buffer): GamePacket {
 		const newPacket = new GamePacket();
 		newPacket.deserialize(originalPacket.serialize());
 
 		if (newData) {
 			newPacket.data.deserialize(newData);
 		} else {
-			newPacket.data = GameMessagePayload.copy(originalPacket.data);
+			newPacket.data.deserialize(originalPacket.data.serialize());
 		}
 
 		return newPacket;

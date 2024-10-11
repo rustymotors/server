@@ -17,7 +17,7 @@
 import { exit } from "node:process";
 import * as Sentry from "@sentry/node";
 import { getGatewayServer } from "rusty-motors-gateway";
-import { verifyLegacyCipherSupport } from "rusty-motors-gateway";
+import { verifyLegacyCipherSupport } from "rusty-motors-shared";
 import { getServerConfiguration } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 

@@ -34,6 +34,7 @@ export {
 	findSessionByConnectionId,
 	updateEncryption,
 } from "./src/State.js";
+export { ensureLegacyCipherCompatibility as verifyLegacyCipherSupport } from "./src/verifyLegacyCipherSupport.js";
 export type { State } from "./src/State.js";
 export type { OnDataHandler, ServiceResponse } from "./src/State.js";
 export { LegacyMessage } from "./src/LegacyMessage.js";
@@ -57,7 +58,12 @@ export interface ConnectionRecord {
 }
 
 // Function to convert ARGB to 32-bit integer
-export function argbToInt(alpha: number, red: number, green: number, blue: number) {
+export function argbToInt(
+	alpha: number,
+	red: number,
+	green: number,
+	blue: number,
+) {
 	return (
 		((alpha & 0xff) << 24) |
 		((red & 0xff) << 16) |

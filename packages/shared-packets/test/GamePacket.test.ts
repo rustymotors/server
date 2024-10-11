@@ -3,7 +3,7 @@ import { Buffer } from "buffer";
 import { GamePacket } from "../src/GamePacket.js";
 
 describe("GamePacket", () => {
-	it("should deserialize correctly v0 correctly", () => {
+	it("should deserialize v0 correctly", () => {
 		const buffer = Buffer.alloc(11);
 		buffer.writeUInt16BE(1234, 0); // Message ID
 		buffer.writeUInt16BE(11, 2); // Length
@@ -19,7 +19,7 @@ describe("GamePacket", () => {
 		);
 	});
 
-	it("should deserialize correctly v1 correctly", () => {
+	it("should deserialize v1 correctly", () => {
 		const buffer = Buffer.alloc(26);
 		buffer.writeUInt16BE(1234, 0); // Message ID
 		buffer.writeUInt16BE(11, 2); // Length
@@ -34,6 +34,32 @@ describe("GamePacket", () => {
 		expect(packet.getDataBuffer().toString("hex")).equals(
 			Buffer.from("test data\u0000\u0000\u0000\u0000\u0000").toString("hex"),
 		);
+	});
+
+	it("should be able to make a copy of the packet", () => {
+		const buffer = Buffer.alloc(11);
+		buffer.writeUInt16BE(1234, 0); // Message ID
+		buffer.writeUInt16BE(11, 2); // Length
+		buffer.write("test da", 4); // Data
+
+		const packet = new GamePacket();
+		packet.deserialize(buffer);
+
+		const copy = GamePacket.copy(packet);
+		expect(copy.serialize().toString("hex")).equals(packet.serialize().toString("hex"));
+	});
+
+	it("should be able to make a copy of the packet with new data", () => {
+		const buffer = Buffer.alloc(11);
+		buffer.writeUInt16BE(1234, 0); // Message ID
+		buffer.writeUInt16BE(11, 2); // Length
+		buffer.write("test da", 4); // Data
+
+		const packet = new GamePacket();
+		packet.deserialize(buffer);
+
+		const copy = GamePacket.copy(packet, Buffer.from("new data"));
+		expect(copy.serialize().toString("hex")).not.equals(packet.serialize().toString("hex"));
 	});
 
 	it("should throw error if data is insufficient for header", () => {
@@ -55,7 +81,7 @@ describe("GamePacket", () => {
 		);
 	});
 
-	it("should identify version correctly", () => {
+	it("should identify version v1 correctly", () => {
 		const buffer = Buffer.alloc(15);
 		buffer.writeUInt16BE(11, 0); // Length
 		buffer.writeUInt16BE(0x101, 4); // Version
@@ -68,7 +94,7 @@ describe("GamePacket", () => {
 		expect(packet.getVersion()).toBe(257);
 	});
 
-	it("should handle version 0 correctly", () => {
+	it("should handle version v0 correctly", () => {
 		const buffer = Buffer.alloc(15);
 		buffer.writeUInt16BE(1234, 0); // Message ID
 		buffer.writeUInt16BE(11, 4); // Length

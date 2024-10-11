@@ -2,7 +2,11 @@ import { BufferSerializer } from "./BufferSerializer.js";
 import type { SerializableInterface } from "./types.js";
 
 /**
- *
+ * Represents the header of a server message.
+ * The header contains the length of the message data, 
+ * the signature of the message,
+ * 
+ * This is a little-endian structure.
  */
 
 export class ServerMessageHeader

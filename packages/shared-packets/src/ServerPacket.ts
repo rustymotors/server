@@ -20,7 +20,7 @@ export class ServerPacket extends BasePacket implements SerializableMessage {
 	 * @returns A new `ServerPacket` instance with the same message ID and header as the original,
 	 *          and either the deserialized new data or a copy of the original data.
 	 */
-	static copy(originalPacket: ServerPacket, newData: Buffer): ServerPacket {
+	static copy(originalPacket: ServerPacket, newData?: Buffer): ServerPacket {
 		const newPacket = new ServerPacket();
 		newPacket.header = ServerMessageHeader.copy(originalPacket.header);
 

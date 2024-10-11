@@ -108,12 +108,6 @@ jobs:
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
               run: |
                   codecovcli --verbose do-upload --fail-on-error --flag persona --name persona --dir packages/persona
-            - name: Codecov upload sessions coverage
-              if: ${{ always() }} # using always() to always run this step because i am uploading test results and coverage in one step
-              env:
-                  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-              run: |
-                  codecovcli --verbose do-upload --fail-on-error --flag sessions --name sessions --dir packages/sessions
             - name: Codecov upload shard coverage
               if: ${{ always() }} # using always() to always run this step because i am uploading test results and coverage in one step
               env:
