@@ -1,10 +1,13 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { npsPortRouter } from "../src/npsPortRouter.js";
 import type { TaggedSocket } from "../src/socketUtility.js";
 import { GamePacket } from "rusty-motors-shared-packets";
-import { write } from "fs";
 
 describe("npsPortRouter", () => {
+	beforeEach(() => {
+		vi.resetAllMocks();
+	});
+
 	it("should log an error and close the socket if local port is undefined", async () => {
 		const mockSocket = {
 			localPort: undefined,
@@ -52,7 +55,7 @@ describe("npsPortRouter", () => {
 
 	it("should handle data event and route initial message", async () => {
 		const mockSocket = {
-			localPort: 7003,
+			localPort: 8228,
 			write: vi.fn(),
 			on: vi.fn((event, callback) => {
 				if (event === "data") {
@@ -64,7 +67,7 @@ describe("npsPortRouter", () => {
 			error: vi.fn(),
 			debug: vi.fn(),
 		};
-		const taggedSocket: TaggedSocket = { socket: mockSocket, id: "test-id" };
+		const taggedSocket: TaggedSocket = { socket: mockSocket, id: "test-id-nps" };
 
 		const mockGamePacket = {
 			deserialize: vi.fn(),
@@ -80,13 +83,13 @@ describe("npsPortRouter", () => {
 		await npsPortRouter({ taggedSocket, log: mockLogger });
 
 		expect(mockLogger.debug).toHaveBeenCalledWith(
-			"[test-id] Received data: 010203",
+			"[test-id-nps] Received data: 010203",
 		);
 		expect(mockLogger.debug).toHaveBeenCalledWith(
-			"[test-id] Initial packet(str): GamePacket {length: 0, messageId: 0}",
+			"[test-id-nps] Initial packet(str): GamePacket {length: 0, messageId: 0}",
 		);
 		expect(mockLogger.debug).toHaveBeenCalledWith(
-			"[test-id] initial Packet(hex): 010203",
+			"[test-id-nps] initial Packet(hex): 010203",
 		);
 	});
 
