@@ -1,4 +1,7 @@
 export * from "./src/types.js";
+export { GameMessageHeader } from "./src/GameMessageHeader.js";
+export { GameMessagePayload } from "./src/GameMessagePayload.js";
+export { GamePacket } from "./src/GamePacket.js";
 export { ServerMessageHeader } from "./src/ServerMessageHeader.js";
 export { ServerMessagePayload } from "./src/ServerMessagePayload.js";
 export { ServerPacket } from "./src/ServerPacket.js";

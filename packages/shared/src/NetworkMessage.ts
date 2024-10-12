@@ -1,3 +1,4 @@
+import type { Serializable } from "./BaseSerialized.js";
 import { SerializedBuffer } from "./SerializedBuffer.js";
 
 /**
@@ -27,7 +28,7 @@ export class NetworkMessage extends SerializedBuffer {
 		this._data.copy(buffer, 12);
 		return buffer;
 	}
-	override deserialize(buffer: Buffer) {
+	override deserialize<T extends Serializable>(buffer: Buffer): T {
 		if (buffer.length < 12) {
 			throw Error(`Unable to get header from buffer, got ${buffer.length}`);
 		}
@@ -46,7 +47,7 @@ export class NetworkMessage extends SerializedBuffer {
 			throw Error(`Checksum ${checksum} does not match length ${length}`);
 		}
 
-		return this;
+		return this as unknown as T;
 	}
 
 	override set data(data: Buffer) {

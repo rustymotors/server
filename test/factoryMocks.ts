@@ -1,6 +1,5 @@
 import { expect, it, vi } from "vitest";
-import { verifyLegacyCipherSupport } from "../packages/gateway/src/encryption.js";
-
+import { ensureLegacyCipherCompatibility } from "../packages/shared/src/verifyLegacyCipherSupport.js";
 
 export function mockPino() {
 	vi.mock("pino", () => {
@@ -30,5 +29,5 @@ export function unmockPino() {
 }
 
 it("should have crypto", () => {
-	expect(() => verifyLegacyCipherSupport()).not.toThrow();
+	expect(() => ensureLegacyCipherCompatibility()).not.toThrow();
 });

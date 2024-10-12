@@ -27,7 +27,8 @@ export async function processServerLogin(
 	log.debug(`Sending LoginCompleteMessage: ${response.toString()}`);
 
 	// Send response packet
-	const responsePacket = new ServerPacket(response.getMessageId());
+	const responsePacket = new ServerPacket();
+	responsePacket.setMessageId(response.getMessageId());
 	responsePacket.setDataBuffer(response.serialize());
 	responsePacket.setSequence(message.sequence);
 

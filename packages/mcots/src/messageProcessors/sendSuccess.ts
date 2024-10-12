@@ -9,7 +9,8 @@ export function sendSuccess(
 	pReply.setMessageId(101);
 	pReply.msgReply = 438;
 
-	const response = new ServerPacket(101);
+	const response = new ServerPacket();
+	response.setMessageId(101);
 	response.setDataBuffer(pReply.serialize());
 	response.setSequence(message.sequence);
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ServerMessageHeader } from "./ServerMessageHeader.js";
+import { ServerMessageHeader } from "../src/ServerMessageHeader.js";
 
 describe("ServerMessageHeader", () => {
 	it("should serialize correctly", () => {

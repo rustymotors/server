@@ -4,18 +4,45 @@ import { ServerMessagePayload } from "./ServerMessagePayload.js";
 import type { SerializableMessage } from "./types.js";
 
 export class ServerPacket extends BasePacket implements SerializableMessage {
-	protected override header: ServerMessageHeader;
-	data: ServerMessagePayload;
+	protected override header: ServerMessageHeader = new ServerMessageHeader();
+	data: ServerMessagePayload = new ServerMessagePayload();
 
-	constructor(messageId: number) {
+	constructor() {
 		super({});
-		this.header = new ServerMessageHeader();
-		this.data = new ServerMessagePayload().setMessageId(messageId);
 	}
+
+	/**
+	 * Creates a copy of the given `ServerPacket` with the option to replace its data.
+	 *
+	 * @param originalPacket - The original `ServerPacket` to be copied.
+	 * @param newData - An optional `Buffer` containing new data to be deserialized into the new packet.
+	 *                  If not provided, the data from the original packet will be copied.
+	 * @returns A new `ServerPacket` instance with the same message ID and header as the original,
+	 *          and either the deserialized new data or a copy of the original data.
+	 */
+	static copy(originalPacket: ServerPacket, newData?: Buffer): ServerPacket {
+		const newPacket = new ServerPacket();
+		newPacket.header = ServerMessageHeader.copy(originalPacket.header);
+
+		if (newData) {
+			newPacket.data.deserialize(newData);
+		} else {
+			newPacket.data = ServerMessagePayload.copy(originalPacket.data);
+		}
+
+		return newPacket;
+	}
+
 	override getDataBuffer(): Buffer {
 		return this.data.serialize();
 	}
 	override setDataBuffer(data: Buffer): ServerPacket {
+		if (this.data.getByteSize() > 2) {
+			throw new Error(
+				`ServerPacket data buffer is already set, use copy() to create a new ServerPacket`,
+			);
+		}
+
 		this.data.deserialize(data);
 		return this;
 	}
@@ -47,6 +74,11 @@ export class ServerPacket extends BasePacket implements SerializableMessage {
 
 	getMessageId(): number {
 		return this.data.getMessageId();
+	}
+
+	setMessageId(messageId: number): ServerPacket {
+		this.data.setMessageId(messageId);
+		return this;
 	}
 
 	getLength(): number {
@@ -103,7 +135,7 @@ export class ServerPacket extends BasePacket implements SerializableMessage {
 		this._assertEnoughData(data, this.header.getByteSize());
 
 		this.header.deserialize(data);
-		this.setDataBuffer(data.subarray(this.header.getDataOffset()));
+		this.data.deserialize(data.subarray(this.header.getDataOffset()));
 
 		return this;
 	}

@@ -17,7 +17,7 @@ export async function login({
 	log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
 	// Normalize the packet
-	const incomingPacket = new ServerPacket(0);
+	const incomingPacket = new ServerPacket();
 	incomingPacket.deserialize(packet.serialize());
 
 	log.debug(
@@ -50,8 +50,7 @@ export async function login({
 
 	// Normalize the packet
 
-	const outgoingPacket = new ServerPacket(response.messageId);
-	outgoingPacket.deserialize(response.serialize());
+	const outgoingPacket = ServerPacket.copy(incomingPacket, response.serialize());
 	outgoingPacket.setSequence(incomingPacket.getSequence());
 	outgoingPacket.setPayloadEncryption(true);
 	outgoingPacket.setSignature("TOMC");
@@ -59,7 +58,7 @@ export async function login({
 	log.debug(`[${connectionId}] Sending response: ${outgoingPacket.toString()}`);
 
 	log.debug(
-		`[${connectionId}] Sending response: ${outgoingPacket.serialize().toString("hex")}`,
+		`[${connectionId}] Sending response(hex): ${outgoingPacket.serialize().toString("hex")}`,
 	);
 
 	const responsePacket = new OldServerMessage();

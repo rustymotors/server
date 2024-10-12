@@ -5,7 +5,15 @@ export class ServerMessagePayload
 	extends BufferSerializer
 	implements SerializableInterface
 {
-	public messageId: number = 0; // 2 bytes
+	private messageId: number = 0; // 2 bytes	
+	private previousMessageId: number = 0; // Not serialized
+	private isEncrypted: boolean = false; // Not serialized
+
+	static copy(payload: ServerMessagePayload): ServerMessagePayload {
+		const newPayload = new ServerMessagePayload();
+		newPayload.deserialize(payload.serialize());
+		return newPayload;
+	}
 
 	override getByteSize(): number {
 		return 2 + this._data.length;
@@ -34,6 +42,24 @@ export class ServerMessagePayload
 
 	setMessageId(messageId: number): ServerMessagePayload {
 		this.messageId = messageId;
+		return this;
+	}
+
+	getPreviousMessageId(): number {
+		return this.previousMessageId;
+	}
+
+	setPreviousMessageId(previousMessageId: number): ServerMessagePayload {
+		this.previousMessageId = previousMessageId;
+		return this;
+	}
+
+	isPayloadEncrypted(): boolean {
+		return this.isEncrypted;
+	}
+
+	setEncrypted(encrypted: boolean): ServerMessagePayload {
+		this.isEncrypted = encrypted;
 		return this;
 	}
 }

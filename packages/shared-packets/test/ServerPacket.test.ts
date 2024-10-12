@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Buffer } from "buffer";
-import { ServerMessagePayload } from "./ServerMessagePayload.js";
-import { ServerPacket } from "./ServerPacket.js";
+import { ServerMessagePayload } from "../src/ServerMessagePayload.js";
+import { ServerPacket } from "../src/ServerPacket.js";
 
 describe("ServerMessagePayload", () => {
 	it("should serialize correctly", () => {
@@ -38,7 +38,8 @@ describe("ServerMessagePayload", () => {
 
 	describe("ServerPacket", () => {
 		it("should serialize correctly", () => {
-			const packet = new ServerPacket(1234);
+			const packet = new ServerPacket();
+			packet.setMessageId(1234);
 			packet.setLength(11);
 			packet.setSignature("TOMC");
 			packet.setSequence(5678);
@@ -61,7 +62,8 @@ describe("ServerMessagePayload", () => {
 			buffer.writeUInt8(0x08, 10);
 			buffer.writeUInt16LE(1234, 11);
 
-			const packet = new ServerPacket(0);
+			const packet = new ServerPacket();
+			packet.setMessageId(1234);
 			packet.deserialize(buffer);
 
 			expect(packet.getLength()).toBe(11);
@@ -72,7 +74,8 @@ describe("ServerMessagePayload", () => {
 		});
 
 		it("should throw error if signature is invalid during serialization", () => {
-			const packet = new ServerPacket(1234);
+			const packet = new ServerPacket();
+			packet.setMessageId(1234);
 			packet.setLength(11);
 			packet.setSignature("INVALID");
 			packet.setSequence(5678);
@@ -84,7 +87,8 @@ describe("ServerMessagePayload", () => {
 		});
 
 		it("should throw error if sequence is zero during serialization", () => {
-			const packet = new ServerPacket(1234);
+			const packet = new ServerPacket();
+			packet.setMessageId(1234);
 			packet.setLength(11);
 			packet.setSignature("TOMC");
 			packet.setSequence(0);
@@ -96,14 +100,17 @@ describe("ServerMessagePayload", () => {
 		});
 
 		it("should convert to string correctly", () => {
-			const packet = new ServerPacket(1234);
+			const packet = new ServerPacket();
+			packet.setMessageId(1234);
 			packet.setLength(11);
 			packet.setSignature("TOMC");
 			packet.setSequence(5678);
 			packet.setPayloadEncryption(true);
 
 			const str = packet.toString();
-			expect(str).toBe("ServerPacket {length: 11, sequence: 5678, messageId: 1234}");
+			expect(str).toBe(
+				"ServerPacket {length: 11, sequence: 5678, messageId: 1234}",
+			);
 		});
 	});
 });

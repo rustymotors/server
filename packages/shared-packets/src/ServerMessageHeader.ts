@@ -2,7 +2,11 @@ import { BufferSerializer } from "./BufferSerializer.js";
 import type { SerializableInterface } from "./types.js";
 
 /**
- *
+ * Represents the header of a server message.
+ * The header contains the length of the message data, 
+ * the signature of the message,
+ * 
+ * This is a little-endian structure.
  */
 
 export class ServerMessageHeader
@@ -14,6 +18,19 @@ export class ServerMessageHeader
 	private signature: string = ""; // 4 bytes
 	private sequence: number = 0; // 4 bytes
 	private flags: number = 0; // 1
+
+	constructor() {
+		super();
+	}
+
+	static copy(header: ServerMessageHeader): ServerMessageHeader {
+		const newHeader = new ServerMessageHeader();
+		newHeader.length = header.length;
+		newHeader.signature = header.signature;
+		newHeader.sequence = header.sequence;
+		newHeader.flags = header.flags;
+		return newHeader;
+	}
 
 	getDataOffset(): number {
 		return 11;

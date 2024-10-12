@@ -1,3 +1,5 @@
+name: rustyserver
+
 services:
     nginx:
         build:
@@ -63,4 +65,4 @@ services:
 #     - db
 
 volumes:
-  pgadmin:
+    pgadmin:

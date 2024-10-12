@@ -5,8 +5,8 @@ import { serverHeader } from "./serverHeader.js";
  * A server message is a message that is passed between the server and the client. It has an 11 byte header. @see {@link serverHeader}
  *
  * @mixin {SerializableMixin}
+ * @deprecated
  */
-
 export class OldServerMessage extends SerializedBufferOld {
 	_header: serverHeader;
 	_msgNo: number;
@@ -21,6 +21,7 @@ export class OldServerMessage extends SerializedBufferOld {
 	}
 
 	/**
+	 * @deprecated
 	 * @param {Buffer} buffer
 	 * @returns {OldServerMessage}
 	 */
@@ -33,6 +34,9 @@ export class OldServerMessage extends SerializedBufferOld {
 		return this;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	override serialize() {
 		const buffer = Buffer.alloc(this._header.length + 2);
 		this._header._doSerialize().copy(buffer);
@@ -41,6 +45,7 @@ export class OldServerMessage extends SerializedBufferOld {
 	}
 
 	/**
+	 * @deprecated
 	 * @param {Buffer} buffer
 	 */
 	override setBuffer(buffer: Buffer) {
@@ -48,6 +53,9 @@ export class OldServerMessage extends SerializedBufferOld {
 		this._header.length = buffer.length + this._header._size - 2;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	updateMsgNo() {
 		this._msgNo = this.data.readInt16LE(0);
 	}
@@ -59,7 +67,7 @@ export class OldServerMessage extends SerializedBufferOld {
 		})}`;
 	}
 
-	toHexString() {
+	override toHexString() {
 		return this.serialize().toString("hex");
 	}
 }

@@ -17,10 +17,6 @@ export { ProfileList } from "./messageStructs/ProfileList.js";
 export { UserInfo } from "./messageStructs/UserInfo.js";
 export { UserStatus } from "./messageStructs/UserStatus.js";
 export {
-	getUser,
-	populateGameUsers,
-} from "./services/account.js";
-export {
 	gameProfiles,
 	getCustomerId,
 	getGameProfilesForCustomerId,

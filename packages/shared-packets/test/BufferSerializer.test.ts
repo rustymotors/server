@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { BufferSerializer } from "./BufferSerializer.js";
+import { BufferSerializer } from "../src/BufferSerializer.js";
 
 describe("BufferSerializer", () => {
 	let bufferSerializer: BufferSerializer;

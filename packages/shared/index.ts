@@ -26,14 +26,13 @@ export {
 	addSession,
 	createInitialState,
 	fetchStateFromDatabase,
-	addOnDataHandler,
-	getOnDataHandler,
 	addEncryption,
 	getEncryption,
 	McosSession,
 	findSessionByConnectionId,
 	updateEncryption,
 } from "./src/State.js";
+export { ensureLegacyCipherCompatibility as verifyLegacyCipherSupport } from "./src/verifyLegacyCipherSupport.js";
 export type { State } from "./src/State.js";
 export type { OnDataHandler, ServiceResponse } from "./src/State.js";
 export { LegacyMessage } from "./src/LegacyMessage.js";
@@ -57,7 +56,12 @@ export interface ConnectionRecord {
 }
 
 // Function to convert ARGB to 32-bit integer
-function argbToInt(alpha: number, red: number, green: number, blue: number) {
+export function argbToInt(
+	alpha: number,
+	red: number,
+	green: number,
+	blue: number,
+) {
 	return (
 		((alpha & 0xff) << 24) |
 		((red & 0xff) << 16) |
@@ -67,7 +71,7 @@ function argbToInt(alpha: number, red: number, green: number, blue: number) {
 }
 
 // Function to convert 32-bit integer to ARGB
-function intToArgb(int: number) {
+export function intToArgb(int: number) {
 	return {
 		alpha: (int >> 24) & 0xff,
 		red: (int >> 16) & 0xff,

@@ -8,14 +8,12 @@ import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 import { getRacingHistoryRecords } from "./database/racingHistoryRecords.js";
 import { GenericReplyPayload } from "rusty-motors-shared-packets";
 
-const log = getServerLogger({
-	name: "transactions/_getPlayerRaceHistory",
-});
-
 export async function _getPlayerRaceHistory({
 	connectionId,
 	packet,
-	log,
+	log = getServerLogger({
+		name: "transactions._getPlayerRaceHistory",
+	}),
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
 	log.debug(`[${connectionId}] Handling _getPlayerRaceHistory...`);
 

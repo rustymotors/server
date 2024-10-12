@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { GenericReplyPayload } from "./GenericReplyPayload.js";
+import { GenericReplyPayload } from "../src/GenericReplyPayload.js";
 import { Buffer } from "buffer";
 
 describe("GenericReplyPayload", () => {
