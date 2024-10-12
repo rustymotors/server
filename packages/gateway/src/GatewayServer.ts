@@ -2,31 +2,17 @@ import { Socket, createServer as createSocketServer } from "node:net";
 import FastifySensible from "@fastify/sensible";
 import fastify from "fastify";
 import { ConsoleThread } from "rusty-motors-cli";
-import { receiveLobbyData } from "rusty-motors-lobby";
-import { receiveLoginData } from "rusty-motors-login";
-import { receivePersonaData } from "rusty-motors-personas";
 import {
 	Configuration,
 	getServerConfiguration,
 	type ServerLogger,
-	type State,
 } from "rusty-motors-shared";
 import {
-	addOnDataHandler,
 	createInitialState,
-	fetchStateFromDatabase,
 } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
-import { receiveTransactionsData } from "rusty-motors-transactions";
 import { onSocketConnection } from "./index.js";
 import { addWebRoutes } from "./web.js";
-import {
-	populateGameMessageProcessors,
-	populatePortToMessageTypes,
-	portToMessageTypes,
-	gameMessageProcessors,
-} from "rusty-motors-nps";
-import { receiveChatData } from "rusty-motors-chat";
 import type { GatewayOptions } from "./types.js";
 import { addPortRouter } from "./portRouters.js";
 import { npsPortRouter } from "./npsPortRouter.js";
