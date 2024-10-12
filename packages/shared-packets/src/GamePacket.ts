@@ -44,7 +44,7 @@ export class GamePacket extends BasePacket implements SerializableMessage {
 	override setDataBuffer(data: Buffer): GamePacket {
 		if (this.data.getByteSize() > 2) {
 			throw new Error(
-				`ServerPacket data buffer is already set, use copy() to create a new ServerPacket`,
+				`GamePacket data buffer is already set, use copy() to create a new ServerPacket`,
 			);
 		}
 
