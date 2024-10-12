@@ -17,7 +17,7 @@ export class GamePacket extends BasePacket implements SerializableMessage {
 	 * @param originalPacket - The original `GamePacket` to be copied.
 	 * @param newData - An optional `Buffer` containing new data to be deserialized into the new packet.
 	 *                  If not provided, the data from the original packet will be copied.
-	 * @returns A new `ServerPacket` instance with the same message ID and header as the original,
+	 * @returns A new `GamePacket` instance with the same message ID and header as the original,
 	 *          and either the deserialized new data or a copy of the original data.
 	 */
 	static copy(originalPacket: GamePacket, newData?: Buffer): GamePacket {
