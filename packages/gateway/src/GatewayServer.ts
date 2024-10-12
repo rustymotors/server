@@ -306,26 +306,6 @@ export class Gateway {
 Gateway._instance = undefined;
 
 /**
- * Registers various data handlers to the provided state.
- *
- * This function adds handlers for different types of data, such as login data,
- * chat data, persona data, lobby data, and transaction data. Each handler is
- * associated with a specific code.
- *
- * @param state - The initial state to which the data handlers will be added.
- * @returns The updated state with all the data handlers registered.
- */
-function registerDataHandlers(state: State) {
-	state = addOnDataHandler(state, 8226, receiveLoginData);
-	state = addOnDataHandler(state, 8227, receiveChatData);
-	state = addOnDataHandler(state, 8228, receivePersonaData);
-	state = addOnDataHandler(state, 7003, receiveLobbyData);
-	state = addOnDataHandler(state, 9000, receiveChatData);
-	state = addOnDataHandler(state, 43300, receiveTransactionsData);
-	return state;
-}
-
-/**
  * Get a singleton instance of GatewayServer
  *
  * @param {GatewayOptions} options

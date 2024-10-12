@@ -26,8 +26,6 @@ export {
 	addSession,
 	createInitialState,
 	fetchStateFromDatabase,
-	addOnDataHandler,
-	getOnDataHandler,
 	addEncryption,
 	getEncryption,
 	McosSession,

@@ -181,7 +181,6 @@ export interface State {
 	encryptions: Record<string, McosEncryption>;
 	sessions: Record<string, McosSession>;
 	// queuedConnections: Record<string, WrappedSocket>;
-	onDataHandlers: Record<string, OnDataHandler>;
 	save: (state?: State) => void;
 }
 
@@ -212,7 +211,6 @@ export function createInitialState({
 		encryptions: {},
 		sessions: {},
 		// queuedConnections: {},
-		onDataHandlers: {},
 		save: function (state?: State) {
 			if (typeof state === "undefined") {
 				state = this as State;
@@ -224,58 +222,6 @@ export function createInitialState({
 			saveFunction(state);
 		},
 	};
-}
-
-/**
- * Add a data handler to the state.
- *
- * This function adds a data handler to the state.
- * The returned state is a new state object, and the original state is not
- * modified. You should then call the save function on the new state to update
- * the database.
- *
- * @param {State} state The state to add the data handler to.
- * @param {number} port The port to add the data handler for.
- * @param {OnDataHandler} handler The data
- *                                                               handler to
- *                                                             add.
- * @returns {State} The state with the data handler added.
- */
-export function addOnDataHandler(
-	state: State,
-	port: number,
-	handler: OnDataHandler,
-): State {
-	const onDataHandlers = state.onDataHandlers;
-	onDataHandlers[port.toString()] = handler;
-	const newState = {
-		...state,
-		onDataHandlers,
-	};
-	return newState;
-}
-
-/**
- * Get a data handler for a port from the state.
- *
- * This function gets a data handler for a port from the state.
- *
- * @param {State} state The state to get the data handler from.
- * @param {number} port The port to get the data handler for.
- * @returns {OnDataHandler | undefined} The
- *                                                                     data
- *                                                                   handler
- *                                                                 for the
- *                                                               given port,
- *                                                            or undefined
- *                                                          if no data
- *                                                       handler exists
- */
-export function getOnDataHandler(
-	state: State,
-	port: number,
-): OnDataHandler | undefined {
-	return state.onDataHandlers[port.toString()];
 }
 
 /**
