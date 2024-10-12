@@ -2,7 +2,7 @@
 
 # mcos
 
-[![Node.js CI](https://github.com/drazisil/mcos/actions/workflows/node.yml/badge.svg?branch=main)](https://github.com/drazisil/mcos/actions/workflows/node.yml) [![CodeQL](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml?branch=main) [![codecov](https://codecov.io/gh/rustymotors/server/graph/badge.svg?token=XiwYgbHCeN)](https://codecov.io/gh/rustymotors/server) [![DeepScan grade](https://deepscan.io/api/teams/16083/projects/20483/branches/558507/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=16083&pid=20483&bid=558507) [![DeepSource](https://deepsource.io/gh/drazisil/mcos.svg/?label=active+issues&token=7m7JTV9V4v4VZTQ-6wxr1kzg)](https://deepsource.io/gh/drazisil/mcos/?ref=repository-badge) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![Node.js CI](https://github.com/drazisil/mcos/actions/workflows/node.yml/badge.svg?branch=dev)](https://github.com/drazisil/mcos/actions/workflows/node.yml) [![CodeQL](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml?branch=dev) [![codecov](https://codecov.io/gh/rustymotors/server/graph/badge.svg?token=XiwYgbHCeN)](https://codecov.io/gh/rustymotors/server)  [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 ## About
 
