@@ -10,13 +10,13 @@ importers:
     dependencies:
       '@adminjs/sequelize':
         specifier: ^4.1.1
-        version: 4.1.1(adminjs@7.8.13(@tiptap/extension-text-style@2.8.0(@tiptap/core@2.1.13(@tiptap/pm@2.1.13)))(@types/react@18.3.11))(sequelize@6.37.4(pg@8.13.0))
+        version: 4.1.1(adminjs@7.8.13(@tiptap/extension-text-style@2.8.0(@tiptap/core@2.1.13(@tiptap/pm@2.1.13)))(@types/react@18.3.11))(sequelize@6.37.4)
       '@databases/pg':
         specifier: ^5.5.0
         version: 5.5.0(typescript@5.6.3)
       '@dotenvx/dotenvx':
-        specifier: ^1.19.0
-        version: 1.19.0
+        specifier: ^1.19.1
+        version: 1.19.1
       '@fastify/sensible':
         specifier: ^6.0.1
         version: 6.0.1
@@ -88,7 +88,7 @@ importers:
         version: link:packages/transactions
       sequelize:
         specifier: ^6.37.4
-        version: 6.37.4(pg@8.13.0)
+        version: 6.37.4
       sqlite:
         specifier: ^5.1.1
         version: 5.1.1
@@ -1260,8 +1260,8 @@ packages:
   '@databases/with-container@2.1.1':
     resolution: {integrity: sha512-iHsOn/6ElWuGpcytgNh9ZAvFd78G0ikOMWj0DtMTB4fXVqRA5uYZpLpLv/fvwL895xT7VTbVA6HV3YoY0yuQUg==}
 
-  '@dotenvx/dotenvx@1.19.0':
-    resolution: {integrity: sha512-o+gdlAm+5xHw8DvkOZeMUn0vqiHWVz5oO9FpRg+ST9Jpg5eg3XL+WSOc7FqJ0PYAuoTHxhHP5vDPPcXvcJKnIQ==}
+  '@dotenvx/dotenvx@1.19.1':
+    resolution: {integrity: sha512-oWEGX8dbsnWsbIl9O+K+DCIOYJ3GtgyDRgUBycLDtX0vbq35I4DkWxvpMHyDRI4aj8XRvdg7X6yp6U3oUGZG+Q==}
     hasBin: true
 
   '@emotion/babel-plugin@11.12.0':
@@ -6274,11 +6274,11 @@ snapshots:
       - react-is
       - supports-color
 
-  '@adminjs/sequelize@4.1.1(adminjs@7.8.13(@tiptap/extension-text-style@2.8.0(@tiptap/core@2.1.13(@tiptap/pm@2.1.13)))(@types/react@18.3.11))(sequelize@6.37.4(pg@8.13.0))':
+  '@adminjs/sequelize@4.1.1(adminjs@7.8.13(@tiptap/extension-text-style@2.8.0(@tiptap/core@2.1.13(@tiptap/pm@2.1.13)))(@types/react@18.3.11))(sequelize@6.37.4)':
     dependencies:
       adminjs: 7.8.13(@tiptap/extension-text-style@2.8.0(@tiptap/core@2.1.13(@tiptap/pm@2.1.13)))(@types/react@18.3.11)
       escape-regexp: 0.0.1
-      sequelize: 6.37.4(pg@8.13.0)
+      sequelize: 6.37.4
 
   '@ampproject/remapping@2.3.0':
     dependencies:
@@ -7491,7 +7491,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@dotenvx/dotenvx@1.19.0':
+  '@dotenvx/dotenvx@1.19.1':
     dependencies:
       commander: 11.1.0
       dotenv: 16.4.5
@@ -11992,7 +11992,7 @@ snapshots:
 
   sequelize-pool@7.1.0: {}
 
-  sequelize@6.37.4(pg@8.13.0):
+  sequelize@6.37.4:
     dependencies:
       '@types/debug': 4.1.12
       '@types/validator': 13.12.2
@@ -12010,8 +12010,6 @@ snapshots:
       uuid: 8.3.2
       validator: 13.12.0
       wkx: 0.5.0
-    optionalDependencies:
-      pg: 8.13.0
     transitivePeerDependencies:
       - supports-color
 
