@@ -1,6 +1,6 @@
 {
 	"name": "rusty-motors-shard",
-	"version": "1.0.0-alpha1",
+	"version": "1.0.0-next.0",
 	"description": "The shard service exposing the following endpoints to the gateway service:",
 	"exports": {
 		".": {

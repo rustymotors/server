@@ -1,6 +1,6 @@
 {
 	"name": "rusty-motors-cli",
-	"version": "1.0.0-alpha1",
+	"version": "1.0.0-next.0",
 	"exports": {
 		".": {
 			"import": "./index.js",
