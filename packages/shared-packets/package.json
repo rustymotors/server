@@ -1,7 +1,7 @@
 {
 	"name": "rusty-motors-shared-packets",
 	"private": true,
-	"version": "1.0.0",
+	"version": "1.0.0-alpha1",
 	"type": "module",
 	"exports": {
 		".": {
