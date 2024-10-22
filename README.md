@@ -1,6 +1,6 @@
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://stand-with-ukraine.pp.ua)
 
-# mcos
+# mcos    
 
 [![Node.js CI](https://github.com/drazisil/mcos/actions/workflows/node.yml/badge.svg?branch=dev)](https://github.com/drazisil/mcos/actions/workflows/node.yml) [![CodeQL](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml?branch=dev) [![codecov](https://codecov.io/gh/rustymotors/server/graph/badge.svg?token=XiwYgbHCeN)](https://codecov.io/gh/rustymotors/server)  [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
