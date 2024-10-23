@@ -15,8 +15,8 @@ importers:
         specifier: ^5.5.0
         version: 5.5.0(typescript@5.6.3)
       '@dotenvx/dotenvx':
-        specifier: ^1.20.0
-        version: 1.20.0
+        specifier: ^1.20.1
+        version: 1.20.1
       '@fastify/sensible':
         specifier: ^6.0.1
         version: 6.0.1
@@ -1260,9 +1260,15 @@ packages:
   '@databases/with-container@2.1.1':
     resolution: {integrity: sha512-iHsOn/6ElWuGpcytgNh9ZAvFd78G0ikOMWj0DtMTB4fXVqRA5uYZpLpLv/fvwL895xT7VTbVA6HV3YoY0yuQUg==}
 
-  '@dotenvx/dotenvx@1.20.0':
-    resolution: {integrity: sha512-Zepr4dxvbTw1PKVa5i0HFP59wy1L6LXD+I9HcXnvugDevLOIA8mwwIH1ZqKDF6TrwRS4AHZy2lP9hKLBqib1EQ==}
+  '@dotenvx/dotenvx@1.20.1':
+    resolution: {integrity: sha512-BkUNp2YdlH0XuzsceTtobFZBkOvxdCUxgv8kDGUEBoU9sfeYmzpDuzTm8QAgsDiusyy9ET1zaEK1s7ojXTnz5w==}
     hasBin: true
+
+  '@ecies/ciphers@0.2.0':
+    resolution: {integrity: sha512-dqQk3HbyuXSdflgRMrXjEcCohKeBZQl2rm0lOcYnEC4Oue90irVMwVJ0GiM/nhjP0zzGimH8mVFF/pOzQcv+Lg==}
+    engines: {bun: '>=1', deno: '>=2', node: '>=16'}
+    peerDependencies:
+      '@noble/ciphers': ^1.0.0
 
   '@emotion/babel-plugin@11.12.0':
     resolution: {integrity: sha512-y2WQb+oP8Jqvvclh8Q55gLUyb7UFvgv7eJfsj7td5TToBrIUtPay2kMrZi4xjq9qw2vD0ZR5fSho0yqoFgX7Rw==}
@@ -3389,8 +3395,8 @@ packages:
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
 
-  eciesjs@0.4.8:
-    resolution: {integrity: sha512-U2wAn6yEOVBP9lOVh3nryufg3hQTKVicG+qjEfqB/70m/mU9DzwWNdK0mC5zuxlJH42EGAezFlHVWI0snwg1nw==}
+  eciesjs@0.4.10:
+    resolution: {integrity: sha512-dYAgdXAC7/d9fEC0w6kpRWj5vHah2BQgMM639g78JI0FUUffMN2Mq60HEHPkyH8ah+FX+cQd6ouDK4kWiatzyw==}
     engines: {node: '>=16.0.0'}
 
   electron-to-chromium@1.5.36:
@@ -7501,17 +7507,21 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@dotenvx/dotenvx@1.20.0':
+  '@dotenvx/dotenvx@1.20.1':
     dependencies:
       commander: 11.1.0
       dotenv: 16.4.5
-      eciesjs: 0.4.8
+      eciesjs: 0.4.10
       execa: 5.1.1
       fdir: 6.4.0(picomatch@4.0.2)
       ignore: 5.3.2
       object-treeify: 1.1.33
       picomatch: 4.0.2
       which: 4.0.0
+
+  '@ecies/ciphers@0.2.0(@noble/ciphers@1.0.0)':
+    dependencies:
+      '@noble/ciphers': 1.0.0
 
   '@emotion/babel-plugin@11.12.0':
     dependencies:
@@ -9787,8 +9797,9 @@ snapshots:
 
   eastasianwidth@0.2.0: {}
 
-  eciesjs@0.4.8:
+  eciesjs@0.4.10:
     dependencies:
+      '@ecies/ciphers': 0.2.0(@noble/ciphers@1.0.0)
       '@noble/ciphers': 1.0.0
       '@noble/curves': 1.6.0
       '@noble/hashes': 1.5.0
