@@ -2,6 +2,7 @@ import type { DatabaseTransactionConnection } from 'slonik';
 import { getDatabase } from '../services/database.js';
 import * as Sentry from '@sentry/node';
 import { getServerLogger } from 'rusty-motors-shared';
+import { buildVehiclePartTree, saveVehicle, saveVehiclePartTree } from '../models/VehiclePartTree.js';
 
 const { slonik, sql } = await getDatabase();
 const log = getServerLogger('createNewCar');
@@ -78,12 +79,16 @@ async function getAbstractPartTypeIDForBrandedPartID(
 //     return abstractPartTypeId === 101;
 // }
 
-type partTableEntry = {
-    partId: number | null;
-    parentPartId: number | null;
-    brandedPartId: number | null;
-    AttachmentPointId: number | null;
-};
+// type partTableEntry = {
+//     partId: number | null;
+//     parentPartId: number | null;
+//     brandedPartId: number | null;
+//     AttachmentPointId: number | null;
+// };
+
+
+
+
 
 export async function createNewCar(
     brandedPartId: number,
@@ -116,123 +121,145 @@ export async function createNewCar(
         );
     }
 
-    const tmpParts: partTableEntry[] = [];
-
-    tmpParts.push({
-        partId: null,
-        parentPartId: null,
-        brandedPartId: brandedPartId,
-        AttachmentPointId: 0,
+    const vehicle = await buildVehiclePartTree({
+        brandedPartId,
+        skinId,
+        ownedLotId: 6,
+        ownerID: newCarOwnerId,
+        isStock: true,
     });
+    
 
-    log.debug({ tmpParts }, 'tmpParts after pushing the first part');
+    log.debug({ vehicle }, 'vehicle');
 
-    // Get the rest of the parts for the vehicle
-    const part = tmpParts[0];
+    await saveVehicle(vehicle);
+    await saveVehiclePartTree(vehicle);
 
-    if (typeof part === 'undefined') {
-        log.error('tmpParts[0] is undefined');
-        throw new Error('tmpParts[0] is undefined');
-    }
-
-    const restOfTheParts = await slonik.many(
-        sql.typeAlias('brandedPart')`
-        SELECT b.branded_part_id, a.attachment_point_id
-        From stock_assembly a
-        inner join branded_part b on a.child_branded_part_id = b.branded_part_id
-        where a.parent_branded_part_id = ${part.brandedPartId}
-    `,
-    );
-
-    if (restOfTheParts.length === 0) {
-        log.error('No parts found for the vehicle');
-        throw new Error('No parts found for the vehicle');
-    }
-
-    log.debug(`Found ${restOfTheParts.length} parts for the vehicle`);
-
-    log.debug({ restOfTheParts }, 'restOfTheParts');
-
-    for (const part of restOfTheParts) {
-        tmpParts.push({
-            partId: null,
-            parentPartId: null,
-            brandedPartId: part.branded_part_id,
-            AttachmentPointId: part.attachment_point_id,
-        });
-    }
-
-    log.debug({ tmpParts }, 'tmpParts after getting the rest of the parts');
-
-    let vehicleId: number | null = null;
-
-    await slonik.transaction(async (connection) => {
-        // First insert the new car into the vehicle table
-
-        if (tmpParts.length === 0) {
-            log.error(`No parts found for the vehicle ${brandedPartId}`);
-            throw new Error('No parts found for the vehicle');
-        }
-
-        log.debug({ tmpParts }, 'tmpParts');
-
-        let parentPartId = null;
-        let currentPartId = await getNextSq(connection, 'part_partid_seq');
-
-        if (typeof tmpParts[0] === 'undefined') {
-            log.error('tmpParts[0] is undefined');
-            throw new Error('tmpParts[0] is undefined');
-        }
-
-        // Make sure the first part's branded part id is not null
-        if (tmpParts[0].brandedPartId === null) {
-            log.error("The first part's branded part id is null");
-            throw new Error("The first part's branded part id is null");
-        }
-
-        // Get the first part's abstract part type id
-        const firstPartAbstractPartTypeId =
-            await getAbstractPartTypeIDForBrandedPartID(
-                connection,
-                tmpParts[0].brandedPartId,
-            );
-
-        if (firstPartAbstractPartTypeId !== 101) {
-            throw new Error('The first part is not a vehicle');
-        }
-
-        // Get the skin record for the new car
-        const skinDefaultFlag = (
-            await connection.one(sql.typeAlias('ptSkin')`
-                    SELECT default_flag FROM pt_skin WHERE skin_id = ${skinId}
-                    `)
-        ).default_flag;
-
-        if (typeof skinDefaultFlag === 'undefined') {
-            log.error('skinDefaultFlag is undefined');
-            throw new Error('skinDefaultFlag is undefined');
-        }
-
-        // The first part will have a parentpartid of 0, and a partid of nextval(next_part_id)
-        ({ currentPartId, parentPartId, vehicleId } = await saveVehicleAndParts(
-            tmpParts,
-            connection,
-            currentPartId,
-            parentPartId,
-            newCarOwnerId,
-            skinId,
-            skinDefaultFlag,
-            vehicleId,
-        ));
-    });
-
-    if (vehicleId === null) {
-        log.error('vehicleId is null');
-        throw new Error('vehicleId is null');
-    }
-
-    return vehicleId;
+    return vehicle.vehicleId;
 }
+    
+    
+    
+    
+    
+    
+//     const tmpParts: partTableEntry[] = [];
+
+//     tmpParts.push({
+//         partId: null,
+//         parentPartId: null,
+//         brandedPartId: brandedPartId,
+//         AttachmentPointId: 0,
+//     });
+
+//     log.debug({ tmpParts }, 'tmpParts after pushing the first part');
+
+//     // Get the rest of the parts for the vehicle
+//     const part = tmpParts[0];
+
+//     if (typeof part === 'undefined') {
+//         log.error('tmpParts[0] is undefined');
+//         throw new Error('tmpParts[0] is undefined');
+//     }
+
+//     const restOfTheParts = await slonik.many(
+//         sql.typeAlias('brandedPart')`
+//         SELECT b.branded_part_id, a.attachment_point_id
+//         From stock_assembly a
+//         inner join branded_part b on a.child_branded_part_id = b.branded_part_id
+//         where a.parent_branded_part_id = ${part.brandedPartId}
+//     `,
+//     );
+
+//     if (restOfTheParts.length === 0) {
+//         log.error('No parts found for the vehicle');
+//         throw new Error('No parts found for the vehicle');
+//     }
+
+//     log.debug(`Found ${restOfTheParts.length} parts for the vehicle`);
+
+//     log.debug({ restOfTheParts }, 'restOfTheParts');
+
+//     for (const part of restOfTheParts) {
+//         tmpParts.push({
+//             partId: null,
+//             parentPartId: null,
+//             brandedPartId: part.branded_part_id,
+//             AttachmentPointId: part.attachment_point_id,
+//         });
+//     }
+
+//     log.debug({ tmpParts }, 'tmpParts after getting the rest of the parts');
+
+//     let vehicleId: number | null = null;
+
+//     await slonik.transaction(async (connection) => {
+//         // First insert the new car into the vehicle table
+
+//         if (tmpParts.length === 0) {
+//             log.error(`No parts found for the vehicle ${brandedPartId}`);
+//             throw new Error('No parts found for the vehicle');
+//         }
+
+//         log.debug({ tmpParts }, 'tmpParts');
+
+//         let parentPartId = null;
+//         let currentPartId = await getNextSq(connection, 'part_partid_seq');
+
+//         if (typeof tmpParts[0] === 'undefined') {
+//             log.error('tmpParts[0] is undefined');
+//             throw new Error('tmpParts[0] is undefined');
+//         }
+
+//         // Make sure the first part's branded part id is not null
+//         if (tmpParts[0].brandedPartId === null) {
+//             log.error("The first part's branded part id is null");
+//             throw new Error("The first part's branded part id is null");
+//         }
+
+//         // Get the first part's abstract part type id
+//         const firstPartAbstractPartTypeId =
+//             await getAbstractPartTypeIDForBrandedPartID(
+//                 connection,
+//                 tmpParts[0].brandedPartId,
+//             );
+
+//         if (firstPartAbstractPartTypeId !== 101) {
+//             throw new Error('The first part is not a vehicle');
+//         }
+
+//         // Get the skin record for the new car
+//         const skinDefaultFlag = (
+//             await connection.one(sql.typeAlias('ptSkin')`
+//                     SELECT default_flag FROM pt_skin WHERE skin_id = ${skinId}
+//                     `)
+//         ).default_flag;
+
+//         if (typeof skinDefaultFlag === 'undefined') {
+//             log.error('skinDefaultFlag is undefined');
+//             throw new Error('skinDefaultFlag is undefined');
+//         }
+
+//         // The first part will have a parentpartid of 0, and a partid of nextval(next_part_id)
+//         ({ currentPartId, parentPartId, vehicleId } = await saveVehicleAndParts(
+//             tmpParts,
+//             connection,
+//             currentPartId,
+//             parentPartId,
+//             newCarOwnerId,
+//             skinId,
+//             skinDefaultFlag,
+//             vehicleId,
+//         ));
+//     });
+
+//     if (vehicleId === null) {
+//         log.error('vehicleId is null');
+//         throw new Error('vehicleId is null');
+//     }
+
+//     return vehicleId;
+// }
 
 export type DBPart = {
     partId: number;
@@ -247,134 +274,134 @@ export type DBPart = {
     scrapValue: number;
 };
 
-async function saveVehicleAndParts(
-    tmpParts: partTableEntry[],
-    connection: DatabaseTransactionConnection,
-    currentPartId: number,
-    parentPartId: any,
-    newCarOwnerId: number,
-    skinId: number,
-    skinDefaultFlag: any,
-    vehicleId: any,
-) {
-    const part = tmpParts[0];
-    if (typeof part === 'undefined') {
-        log.error('tmpParts[0] is undefined');
-        throw new Error('tmpParts[0] is undefined');
-    }
+// async function saveVehicleAndParts(
+//     tmpParts: partTableEntry[],
+//     connection: DatabaseTransactionConnection,
+//     currentPartId: number,
+//     parentPartId: any,
+//     newCarOwnerId: number,
+//     skinId: number,
+//     skinDefaultFlag: any,
+//     vehicleId: any,
+// ) {
+//     const part = tmpParts[0];
+//     if (typeof part === 'undefined') {
+//         log.error('tmpParts[0] is undefined');
+//         throw new Error('tmpParts[0] is undefined');
+//     }
 
-    await connection.query(sql.typeAlias('part')`
-                                INSERT INTO part (part_id, parent_part_id, branded_part_id, percent_damage, item_wear, attachment_point_id, owner_id, part_name, repair_cost, scrap_value)
-                                VALUES (${currentPartId}, ${parentPartId}, ${part.brandedPartId}, 0, 0, ${part.AttachmentPointId}, ${newCarOwnerId}, null, 0, 0)
-                                `);
+//     await connection.query(sql.typeAlias('part')`
+//                                 INSERT INTO part (part_id, parent_part_id, branded_part_id, percent_damage, item_wear, attachment_point_id, owner_id, part_name, repair_cost, scrap_value)
+//                                 VALUES (${currentPartId}, ${parentPartId}, ${part.brandedPartId}, 0, 0, ${part.AttachmentPointId}, ${newCarOwnerId}, null, 0, 0)
+//                                 `);
 
-    // Insert the vehicle record
-    await connection.query(
-        sql.typeAlias('brandedPart')`
-                            INSERT INTO vehicle (vehicle_id, skin_id, flags, class, info_setting, damage_info)
-                            VALUES (${currentPartId}, ${skinId}, ${skinDefaultFlag}, 0, 0, null)
-                            `,
-    );
+//     // Insert the vehicle record
+//     await connection.query(
+//         sql.typeAlias('brandedPart')`
+//                             INSERT INTO vehicle (vehicle_id, skin_id, flags, class, info_setting, damage_info)
+//                             VALUES (${currentPartId}, ${skinId}, ${skinDefaultFlag}, 0, 0, null)
+//                             `,
+//     );
 
-    vehicleId = currentPartId;
+//     vehicleId = currentPartId;
 
-    log.debug({ vehicleId }, 'vehicleId');
+//     log.debug({ vehicleId }, 'vehicleId');
 
-    // Update the partid of the part in the tmpParts
-    if (typeof tmpParts[0] === 'undefined') {
-        log.error('tmpParts[0] is undefined');
-        throw new Error('tmpParts[0] is undefined');
-    }
+//     // Update the partid of the part in the tmpParts
+//     if (typeof tmpParts[0] === 'undefined') {
+//         log.error('tmpParts[0] is undefined');
+//         throw new Error('tmpParts[0] is undefined');
+//     }
 
-    tmpParts[0].partId = currentPartId;
-    tmpParts[0].parentPartId = parentPartId;
+//     tmpParts[0].partId = currentPartId;
+//     tmpParts[0].parentPartId = parentPartId;
 
-    log.debug({ tmpParts }, 'tmpParts after inserting the first part');
+//     log.debug({ tmpParts }, 'tmpParts after inserting the first part');
 
-    // Now insert the rest of the parts
-    for (let i = 1; i < tmpParts.length; i++) {
-        parentPartId = currentPartId;
-        currentPartId = await getNextSq(connection, 'part_partid_seq');
+//     // Now insert the rest of the parts
+//     for (let i = 1; i < tmpParts.length; i++) {
+//         parentPartId = currentPartId;
+//         currentPartId = await getNextSq(connection, 'part_partid_seq');
 
-        const part = tmpParts[i];
+//         const part = tmpParts[i];
 
-        if (typeof part === 'undefined') {
-            log.error('tmpParts[i] is undefined');
-            throw new Error('tmpParts[i] is undefined');
-        }
+//         if (typeof part === 'undefined') {
+//             log.error('tmpParts[i] is undefined');
+//             throw new Error('tmpParts[i] is undefined');
+//         }
 
-        await addPartToDatabase(
-            part,
-            connection,
-            currentPartId,
-            parentPartId,
-            newCarOwnerId,
-        );
+//         await addPartToDatabase(
+//             part,
+//             connection,
+//             currentPartId,
+//             parentPartId,
+//             newCarOwnerId,
+//         );
 
-        // Update the partid of the part in the tmpParts array
-        part.partId = currentPartId;
-        part.parentPartId = parentPartId;
-    }
+//         // Update the partid of the part in the tmpParts array
+//         part.partId = currentPartId;
+//         part.parentPartId = parentPartId;
+//     }
 
-    log.debug({ tmpParts }, 'tmpParts after inserting the rest of the parts');
-    return { currentPartId, parentPartId, vehicleId };
-}
+//     log.debug({ tmpParts }, 'tmpParts after inserting the rest of the parts');
+//     return { currentPartId, parentPartId, vehicleId };
+// }
 
-async function addPartToDatabase(
-    part: partTableEntry | undefined,
-    connection: DatabaseTransactionConnection,
-    currentPartId: number,
-    parentPartId: any,
-    newCarOwnerId: number,
-) {
-    if (typeof part === 'undefined') {
-        log.error('tmpParts[i] is undefined');
+// async function addPartToDatabase(
+//     part: partTableEntry | undefined,
+//     connection: DatabaseTransactionConnection,
+//     currentPartId: number,
+//     parentPartId: any,
+//     newCarOwnerId: number,
+// ) {
+//     if (typeof part === 'undefined') {
+//         log.error('tmpParts[i] is undefined');
 
-        throw new Error('tmpParts[i] is undefined');
-    }
+//         throw new Error('tmpParts[i] is undefined');
+//     }
 
-    if (typeof part.brandedPartId === 'undefined') {
-        log.error({ part }, 'brandedPartId is undefined');
-        throw new Error('brandedPartId is undefined');
-    }
+//     if (typeof part.brandedPartId === 'undefined') {
+//         log.error({ part }, 'brandedPartId is undefined');
+//         throw new Error('brandedPartId is undefined');
+//     }
 
-    if (typeof part.AttachmentPointId === 'undefined') {
-        log.error({ part }, 'AttachmentPointId is undefined');
-        throw new Error('AttachmentPointId is undefined');
-    }
+//     if (typeof part.AttachmentPointId === 'undefined') {
+//         log.error({ part }, 'AttachmentPointId is undefined');
+//         throw new Error('AttachmentPointId is undefined');
+//     }
 
-    await connection.query(
-        sql.typeAlias('part')`
-                                INSERT INTO part (part_id, parent_part_id, branded_part_id, percent_damage, item_wear, attachment_point_id, owner_id, part_name, repair_cost, scrap_value)
-                                VALUES (${currentPartId}, ${parentPartId}, ${part.brandedPartId}, 0, 0, ${part.AttachmentPointId}, ${newCarOwnerId}, null, 0, 0)
-                                `,
-    );
-}
+//     await connection.query(
+//         sql.typeAlias('part')`
+//             INSERT INTO part (part_id, parent_part_id, branded_part_id, percent_damage, item_wear, attachment_point_id, owner_id, part_name, repair_cost, scrap_value)
+//             VALUES (${currentPartId}, ${parentPartId}, ${part.brandedPartId}, 0, 0, ${part.AttachmentPointId}, ${newCarOwnerId}, null, 0, 0)
+//                                 `,
+//     );
+// }
 
-async function getNextSq(
-    connection: DatabaseTransactionConnection,
-    seqName: string,
-) {
-    return await Sentry.startSpan(
-        {
-            name: 'Get next part id',
-            op: 'db.query',
-            attributes: {
-                sql: "SELECT nextval('part_partid_seq')",
-                db: 'postgres',
-            },
-        },
-        async () => {
-            return Number(
-                (
-                    await connection.one(sql.typeAlias('nextPartId')`
-                SELECT nextval(${seqName})
-            `)
-                ).nextval,
-            );
-        },
-    );
-}
+// async function getNextSq(
+//     connection: DatabaseTransactionConnection,
+//     seqName: string,
+// ) {
+//     return await Sentry.startSpan(
+//         {
+//             name: 'Get next part id',
+//             op: 'db.query',
+//             attributes: {
+//                 sql: "SELECT nextval('part_partid_seq')",
+//                 db: 'postgres',
+//             },
+//         },
+//         async () => {
+//             return Number(
+//                 (
+//                     await connection.one(sql.typeAlias('nextPartId')`
+//                 SELECT nextval(${seqName})
+//             `)
+//                 ).nextval,
+//             );
+//         },
+//     );
+// }
 
 export type PartEntry = {
     partId: number;
@@ -429,7 +456,7 @@ export async function getVehicleAndParts(
         SELECT v.*, p.owner_id 
 from public.vehicle v
 inner join public.part p on p.part_id = v.vehicle_id 
-where v.vehicle_id = 79
+where v.vehicle_id = ${vehicleId}
     `);
 
             if (!vehicle) {
@@ -476,8 +503,14 @@ where v.vehicle_id = 79
         async (): Promise<PartEntry[]> => {
             const parts = [];
             const rawParts = await slonik.many(sql.typeAlias('part')`
-        SELECT * FROM part WHERE part_id = ${vehicleId} OR parent_part_id = ${vehicleId}
+        SELECT * 
+        FROM part p1 
+        inner join part p2 on p1.part_id = p2.parent_part_id
+        WHERE p1.part_id = ${vehicleId} OR p1.parent_part_id = ${vehicleId}
     `);
+
+    log.debug({ rawParts }, 'rawParts');
+
             for (const rawPart of rawParts) {
                 parts.push({
                     partId: rawPart.part_id,
@@ -535,7 +568,7 @@ export async function getOwnedVehiclesForPerson(
         },
         async () => {
             const cars = [];
-            const parts = await slonik.many(sql.typeAlias('part')`
+            const parts = await slonik.any(sql.typeAlias('part')`
         SELECT p.part_id, p.branded_part_id, p.attachment_point_id, p.owner_id, p.part_name, p.repair_cost, p.scrap_value 
 from public.part p 
 inner join public.vehicle v on v.vehicle_id = p.part_id 
@@ -559,3 +592,4 @@ where p.owner_id = ${personId};
         },
     );
 }
+

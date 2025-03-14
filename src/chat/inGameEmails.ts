@@ -1,5 +1,4 @@
 import { ChatMessage } from "./ChatMessage.js";
-import { assertLength } from "./assertLength.js";
 import { ListInGameEmailsMessage } from "./ListInGameEmailsMessage.js";
 import { ListInGameEmailsResponseMessage } from "./ListInGameEmailsResponseMessage.js";
 import { InGameEmailMessage } from "./InGameEmailMessage.js";
@@ -46,7 +45,7 @@ export class ReceiveEmailMessage extends ChatMessage {
 export function handleListInGameEmailsMessage(message: ChatMessage): Buffer[] {
 	defaultLogger.debug(`Handling ListInGameEmailsMessage: ${message.toString()}`);
 
-	const parsedMessage = new ListInGameEmailsMessage();
+	const parsedMessage = new ListInGameEmailsMessage(0, 0, Buffer.alloc(0));
 	parsedMessage.deserialize(message.toBuffer());
 
 	defaultLogger.debug(`Parsed message: ${parsedMessage.toString()}`);
@@ -64,7 +63,7 @@ export function handleListInGameEmailsMessage(message: ChatMessage): Buffer[] {
 export function handleReceiveEmailMessage(message: ChatMessage): Buffer[] {
 	defaultLogger.debug(`Handling ReceiveEmailMessage: ${message.toString()}`);
 
-	const parsedMessage = new ReceiveEmailMessage();
+	const parsedMessage = new ReceiveEmailMessage(0, 0, Buffer.alloc(0));
 	parsedMessage.deserialize(message.toBuffer());
 
 	defaultLogger.debug(`Parsed message: ${parsedMessage.toString()}`);

@@ -31,7 +31,7 @@ import { login } from "./login.js";
 import { trackingPing } from "./trackingPing.js";
 import { _buyCarFromDealer } from "./_buyCarFromDealer.js";
 import { IServerMessage } from "rusty-motors-shared-packets";
-import { _getFullCarInfo } from "./_getFullCarInfo.js";
+import { _getCompleteVehicleInfo } from "./_getFullCarInfo.js";
 import { _updateCachedVehicle } from "./_updateCachedVehicle.js";
 
 export interface MessageHandlerArgs {
@@ -73,7 +73,7 @@ export const messageHandlers: MessageHandler[] = [
 	},
 	{
 		name: "MC_GET_COMPLETE_VEHICLE_INFO",
-		handler: _getFullCarInfo,
+		handler: _getCompleteVehicleInfo,
 	},
 	{
 		name: "MC_GET_LOBBIES",

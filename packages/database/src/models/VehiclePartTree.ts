@@ -45,6 +45,61 @@ export type VehiclePartTreeType = {
     };
 };
 
+export function vehiclePartTreeToJSON(
+    vehiclePartTree: VehiclePartTreeType,
+): string {
+    const level1Parts = vehiclePartTree.partTree.level1.parts.map((part) => ({
+        partId: part.part_id,
+        parentPartId: part.parent_part_id,
+        brandedPartId: part.branded_part_id,
+        percentDamage: part.percent_damage,
+        itemWear: part.item_wear,
+        attachmentPointId: part.attachment_point_id,
+        ownerId: part.owner_id,
+        partName: part.part_name,
+        repairCost: part.repair_cost,
+        scrapValue: part.scrap_value,
+    }));
+
+    const level2Parts = vehiclePartTree.partTree.level2.parts.map((part) => ({
+        partId: part.part_id,
+        parentPartId: part.parent_part_id,
+        brandedPartId: part.branded_part_id,
+        percentDamage: part.percent_damage,
+        itemWear: part.item_wear,
+        attachmentPointId: part.attachment_point_id,
+        ownerId: part.owner_id,
+        partName: part.part_name,
+        repairCost: part.repair_cost,
+        scrapValue: part.scrap_value,
+    }));
+
+    return JSON.stringify({
+        vehicleId: vehiclePartTree.vehicleId,
+        skinId: vehiclePartTree.skinId,
+        flags: vehiclePartTree.flags,
+        class: vehiclePartTree.class,
+        infoSetting: vehiclePartTree.infoSetting,
+        damageInfo: vehiclePartTree.damageInfo,
+        isStock: vehiclePartTree.isStock,
+        ownedLotId: vehiclePartTree.ownedLotId,
+        ownerID: vehiclePartTree.ownerID,
+        partId: vehiclePartTree.partId,
+        parentPartId: vehiclePartTree.parentPartId,
+        brandedPartId: vehiclePartTree.brandedPartId,
+        partTree: {
+            level1: {
+                partId: vehiclePartTree.partTree.level1.partId,
+                parts: level1Parts,
+            },
+            level2: {
+                partId: vehiclePartTree.partTree.level2.partId,
+                parts: level2Parts,
+            },
+        },
+    });
+}
+
 async function getNextPartId(): Promise<number> {
     const result = await Sentry.startSpan(
         {
@@ -80,27 +135,27 @@ export async function savePart(part: TPart): Promise<void> {
             const { slonik, sql } = await getSlonik();
             return slonik.query(sql.typeAlias('dbPart')`
         INSERT INTO part (
-            partid,
-            parentpartid,
-            brandedpartid,
-            percentdamage,
-            itemwear,
-            attachmentpointid,
-            ownerid,
-            partname,
-            repaircost,
-            scrapvalue
+            part_id,
+            parent_part_id,
+            branded_part_id,
+            percent_damage,
+            item_wear,
+            attachment_point_id,
+            owner_id,
+            part_name,
+            repair_cost,
+            scrap_value
         ) VALUES (
-            ${part.partId},
-            ${part.parentPartId},
-            ${part.brandedPartId},
-            ${part.percentDamage},
-            ${part.itemWear},
-            ${part.attachmentPointId},
-            ${part.ownerID},
-            ${part.partName},
-            ${part.repairCost},
-            ${part.scrapValue}
+            ${part.part_id},
+            ${part.parent_part_id},
+            ${part.branded_part_id},
+            ${part.percent_damage},
+            ${part.item_wear},
+            ${part.attachment_point_id},
+            ${part.owner_id},
+            ${part.part_name},
+            ${part.repair_cost},
+            ${part.scrap_value}
         )
     `);
         },
@@ -112,20 +167,25 @@ export async function saveVehicle(
 ): Promise<void> {
     try {
         const vehiclePart: TPart = {
-            partId: vehiclePartTree.vehicleId,
-            parentPartId: null,
-            brandedPartId: vehiclePartTree.brandedPartId,
-            percentDamage: 0,
-            itemWear: 0,
-            attachmentPointId: null,
-            ownerID: vehiclePartTree.ownerID || null,
-            partName: null,
-            repairCost: 0,
-            scrapValue: 0,
+            part_id: vehiclePartTree.vehicleId,
+            parent_part_id: null,
+            branded_part_id: vehiclePartTree.brandedPartId,
+            percent_damage: 0,
+            item_wear: 0,
+            attachment_point_id: null,
+            owner_id: vehiclePartTree.ownerID || null,
+            part_name: null,
+            repair_cost: 0,
+            scrap_value: 0,
         };
 
         log.debug(`Saving vehicle part: ${JSON.stringify(vehiclePart)}`);
-        await savePart(vehiclePart);
+        await savePart(vehiclePart).catch((error) => {
+            log.error(`Error saving vehicle part: ${error}`);
+            const e = new Error(`Error saving vehicle part: ${error}`);
+            e.cause = error;
+            throw e;
+        });
 
         const newVehicle: TVehicle = {
             vehicleId: vehiclePartTree.vehicleId,
@@ -151,12 +211,12 @@ export async function saveVehicle(
                 const { slonik, sql } = await getSlonik();
                 return slonik.query(sql.typeAlias('vehicle')`
             INSERT INTO vehicle (
-                vehicleid,
-                skinid,
+                vehicle_id,
+                skin_id,
                 flags,
                 class,
-                infosetting,
-                damageinfo
+                info_setting,
+                damage_info
             ) VALUES (
                 ${newVehicle.vehicleId},
                 ${newVehicle.skinId},
@@ -167,6 +227,12 @@ export async function saveVehicle(
             )
         `);
             },
+        ).catch((error) => {
+            log.error(`Error saving vehicle(db): ${error}`);
+            const e = new Error(`Error saving vehicle: ${error}`);
+            e.cause = error;
+            throw e;
+        }
         );
     } catch (error) {
         log.error(`Error saving vehicle: ${error}`);
@@ -183,17 +249,17 @@ export async function saveVehiclePartTree(
         const partTree = vehiclePartTree.partTree;
 
         for (const part of partTree.level1.parts) {
-            partIds.add(part.partId);
+            partIds.add(part.part_id);
         }
 
         for (const part of partTree.level2.parts) {
-            partIds.add(part.partId);
+            partIds.add(part.part_id);
         }
 
         for (const partId of partIds) {
             const part =
-                partTree.level1.parts.find((p) => p.partId === partId) ||
-                partTree.level2.parts.find((p) => p.partId === partId);
+                partTree.level1.parts.find((p) => p.part_id === partId) ||
+                partTree.level2.parts.find((p) => p.part_id === partId);
             if (!part) {
                 log.error(`Part with partId ${partId} not found`);
                 throw new Error(`Part with partId ${partId} not found`);
@@ -328,16 +394,16 @@ export async function buildVehiclePartTreeFromDB(
         );
 
         const newPart: TPart = {
-            partId: part.partid,
-            parentPartId: part.parentpartid,
-            brandedPartId: part.brandedpartid,
-            percentDamage: part.percentdamage,
-            itemWear: part.itemwear,
-            attachmentPointId: part.attachmentpointid,
-            ownerID: part.ownerid,
-            partName: part.partname,
-            repairCost: part.repaircost,
-            scrapValue: part.scrapvalue,
+            part_id: part.partid,
+            parent_part_id: part.parentpartid,
+            branded_part_id: part.brandedpartid,
+            percent_damage: part.percentdamage,
+            item_wear: part.itemwear,
+            attachment_point_id: part.attachmentpointid,
+            owner_id: part.ownerid,
+            part_name: part.partname,
+            repair_cost: part.repaircost,
+            scrap_value: part.scrapvalue,
         };
 
         vehiclePartTree.partTree.level1.parts.push(newPart);
@@ -374,16 +440,16 @@ export async function buildVehiclePartTreeFromDB(
 
     for (const part of level2Parts) {
         const newPart: TPart = {
-            partId: part.partid,
-            parentPartId: part.parentpartid,
-            brandedPartId: part.brandedpartid,
-            percentDamage: part.percentdamage,
-            itemWear: part.itemwear,
-            attachmentPointId: part.attachmentpointid,
-            ownerID: part.ownerid,
-            partName: part.partname,
-            repairCost: part.repaircost,
-            scrapValue: part.scrapvalue,
+            part_id: part.partid,
+            parent_part_id: part.parentpartid,
+            branded_part_id: part.brandedpartid,
+            percent_damage: part.percentdamage,
+            item_wear: part.itemwear,
+            attachment_point_id: part.attachmentpointid,
+            owner_id: part.ownerid,
+            part_name: part.partname,
+            repair_cost: part.repaircost,
+            scrap_value: part.scrapvalue,
         };
 
         vehiclePartTree.partTree.level2.parts.push(newPart);
@@ -432,7 +498,7 @@ export async function buildVehiclePartTree({
         WHERE skin_id = ${skinId}
     `);
         },
-    );
+    ) as { default_flag: number };
 
     if (!skinFlags) {
         log.error(`Skin with id ${skinId} does not exist`);
@@ -461,7 +527,13 @@ export async function buildVehiclePartTree({
         WHERE a.parent_branded_part_id = ${brandedPartId}
     `);
         },
-    );
+    ) as {
+        branded_part_id: number;
+        part_type_id: number;
+        abstract_part_type_id: number;
+        parent_abstract_part_type_id: number;
+        attachment_point_id: number;
+    }[];
 
     if (vehicleAssembly.length === 0) {
         log.error(
@@ -486,7 +558,7 @@ export async function buildVehiclePartTree({
         vehicleId: topPartId,
         skinId,
         isStock,
-        flags: skinFlags.defaultflag,
+        flags: skinFlags.default_flag,
         class: 0,
         infoSetting: 0,
         damageInfo: null,
@@ -512,41 +584,41 @@ export async function buildVehiclePartTree({
 
     // Populate the vehicle part tree
     for (const part of vehicleAssembly) {
-        const parentPartId = partNumbersMap.get(part.parentabstractparttypeid);
+        const parentPartId = partNumbersMap.get(part.parent_abstract_part_type_id);
 
         log.debug(
-            `parentAbstractPartTypeId: ${part.parentabstractparttypeid}, parentPartId: ${parentPartId}`,
+            `parentAbstractPartTypeId: ${part.parent_abstract_part_type_id}, parentPartId: ${parentPartId}`,
         );
 
         if (parentPartId === undefined) {
             log.error(
-                `parentPartId is undefined for part with parentabstractparttypeid ${part.parentabstractparttypeid}`,
+                `parentPartId is undefined for part with parentabstractparttypeid ${part.parent_abstract_part_type_id}`,
             );
             throw new Error(
-                `parentPartId is undefined for part with parentabstractparttypeid ${part.parentabstractparttypeid}`,
+                `parentPartId is undefined for part with parentabstractparttypeid ${part.parent_abstract_part_type_id}`,
             );
         }
 
         const thisPartId = await getNextPartId();
 
-        if (!partNumbersMap.has(part.abstractparttypeid)) {
-            partNumbersMap.set(part.abstractparttypeid, thisPartId);
+        if (!partNumbersMap.has(part.abstract_part_type_id)) {
+            partNumbersMap.set(part.abstract_part_type_id, thisPartId);
         }
 
         const newPart: TPart = {
-            partId: thisPartId,
-            parentPartId: parentPartId,
-            brandedPartId: part.brandedpartid,
-            percentDamage: 0,
-            itemWear: 0,
-            attachmentPointId: part.attachmentpointid,
-            ownerID: ownerID || null,
-            partName: null,
-            repairCost: 0,
-            scrapValue: 0,
+            part_id: thisPartId,
+            parent_part_id: parentPartId,
+            branded_part_id: part.branded_part_id,
+            percent_damage: 0,
+            item_wear: 0,
+            attachment_point_id: part.attachment_point_id,
+            owner_id: ownerID || null,
+            part_name: null,
+            repair_cost: 0,
+            scrap_value: 0,
         };
 
-        const partDepth = level1PartTypes.includes(part.abstractparttypeid)
+        const partDepth = level1PartTypes.includes(part.abstract_part_type_id)
             ? 1
             : 2;
 

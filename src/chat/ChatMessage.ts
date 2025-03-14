@@ -5,6 +5,12 @@ export class ChatMessage {
 	messageLength = 0;
 	payload: Buffer = Buffer.alloc(0);
 
+	constructor(messageId: number, messageLength: number, payload: Buffer) {
+		this.messageId = messageId;
+		this.messageLength = messageLength;
+		this.payload = payload;
+	}
+
 	deserialize(buffer: Buffer): ChatMessage {
 		const messageId = buffer.readUInt16BE(0);
 		const messageLength = buffer.readUInt16BE(2);

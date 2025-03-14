@@ -12,15 +12,19 @@ export class ListInGameEmailsResponseMessage extends ChatMessage {
     }
 
     override toBuffer(): Buffer {
-        const buffer = Buffer.alloc(this.messageLength);
-
-        buffer.writeUInt16BE(this.messageId, 0);
-        buffer.writeUInt16BE(this.messageLength, 2);
-
-        buffer.writeUInt16BE(this.totalEmails, 4);
-        buffer.writeUInt32BE(this.firstEmailId, 6);
-
-        return buffer;
+try {
+            const buffer = Buffer.alloc(this.messageLength);
+    
+            buffer.writeUInt16BE(this.messageId, 0);
+            buffer.writeUInt16BE(this.messageLength, 2);
+    
+            buffer.writeUInt16BE(this.totalEmails, 4);
+            buffer.writeUInt32BE(this.firstEmailId, 6);
+    
+            return buffer;
+} catch (error) {
+        throw new Error(`Error in ListInGameEmailsResponseMessage.toBuffer: ${error}`);
+}
     }
 
     override toString(): string {
