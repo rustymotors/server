@@ -1,6 +1,6 @@
 import { getServerLogger } from "rusty-motors-shared";
 import type { TBrand } from "./models/Brand.js";
-import { vehiclePartTreeToJSON, type VehiclePartTreeType } from "./models/VehiclePartTree.js";
+import { TVehicle, vehiclePartTreeToJSON, type VehiclePartTreeType } from "./models/VehiclePartTree.js";
 import { getSlonik, getDatabase } from "./services/database.js";
 import * as Sentry from "@sentry/node";
 import { TPart } from "./models/Part.js";
@@ -72,8 +72,8 @@ export async function buildVehiclePartTreeFromDB(
         FROM vehicle
         WHERE vehicle_id = ${vehicleId}
     `);
-        },
-    );
+        }
+    ) as TVehicle;
 
     if (!vehicle) {
         log.error(`Vehicle with id ${vehicleId} does not exist`);
@@ -81,16 +81,16 @@ export async function buildVehiclePartTreeFromDB(
     }
 
     const vehiclePartTree: VehiclePartTreeType = {
-        vehicleId: vehicle.vehicleid,
-        skinId: vehicle.skinid,
+        vehicleId: vehicle.vehicle_id,
+        skinId: vehicle.skin_id,
         flags: vehicle.flags,
         class: vehicle.class,
-        infoSetting: vehicle.infosetting,
-        damageInfo: vehicle.damageinfo,
+        infoSetting: vehicle.info_setting,
+        damageInfo: vehicle.damage_info,
         isStock: false,
         ownedLotId: null,
         ownerID: null,
-        partId: vehicle.vehicleid,
+        partId: vehicle.vehicle_id,
         parentPartId: null,
         brandedPartId: 0,
         partTree: {

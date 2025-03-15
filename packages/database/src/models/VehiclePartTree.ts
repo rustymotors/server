@@ -11,12 +11,12 @@ const partNumbersMap = new Map<number, number>();
 const log = getServerLogger();
 
 export type TVehicle = {
-    vehicleId: number;
-    skinId: number;
+    vehicle_id: number;
+    skin_id: number;
     flags: number;
     class: number;
-    infoSetting: number;
-    damageInfo: Buffer | null;
+    info_setting: number;
+    damage_info: Buffer | null;
 };
 
 export type VehiclePartTreeType = {
@@ -188,12 +188,12 @@ export async function saveVehicle(
         });
 
         const newVehicle: TVehicle = {
-            vehicleId: vehiclePartTree.vehicleId,
-            skinId: vehiclePartTree.skinId,
+            vehicle_id: vehiclePartTree.vehicleId,
+            skin_id: vehiclePartTree.skinId,
             flags: vehiclePartTree.flags,
             class: vehiclePartTree.class,
-            infoSetting: vehiclePartTree.infoSetting,
-            damageInfo: vehiclePartTree.damageInfo,
+            info_setting: vehiclePartTree.infoSetting,
+            damage_info: vehiclePartTree.damageInfo,
         };
 
         log.debug(`Saving vehicle: ${JSON.stringify(newVehicle)}`);
@@ -218,12 +218,12 @@ export async function saveVehicle(
                 info_setting,
                 damage_info
             ) VALUES (
-                ${newVehicle.vehicleId},
-                ${newVehicle.skinId},
+                ${newVehicle.vehicle_id},
+                ${newVehicle.skin_id},
                 ${newVehicle.flags},
                 ${newVehicle.class},
-                ${newVehicle.infoSetting},
-                ${newVehicle.damageInfo}
+                ${newVehicle.info_setting},
+                ${newVehicle.damage_info}
             )
         `);
             },

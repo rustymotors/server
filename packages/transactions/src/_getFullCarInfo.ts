@@ -13,6 +13,7 @@ export class VehicleStruct {
     Delta: number = 0; // 4 bytes
     CarClass: number = 0; // 1 byte
     Damage: Buffer = Buffer.alloc(DAMAGE_SIZE); // buffer, max DAMAGE_SIZE
+    damageLengthOverride: number | null = null;
 
     serialize() {
         try {
@@ -22,7 +23,8 @@ export class VehicleStruct {
             buffer.writeInt32LE(this.Flags, 8); // offset 8
             buffer.writeInt32LE(this.Delta, 12); // offset 12
             buffer.writeInt8(this.CarClass, 16); // offset 16
-            buffer.writeInt16LE(this.Damage.length, 17); // offset 17
+            const damageLengthOverride = this.damageLengthOverride ?? this.Damage.length;
+            buffer.writeInt16LE(damageLengthOverride, 17); // offset 17
             if (this.Damage.length > 0) {
                 this.Damage.copy(buffer, 19); // offset 19
             }
@@ -210,6 +212,7 @@ export async function _getCompleteVehicleInfo({
         const damageInfo =
             vehicleFromCache.damageInfo ?? Buffer.alloc(DAMAGE_SIZE);
         vehicleStruct.Damage = damageInfo;
+        vehicleStruct.damageLengthOverride = 0;
 
         log.debug(`VehicleStruct: ${vehicleStruct}`);
 
