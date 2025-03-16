@@ -123,9 +123,40 @@ interface Logger {
 
 type LogLevel = "fatal" | "error" | "warn" | "info" | "debug" | "trace";
 
+type LoggeringGroup = "gateway" | "lobby" | "roomserver";
+
+const shouldLog = (loggingGroup: LoggeringGroup) => {
+	const loggingGroups = process.env["MCO_LOGGING_GROUPS"]?.split(",") || [];
+	return loggingGroups.includes(loggingGroup);
+}
+
 let logger: pino.Logger;
 
-export function getServerLogger(name?: string): Logger {
+export function getServerLogger(name?: string, loggingGroup?: LoggeringGroup): Logger {
+	if (loggingGroup && !shouldLog(loggingGroup)) {
+		return {
+			info: () => {
+				// do nothing
+			},
+			warn: () => {
+				// do nothing
+			},
+			error: () => {
+				// do nothing
+			},
+			fatal: () => {
+				// do nothing
+			},
+			debug: () => {
+				// do nothing
+			},
+			trace: () => {
+				// do nothing
+			},
+			child: () => getServerLogger(name, loggingGroup),
+		}
+	}
+
 	if (logger) {
 		return logger.child({ name });
 	}

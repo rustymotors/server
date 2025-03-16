@@ -39,7 +39,7 @@ export class Gateway {
 	 */
 	constructor({
 		config = getServerConfiguration(),
-		log = getServerLogger("Gateway"),
+		log = getServerLogger("Gateway", "gateway"),
 		backlogAllowedCount = 0,
 		listeningPortList = [],
 		socketConnectionHandler = onSocketConnection,

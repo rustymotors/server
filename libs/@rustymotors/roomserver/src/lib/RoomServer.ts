@@ -1,38 +1,78 @@
 import { BytableMessage } from '@rustymotors/binary';
 import { getServerLogger, ServiceResponse, type ServerLogger } from 'rusty-motors-shared';
-
-export class Room {}
+import { MessageNumberMap } from './MessageNumberMap.js';
+import { LoginRequest } from './LoginRequest.js';
 
 export class RoomServer {
     private _id: number;
     private _name: string;
     private _ip: string;
     private _port: number;
-    private _rooms: Map<string, Room>;
     private log: ServerLogger;
 
-    constructor({id, name, ip, port}: {id: number, name: string, ip: string, port: number}) {
+    constructor({ id, name, ip, port }: { id: number, name: string, ip: string, port: number }) {
         this._name = name;
         this._id = id;
-        this.log = getServerLogger(name);
+        this.log = getServerLogger(name, 'roomserver');
         this._ip = ip;
         this._port = port;
-        this._rooms = new Map<string, Room>();
     }
 
-    async recievePacket({
+    async receivePacket({
         connectionId,
         packet,
     }: {
         connectionId: string;
         packet: BytableMessage;
     }): Promise<ServiceResponse> {
-        this.log.debug({connectionId, packet: packet.toHexString()}, "Received packet");
+        this.log.debug({ connectionId, packet: packet.toHexString() }, "Received packet");
 
+        const messageNumber = packet.header.messageId;
+        const messageName = MessageNumberMap[messageNumber];
+
+        if (!messageName) {
+            this.log.error({ connectionId, messageNumber }, "Unknown message number");
+            return {
+                connectionId,
+                messages: [],
+            }
+        }
+
+        this.log.debug({ connectionId, messageName }, "Handling message");
+
+        switch (messageName) {
+            case "NPS_LOGIN":
+                return this.handleLogin({ connectionId, packet });
+            default:{
+                this.log.error({ connectionId, messageName }, "Unknown message name");
+                return {
+                    connectionId,
+                    messages: [],
+                }
+            }
+        }
+    }
+    private async handleLogin({ connectionId, packet }: { connectionId: string, packet: BytableMessage }): Promise<ServiceResponse> {
+        const log = getServerLogger("RoomServer.handleLogin");
+
+        try {
+            log.debug({ connectionId, packet: packet.toHexString() }, "Handling NPS_LOGIN");
+
+            const getServerInfoRequest = new LoginRequest();
+            getServerInfoRequest.deserialize(packet.getBody());
+
+        } catch (error) {
+            log.error({ connectionId, error }, "Error handling NPS_LOGIN");
+            return {
+                connectionId,
+                messages: [],
+            };
+
+        }
         return {
             connectionId,
             messages: [],
-        }
+        };
     }
 
     get id() {
