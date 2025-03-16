@@ -4,13 +4,16 @@ import {
 	type SerializableInterface,
 } from "rusty-motors-shared-packets";
 import { receiveLobbyData } from "rusty-motors-lobby";
-import { receiveChatData } from "rusty-motors-chat";
 import { receivePersonaData } from "rusty-motors-personas";
 import { receiveLoginData } from "rusty-motors-login";
-import { getServerLogger, ServerLogger } from "rusty-motors-shared";
+import { getServerConfiguration, getServerLogger, ServerLogger } from "rusty-motors-shared";
 import { BytableMessage, createRawMessage } from "@rustymotors/binary";
+import { RoomServer } from "@rustymotors/roomserver";
+import { addRoomServer, getRoomServerByPort } from "rusty-motors-database";
 import * as Sentry from "@sentry/node";
-import { getMCOProtocolInstance } from "@rustymotors/protocol";
+
+const server01 = new RoomServer({ id: 224, name: "MCC01", ip: getServerConfiguration().host, port: 9001 });
+addRoomServer(server01);
 
 /**
  * Handles routing for the NPS (Network Play System) ports.
@@ -200,6 +203,20 @@ async function routeInitialMessage(
 			).messages;
 			log.debug(`[${id}] Persona Responses: ${responses.map((r) => r.serialize().toString("hex"))}`);
 			break;
+		case 9001: {
+			const server = getRoomServerByPort(port);
+			if (server === undefined) {
+				log.warn({ port }, "No room server found for port");
+				break;
+			}
+			log.debug({ id, port, packet: packet.serialize().toString("hex") }, `Passing packet to room server: ${server.name}`);
+			responses = (
+				await server.recievePacket({ connectionId: id, packet: initialPacket })
+			).messages;
+			const responseBuffer = Buffer.concat(responses.map((r) => r.serialize()));
+			log.debug({ roomServer: server.name, responseBuffer: responseBuffer.toString("hex") }, `Room Server Responses`);
+			break;
+		}
 		default:
 			// No handler
 			log.warn(

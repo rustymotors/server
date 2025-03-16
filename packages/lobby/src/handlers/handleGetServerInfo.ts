@@ -1,8 +1,15 @@
 import { BytableMessage } from "@rustymotors/binary";
+import { getRoomServerById } from "rusty-motors-database";
 import {
 	getServerLogger,
 	ServerLogger,
 } from "rusty-motors-shared";
+
+const DEFAULT_RIFF = {
+	name: "MCC01",
+	ip: "71.186.155.248\n",
+	port: 7003,
+}
 
 export async function handleGetServerInfo({
 	connectionId,
@@ -27,9 +34,31 @@ export async function handleGetServerInfo({
 		incommingRequest.setSerializeOrder([{ name: "riffId", field: "Dword" }]);
 		incommingRequest.deserialize(message.serialize());
 
+		const requestRiffId = incommingRequest.getFieldValueByName("riffId");
+
+		if (typeof requestRiffId !== "number") {
+			log.error({
+				connectionId,
+				requestRiffId,
+			}, `Invalid riffId: ${requestRiffId}`);
+			return {
+				connectionId,
+				message: new BytableMessage(),
+			};
+		}
+
 		log.debug(
-			`[${connectionId}] Received riffId: ${incommingRequest.getFieldValueByName("riffId")}`,
+			`[${connectionId}] Received riffId: ${requestRiffId}`,
 		);
+
+		let riff = getRoomServerById(requestRiffId) || DEFAULT_RIFF;
+
+		if (riff === DEFAULT_RIFF) {
+			log.warn(
+				`[${connectionId}] Riff not found, using default riff: ${riff.name}`,
+			);
+		}
+
 
 		// TODO: Actually have servers
 
@@ -46,7 +75,7 @@ export async function handleGetServerInfo({
 
 		outgoingGameMessage.header.setMessageId(525);
         outgoingGameMessage.setVersion(0);
-		outgoingGameMessage.setFieldValueByName("riffName", "MCC01\n");
+		outgoingGameMessage.setFieldValueByName("riffName", riff.name);
 		outgoingGameMessage.setFieldValueByName("commId", 224);
 		outgoingGameMessage.setFieldValueByName(
 			"ipAddress",
@@ -54,7 +83,7 @@ export async function handleGetServerInfo({
 		);
 		outgoingGameMessage.setFieldValueByName(
 			"port",
-			7003
+			riff.port
 		);
 		outgoingGameMessage.setFieldValueByName("userId", 21);
 		outgoingGameMessage.setFieldValueByName("playerCount", 1);

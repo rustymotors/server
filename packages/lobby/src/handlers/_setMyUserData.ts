@@ -5,6 +5,8 @@ import { ServerLogger, getServerLogger } from "rusty-motors-shared";
 import { UserData } from "../UserInfoMessage.js";
 import { BytableMessage } from "@rustymotors/binary";
 
+const NPS_USER_INFO = 0x204; // 516
+const NPS_CHANNEL_GRANTED = 0x214; // 532
 
 export async function _setMyUserData({
 	connectionId,
@@ -39,8 +41,8 @@ export async function _setMyUserData({
 
 		// Build the packet
 		const packetResult = new LegacyMessage();
-		// packetResult._header.id = 516;
-		packetResult._header.id = 0x214;
+		// packetResult._header.id = NPS_USER_INFO;
+		packetResult._header.id = NPS_CHANNEL_GRANTED;
 
 		const channelBuffer = Buffer.alloc(4);
 		channelBuffer.writeInt32BE(currentChannel);
@@ -51,11 +53,11 @@ export async function _setMyUserData({
 
 		// packetResult.deserialize(incomingMessage.serialize());
 
-		message.header.setMessageId(516)
+		message.header.setMessageId(NPS_USER_INFO)
 
 		return {
 			connectionId,
-			message,
+			message: null,
 		};
 	} catch (error) {
 		const err = Error(`[$connectionId] Error handling NPS_SET_MY_USER_DATA: ${String(error)}`);

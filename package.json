@@ -38,6 +38,7 @@
         "@mikro-orm/postgresql": "^6.4.3",
         "@mikro-orm/reflection": "^6.4.3",
         "@rustymotors/binary": "workspace:^",
+        "@rustymotors/roomserver": "link:libs/@rustymotors/roomserver",
         "@sentry/node": "^8.50.0",
         "@sentry/profiling-node": "8.50.0",
         "adminjs": "^7.8.15",

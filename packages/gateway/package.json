@@ -22,7 +22,8 @@
 		"@fastify/sensible": "^6.0.3",
 		"@rustymotors/binary": "workspace:^",
 		"@rustymotors/protocol": "workspace:^",
-		"fastify": "^5.2.1"
+		"fastify": "^5.2.1",
+		"roomserver": "link:libs/@rustymotors/roomserver"
 	},
 	"directories": {
 		"test": "test"

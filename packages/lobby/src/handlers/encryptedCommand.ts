@@ -161,7 +161,7 @@ export type NpsCommandHandler = {
 		log?: ServerLogger;
 	}) => Promise<{
 		connectionId: string;
-		message: BytableMessage;
+		message: BytableMessage | null;
 	}>;
 };
 
@@ -199,7 +199,7 @@ async function handleCommand({
 	log?: ServerLogger;
 }): Promise<{
 	connectionId: string;
-	message: BytableMessage;
+	message: BytableMessage | null;
 }> {
 	log.debug(
 		`[${connectionId}] Received command: ${message.serialize().toString("hex")}`,
@@ -222,7 +222,9 @@ async function handleCommand({
 		message,
 	});
 
-	log.debug(`[${connectionId}] Sending response: ${response.serialize().toString("hex")}`);
+	if (response !== null) {
+		log.debug(`[${connectionId}] Sending response: ${response.serialize().toString("hex")}`);
+	}
 
 	return {
 		connectionId,
