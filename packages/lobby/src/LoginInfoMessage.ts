@@ -3,7 +3,7 @@ import { LegacyMessage } from "rusty-motors-shared";
 import { serializeString } from "rusty-motors-shared";
 
 export class LoginInfoMessage extends LegacyMessage {
-	_userId: number;
+	_userId: number; // 4 bytes
 	_userName: string;
 	_userData: Buffer;
 	_customerId: number;

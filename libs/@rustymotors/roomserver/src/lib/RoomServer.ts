@@ -61,8 +61,10 @@ export class RoomServer {
             const getServerInfoRequest = new LoginRequest();
             getServerInfoRequest.deserialize(packet.getBody());
 
+            log.debug({ connectionId, getServerInfoRequest }, "Received NPS_LOGIN");
+
         } catch (error) {
-            log.error({ connectionId, error }, "Error handling NPS_LOGIN");
+            log.error({ connectionId, error }, `Error handling NPS_LOGIN: ${error.message}`);
             return {
                 connectionId,
                 messages: [],

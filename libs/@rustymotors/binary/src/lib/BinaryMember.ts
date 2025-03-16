@@ -73,8 +73,8 @@ export function verifyAlignment(buffer: Uint8Array, alignment: number) {
 
 
 export class BinaryMember {
-    private value: Uint8Array;
-    private maxSize: number;
+    protected value: Uint8Array;
+    protected maxSize: number;
     constructor(size = 0) {
         this.value = new Uint8Array(size);
         this.maxSize = size;
@@ -117,6 +117,40 @@ export class Uint8_tArray extends BinaryMember {
         super(size);
     }
 }
+
+/**
+ * A class representing a string of characters.
+ * The string is stored as a sequence of characters followed by a null terminator.
+ * It is prefixed with a 32-bit integer representing the length of the string.
+ * The prefix is in network byte order.
+ */
+export class CString extends BinaryMember {
+    constructor(size: number) {
+        super(size);
+    }
+    override set(v: Uint8Array) {
+        if (v[v.length - 1] !== 0) {
+            throw new Error("CString must be null-terminated");
+        }
+        super.set(v);
+    }
+    /**
+     * Returns the string as a sequence of characters followed by a null terminator.
+     * The string is prefixed with a 32-bit integer representing the length of the string.
+     * The prefix is in network byte order.
+     * @returns {Uint8Array} The string as a sequence of characters followed by a null terminator.
+     */
+    override get() {
+        const length = new Uint32_t();
+        length.set(new Uint8Array([this.value.length]));
+        return new Uint8Array([...length.get(), ...this.value]);
+    }
+    override size() {
+        return this.value.length + 4;
+    }
+}
+
+
 
 export type BinaryFieldTypes = {
     set: (value: Uint8Array) => void;
