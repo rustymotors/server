@@ -21,14 +21,14 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
       '@mikro-orm/core':
-        specifier: ^6.4.9
-        version: 6.4.9
+        specifier: ^6.4.10
+        version: 6.4.10
       '@mikro-orm/postgresql':
-        specifier: ^6.4.9
-        version: 6.4.9(@mikro-orm/core@6.4.9)
+        specifier: ^6.4.10
+        version: 6.4.10(@mikro-orm/core@6.4.10)
       '@mikro-orm/reflection':
-        specifier: ^6.4.9
-        version: 6.4.9(@mikro-orm/core@6.4.9)
+        specifier: ^6.4.10
+        version: 6.4.10(@mikro-orm/core@6.4.10)
       '@rustymotors/binary':
         specifier: workspace:^
         version: link:libs/@rustymotors/binary
@@ -235,8 +235,8 @@ importers:
   libs/@rustymotors/binary:
     dependencies:
       '@mikro-orm/core':
-        specifier: ^6.4.9
-        version: 6.4.9
+        specifier: ^6.4.10
+        version: 6.4.10
       rusty-motors-shared:
         specifier: workspace:1.0.0-next.0
         version: link:../../../packages/shared
@@ -1900,12 +1900,12 @@ packages:
     resolution: {integrity: sha512-Yhlar6v9WQgUp/He7BdgzOz8lqMQ8sU+jkCq7Wx8Myc5YFJLbEe7lgui/V7G1qB1DJykHSGwreceSaD60Y0PUQ==}
     hasBin: true
 
-  '@mikro-orm/core@6.4.9':
-    resolution: {integrity: sha512-osB2TbvSH4ZL1s62LCBQFAnxPqLycX5fakPHOoztudixqfbVD5QQydeGizJXMMh2zKP6vRCwIJy3MeSuFxPjHg==}
+  '@mikro-orm/core@6.4.10':
+    resolution: {integrity: sha512-rLRiBnxK0v+AkzYvfR7kHM6MLh9IaE9Ys2lccr/hDOdqcZ0pMlOseBAR/Jrq8/K2/KXF5tZGphVZYQKjU5cYyw==}
     engines: {node: '>= 18.12.0'}
 
-  '@mikro-orm/knex@6.4.9':
-    resolution: {integrity: sha512-iGXJfe/TziVOQsWuxMIqkOpurysWzQA6kj3+FDtOkHJAijZhqhjSBnfUVHHY/JzU9o0M0rgLrDVJFry/uEaJEA==}
+  '@mikro-orm/knex@6.4.10':
+    resolution: {integrity: sha512-u/v4Vj4cCiGRgCxzXC+iCDB8ciUnRPg0WsKX7Fu2tUFPwOlRZvJmU7hFUXfkOLRaxpAUgdzb7UPTeNmXqVaCBA==}
     engines: {node: '>= 18.12.0'}
     peerDependencies:
       '@mikro-orm/core': ^6.0.0
@@ -1920,14 +1920,14 @@ packages:
       mariadb:
         optional: true
 
-  '@mikro-orm/postgresql@6.4.9':
-    resolution: {integrity: sha512-ZdVVFAL/TSbzpEmChGdH0oUpy2KiHLjNIeItZHRQgInn1X9p0qx28VVDR78p8qgRGkQ3LquxGTkvmWI0w7qi3A==}
+  '@mikro-orm/postgresql@6.4.10':
+    resolution: {integrity: sha512-g31lR5QksByzw0rwfIUzsN23zhErg9HyPH312qwy3QHtt9ubbwTz/wMSeTbF751AQkAYaDK3mEb6CrOBZaOaDA==}
     engines: {node: '>= 18.12.0'}
     peerDependencies:
       '@mikro-orm/core': ^6.0.0
 
-  '@mikro-orm/reflection@6.4.9':
-    resolution: {integrity: sha512-fgY7yLrcZm3J/8dv9reUC4PQo7C2muImU31jmzz1SxmNKPJFDJl7OzcDZlM5NOisXzsWUBrcNdCyuQiWViVc3A==}
+  '@mikro-orm/reflection@6.4.10':
+    resolution: {integrity: sha512-l3YUr/RbZCzBrAJvFZPhOy076ZXWNmpmcH2BUuas7413Yqj8pAW/WNX0U/QyxF4acsoGzj4G/MW33cZyxFiAxw==}
     engines: {node: '>= 18.12.0'}
     peerDependencies:
       '@mikro-orm/core': ^6.0.0
@@ -5472,8 +5472,8 @@ packages:
     resolution: {integrity: sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==}
     engines: {node: '>=8.6'}
 
-  mikro-orm@6.4.9:
-    resolution: {integrity: sha512-XwVrWNT4NNwS6kHIKFNDfvy8L1eWcBBEHeTVzFFYcnb2ummATaLxqeVkNEmKA68jmdtfQdUmWBqGdbcIPwtL2Q==}
+  mikro-orm@6.4.10:
+    resolution: {integrity: sha512-gxElkHr4IiNpOkvb0ZtJnunth9aq/hbQUVNNj9Uvz/9lNvkKDUj45YuWMDmp692x5KGcI+ocujRf4NHk/NzTtw==}
     engines: {node: '>= 18.12.0'}
 
   mime-db@1.52.0:
@@ -5897,11 +5897,6 @@ packages:
     resolution: {integrity: sha512-BM/Thnrw5jm2kKLE5uJkXqqExRUY/toLHda65XgFTBTFYZyopbKjBe29Ii3RbkvlsMoFwD+tHeGaCjjv0gHlyw==}
     engines: {node: '>=4'}
 
-  pg-pool@3.7.1:
-    resolution: {integrity: sha512-xIOsFoh7Vdhojas6q3596mXFsR8nwBQBXX5JiV7p9buEVAGqYL4yFzclON5P9vFrpu1u7Zwl2oriyDa89n0wbw==}
-    peerDependencies:
-      pg: '>=8.0'
-
   pg-pool@3.8.0:
     resolution: {integrity: sha512-VBw3jiVm6ZOdLBTIcXLNdSotb6Iy3uOCwDGFAksZCXmi10nyRvnP2v3jl4d+IsLYRyXf6o9hIm/ZtUzlByNUdw==}
     peerDependencies:
@@ -5923,15 +5918,6 @@ packages:
   pg-types@4.0.2:
     resolution: {integrity: sha512-cRL3JpS3lKMGsKaWndugWQoLOCoP+Cic8oseVcbr0qhPzYD5DWXK+RZ9LY9wxRf7RQia4SCwQlXk0q6FCPrVng==}
     engines: {node: '>=10'}
-
-  pg@8.13.3:
-    resolution: {integrity: sha512-P6tPt9jXbL9HVu/SSRERNYaYG++MjnscnegFh9pPHihfoBSujsrka0hyuymMzeJKFWrcG8wvCKy8rCe8e5nDUQ==}
-    engines: {node: '>= 8.0.0'}
-    peerDependencies:
-      pg-native: '>=3.0.1'
-    peerDependenciesMeta:
-      pg-native:
-        optional: true
 
   pg@8.14.0:
     resolution: {integrity: sha512-nXbVpyoaXVmdqlKEzToFf37qzyeeh7mbiXsnoWvstSqohj88yaa/I/Rq/HEVn2QPSZEuLIJa/jSpRDyzjEx4FQ==}
@@ -9259,21 +9245,21 @@ snapshots:
       - encoding
       - supports-color
 
-  '@mikro-orm/core@6.4.9':
+  '@mikro-orm/core@6.4.10':
     dependencies:
       dataloader: 2.2.3
       dotenv: 16.4.7
       esprima: 4.0.1
       fs-extra: 11.3.0
       globby: 11.1.0
-      mikro-orm: 6.4.9
+      mikro-orm: 6.4.10
       reflect-metadata: 0.2.2
 
-  '@mikro-orm/knex@6.4.9(@mikro-orm/core@6.4.9)(pg@8.13.3)':
+  '@mikro-orm/knex@6.4.10(@mikro-orm/core@6.4.10)(pg@8.14.0)':
     dependencies:
-      '@mikro-orm/core': 6.4.9
+      '@mikro-orm/core': 6.4.10
       fs-extra: 11.3.0
-      knex: 3.1.0(pg@8.13.3)
+      knex: 3.1.0(pg@8.14.0)
       sqlstring: 2.3.3
     transitivePeerDependencies:
       - mysql
@@ -9284,11 +9270,11 @@ snapshots:
       - supports-color
       - tedious
 
-  '@mikro-orm/postgresql@6.4.9(@mikro-orm/core@6.4.9)':
+  '@mikro-orm/postgresql@6.4.10(@mikro-orm/core@6.4.10)':
     dependencies:
-      '@mikro-orm/core': 6.4.9
-      '@mikro-orm/knex': 6.4.9(@mikro-orm/core@6.4.9)(pg@8.13.3)
-      pg: 8.13.3
+      '@mikro-orm/core': 6.4.10
+      '@mikro-orm/knex': 6.4.10(@mikro-orm/core@6.4.10)(pg@8.14.0)
+      pg: 8.14.0
       postgres-array: 3.0.4
       postgres-date: 2.1.0
       postgres-interval: 4.0.2
@@ -9303,9 +9289,9 @@ snapshots:
       - supports-color
       - tedious
 
-  '@mikro-orm/reflection@6.4.9(@mikro-orm/core@6.4.9)':
+  '@mikro-orm/reflection@6.4.10(@mikro-orm/core@6.4.10)':
     dependencies:
-      '@mikro-orm/core': 6.4.9
+      '@mikro-orm/core': 6.4.10
       globby: 11.1.0
       ts-morph: 25.0.1
 
@@ -13238,7 +13224,7 @@ snapshots:
 
   kind-of@6.0.3: {}
 
-  knex@3.1.0(pg@8.13.3):
+  knex@3.1.0(pg@8.14.0):
     dependencies:
       colorette: 2.0.19
       commander: 10.0.1
@@ -13255,7 +13241,7 @@ snapshots:
       tarn: 3.0.2
       tildify: 2.0.0
     optionalDependencies:
-      pg: 8.13.3
+      pg: 8.14.0
     transitivePeerDependencies:
       - supports-color
 
@@ -13483,7 +13469,7 @@ snapshots:
       braces: 3.0.3
       picomatch: 2.3.1
 
-  mikro-orm@6.4.9: {}
+  mikro-orm@6.4.10: {}
 
   mime-db@1.52.0: {}
 
@@ -13921,10 +13907,6 @@ snapshots:
 
   pg-numeric@1.0.2: {}
 
-  pg-pool@3.7.1(pg@8.13.3):
-    dependencies:
-      pg: 8.13.3
-
   pg-pool@3.8.0(pg@8.14.0):
     dependencies:
       pg: 8.14.0
@@ -13952,16 +13934,6 @@ snapshots:
       postgres-date: 2.1.0
       postgres-interval: 3.0.0
       postgres-range: 1.1.4
-
-  pg@8.13.3:
-    dependencies:
-      pg-connection-string: 2.7.0
-      pg-pool: 3.7.1(pg@8.13.3)
-      pg-protocol: 1.7.1
-      pg-types: 2.2.0
-      pgpass: 1.0.5
-    optionalDependencies:
-      pg-cloudflare: 1.1.1
 
   pg@8.14.0:
     dependencies:
