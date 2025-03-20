@@ -33,7 +33,7 @@ import {
 	ServerPacket,
 	type BufferSerializer,
 } from "rusty-motors-shared-packets";
-import { _MSG_STRING } from "./_MSG_STRING.js";
+import { _MSG_STRING } from "rusty-motors-shared";
 
 
 

@@ -1,3 +1,5 @@
+import { getServerLogger } from "rusty-motors-shared";
+
 export const BINARY_ALIGNMENT = 4;
 
 /**
@@ -92,6 +94,10 @@ export class BinaryMember {
     size() {
         return this.value.length;
     }
+
+    toString() {
+        return this.value.toString();
+    }
 }   
 
 export class Uint8_t extends BinaryMember {
@@ -110,6 +116,39 @@ export class Uint32_t extends BinaryMember {
     constructor() {
         super(4);
     }
+
+    getInt(endian: "LE" | "BE" = "LE"): number {
+        if (endian === "BE") {
+            return this.getBE();
+        }
+        return this.getLE();
+    }
+
+    /**
+     * Converts the first four bytes of the `value` array to a 32-bit little-endian integer.
+     * 
+     * @returns {number} The 32-bit little-endian integer representation of the first four bytes.
+     */
+    getLE(): number {     
+        const byte0 = this.value[0] || 0;
+        const byte1 = (this.value[1] || 0) << 8;
+        const byte2 = (this.value[2] || 0) << 16;
+        const byte3 = (this.value[3] || 0) << 24;
+        return byte0 | byte1 | byte2 | byte3;
+    }
+
+    /**
+     * Converts the first four bytes of the `value` array to a 32-bit big-endian integer.
+     * 
+     * @returns {number} The 32-bit big-endian integer representation of the first four bytes.
+     */
+    getBE(): number {
+        const byte0 = (this.value[0] || 0) << 24;
+        const byte1 = (this.value[1] || 0) << 16;
+        const byte2 = (this.value[2] || 0) << 8;
+        const byte3 = this.value[3] || 0;
+        return byte0 | byte1 | byte2 | byte3;
+    }
 }
 
 export class Uint8_tArray extends BinaryMember {
@@ -122,17 +161,38 @@ export class Uint8_tArray extends BinaryMember {
  * A class representing a string of characters.
  * The string is stored as a sequence of characters followed by a null terminator.
  * It is prefixed with a 32-bit integer representing the length of the string.
+ * The length includes the null terminator.
  * The prefix is in network byte order.
  */
 export class CString extends BinaryMember {
+    private _rawLength = 0
     constructor(size: number) {
         super(size);
     }
+
+
     override set(v: Uint8Array) {
-        if (v[v.length - 1] !== 0) {
-            throw new Error("CString must be null-terminated");
+        const log = getServerLogger("Binary.CString");
+        log.debug({ v }, "Setting CString");
+
+        if (v.length > this.maxSize + 4) {
+            throw new Error(`CString exceeds maximum size of ${this.maxSize + 4}, got ${v.length}`);
         }
-        super.set(v);
+
+        if (v.length <= 4) {
+            throw new Error("CString must be at least 5 bytes long");
+        }
+
+        const length = new Uint32_t();
+        length.set(v.slice(0, 4));
+        const stringLength = length.getInt("BE");
+        if (stringLength + 4 > v.length) {
+            throw new Error(`CString length is ${stringLength} but only ${v.length - 4} bytes are available`);
+        }
+
+        this._rawLength = stringLength
+
+        this.value = addAlignementPadding(v.slice(4, stringLength + 4), BINARY_ALIGNMENT);
     }
     /**
      * Returns the string as a sequence of characters followed by a null terminator.
@@ -140,13 +200,28 @@ export class CString extends BinaryMember {
      * The prefix is in network byte order.
      * @returns {Uint8Array} The string as a sequence of characters followed by a null terminator.
      */
-    override get() {
+    override get(): Uint8Array {
         const length = new Uint32_t();
         length.set(new Uint8Array([this.value.length]));
         return new Uint8Array([...length.get(), ...this.value]);
     }
-    override size() {
+    
+    
+    /**
+     * Calculates the size of the binary member.
+     *
+     * @returns {number} The size of the binary member, which is the length of the value plus 4.
+     */
+    override size(): number {
         return this.value.length + 4;
+    }
+
+    /**
+     * Returns the length of the string.
+     * @returns {number} The length of the string.
+     */
+    get length(): number {
+        return this._rawLength;
     }
 }
 

@@ -31,7 +31,8 @@ export function _MSG_STRING(messageID: number): string {
 		{ id: 389, name: "MC_GET_MCO_TUNABLES" }, // 0x185"}
 		{ id: 391, name: "MC_CLUB_GET_INVITATIONS" }, // 0x187
 		{ id: 438, name: "MC_CLIENT_CONNECT_MSG" }, // 0x1b6
-		{ id: 440, name: "MC_TRACKING_MSG" },
+		{ id: 440, name: "MC_TRACKING_MSG" }, // 0x1b8
+		{ id: 490, name: "MC_CLASSIFIED_AD_GET_COUNT" }, // 0x1ea
 	];
 	const result = messageIds.find((id) => id.id === messageID);
 

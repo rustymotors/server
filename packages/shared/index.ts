@@ -38,6 +38,7 @@ export type { State } from "./src/State.js";
 export type { OnDataHandler, ServiceResponse } from "./src/State.js";
 export { LegacyMessage } from "./src/LegacyMessage.js";
 export { NPSHeader } from "./src/NPSHeader.js";
+export { _MSG_STRING } from "./src/_MSG_STRING.js";
 export * from "./src/interfaces.js";
 import * as Sentry from "@sentry/node";
 import pino from "pino";

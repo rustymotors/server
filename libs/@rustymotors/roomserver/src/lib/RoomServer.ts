@@ -31,7 +31,7 @@ export class RoomServer {
         const messageName = MessageNumberMap[messageNumber];
 
         if (!messageName) {
-            this.log.error({ connectionId, messageNumber }, "Unknown message number");
+            this.log.warn({ connectionId, messageNumber }, "Unknown message number");
             return {
                 connectionId,
                 messages: [],
@@ -44,7 +44,7 @@ export class RoomServer {
             case "NPS_LOGIN":
                 return this.handleLogin({ connectionId, packet });
             default:{
-                this.log.error({ connectionId, messageName }, "Unknown message name");
+                this.log.warn({ connectionId, messageName }, "Unknown message name");
                 return {
                     connectionId,
                     messages: [],
