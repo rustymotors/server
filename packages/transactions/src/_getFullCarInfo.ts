@@ -67,21 +67,13 @@ export class PartStruct {
         const log = getServerLogger("transactions/PartStruct");
         try {
             const buffer = Buffer.alloc(this.size());
-            log.debug(`Writing partId: ${this.partId}`);
             buffer.writeInt32LE(this.partId, 0);
-            log.debug(`Writing parentPartId: ${this.parentPartId}`);
             buffer.writeInt32LE(this.parentPartId ?? 0, 4);
-            log.debug(`Writing brandedPartId: ${this.brandedPartId}`);
             buffer.writeInt32LE(this.brandedPartId, 8);
-            log.debug(`Writing repairCost: ${this.repairCost}`);
             buffer.writeInt32LE(this.repairCost, 12);
-            log.debug(`Writing junkyardValue: ${this.junkyardValue}`);
             buffer.writeInt32LE(this.junkyardValue, 16);
-            log.debug(`Writing wear: ${this.wear}`);
             buffer.writeInt32LE(this.wear, 20);
-            log.debug(`Writing attachmentPoint: ${this.attachmentPoint}`);
             buffer.writeInt8(this.attachmentPoint, 24);
-            log.debug(`Writing damage: ${this.damage}`);
             buffer.writeInt8(this.damage, 25);
             return buffer;
         } catch (error) {
