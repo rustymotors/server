@@ -67,7 +67,7 @@ export function addAlignementPadding(buffer: Uint8Array, alignment: number): Uin
  */
 export function verifyAlignment(buffer: Uint8Array, alignment: number) {
     if (buffer.length % alignment !== 0) {
-        throw new Error(`Buffer size is not aligned to ${alignment}`);
+        throw new Error(`Buffer size is not aligned to ${alignment}, got ${buffer.length}`);
     }
 }
 
@@ -92,10 +92,6 @@ export class BinaryMember {
         this.value = v;
     }
     get() {
-        if (this.shouldPad) {
-            verifyAlignment(this.value, BINARY_ALIGNMENT);
-            return this.value;
-        }
         return this.value;
     }
     size() {
@@ -155,6 +151,46 @@ export class Uint32_t extends BinaryMember {
         const byte2 = (this.value[2] || 0) << 8;
         const byte3 = this.value[3] || 0;
         return byte0 | byte1 | byte2 | byte3;
+    }
+
+    setInt(value: number, endian: "LE" | "BE" = "LE") {
+        if (value < 0 || value > 0xffffffff) {
+            throw new Error(`Value ${value} is not a 32-bit integer`);
+        }
+
+        if (endian === "BE") {
+            this.setBE(value);
+        } else {
+            this.setLE(value);
+        }
+    }
+
+    /**
+     * Sets the value of the binary member to a 32-bit little-endian integer.
+     * 
+     * @param {number} value - The 32-bit little-endian integer value to set.
+     */
+    setLE(value: number) {
+        this.value = new Uint8Array([
+            value & 0xff,
+            (value >> 8) & 0xff,
+            (value >> 16) & 0xff,
+            (value >> 24) & 0xff,
+        ]);
+    }
+
+    /**
+     * Sets the value of the binary member to a 32-bit big-endian integer.
+     * 
+     * @param {number} value - The 32-bit big-endian integer value to set.
+     */
+    setBE(value: number) {
+        this.value = new Uint8Array([
+            (value >> 24) & 0xff,
+            (value >> 16) & 0xff,
+            (value >> 8) & 0xff,
+            value & 0xff,
+        ]);
     }
 }
 
@@ -216,6 +252,15 @@ export class CString extends BinaryMember {
     override size(): number {
         return this.value.length + 4;
     }
+
+    /**
+     * Returns the string as a sequence of characters without the null terminator.
+     * @returns {string} The string as a sequence of characters.
+     */
+    override toString(): string {
+        return this.value.toString();
+    }
+
 }
 
 

@@ -2,7 +2,6 @@ import {
 	BinaryMember,
 	Uint32_t,
 	CString,
-	Uint8_tArray,
 } from "@rustymotors/binary";
 import { UserData } from "./UserData.js";
 
@@ -59,27 +58,27 @@ export class UserInfo extends BinaryMember {
 		return this._userId.size() + this._userName.size() + this._userData.size();
 	}
 
-	get userId(): Uint32_t {
-		return this._userId;
+	get userId(): number {
+		return this._userId.getInt("BE");
 	}
 
-	get userName(): CString {
-		return this._userName;
+	get userName(): string	 {
+		return this._userName.toString();
 	}
 
-	get userData(): Uint8_tArray {
+	get userData(): UserData {
 		return this._userData;
 	}
 
-	set userId(value: Uint32_t) {
-		this._userId = value;
+	set userId(value: number) {
+		this._userId.setInt(value, "BE");
 	}
 
 	set userName(value: CString) {
 		this._userName = value;
 	}
 
-	set userData(value: Uint8_tArray) {
-		this._userData.set(value.get());
+	set userData(value: UserData) {
+		this._userData = value;
 	}
 }

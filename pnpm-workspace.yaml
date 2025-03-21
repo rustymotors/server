@@ -3,4 +3,5 @@ packages:
   - src/*
   - libs/@rustymotors/*
 onlyBuiltDependencies:
+  - '@sentry/profiling-node'
   - nx

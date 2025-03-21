@@ -74,4 +74,12 @@ export class LoginRequest implements PacketBody {
 	toHexString(): string {
 		return this.serialize().toString();
 	}
+
+    get customerNumber(): number {
+        return this._customerNumber.getBE();
+    }
+
+    get userInfo(): UserInfo {
+        return this._userInfo;
+    }
 }
