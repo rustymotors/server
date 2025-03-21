@@ -1,3 +1,5 @@
+import { SerializableInterface } from "rusty-motors-shared-packets";
+
 export const BINARY_ALIGNMENT = 4;
 
 /**
@@ -72,7 +74,7 @@ export function verifyAlignment(buffer: Uint8Array, alignment: number) {
 }
 
 
-export class BinaryMember {
+export class BinaryMember implements SerializableInterface {
     protected value: Uint8Array;
     protected maxSize: number;
     protected shouldPad: boolean;
@@ -101,6 +103,22 @@ export class BinaryMember {
     toString() {
         return this.value.toString();
     }
+
+    serialize(): Buffer {
+        return Buffer.from(this.get());
+    }
+
+    deserialize(data: Buffer) {
+        this.set(new Uint8Array(data));
+    }
+
+    getByteSize(): number {
+        return this.size();
+    }
+
+    toHexString(): string {
+        return this.get().reduce((acc, v) => acc + v.toString(16).padStart(2, "0"), "");
+    }
 }   
 
 export class Uint8_t extends BinaryMember {
@@ -112,6 +130,71 @@ export class Uint8_t extends BinaryMember {
 export class Uint16_t extends BinaryMember {
     constructor() {
         super(2);
+    }
+
+    getShort(endian: "LE" | "BE" = "LE"): number {
+        if (endian === "BE") {
+            return this.getBE();
+        }
+        return this.getLE();
+    }
+
+    /**
+     * Converts the first two bytes of the `value` array to a 16-bit little-endian integer.
+     * 
+     * @returns {number} The 16-bit little-endian integer representation of the first two bytes.
+     */
+    getLE(): number {
+        const byte0 = this.value[0] || 0;
+        const byte1 = this.value[1] || 0 << 8;
+        return byte0 | byte1;
+    }
+
+    /**
+     * Converts the first two bytes of the `value` array to a 16-bit big-endian integer.
+     * 
+     * @returns {number} The 16-bit big-endian integer representation of the first two bytes.
+     */
+    getBE(): number {
+        const byte0 = this.value[0] || 0 << 8;
+        const byte1 = this.value[1] || 0;
+        return byte0 | byte1;
+    }
+
+    setShort(value: number, endian: "LE" | "BE" = "LE") {
+        if (value < 0 || value > 0xffff) {
+            throw new Error(`Value ${value} is not a 16-bit integer`);
+        }
+
+        if (endian === "BE") {
+            this.setBE(value);
+        } else {
+            this.setLE(value);
+        }
+    }
+
+    /**
+     * Sets the value of the binary member to a 16-bit little-endian integer.
+     * 
+     * @param {number} value - The 16-bit little-endian integer value to set.
+     */
+    setLE(value: number) {
+        this.value = new Uint8Array([
+            value & 0xff,
+            (value >> 8) & 0xff,
+        ]);
+    }
+
+    /**
+     * Sets the value of the binary member to a 16-bit big-endian integer.
+     * 
+     * @param {number} value - The 16-bit big-endian integer value to set.
+     */
+    setBE(value: number) {
+        this.value = new Uint8Array([
+            (value >> 8) & 0xff,
+            value & 0xff,
+        ]);
     }
 }
 
@@ -261,66 +344,6 @@ export class CString extends BinaryMember {
         return this.value.toString();
     }
 
-}
-
-
-
-export type BinaryFieldTypes = {
-    set: (value: Uint8Array) => void;
-    get: () => Uint8Array;
-    size: () => number;
-    constructor: (size: number) => BinaryFieldTypes;
-}
-
-export type BinaryFieldsStructure = Omit<BinaryFieldTypes, "constructor"> & {
-    getField: (name: string) => BinaryFieldTypes;
-    setField: (name: string, value: Uint8Array) => void;
-}
-
-export class RawBinaryStructure implements BinaryFieldsStructure {
-    protected _fields: Record<string, BinaryFieldTypes>;
-
-    constructor(fields: Record<string, BinaryFieldTypes>) {        
-        this._fields = fields;
-
-    }
-    getField(name: string): BinaryFieldTypes {
-        if (!this._fields[name]) {
-            throw new Error(`Field ${name} not found`);
-        }
-        return this._fields[name];
-    }
-
-    setField(name: string, value: Uint8Array) {
-        if (!this._fields[name]) {
-            throw new Error(`Field ${name} not found`);
-        }
-        this._fields[name].set(value);
-    }
-
-    set(value: Uint8Array) {
-        let offset = 0;
-        for (const field of Object.values(this._fields)) {
-            const fieldSize = field.size();
-            field.set(value.slice(offset, offset + fieldSize));
-            offset += fieldSize;
-        }
-    }
-
-    get() {
-        return Object.values(this._fields)
-            .map(field => field.get())
-            .reduce((acc, v) => {
-                const combined = new Uint8Array(acc.length + v.length);
-                combined.set(acc);
-                combined.set(v, acc.length);
-                return combined;
-            }, new Uint8Array());
-    }
-
-    size() {
-        return Object.values(this._fields).reduce((acc, field) => acc + field.size(), 0);
-    }
 }
 
 

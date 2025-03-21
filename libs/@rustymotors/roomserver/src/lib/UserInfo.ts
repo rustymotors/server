@@ -46,9 +46,22 @@ export class UserInfo extends BinaryMember {
 		}
 	}
 
+	swapBytes(v: Uint8Array): Uint8Array {
+		const byte0 = v[0] || 0;
+		const byte1 = v[1] || 0;
+		const byte2 = v[2] || 0;
+		const byte3 = v[3] || 0;
+		v[0] = byte3;
+		v[1] = byte2;
+		v[2] = byte1;
+		v[3] = byte0;
+		return v;
+	}
+
 	override get(): Uint8Array {
+
 		return new Uint8Array([
-			...this._userId.get(),
+			...this.swapBytes(this._userId.get()),
 			...this._userName.get(),
 			...this._userData.get(),
 		]);

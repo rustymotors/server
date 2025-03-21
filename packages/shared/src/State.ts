@@ -7,8 +7,10 @@
 
 // eslint-disable-next-line no-unused-vars
 import { Cipher, Decipher } from "crypto";
-import { SerializedBufferOld } from "./SerializedBufferOld.js";
-import { BufferSerializer } from "rusty-motors-shared-packets";
+import {
+	BufferSerializer,
+	type SerializableInterface,
+} from "rusty-motors-shared-packets";
 import { ServerLogger } from "../index.js";
 
 
@@ -148,9 +150,9 @@ type OnDataHandlerArgs = {
 };
 
 export interface ServiceResponse {
-	connectionId: string;
-	messages: SerializedBufferOld[];
-}
+		connectionId: string;
+		messages: SerializableInterface[];
+	}
 
 export type OnDataHandler = (
 	args: OnDataHandlerArgs,

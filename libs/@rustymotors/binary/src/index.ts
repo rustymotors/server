@@ -11,3 +11,4 @@ export * from "./lib/BytableWord.js";
 export {deserialize, serialize, createEmptyField, serializeSize } from "./lib/Serializer.js";
 export * from "./lib/types.js";
 export * from "./lib/BinaryMember.js";
+export { GameMessage } from "./lib/GameMessage.js";

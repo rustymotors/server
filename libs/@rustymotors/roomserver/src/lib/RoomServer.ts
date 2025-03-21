@@ -1,4 +1,4 @@
-import { BytableMessage } from '@rustymotors/binary';
+import { BytableMessage, GameMessage } from '@rustymotors/binary';
 import { databaseManager } from "rusty-motors-database";
 import {
 	createCommandEncryptionPair,
@@ -10,7 +10,6 @@ import {
 	getEncryption,
 	getServerLogger,
 	McosEncryption,
-	SerializedBufferOld,
 	ServiceResponse,
 	type ServerLogger,
 } from "rusty-motors-shared";
@@ -127,30 +126,20 @@ export class RoomServer {
             
             this.usersData.set(userId, userData);
 
-            const response = new BytableMessage();
-            response.header.setMessageId(
+            const responseMessage = new GameMessage();
+            responseMessage.setMessageId(
                 getMessageNumber("NPS_LOGIN_RESPONSE"),
             );
-            response.header.setMessageVersion(0);
-            response.setSerializeOrder([
-                { name: "userId", field: "Dword" },
-                { name: "userName", field: "Container" },
-                { name: "userData", field: "Buffer" },
-            ]);
-
-            response.setFieldValueByName("userId", userInfo.userId);
-            response.setFieldValueByName("userName", userInfo.userName);
-            response.setFieldValueByName("userData", Buffer.from(userData.get()));
-
+            responseMessage.setMessageData(userInfo.get());
 
             log.debug(
-                { connectionId, response: response.toHexString() },
+                { connectionId, response: responseMessage.toHexString() },
                 "Sending NPS_LOGIN_RESPONSE",
             );
 
             return {
                 connectionId,
-                messages: [response],
+                messages: [responseMessage],
             };
 
 
