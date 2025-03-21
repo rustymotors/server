@@ -1,6 +1,6 @@
 import { ServerLogger } from "rusty-motors-shared";
 import { LegacyMessage } from "rusty-motors-shared";
-import { MiniUserInfo } from "../MiniUserInfo.js";
+import { MiniUserInfo } from "./MiniUserInfo.js";
 import { getServerLogger } from "rusty-motors-shared";
 import { BytableMessage } from "@rustymotors/binary";
 

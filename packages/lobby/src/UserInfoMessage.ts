@@ -118,17 +118,6 @@ export class UserData extends BytableStructure {
 	}
 }
 
-export class MiniUserInfo extends BytableStructure {
-	constructor() {
-		super();
-		this.setSerializeOrder([
-			{ name: "userId", field: "Dword" },
-			{ name: "userName", field: "String" },
-		]);
-	}
-}
-
-
 export class UserInfo {
 	_userId: number;
 	_userName: string;
