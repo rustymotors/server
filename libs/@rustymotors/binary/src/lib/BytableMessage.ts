@@ -380,6 +380,10 @@ export class BytableMessage extends Bytable {
 		toHexString() {
 			return this.serialize().toString("hex");
 		}
+
+		getByteSize() {
+			return this.serializeSize;
+		}
 	}
 
 export function createRawMessage(buffer?: Buffer) {

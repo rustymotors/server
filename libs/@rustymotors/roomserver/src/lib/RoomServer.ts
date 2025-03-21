@@ -130,16 +130,32 @@ export class RoomServer {
             responseMessage.setMessageId(
                 getMessageNumber("NPS_LOGIN_RESPONSE"),
             );
-            responseMessage.setMessageData(userInfo.get());
+            responseMessage.setMessageData(userData.get());
+
+            const response = new BytableMessage();
+            response.header.setMessageId(
+                getMessageNumber("NPS_LOGIN_RESPONSE"),
+            );
+            response.header.setMessageVersion(0);
+            response.setSerializeOrder([
+                { name: "userId", field: "Dword" },
+                { name: "userName", field: "Container" },
+                { name: "userData", field: "Buffer" },
+            ]);
+
+            response.setFieldValueByName("userId", userInfo.userId);
+            response.setFieldValueByName("userName", userInfo.userName);
+            response.setFieldValueByName("userData", Buffer.from(userData.get()));
+
 
             log.debug(
-                { connectionId, response: responseMessage.toHexString() },
+                { connectionId, response: response.toHexString() },
                 "Sending NPS_LOGIN_RESPONSE",
             );
 
             return {
                 connectionId,
-                messages: [responseMessage],
+                messages: [response],
             };
 
 

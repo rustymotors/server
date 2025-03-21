@@ -61,7 +61,7 @@ export class UserInfo extends BinaryMember {
 	override get(): Uint8Array {
 
 		return new Uint8Array([
-			...this.swapBytes(this._userId.get()),
+			...this._userId.get(),
 			...this._userName.get(),
 			...this._userData.get(),
 		]);
