@@ -1,8 +1,5 @@
-import { BinaryMember, Uint32_t, Uint8_t } from "@rustymotors/binary";
+import { BinaryMember, Uint32_t } from "@rustymotors/binary";
 import { CarDecal } from "./CarDecal.js";
-import { getServerLogger } from "rusty-motors-shared";
-
-const log = getServerLogger("RoomServer.UserCar", "roomserver");
 
 export class UserCar extends BinaryMember {
 	private _carId: Uint32_t = new Uint32_t();
@@ -71,11 +68,9 @@ export class UserCar extends BinaryMember {
             value = v.slice(offset, offset + this._decal.size());
             this._decal.set(value);
         } catch (error) {
-			log.error(
-				{ error, value, self: this },
-				`Error setting UserCar: ${(error as Error).message}`,
-			);
-			throw error;
+            const e = new Error(`Error setting UserCar: ${(error as Error).message}`);
+            e.cause = error;
+            throw e;
 		}
 	}
 

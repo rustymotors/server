@@ -1,5 +1,3 @@
-import { getServerLogger } from "rusty-motors-shared";
-
 export const BINARY_ALIGNMENT = 4;
 
 /**
@@ -77,18 +75,27 @@ export function verifyAlignment(buffer: Uint8Array, alignment: number) {
 export class BinaryMember {
     protected value: Uint8Array;
     protected maxSize: number;
-    constructor(size = 0) {
+    protected shouldPad: boolean;
+
+    constructor(size = 0, shouldPad = true) {
         this.value = new Uint8Array(size);
         this.maxSize = size;
+        this.shouldPad = shouldPad;
     }
     set(v: Uint8Array) {
         if (v.length > this.maxSize) {
             throw new Error(`Value exceeds maximum size of ${this.maxSize}`);
         }
-        this.value = addAlignementPadding(v, BINARY_ALIGNMENT);
+        if (this.shouldPad) {
+            this.value = addAlignementPadding(v, BINARY_ALIGNMENT);
+        }
+        this.value = v;
     }
     get() {
-        verifyAlignment(this.value, BINARY_ALIGNMENT);
+        if (this.shouldPad) {
+            verifyAlignment(this.value, BINARY_ALIGNMENT);
+            return this.value;
+        }
         return this.value;
     }
     size() {
@@ -101,8 +108,8 @@ export class BinaryMember {
 }   
 
 export class Uint8_t extends BinaryMember {
-    constructor() {
-        super(1);
+    constructor(shouldPad = true) {
+        super(1, shouldPad);
     }
 }
 
@@ -165,16 +172,12 @@ export class Uint8_tArray extends BinaryMember {
  * The prefix is in network byte order.
  */
 export class CString extends BinaryMember {
-    private _rawLength = 0
     constructor(size: number) {
         super(size);
     }
 
 
     override set(v: Uint8Array) {
-        const log = getServerLogger("Binary.CString");
-        log.debug({ v }, "Setting CString");
-
         if (v.length > this.maxSize + 4) {
             throw new Error(`CString exceeds maximum size of ${this.maxSize + 4}, got ${v.length}`);
         }
@@ -190,9 +193,7 @@ export class CString extends BinaryMember {
             throw new Error(`CString length is ${stringLength} but only ${v.length - 4} bytes are available`);
         }
 
-        this._rawLength = stringLength
-
-        this.value = addAlignementPadding(v.slice(4, stringLength + 4), BINARY_ALIGNMENT);
+        this.value = v.slice(4, stringLength + 4);
     }
     /**
      * Returns the string as a sequence of characters followed by a null terminator.
@@ -214,14 +215,6 @@ export class CString extends BinaryMember {
      */
     override size(): number {
         return this.value.length + 4;
-    }
-
-    /**
-     * Returns the length of the string.
-     * @returns {number} The length of the string.
-     */
-    get length(): number {
-        return this._rawLength;
     }
 }
 

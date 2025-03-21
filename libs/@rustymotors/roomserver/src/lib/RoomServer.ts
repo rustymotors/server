@@ -63,8 +63,8 @@ export class RoomServer {
 
             log.debug({ connectionId, getServerInfoRequest }, "Received NPS_LOGIN");
 
-        } catch (error) {
-            log.error({ connectionId, error }, `Error handling NPS_LOGIN: ${error.message}`);
+        } catch (error: any) {
+            log.error({ connectionId, error }, `Error handling NPS_LOGIN: ${(error as Error).message}`);
             return {
                 connectionId,
                 messages: [],

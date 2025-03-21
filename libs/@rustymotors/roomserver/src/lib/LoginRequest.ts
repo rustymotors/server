@@ -1,9 +1,6 @@
 import { CString, Uint32_t, Uint8_tArray } from "@rustymotors/binary";
 import { PacketBody } from "./types.js";
 import { UserInfo } from "./UserInfo.js";
-import { getServerLogger } from "rusty-motors-shared";
-
-const log = getServerLogger("RoomServer.LoginRequest", "roomserver");
 
 export class LoginRequest implements PacketBody {
 	private _userInfo: UserInfo = new UserInfo();
@@ -21,13 +18,6 @@ export class LoginRequest implements PacketBody {
 			);
 		}
 
-		if (v.length !== this.size()) {
-			log.warn(
-				{ expectedSize: this.size(), actualSize: v.length },
-				"Message smaller than expected size",
-			);
-		}
-
 		try {
 			let offset = 0;
 			this._userInfo.set(v.slice(0, this._userInfo.size()));
@@ -36,21 +26,20 @@ export class LoginRequest implements PacketBody {
 				v.slice(offset, offset + this._customerNumber.size()),
 			);
 			offset += this._customerNumber.size();
-			this._flags.set(v.slice(offset, offset + this._flags.size()));
-			offset += this._flags.size();
-			this._version.set(v.slice(offset, offset + this._version.size()));
-			offset += this._version.size();
-			this._hostName.set(v.slice(offset, offset + this._hostName.size()));
-			offset += this._hostName.size();
-			this._ipAddress.set(v.slice(offset, offset + this._ipAddress.size()));
-			offset += this._ipAddress.size();
+            this._flags.set(v.slice(offset, offset + this._flags.size()));
+            offset += this._flags.size();
+            this._version.set(v.slice(offset, offset + this._version.size()));
+            offset += this._version.size();
+            this._hostName.set(v.slice(offset, offset + this._hostName.size()));
+            offset += this._hostName.size();
+            this._ipAddress.set(v.slice(offset, offset + this._ipAddress.size()));
+            offset += this._ipAddress.size();
 			this._keyHash.set(v.slice(offset, offset + this._keyHash.size()));
+            offset += this._keyHash.size();
 		} catch (error) {
-			log.error(
-				{ error, self: this, value: v },
-				`Error setting LoginRequest: ${(error as Error).message}`,
-			);
-			throw error;
+            const e = new Error(`Error setting LoginRequest: ${(error as Error).message}`);
+            e.cause = error;
+            throw e;
 		}
 	}
 
@@ -58,11 +47,11 @@ export class LoginRequest implements PacketBody {
 		return new Uint8Array([
 			...this._userInfo.get(),
 			...this._customerNumber.get(),
-			...this._flags.get(),
-			...this._version.get(),
-			...this._hostName.get(),
-			...this._ipAddress.get(),
-			...this._keyHash.get(),
+            ...this._flags.get(),
+            ...this._version.get(),
+            ...this._hostName.get(),
+            ...this._ipAddress.get(),
+            ...this._keyHash.get(),
 		]);
 	}
 
@@ -70,11 +59,11 @@ export class LoginRequest implements PacketBody {
 		return (
 			this._userInfo.size() +
 			this._customerNumber.size() +
-			this._flags.size() +
-			this._version.size() +
-			this._hostName.size() +
-			this._ipAddress.size() +
-			this._keyHash.size()
+            this._flags.size() +
+            this._version.size() +
+            this._hostName.size() +
+            this._ipAddress.size() +
+            this._keyHash.size()
 		);
 	}
 

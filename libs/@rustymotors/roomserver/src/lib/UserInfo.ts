@@ -5,9 +5,6 @@ import {
 	Uint8_tArray,
 } from "@rustymotors/binary";
 import { UserData } from "./UserData.js";
-import { getServerLogger } from "rusty-motors-shared";
-
-const log = getServerLogger("RoomServer.UserInfo", "roomserver");
 
 export class UserInfo extends BinaryMember {
 	private _userId: Uint32_t = new Uint32_t();
@@ -40,15 +37,13 @@ export class UserInfo extends BinaryMember {
             offset += this._userId.size();
             value = v.slice(offset, offset + this._userName.size());
             this._userName.set(value);
-            offset += this._userName.length;
-
-            log.debug({ offset, self: this, size: this._userData.size() }, "Setting UserInfo");
-
+            offset += this._userName.size();
             value = v.slice(offset, offset + this._userData.size());
             this._userData.set(value);
         } catch (error) {
-			log.error({ error, value }, `Error setting UserInfo: ${(error as Error).message}`);
-            throw error;
+            const e = new Error(`Error setting UserInfo: ${(error as Error).message}`);
+            e.cause = error;
+            throw e;
 		}
 	}
 
