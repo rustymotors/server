@@ -128,6 +128,10 @@ type LoggeringGroup = "gateway" | "lobby" | "roomserver";
 
 const shouldLog = (loggingGroup: LoggeringGroup) => {
 	const loggingGroups = process.env["MCO_LOGGING_GROUPS"]?.split(",") || [];
+	if (loggingGroups.includes("all") || loggingGroups.includes("*")) {
+		return true;
+	}
+
 	return loggingGroups.includes(loggingGroup);
 }
 

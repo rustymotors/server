@@ -219,9 +219,11 @@ async function routeInitialMessage(
 		}
 		default:
 			// No handler
-			log.warn(
-				`${connectionId}] No handler found for port ${connectionPort}: ${gameRequestPacket.serialize().toString("hex")}`,
-			);
+			log.warn({
+				id: connectionId,
+				port: connectionPort,
+				packet: gameRequestPacket.serialize().toString("hex"),
+			},`No handler found for port ${connectionPort}`);
 			break;
 	}
 

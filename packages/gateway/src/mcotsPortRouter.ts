@@ -170,7 +170,11 @@ async function routeInitialMessage(
 			).messages;
 			break;
 		default:
-			console.log(`No handler found for port ${port}`);
+			log.warn({
+                connectionId: id,
+                port,
+                initialPacket: initialPacket.toHexString(),
+            }, `WARN: No handler found for port ${port}`);
 			break;
 	}
 
