@@ -53,6 +53,11 @@ const npsCommandHandlers: NpsCommandHandler[] = [
 		name: "NPS_SET_MY_USER_DATA",
 		handler: _setMyUserData,
 	},
+    {
+        opCode: 0x106,
+        name: "NPS_OPEN_COMM_CHANNEL",
+        handler: _openCommChannel,
+    }
 ];
 
 async function handleCommand({
@@ -67,14 +72,18 @@ async function handleCommand({
 	connectionId: string;
 	message: BytableMessage | null;
 }> {
-	log.debug(
-		`[${connectionId}] Received command: ${message.serialize().toString("hex")}`,
-	);
+	log.debug({
+        connectionId,
+        command: message.serialize().toString("hex").slice(0, 4),
+    }, 'Handling command');
 
 	const command = message.header.messageId;
 
 	// What is the command?
-	log.debug(`[${connectionId}] Command: ${command}`);
+	log.debug({
+        connectionId,
+        command: MessageNumberMap[command],
+    }, `Received command: ${MessageNumberMap[command]}(${command})`);
 
 	const handler = npsCommandHandlers.find((h) => h.opCode === command);
 
@@ -449,4 +458,8 @@ export class RoomServer {
     get port() {
         return this._port;
     }
+}
+
+function _openCommChannel(args: { connectionId: string; message: BytableMessage; log?: Logger; }): Promise<{ connectionId: string; message: BytableMessage | null; }> {
+    
 }

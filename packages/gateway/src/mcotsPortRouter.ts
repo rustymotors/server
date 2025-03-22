@@ -104,7 +104,7 @@ async function processIncomingPackets(
             inPackets.push(packet);
         }
 
-        log.warn(`[${id}] Received ${inPackets.length} packets`);
+        log.debug(`[${id}] Received ${inPackets.length} packets`);
 
         for (let packet of inPackets) {
             log.debug(`[${id}] Received data: ${packet.toString('hex')}`);

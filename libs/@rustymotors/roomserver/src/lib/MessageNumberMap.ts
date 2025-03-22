@@ -2,6 +2,7 @@
 export const MessageNumberMap: Record<number, string> = {
     0x0100: "NPS_LOGIN",
     0x0101: "NPS_GET_USER_LIST",
+    0x0106: "NPS_OPEN_COMM_CHANNEL",
     0x0120: "NPS_LOGIN_RESPONSE",
     0x1101: "NPS_ENCRYPTED_COMMAND",
 };

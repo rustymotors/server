@@ -18,13 +18,10 @@ export async function handleGetMiniUserList({
 	message: BytableMessage;
 }> {
 	try {
-		log.debug(`[${connectionId}] Handling NPS_GET_MINI_USER_LIST`);
-		log.debug(
-			`[${connectionId}]Received command: ${message.serialize().toString("hex")}`,
-		);
-		log.debug(
-			`[${connectionId}] Received NPS_GET_MINI_USER_LIST: ${message.toString()}`,
-		);
+		log.debug({
+			connectionId,
+			payload: message.serialize().toString("hex"),
+		}, "Handling NPS_GET_MINI_USER_LIST");
 
 		const requestedCommId = message.getBody().readUInt32BE(0);
 
