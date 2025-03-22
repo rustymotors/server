@@ -18,8 +18,10 @@ export async function _setMyUserData({
 	log?: ServerLogger;
 }) {
 	try {
-		log.debug(`[$connectionId] Handling NPS_SET_MY_USER_DATA`);
-		log.debug(`[$connectionId] Received command: ${message.serialize().toString("hex")}`);
+		log.debug({
+			connectionId,
+			payload: message.serialize().toString("hex")
+		}, "Handling NPS_SET_MY_USER_DATA");
 
 		const incomingMessage = new UserInfo();
 		incomingMessage.deserialize(message.serialize());
@@ -60,7 +62,7 @@ export async function _setMyUserData({
 			message: null,
 		};
 	} catch (error) {
-		const err = Error(`[$connectionId] Error handling NPS_SET_MY_USER_DATA: ${String(error)}`);
+		const err = Error(`[${connectionId}] Error handling NPS_SET_MY_USER_DATA: ${String(error)}`);
 		err.cause = error;
 		throw err;
 	}
