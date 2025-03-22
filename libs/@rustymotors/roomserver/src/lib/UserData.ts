@@ -99,4 +99,8 @@ export class UserData extends BinaryMember {
 			this._level.size()
 		);
 	}
+
+	get lobbyId(): number {
+		return this._lobbyId.getBE();
+	}
 }

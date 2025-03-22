@@ -21,6 +21,8 @@ import { getMessageNumber, MessageNumberMap } from "./MessageNumberMap.js";
 import { LoginRequest } from './LoginRequest.js';
 import { UserData } from './UserData.js';
 import { handleGetMiniUserList } from "./handleGetMiniUserList.js";
+import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";
+import { _setMyUserData } from "./_setMyUserData.js";
 
 export type NpsCommandHandler = {
 	opCode: number;
@@ -40,6 +42,16 @@ const npsCommandHandlers: NpsCommandHandler[] = [
 		opCode: 0x128, // 296
 		name: "NPS_GET_MINI_USER_LIST",
 		handler: handleGetMiniUserList,
+	},
+	{
+		opCode: 0x30c, // 780
+		name: "NPS_SEND_MINI_RIFF_LIST",
+		handler: handleSendMiniRiffList,
+	},
+	{
+		opCode: 0x103, // 259
+		name: "NPS_SET_MY_USER_DATA",
+		handler: _setMyUserData,
 	},
 ];
 

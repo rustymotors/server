@@ -30,11 +30,10 @@ export async function handleGetMiniUserList({
 
 		log.debug(`[${connectionId}] Requested commId: ${requestedCommId}`);
 
-		const commId = 1;
 		const userCount = 1;
 
 		const channelCountRecord = Buffer.alloc(8);
-		channelCountRecord.writeUInt32BE(commId, 0); // commId
+		channelCountRecord.writeUInt32BE(requestedCommId, 0); // commId
 		channelCountRecord.writeUInt32BE(userCount, 4); // userCount
 
 		const user1 = new MiniUserInfo();
