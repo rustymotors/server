@@ -157,8 +157,8 @@ importers:
         specifier: ^5.0.2
         version: 5.0.2
       '@types/chai':
-        specifier: 5.2.0
-        version: 5.2.0
+        specifier: 5.2.1
+        version: 5.2.1
       '@types/node':
         specifier: ^22.13.13
         version: 22.13.13
@@ -3033,8 +3033,8 @@ packages:
   '@types/bcrypt@5.0.2':
     resolution: {integrity: sha512-6atioO8Y75fNcbmj0G7UjI9lXN2pQ/IGJ2FWT4a/btd0Lk9lQalHLKhkgKVZ3r+spnmWUKfbMi1GEe9wyHQfNQ==}
 
-  '@types/chai@5.2.0':
-    resolution: {integrity: sha512-FWnQYdrG9FAC8KgPVhDFfrPL1FBsL3NtIt2WsxKvwu/61K6HiuDF3xAb7c7w/k9ML2QOUHcwTgU7dKLFPK6sBg==}
+  '@types/chai@5.2.1':
+    resolution: {integrity: sha512-iu1JLYmGmITRzUgNiLMZD3WCoFzpYtueuyAgHTXqgwSRAMIlFTnZqG6/xenkpUGRJEzSfklUTI4GNSzks/dc0w==}
 
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
@@ -10571,7 +10571,7 @@ snapshots:
     dependencies:
       '@types/node': 22.13.13
 
-  '@types/chai@5.2.0':
+  '@types/chai@5.2.1':
     dependencies:
       '@types/deep-eql': 4.0.2
 
@@ -10675,7 +10675,7 @@ snapshots:
 
   '@types/sinon-chai@4.0.0':
     dependencies:
-      '@types/chai': 5.2.0
+      '@types/chai': 5.2.1
       '@types/sinon': 17.0.4
 
   '@types/sinon@17.0.4':
