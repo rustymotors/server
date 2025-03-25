@@ -345,8 +345,8 @@ importers:
         specifier: 9.9.0
         version: 9.9.0
       short-unique-id:
-        specifier: ^5.2.0
-        version: 5.2.0
+        specifier: ^5.2.2
+        version: 5.2.2
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.0.9
@@ -361,8 +361,8 @@ importers:
         specifier: 9.9.0
         version: 9.9.0
       short-unique-id:
-        specifier: ^5.2.0
-        version: 5.2.0
+        specifier: ^5.2.2
+        version: 5.2.2
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.0.9
@@ -6609,8 +6609,8 @@ packages:
   shimmer@1.2.1:
     resolution: {integrity: sha512-sQTKC1Re/rM6XyFM6fIAGHRPVGvyXfgzIDvzoq608vM+jeyVD0Tu1E6Np0Kc2zAIFWIj963V2800iF/9LPieQw==}
 
-  short-unique-id@5.2.0:
-    resolution: {integrity: sha512-cMGfwNyfDZ/nzJ2k2M+ClthBIh//GlZl1JEf47Uoa9XR11bz8Pa2T2wQO4bVrRdH48LrIDWJahQziKo3MjhsWg==}
+  short-unique-id@5.2.2:
+    resolution: {integrity: sha512-MlRVyT5RYfDO2kUzBgOPlZriRzG+NIAuwSy1HBN8tahXyFi3+804GGi/mzjUsi6VxgiQuDgMnhoI2FqmSHX8Tg==}
     hasBin: true
 
   side-channel@1.0.6:
@@ -14602,7 +14602,7 @@ snapshots:
 
   shimmer@1.2.1: {}
 
-  short-unique-id@5.2.0: {}
+  short-unique-id@5.2.2: {}
 
   side-channel@1.0.6:
     dependencies:
