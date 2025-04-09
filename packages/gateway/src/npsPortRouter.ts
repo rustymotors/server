@@ -4,12 +4,16 @@ import {
 	type SerializableInterface,
 } from "rusty-motors-shared-packets";
 import { receiveLobbyData } from "rusty-motors-lobby";
-import { receiveChatData } from "rusty-motors-chat";
 import { receivePersonaData } from "rusty-motors-personas";
 import { receiveLoginData } from "rusty-motors-login";
+import { getServerConfiguration, getServerLogger, ServerLogger } from "rusty-motors-shared";
+import { BytableMessage, createRawMessage } from "@rustymotors/binary";
+import { RoomServer } from "@rustymotors/roomserver";
+import { addRoomServer, getRoomServerByPort } from "rusty-motors-database";
 import * as Sentry from "@sentry/node";
-import { getServerLogger, ServerLogger } from "rusty-motors-shared";
-import { BytableMessage } from "@rustymotors/binary";
+
+const server01 = new RoomServer({ id: 224, name: "MCC01", ip: getServerConfiguration().host, port: 9001 });
+addRoomServer(server01);
 
 /**
  * Handles routing for the NPS (Network Play System) ports.
@@ -19,7 +23,7 @@ import { BytableMessage } from "@rustymotors/binary";
 
 export async function npsPortRouter({
 	taggedSocket,
-	log = getServerLogger("gateway.npsPortRouter"),
+	log = getServerLogger("gateway.npsPortRouter", "gateway"),
 }: {
 	taggedSocket: TaggedSocket;
 	log?: ServerLogger;
@@ -35,10 +39,18 @@ export async function npsPortRouter({
 	}
 	log.debug(`[${id}] NPS port router started for port ${port}`);
 
+	// getMCOProtocolInstance().acceptIncomingSocket({
+	// 	connectionId: id,
+	// 	port,
+	// 	socket,
+	// });
+
+	// return;
+
 	if (port === 7003) {
 		// Sent ok to login packet
 		log.debug(`[${id}] Sending ok to login packet`);
-		socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
+		socket.write(Buffer.from([0x02, 0x30, 0x00, 0x04]));
 	}
 
 	// Handle the socket connection here
@@ -73,33 +85,45 @@ export async function npsPortRouter({
 			}
 		}
 	});
-	
+
 	socket.on("end", () => {
 		// log.debug(`[${id}] Socket closed by client for port ${port}`);
 	});
-	
+
 	socket.on("error", (error) => {
+		if (error.message.includes("ECONNRESET")) {
+			log.debug(`[${id}] Connection reset by client`);
+			return;
+		}
 		log.error(`[${id}] Socket error: ${error}`);
 	});
 }
 
 /**
  * Parses the initial message from a buffer and returns a `GamePacket` object.
-*
-* @param data - The buffer containing the initial message data.
-* @returns A `GamePacket` object deserialized from the buffer.
-*/
+ *
+ * @param data - The buffer containing the initial message data.
+ * @returns A `GamePacket` object deserialized from the buffer.
+ */
 function parseInitialMessage(data: Buffer): BytableMessage {
 	try {
-		const message = new BytableMessage(0);
+		const message = createRawMessage();
+		message.setVersion(1);
 
 		// There are a few messages here that need special handling due to length
 		const id = data.readUInt16BE(0);
-		if ([0x1101, 0x217].includes(id)) {
-			message.setVersion(0)
+		if ([0x217, 0x532].includes(id)) {
+			message.setVersion(0);
 		}
-		message.setSerializeOrder([{ name: "data", field: "Raw" }]);
+		getServerLogger("gateway.npsPortRouter/parseInitialMessage", "gateway").debug(
+			`Parsing initial message: ${data.toString("hex")}`,
+		);
+
 		message.deserialize(data);
+
+		getServerLogger("gateway.npsPortRouter/parseInitialMessage", "gateway").debug(
+			`Parsed initial message: ${message.serialize().toString("hex")}`,
+		);
 		return message;
 	} catch (error) {
 		const err = new Error(`Error parsing initial message: ${error}`, {
@@ -117,61 +141,97 @@ function parseInitialMessage(data: Buffer): BytableMessage {
  * Handles different types of packets such as lobby data, login data, chat data, and persona data.
  * Logs the routing process and the number of responses sent back to the client.
  *
- * @param id - The connection ID of the client.
- * @param port - The port number to determine the type of packet.
+ * @param connectionId - The connection ID of the client.
+ * @param connectionPort - The port number to determine the type of packet.
  * @param initialPacket - The initial packet received from the client.
  * @param log - The logger to use for logging messages.
  * @returns A promise that resolves to a Buffer containing the serialized responses.
  */
 async function routeInitialMessage(
-	id: string,
-	port: number,
+	connectionId: string,
+	connectionPort: number,
 	initialPacket: BytableMessage,
-	log = getServerLogger("gateway.npsPortRouter/routeInitialMessage"),
+	log = getServerLogger("gateway.npsPortRouter/routeInitialMessage", "gateway"),
 ): Promise<Buffer> {
 	// Route the initial message to the appropriate handler
 	// Messages may be encrypted, this will be handled by the handler
 
-	log.debug(`Routing message for port ${port}: ${initialPacket.toString()}`);
+	log.debug(`Routing message for port ${connectionPort}: ${initialPacket.toString()}`);
 
-	const packet = new GamePacket();
-	packet.deserialize(initialPacket.serialize());
+	const gameRequestPacket = new GamePacket();
+	gameRequestPacket.deserialize(initialPacket.serialize());
 
-	let responses: SerializableInterface[] = [];
+	let packetResponses: SerializableInterface[] = [];
 
-	switch (port) {
+	switch (connectionPort) {
 		case 7003:
-			responses = (
-				await receiveLobbyData({ connectionId: id, message: packet })
+			// Handle lobby packet
+			log.debug(
+				`[${connectionId}] Passing packet to lobby handler: ${gameRequestPacket.serialize().toString("hex")}`,
+			);
+			packetResponses = (
+				await receiveLobbyData({ connectionId: connectionId, message: initialPacket })
 			).messages;
+			log.debug(`[${connectionId}] Lobby Responses: ${packetResponses.map((r) => r.serialize().toString("hex"))}`);
 			break;
 		case 8226:
 			// Handle login packet
-			responses = (
-				await receiveLoginData({ connectionId: id, message: initialPacket })
+			log.debug(
+				`[${connectionId}] Passing packet to login handler: ${gameRequestPacket.serialize().toString("hex")}`,
+			);
+			packetResponses = (
+				await receiveLoginData({ connectionId: connectionId, message: initialPacket })
 			).messages;
+			log.debug(`[${connectionId}] Login Responses: ${packetResponses.map((r) => r.serialize().toString("hex"))}`);
 			break;
-		case 8227:
-			// Handle chat packet
-			responses = (await receiveChatData({ connectionId: id, message: packet }))
-				.messages;
-			break;
+		// case 8227:
+		// 	// Handle chat packet
+		// 	log.debug(
+		// 		`[${id}] Passing packet to chat handler: ${packet.serialize().toString("hex")}`,
+		// 	);
+		// 	responses = (await receiveChatData({ connectionId: id, message: packet }))
+		// 		.messages;
+		// 	log.debug(`[${id}] Chat Responses: ${responses.map((r) => r.serialize().toString("hex"))}`);
+		// 	break;
 		case 8228:
+			log.debug(
+				`[${connectionId}] Passing packet to persona handler: ${gameRequestPacket.serialize().toString("hex")}`,
+			);
 			// responses =Handle persona packet
-			responses = (
-				await receivePersonaData({ connectionId: id, message: packet })
+			packetResponses = (
+				await receivePersonaData({ connectionId: connectionId, message: gameRequestPacket })
 			).messages;
+			log.debug(`[${connectionId}] Persona Responses: ${packetResponses.map((r) => r.serialize().toString("hex"))}`);
 			break;
+		case 9001: {
+			const roomServer = getRoomServerByPort(connectionPort);
+			if (roomServer === undefined) {
+				log.warn({ id: connectionId, port: connectionPort }, "No room server found for port");
+				break;
+			}
+			log.debug({ id: connectionId, port: connectionPort, roomServer: roomServer.name, packet: gameRequestPacket.serialize().toString("hex") }, `Passing packet to room server: ${roomServer.name}`);
+			packetResponses = (
+				await roomServer.receivePacket({ connectionId: connectionId, packet: initialPacket })
+			).messages;
+			const serializedResponseData = Buffer.concat(packetResponses.map((r) => r.serialize()));
+			log.debug({ id: connectionId, port: connectionPort, roomServer: roomServer.name, responseBuffer: serializedResponseData.toString("hex") }, `Room Server Responses`);
+			break;
+		}
 		default:
-			console.log(`No handler found for port ${port}`);
+			// No handler
+			log.warn({
+				id: connectionId,
+				port: connectionPort,
+				packet: gameRequestPacket.serialize().toString("hex"),
+			},`No handler found for port ${connectionPort}`);
 			break;
 	}
 
 	// Send responses back to the client
-	log.debug(`[${id}] Sending ${responses.length} responses`);
+	log.debug(`[${connectionId}] Sending ${packetResponses.length} responses`);
 
 	// Serialize the responses
-	const serializedResponses = responses.map((response) => response.serialize());
+	const serializedResponses = packetResponses.map((response) => response.serialize());
 
 	return Buffer.concat(serializedResponses);
 }

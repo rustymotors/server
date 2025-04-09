@@ -1,10 +1,9 @@
-import { assertLength } from "./assertLength.js";
 import { bufferToHexString } from "./toHexString.js";
 
 export class ChatMessage {
-	messageId: number;
-	messageLength: number;
-	payload: Buffer;
+	messageId = 0;
+	messageLength = 0;
+	payload: Buffer = Buffer.alloc(0);
 
 	constructor(messageId: number, messageLength: number, payload: Buffer) {
 		this.messageId = messageId;
@@ -12,15 +11,15 @@ export class ChatMessage {
 		this.payload = payload;
 	}
 
-	static fromBuffer(buffer: Buffer): ChatMessage {
+	deserialize(buffer: Buffer): ChatMessage {
 		const messageId = buffer.readUInt16BE(0);
 		const messageLength = buffer.readUInt16BE(2);
+		const payload = buffer.subarray(4);
 
-		assertLength(buffer.byteLength, messageLength);
-
-		const payload = buffer.subarray(4, 4 + messageLength);
-
-		return new ChatMessage(messageId, messageLength, payload);
+		this.messageId = messageId;
+		this.messageLength = messageLength;
+		this.payload = payload;
+		return this;
 	}
 
 	toBuffer(): Buffer {

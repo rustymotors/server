@@ -1,5 +1,4 @@
 import { ChatMessage } from "./ChatMessage.js";
-import { assertLength } from "./assertLength.js";
 import { ListInGameEmailsMessage } from "./ListInGameEmailsMessage.js";
 import { ListInGameEmailsResponseMessage } from "./ListInGameEmailsResponseMessage.js";
 import { InGameEmailMessage } from "./InGameEmailMessage.js";
@@ -25,27 +24,17 @@ unseenMail.set(
 );
 
 export class ReceiveEmailMessage extends ChatMessage {
-	gameUserId: number;
-	mailId: number;
-	headerOnly: boolean;
+	gameUserId = 0;
+	mailId = 0;
+	headerOnly = false;
 
-	static override fromBuffer(buffer: Buffer): ReceiveEmailMessage {
-		const messageId = buffer.readUInt16BE(0);
-		const messageLength = buffer.readUInt16BE(2);
 
-		assertLength(buffer.byteLength, messageLength);
+	override deserialize(buffer: Buffer): ChatMessage {
+		this.gameUserId = buffer.readUInt32BE(0);
+		this.mailId = buffer.readUInt16BE(4);
+		this.headerOnly = buffer.readUInt16BE(8) === 1;
 
-		const payload = buffer.subarray(4, 4 + messageLength);
-
-		return new ReceiveEmailMessage(messageId, messageLength, payload);
-	}
-
-	constructor(messageId: number, messageLength: number, payload: Buffer) {
-		super(messageId, messageLength, payload);
-
-		this.gameUserId = payload.readUInt32BE(0);
-		this.mailId = payload.readUInt16BE(4);
-		this.headerOnly = payload.readUInt16BE(8) === 1;
+		return this;
 	}
 
 	override toString(): string {
@@ -56,7 +45,8 @@ export class ReceiveEmailMessage extends ChatMessage {
 export function handleListInGameEmailsMessage(message: ChatMessage): Buffer[] {
 	defaultLogger.debug(`Handling ListInGameEmailsMessage: ${message.toString()}`);
 
-	const parsedMessage = ListInGameEmailsMessage.fromBuffer(message.toBuffer());
+	const parsedMessage = new ListInGameEmailsMessage(0, 0, Buffer.alloc(0));
+	parsedMessage.deserialize(message.toBuffer());
 
 	defaultLogger.debug(`Parsed message: ${parsedMessage.toString()}`);
 
@@ -73,7 +63,8 @@ export function handleListInGameEmailsMessage(message: ChatMessage): Buffer[] {
 export function handleReceiveEmailMessage(message: ChatMessage): Buffer[] {
 	defaultLogger.debug(`Handling ReceiveEmailMessage: ${message.toString()}`);
 
-	const parsedMessage = ReceiveEmailMessage.fromBuffer(message.toBuffer());
+	const parsedMessage = new ReceiveEmailMessage(0, 0, Buffer.alloc(0));
+	parsedMessage.deserialize(message.toBuffer());
 
 	defaultLogger.debug(`Parsed message: ${parsedMessage.toString()}`);
 

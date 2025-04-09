@@ -38,6 +38,7 @@ export type { State } from "./src/State.js";
 export type { OnDataHandler, ServiceResponse } from "./src/State.js";
 export { LegacyMessage } from "./src/LegacyMessage.js";
 export { NPSHeader } from "./src/NPSHeader.js";
+export { _MSG_STRING } from "./src/_MSG_STRING.js";
 export * from "./src/interfaces.js";
 import * as Sentry from "@sentry/node";
 import pino from "pino";
@@ -112,20 +113,55 @@ export const cloth_grey = argbToInt(255, 146, 143, 137); //grey
 export const cloth_white = argbToInt(255, 255, 255, 255); //white
 
 interface Logger {
-	info: (msg: string, obj?: unknown) => void;
-	warn: (msg: string, obj?: unknown) => void;
-	error: (msg: string, obj?: unknown) => void;
-	fatal: (msg: string, obj?: unknown) => void;
-	debug: (msg: string, obj?: unknown) => void;
-	trace: (msg: string, obj?: unknown) => void;
+	info: pino.LogFn;
+	warn: pino.LogFn;
+	error: pino.LogFn;
+	fatal: pino.LogFn;
+	debug: pino.LogFn;
+	trace: pino.LogFn;
 	child: (obj: pino.Bindings) => Logger;
 }
 
 type LogLevel = "fatal" | "error" | "warn" | "info" | "debug" | "trace";
 
+type LoggeringGroup = "gateway" | "lobby" | "roomserver";
+
+const shouldLog = (loggingGroup: LoggeringGroup) => {
+	const loggingGroups = process.env["MCO_LOGGING_GROUPS"]?.split(",") || [];
+	if (loggingGroups.includes("all") || loggingGroups.includes("*")) {
+		return true;
+	}
+
+	return loggingGroups.includes(loggingGroup);
+}
+
 let logger: pino.Logger;
 
-export function getServerLogger(name?: string): Logger {
+export function getServerLogger(name?: string, loggingGroup?: LoggeringGroup): Logger {
+	if (loggingGroup && !shouldLog(loggingGroup)) {
+		return {
+			info: () => {
+				// do nothing
+			},
+			warn: () => {
+				// do nothing
+			},
+			error: () => {
+				// do nothing
+			},
+			fatal: () => {
+				// do nothing
+			},
+			debug: () => {
+				// do nothing
+			},
+			trace: () => {
+				// do nothing
+			},
+			child: () => getServerLogger(name, loggingGroup),
+		}
+	}
+
 	if (logger) {
 		return logger.child({ name });
 	}
@@ -137,7 +173,7 @@ export function getServerLogger(name?: string): Logger {
 		console.warn(`Invalid log level: ${logLevel}. Defaulting to "debug"`);
 	}
 
-	logger = pino({ 
+	logger = pino.default({ 
 		name: loggerName,
 		transport: {
 			targets: [
@@ -166,14 +202,8 @@ export function getServerLogger(name?: string): Logger {
 	return {
 		info: logger.info.bind(logger),
 		warn: logger.warn.bind(logger),
-		error: (msg: string, obj?: unknown) => {
-			if (obj instanceof Error) {
-				Sentry.captureException(obj);
-			} else if (obj) {
-				Sentry.captureException(new Error(msg), { extra: { context: obj } });
-			} else {
-				Sentry.captureException(new Error(msg));
-			}
+		error: (msg: unknown, obj?: any) => {
+			Sentry.captureException(msg);
 			logger.error({ msg, obj });
 		},
 		fatal: logger.fatal.bind(logger),
