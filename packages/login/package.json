@@ -21,7 +21,7 @@
 	"dependencies": {
 		"@fastify/sensible": "^6.0.3",
 		"@rustymotors/binary": "workspace:^",
-		"fastify": "^5.2.1",
+		"fastify": "^5.2.2",
 		"rusty-motors-personas": "workspace:^"
 	},
 	"directories": {
@@ -29,7 +29,7 @@
 	},
 	"description": "",
 	"devDependencies": {
-		"@vitest/coverage-v8": "3.0.7",
-		"vitest": "^3.0.7"
+		"@vitest/coverage-v8": "3.1.1",
+		"vitest": "^3.1.1"
 	}
 }
