@@ -1,7 +1,4 @@
-import {
-	BytableMessage,
-	createRawMessage,
-} from "@rustymotors/binary";
+import { BytableMessage, createRawMessage } from "@rustymotors/binary";
 import { databaseManager } from "rusty-motors-database";
 import {
 	createCommandEncryptionPair,
@@ -18,11 +15,12 @@ import {
 	type ServerLogger,
 } from "rusty-motors-shared";
 import { getMessageNumber, MessageNumberMap } from "./MessageNumberMap.js";
-import { LoginRequest } from './LoginRequest.js';
-import { UserData } from './UserData.js';
+import { LoginRequest } from "./LoginRequest.js";
+import { UserData } from "./UserData.js";
 import { handleGetMiniUserList } from "./handleGetMiniUserList.js";
 import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";
 import { _setMyUserData } from "./_setMyUserData.js";
+import { _handleCommChannelOpen } from "./_openCommChannel.js";
 
 export type NpsCommandHandler = {
 	opCode: number;
@@ -53,11 +51,11 @@ const npsCommandHandlers: NpsCommandHandler[] = [
 		name: "NPS_SET_MY_USER_DATA",
 		handler: _setMyUserData,
 	},
-    {
-        opCode: 0x106,
-        name: "NPS_OPEN_COMM_CHANNEL",
-        handler: _openCommChannel,
-    }
+	{
+		opCode: 0x106,
+		name: "NPS_OPEN_COMM_CHANNEL",
+		handler: _handleCommChannelOpen,
+	},
 ];
 
 async function handleCommand({
@@ -72,18 +70,24 @@ async function handleCommand({
 	connectionId: string;
 	message: BytableMessage | null;
 }> {
-	log.debug({
-        connectionId,
-        command: message.serialize().toString("hex").slice(0, 4),
-    }, 'Handling command');
+	log.debug(
+		{
+			connectionId,
+			command: message.serialize().toString("hex").slice(0, 4),
+		},
+		"Handling command",
+	);
 
 	const command = message.header.messageId;
 
 	// What is the command?
-	log.debug({
-        connectionId,
-        command: MessageNumberMap[command],
-    }, `Received command: ${MessageNumberMap[command]}(${command})`);
+	log.debug(
+		{
+			connectionId,
+			command: MessageNumberMap[command],
+		},
+		`Received command: ${MessageNumberMap[command]}(${command})`,
+	);
 
 	const handler = npsCommandHandlers.find((h) => h.opCode === command);
 
@@ -94,7 +98,7 @@ async function handleCommand({
 	const { message: response } = await handler.handler({
 		connectionId,
 		message,
-        log: log.child({ connectionId, loggerName: handler.name }),
+		log: log.child({ connectionId, loggerName: handler.name }),
 	});
 
 	if (response !== null) {
@@ -286,180 +290,185 @@ export async function handleEncryptedNPSCommand({
 }
 
 export class RoomServer {
-    private _id: number;
-    private _name: string;
-    private _ip: string;
-    private _port: number;
-    private log: ServerLogger;
+	private _id: number;
+	private _name: string;
+	private _ip: string;
+	private _port: number;
+	private log: ServerLogger;
 
-    private usersData = new Map<number, UserData>();
+	private usersData = new Map<number, UserData>();
 
-    constructor({ id, name, ip, port }: { id: number, name: string, ip: string, port: number }) {
-        this._name = name;
-        this._id = id;
-        this.log = getServerLogger(name, 'roomserver');
-        this._ip = ip;
-        this._port = port;        
-    }
+	constructor({
+		id,
+		name,
+		ip,
+		port,
+	}: { id: number; name: string; ip: string; port: number }) {
+		this._name = name;
+		this._id = id;
+		this.log = getServerLogger(name, "roomserver");
+		this._ip = ip;
+		this._port = port;
+	}
 
-    async receivePacket({
-        connectionId,
-        packet,
-    }: {
-        connectionId: string;
-        packet: BytableMessage;
-    }): Promise<ServiceResponse> {
-        this.log.debug({ connectionId, packet: packet.toHexString() }, "Received packet");
+	async receivePacket({
+		connectionId,
+		packet,
+	}: {
+		connectionId: string;
+		packet: BytableMessage;
+	}): Promise<ServiceResponse> {
+		this.log.debug(
+			{ connectionId, packet: packet.toHexString() },
+			"Received packet",
+		);
 
-        const messageNumber = packet.header.messageId;
-        const messageName = MessageNumberMap[messageNumber];
+		const messageNumber = packet.header.messageId;
+		const messageName = MessageNumberMap[messageNumber];
 
-        if (!messageName) {
-            this.log.warn({ connectionId, messageNumber }, "Unknown message number");
-            return {
-                connectionId,
-                messages: [],
-            }
-        }
+		if (!messageName) {
+			this.log.warn({ connectionId, messageNumber }, "Unknown message number");
+			return {
+				connectionId,
+				messages: [],
+			};
+		}
 
-        this.log.debug({ connectionId, messageName }, "Handling message");
+		this.log.debug({ connectionId, messageName }, "Handling message");
 
-        switch (messageName) {
-									case "NPS_LOGIN":
-										return this.handleLogin({ connectionId, packet });
-									case "NPS_ENCRYPTED_COMMAND":
-										return handleEncryptedNPSCommand({
-											connectionId,
-											message: packet,
-											log: this.log.child({
-												connectionId,
-												loggerName: "handleEncryptedNPSCommand",
-											}),
-										});
-									default: {
-										this.log.warn(
-											{ connectionId, messageName },
-											"Unknown message name",
-										);
-										return {
-											connectionId,
-											messages: [],
-										};
-									}
-								}
-    }
-    private async handleLogin({ connectionId, packet }: { connectionId: string, packet: BytableMessage }): Promise<ServiceResponse> {
-        const log = this.log.child({ connectionId, loggerName: "handlers/_npsRequestGameConnectServer" });
+		switch (messageName) {
+			case "NPS_LOGIN":
+				return this.handleLogin({ connectionId, packet });
+			case "NPS_ENCRYPTED_COMMAND":
+				return handleEncryptedNPSCommand({
+					connectionId,
+					message: packet,
+					log: this.log.child({
+						connectionId,
+						loggerName: "handleEncryptedNPSCommand",
+					}),
+				});
+			default: {
+				this.log.warn({ connectionId, messageName }, "Unknown message name");
+				return {
+					connectionId,
+					messages: [],
+				};
+			}
+		}
+	}
+	private async handleLogin({
+		connectionId,
+		packet,
+	}: {
+		connectionId: string;
+		packet: BytableMessage;
+	}): Promise<ServiceResponse> {
+		const log = this.log.child({
+			connectionId,
+			loggerName: "handlers/_npsRequestGameConnectServer",
+		});
 
-        try {
-            log.debug({ connectionId, packet: packet.toHexString() }, "Handling NPS_LOGIN");
+		try {
+			log.debug(
+				{ connectionId, packet: packet.toHexString() },
+				"Handling NPS_LOGIN",
+			);
 
-            const getServerInfoRequest = new LoginRequest();
-            getServerInfoRequest.deserialize(packet.getBody());
+			const getServerInfoRequest = new LoginRequest();
+			getServerInfoRequest.deserialize(packet.getBody());
 
+			const customerId = getServerInfoRequest.customerNumber;
+			const userId = getServerInfoRequest.userInfo.userId;
 
-            const customerId = getServerInfoRequest.customerNumber;
-            const userId = getServerInfoRequest.userInfo.userId;
+			log.debug(
+				{ connectionId, customerId: customerId, userId: userId },
+				"Connecting to game server",
+			);
 
-            log.debug(
-                { connectionId, customerId: customerId , userId: userId },
-                "Connecting to game server",
-            );
+			const state = fetchStateFromDatabase();
 
-            const state = fetchStateFromDatabase();
+			const existingEncryption = getEncryption(state, connectionId);
 
-            const existingEncryption = getEncryption(
-                state,
-                connectionId,
-            );
+			if (!existingEncryption) {
+				// Set the encryption keys on the lobby connection
+				const keys =
+					await databaseManager.fetchSessionKeyByCustomerId(customerId);
 
-            if (!existingEncryption) {
-                // Set the encryption keys on the lobby connection
-                const keys =
-                    await databaseManager.fetchSessionKeyByCustomerId(
-                        customerId,
-                    );
+				if (keys === undefined) {
+					throw Error("Error fetching session keys!");
+				}
 
-                if (keys === undefined) {
-                    throw Error("Error fetching session keys!");
-                }
+				// We have the session keys, set them on the connection
+				const newCommandEncryptionPair = createCommandEncryptionPair(
+					keys.sessionKey,
+				);
 
-                // We have the session keys, set them on the connection
-                const newCommandEncryptionPair =
-                    createCommandEncryptionPair(keys.sessionKey);
+				const newDataEncryptionPair = createDataEncryptionPair(keys.sessionKey);
 
-                const newDataEncryptionPair =
-                    createDataEncryptionPair(keys.sessionKey);
+				const newEncryption = new McosEncryption({
+					connectionId,
+					commandEncryptionPair: newCommandEncryptionPair,
+					dataEncryptionPair: newDataEncryptionPair,
+				});
 
-                const newEncryption = new McosEncryption({
-                    connectionId,
-                    commandEncryptionPair: newCommandEncryptionPair,
-                    dataEncryptionPair: newDataEncryptionPair,
-                });
+				addEncryption(state, newEncryption).save();
+			}
 
-                addEncryption(state, newEncryption).save();
-            }
+			const userInfo = getServerInfoRequest.userInfo;
 
-            const userInfo = getServerInfoRequest.userInfo
+			const userData = userInfo.userData;
 
-            const userData = userInfo.userData;
-            
-            this.usersData.set(userId, userData);
+			this.usersData.set(userId, userData);
 
-            const response = new BytableMessage();
-            response.header.setMessageId(
-                getMessageNumber("NPS_LOGIN_RESPONSE"),
-            );
-            response.header.setMessageVersion(0);
-            response.setSerializeOrder([
-                { name: "userId", field: "Dword" },
-                { name: "userName", field: "Container" },
-                { name: "userData", field: "Buffer" },
-            ]);
+			const response = new BytableMessage();
+			response.header.setMessageId(getMessageNumber("NPS_LOGIN_RESPONSE"));
+			response.header.setMessageVersion(0);
+			response.setSerializeOrder([
+				{ name: "userId", field: "Dword" },
+				{ name: "userName", field: "Container" },
+				{ name: "userData", field: "Buffer" },
+			]);
 
-            response.setFieldValueByName("userId", userInfo.userId);
-            response.setFieldValueByName("userName", userInfo.userName);
-            response.setFieldValueByName("userData", Buffer.from(userData.get()));
+			response.setFieldValueByName("userId", userInfo.userId);
+			response.setFieldValueByName("userName", userInfo.userName);
+			response.setFieldValueByName("userData", Buffer.from(userData.get()));
 
+			log.debug(
+				{ connectionId, response: response.toHexString() },
+				"Sending NPS_LOGIN_RESPONSE",
+			);
 
-            log.debug(
-                { connectionId, response: response.toHexString() },
-                "Sending NPS_LOGIN_RESPONSE",
-            );
+			return {
+				connectionId,
+				messages: [response],
+			};
+		} catch (error: any) {
+			log.error(
+				{ connectionId, error },
+				`Error handling NPS_LOGIN: ${(error as Error).message}`,
+			);
+			return {
+				connectionId,
+				messages: [],
+			};
+		}
+	}
 
-            return {
-                connectionId,
-                messages: [response],
-            };
+	get id() {
+		return this._id;
+	}
 
+	get name() {
+		return this._name;
+	}
 
-        } catch (error: any) {
-            log.error({ connectionId, error  }, `Error handling NPS_LOGIN: ${(error as Error).message}`);
-            return {
-                connectionId,
-                messages: [],
-            };
+	get ip() {
+		return this._ip;
+	}
 
-        }
-    }
-
-    get id() {
-        return this._id;
-    }
-
-    get name() {
-        return this._name;
-    }
-
-    get ip() {
-        return this._ip;
-    }
-
-    get port() {
-        return this._port;
-    }
+	get port() {
+		return this._port;
+	}
 }
 
-function _openCommChannel(args: { connectionId: string; message: BytableMessage; log?: Logger; }): Promise<{ connectionId: string; message: BytableMessage | null; }> {
-    
-}

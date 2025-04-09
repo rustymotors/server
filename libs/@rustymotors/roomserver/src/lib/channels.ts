@@ -17,8 +17,8 @@ export const channels = [
 		population: 6,
 	},
 	{
-		id: 17,
-		name: "MARK",
+		id: 2,
+		name: "LOBBY",
 		population: 15,
 	},
 	{
