@@ -21,7 +21,6 @@
         "types:db": "pnpm --filter=rusty-motors-database run types:db",
         "types": "dotenvx run -- pnpm run types:db",
         "migrate": "npx dotenvx run -- pnpm pg-migrations apply --directory migrations    ",
-        "prepare": "husky",
         "build": "tsc"
     },
     "files": [
@@ -93,7 +92,6 @@
         "eslint-config-prettier": "^10.1.1",
         "eslint-plugin-prettier": "5.2.6",
         "globals": "^16.0.0",
-        "husky": "^9.1.7",
         "lint-staged": "^15.5.0",
         "nx": "20.7.2",
         "prettier": "3.5.3",
@@ -136,6 +134,7 @@
             "tinymce": "^7.7.2"
         },
         "onlyBuiltDependencies": [
+            "@sentry-internal/node-cpu-profiler",
             "@sentry/cli",
             "@sentry/profiling-node",
             "@swc/core",
