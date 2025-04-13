@@ -1,6 +1,6 @@
 import { BytableMessage } from "@rustymotors/binary";
 import { getServerLogger, LegacyMessage, type ServerLogger } from "rusty-motors-shared";
-import { OpenCommChannelRequest } from "./OpenCommChannelRequest.js";
+import { CommData } from "./OpenCommChannelRequest.js";
 
 export async function _handleCommChannelOpen({
 	connectionId,
@@ -16,7 +16,7 @@ export async function _handleCommChannelOpen({
 		"Handling NPS_OPEN_COMM_CHANNEL",
 	);
 
-	const request = new OpenCommChannelRequest();
+	const request = new CommData();
 	request.deserialize(message.getBody());
 
     const requestedCommId = 2;

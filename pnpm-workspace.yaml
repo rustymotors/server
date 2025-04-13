@@ -3,5 +3,7 @@ packages:
   - src/*
   - libs/@rustymotors/*
 onlyBuiltDependencies:
+  - '@sentry/cli'
   - '@sentry/profiling-node'
+  - '@swc/core'
   - nx

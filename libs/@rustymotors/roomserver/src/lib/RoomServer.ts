@@ -61,11 +61,11 @@ const npsCommandHandlers: NpsCommandHandler[] = [
 async function handleCommand({
 	connectionId,
 	message,
-	log = getServerLogger("lobby.handleCommand"),
+	log,
 }: {
 	connectionId: string;
 	message: BytableMessage;
-	log?: ServerLogger;
+	log: ServerLogger;
 }): Promise<{
 	connectionId: string;
 	message: BytableMessage | null;
@@ -103,6 +103,10 @@ async function handleCommand({
 
 	if (response !== null) {
 		log.debug(
+			{
+				loggerName: handler.name,
+				connectionId,
+			},
 			`[${connectionId}] Sending response: ${response.serialize().toString("hex")}`,
 		);
 	}
