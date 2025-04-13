@@ -15,8 +15,8 @@ importers:
         specifier: ^5.5.0
         version: 5.5.0(typescript@5.8.3)
       '@dotenvx/dotenvx':
-        specifier: ^1.39.1
-        version: 1.39.1
+        specifier: ^1.40.0
+        version: 1.40.0
       '@fastify/sensible':
         specifier: ^6.0.3
         version: 6.0.3
@@ -1308,8 +1308,8 @@ packages:
   '@databases/with-container@2.1.1':
     resolution: {integrity: sha512-iHsOn/6ElWuGpcytgNh9ZAvFd78G0ikOMWj0DtMTB4fXVqRA5uYZpLpLv/fvwL895xT7VTbVA6HV3YoY0yuQUg==}
 
-  '@dotenvx/dotenvx@1.39.1':
-    resolution: {integrity: sha512-FIjEB/s3TSQBYnYA64GPkXJrOR6w5J52SSnl6gSoq1tp+4r9zLjaAsf65AgDv5emA4ypm90gVWv1XX0/bfHA/A==}
+  '@dotenvx/dotenvx@1.40.0':
+    resolution: {integrity: sha512-cfYHAIBkSfI0nuOagBhqYGq0k/pSIPdbM7+/IROcdGMjUxYdNXXqzO1d6b9u9dY4rancte3fR/4wGI4Zb09USg==}
     hasBin: true
 
   '@ecies/ciphers@0.2.1':
@@ -8636,10 +8636,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@dotenvx/dotenvx@1.39.1':
+  '@dotenvx/dotenvx@1.40.0':
     dependencies:
       commander: 11.1.0
-      dotenv: 16.4.7
+      dotenv: 16.5.0
       eciesjs: 0.4.11
       execa: 5.1.1
       fdir: 6.4.3(picomatch@4.0.2)
