@@ -270,9 +270,6 @@ importers:
       rusty-motors-database:
         specifier: workspace:1.0.0-next.0
         version: link:../../../packages/database
-      rusty-motors-gateway:
-        specifier: workspace:1.0.0-next.0
-        version: link:../../../packages/gateway
       rusty-motors-shared:
         specifier: workspace:1.0.0-next.0
         version: link:../../../packages/shared
@@ -335,12 +332,12 @@ importers:
       '@rustymotors/protocol':
         specifier: workspace:^
         version: link:../../libs/@rustymotors/protocol
+      '@rustymotors/roomserver':
+        specifier: workspace:^
+        version: link:../../libs/@rustymotors/roomserver
       fastify:
         specifier: ^5.2.2
         version: 5.2.2
-      roomserver:
-        specifier: link:libs/@rustymotors/roomserver
-        version: link:libs/@rustymotors/roomserver
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.1.1
@@ -382,22 +379,6 @@ importers:
       rusty-motors-personas:
         specifier: workspace:^
         version: link:../persona
-    devDependencies:
-      '@vitest/coverage-v8':
-        specifier: 3.1.1
-        version: 3.1.1(vitest@3.1.1)
-      vitest:
-        specifier: ^3.1.1
-        version: 3.1.1(@types/debug@4.1.12)(@types/node@22.14.0)(@vitest/ui@3.1.1)(jiti@2.4.2)(tsx@4.19.3)(yaml@2.7.0)
-
-  packages/nps:
-    dependencies:
-      '@sentry/profiling-node':
-        specifier: 9.12.0
-        version: 9.12.0
-      short-unique-id:
-        specifier: ^5.2.2
-        version: 5.2.2
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.1.1
