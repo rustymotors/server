@@ -23,7 +23,7 @@
 		"@rustymotors/binary": "workspace:^",
 		"@rustymotors/protocol": "workspace:^",
 		"fastify": "^5.2.2",
-		"roomserver": "link:libs/@rustymotors/roomserver"
+		"@rustymotors/roomserver": "workspace:^"
 	},
 	"directories": {
 		"test": "test"

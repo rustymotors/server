@@ -138,6 +138,7 @@
             "@sentry/cli",
             "@sentry/profiling-node",
             "@swc/core",
+            "bcrypt",
             "nx"
         ]
     }
