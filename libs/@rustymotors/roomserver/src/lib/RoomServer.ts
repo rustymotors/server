@@ -21,6 +21,7 @@ import { handleGetMiniUserList } from "./handleGetMiniUserList.js";
 import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";
 import { _setMyUserData } from "./_setMyUserData.js";
 import { _handleCommChannelOpen } from "./_openCommChannel.js";
+import { _handleGetUserList} from "./_getUserList.js"
 
 export type NpsCommandHandler = {
 	opCode: number;
@@ -45,6 +46,11 @@ const npsCommandHandlers: NpsCommandHandler[] = [
 		opCode: 0x30c, // 780
 		name: "NPS_SEND_MINI_RIFF_LIST",
 		handler: handleSendMiniRiffList,
+	},
+	{
+		opCode: 0x101, // 257
+		name: "NPS_GET_USER_LIST",
+		handler: _handleGetUserList,
 	},
 	{
 		opCode: 0x103, // 259
