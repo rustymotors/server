@@ -1,5 +1,16 @@
 name: rustyserver
 services:
+    haproxy:
+        build:
+            context: services/haproxy
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./services/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+            - ./services/haproxy/ssl:/usr/local/etc/haproxy/ssl
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
     nginx:
         build:
             context: services/sslProxy
