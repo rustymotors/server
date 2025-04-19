@@ -11,14 +11,6 @@ services:
             - ./services/haproxy/ssl:/usr/local/etc/haproxy/ssl
         extra_hosts:
             - "host.docker.internal:host-gateway"
-    nginx:
-        build:
-            context: services/sslProxy
-        ports:
-            - "443:443"
-            - "80:80"
-        extra_hosts:
-            - "host.docker.internal:host-gateway"
     db:
         image: postgres:14.6
         ports:
