@@ -291,7 +291,7 @@ importers:
         specifier: workspace:^
         version: link:../../libs/@rustymotors/binary
       fastify:
-        specifier: ^5.3.1
+        specifier: ^5.3.2
         version: 5.3.2
     devDependencies:
       '@vitest/coverage-v8':
@@ -307,7 +307,7 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
       fastify:
-        specifier: ^5.3.1
+        specifier: ^5.3.2
         version: 5.3.2
       rusty-motors-shared:
         specifier: workspace:1.0.0-next.0
@@ -329,7 +329,7 @@ importers:
         specifier: workspace:^
         version: link:../../libs/@rustymotors/binary
       fastify:
-        specifier: ^5.3.1
+        specifier: ^5.3.2
         version: 5.3.2
     devDependencies:
       '@vitest/coverage-v8':
@@ -387,7 +387,7 @@ importers:
   packages/shared:
     dependencies:
       fastify:
-        specifier: ^5.3.1
+        specifier: ^5.3.2
         version: 5.3.2
       pino:
         specifier: ^9.6.0
@@ -4379,9 +4379,6 @@ packages:
   fast-uri@2.4.0:
     resolution: {integrity: sha512-ypuAmmMKInk5q7XcepxlnUWDLWv4GFtaJqAzWKqn62IpQ3pejtr5dTVbt3vwqVaMKmkNR55sTT+CqUKIaT21BA==}
 
-  fast-uri@3.0.2:
-    resolution: {integrity: sha512-GR6f0hD7XXyNJa25Tb9BuIdN0tdr+0BMi6/CJPH3wJO1JjNG3n/VsSw38AwRdKZABm8lGbPfakLRkYzx2V9row==}
-
   fast-uri@3.0.6:
     resolution: {integrity: sha512-Atfo14OibSv5wAp4VWNsFYE1AchQRTv9cBGWET4pZWHzYshFSS9NQI6I57rdKn9croWVMbYFbLhJ+yJvmZIIHw==}
 
@@ -4390,9 +4387,6 @@ packages:
 
   fastify@5.3.2:
     resolution: {integrity: sha512-AIPqBgtqBAwkOkrnwesEE+dOyU30dQ4kh7udxeGVR05CRGwubZx+p2H8P0C4cRnQT0+EPK4VGea2DTL2RtWttg==}
-
-  fastq@1.17.1:
-    resolution: {integrity: sha512-sRVD3lWVIXWg6By68ZN7vho9a1pQcN/WBFaAAsDDFzlJjvoGx0P8z7V1t72grFJfJhu3YPZBuu25f7Kaw2jN1w==}
 
   fastq@1.19.1:
     resolution: {integrity: sha512-GwLTyxkCXjXbxqIhTsMI2Nui8huMPtnxg7krajPJAjnEG/iiOS7i+zCtWGZR9G0NBKbXKh6X9m9UIsYX/N6vvQ==}
@@ -6488,10 +6482,6 @@ packages:
   retry-as-promised@7.0.4:
     resolution: {integrity: sha512-XgmCoxKWkDofwH8WddD0w85ZfqYz+ZHlr5yo+3YUCfycWawU56T5ckWXsScsj5B8tqUcIG67DxXByo3VUgiAdA==}
 
-  reusify@1.0.4:
-    resolution: {integrity: sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==}
-    engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
-
   reusify@1.1.0:
     resolution: {integrity: sha512-g6QUff04oZpHs0eG5p83rFLhHeV00ug/Yf9nZM6fLeUrPguBTkTQOdpAWWspMh55TZfVQDPaN3NQJfbVRAxdIw==}
     engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
@@ -8565,7 +8555,7 @@ snapshots:
       interrogator: 2.0.1
       is-interactive: 1.0.0
       parameter-reducers: 2.1.0
-      semver: 7.6.3
+      semver: 7.7.1
 
   '@databases/pg-config@3.2.0(typescript@5.8.3)':
     dependencies:
@@ -9017,7 +9007,7 @@ snapshots:
     dependencies:
       ajv: 8.17.1
       ajv-formats: 3.0.1(ajv@8.17.1)
-      fast-uri: 3.0.2
+      fast-uri: 3.0.6
 
   '@fastify/error@4.0.0': {}
 
@@ -11088,7 +11078,7 @@ snapshots:
   avvio@9.0.0:
     dependencies:
       '@fastify/error': 4.0.0
-      fastq: 1.17.1
+      fastq: 1.19.1
 
   axios@1.7.9(debug@4.4.0):
     dependencies:
@@ -12180,8 +12170,6 @@ snapshots:
 
   fast-uri@2.4.0: {}
 
-  fast-uri@3.0.2: {}
-
   fast-uri@3.0.6: {}
 
   fastify-plugin@5.0.1: {}
@@ -12201,12 +12189,8 @@ snapshots:
       process-warning: 5.0.0
       rfdc: 1.4.1
       secure-json-parse: 4.0.0
-      semver: 7.6.3
+      semver: 7.7.1
       toad-cache: 3.7.0
-
-  fastq@1.17.1:
-    dependencies:
-      reusify: 1.0.4
 
   fastq@1.19.1:
     dependencies:
@@ -14525,8 +14509,6 @@ snapshots:
   ret@0.5.0: {}
 
   retry-as-promised@7.0.4: {}
-
-  reusify@1.0.4: {}
 
   reusify@1.1.0: {}
 
