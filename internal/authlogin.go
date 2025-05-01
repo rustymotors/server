@@ -78,7 +78,6 @@ func maskPassword(password string) string {
 func AuthLogin(w http.ResponseWriter, req *http.Request) {
 
 	fmt.Println("AuthLogin request from: ", req.RemoteAddr)
-	fmt.Println("AuthLogin request URL: ", req.URL)
 
 	authTickets := &AuthTickets{}
 

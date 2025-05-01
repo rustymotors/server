@@ -17,13 +17,22 @@ func ListenLoop(ln net.Listener) error {
 	for {
 		conn, err := ln.Accept()
 		internal.CheckError(err)
-		go HandleConnection(conn)
+		go HandleTCPConnection(conn)
 	}
 }
 
-func HandleConnection(c net.Conn) {
-	fmt.Println("We got a connection!")
+func HandleTCPConnection(c net.Conn) {
+	fmt.Printf("Connection from %s on local port %d\n", c.RemoteAddr().String(), c.LocalAddr().(*net.TCPAddr).Port)	
+
+	buf := make([]byte, 1024)
+	_, err := c.Read(buf)
+	if err != nil {
+		fmt.Println("Error reading from connection:", err)
+		return
+	}
+	fmt.Println("Received data(hex):", buf)
 	
+
 	c.Write([]byte("Cya!"))
 
 }
@@ -44,7 +53,7 @@ func (s *ServerInstance) Start() error {
 
 		go func(port string) {
 			http.Handle("/ShardList/", http.HandlerFunc(internal.ShardList))
-			http.Handle("/", http.HandlerFunc(internal.AuthLogin))
+			http.Handle("/AuthLogin", http.HandlerFunc(internal.AuthLogin))
 
 			err := http.ListenAndServe(port, nil)
 			internal.CheckError(err)
@@ -70,7 +79,7 @@ func (s *ServerInstance) Start() error {
 
 func main() {
 	httpPorts := []int{3000}
-	tcpPorts :=  []int{}   // []int{8226, 8228}
+	tcpPorts :=  []int{8226, 8228}
 
 	fmt.Println("Everythis starting")
 
