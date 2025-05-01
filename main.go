@@ -2,24 +2,10 @@ package main
 
 import (
 	"fmt"
-	"log"
+	internal "github.com/rustymotors/server/internal"
 	"net"
 	"net/http"
 )
-
-func authLogin(w http.ResponseWriter, req *http.Request) {
-
-	fmt.Println("AuthLogin request from: ", req.RemoteAddr)
-
-	fmt.Fprintf(w, "Hello\n")
-
-}
-
-func CheckError(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
-}
 
 type ServerInstance struct {
 	httpPorts []int
@@ -30,7 +16,7 @@ type ServerInstance struct {
 func ListenLoop(ln net.Listener) error {
 	for {
 		conn, err := ln.Accept()
-		CheckError(err)
+		internal.CheckError(err)
 		go HandleConnection(conn)
 	}
 }
@@ -57,10 +43,11 @@ func (s *ServerInstance) Start() error {
 		fmt.Printf("Starting http server on %s\n", port)
 
 		go func(port string) {
-			http.Handle("/", http.HandlerFunc(authLogin))
+			http.Handle("/ShardList/", http.HandlerFunc(internal.ShardList))
+			http.Handle("/", http.HandlerFunc(internal.AuthLogin))
 
 			err := http.ListenAndServe(port, nil)
-			CheckError(err)
+			internal.CheckError(err)
 
 		}(port)
 	}
@@ -72,7 +59,7 @@ func (s *ServerInstance) Start() error {
 		fmt.Printf("Starting tcp server on %s\n", port)
 
 		ln, err := net.Listen("tcp", port)
-		CheckError(err)
+		internal.CheckError(err)
 		go ListenLoop(ln)
 
 	}
@@ -83,15 +70,15 @@ func (s *ServerInstance) Start() error {
 
 func main() {
 	httpPorts := []int{3000}
-	tcpPorts := []int{8226, 8228}
+	tcpPorts :=  []int{}   // []int{8226, 8228}
 
 	fmt.Println("Everythis starting")
 
 	instance, err := NewServerInstance(httpPorts, tcpPorts)
-	CheckError(err)
+	internal.CheckError(err)
 
 	err = instance.Start()
-	CheckError(err)
+	internal.CheckError(err)
 	
 	defer fmt.Println("Everything stopping")
 
