@@ -187,7 +187,6 @@ export class CommData extends BinaryMember {
 		this.numberOMessagesToSend.deserialize(
 			buffer.subarray(offset, offset + this.numberOMessagesToSend.size()),
 		);
-		offset += this.numberOMessagesToSend.size();
 	}
 
     override size(): number {
