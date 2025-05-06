@@ -263,8 +263,8 @@ importers:
   packages/database:
     dependencies:
       '@types/pg':
-        specifier: ^8.12.0
-        version: 8.12.0
+        specifier: ^8.15.0
+        version: 8.15.0
       pg:
         specifier: ^8.15.6
         version: 8.15.6
@@ -3105,9 +3105,6 @@ packages:
   '@types/mysql@2.15.26':
     resolution: {integrity: sha512-DSLCOXhkvfS5WNNPbfn2KdICAmk8lLc+/PNvnPnF7gOdMZCxopXduqv0OQ13y/yA/zXTSikZZqVgybUxOEg6YQ==}
 
-  '@types/node@22.15.11':
-    resolution: {integrity: sha512-rlyK0vuU7VLEYQfXuC7QTFxDvkb6tKhDI7wR4r6ZzM0k8BJd44W0jxo6xmUjqSs4AlYmiYfLJU2f0pAG/FtCRw==}
-
   '@types/node@22.15.14':
     resolution: {integrity: sha512-BL1eyu/XWsFGTtDWOYULQEs4KR0qdtYfCxYAUYRoB7JP7h9ETYLgQTww6kH8Sj2C0pFGgrpM0XKv6/kbIzYJ1g==}
 
@@ -3120,8 +3117,8 @@ packages:
   '@types/pg-pool@2.0.6':
     resolution: {integrity: sha512-TaAUE5rq2VQYxab5Ts7WZhKNmuN78Q6PiFonTDdpbx8a1H0M1vhy3rhiMjl+e2iHmogyMw7jZF4FrE6eJUy5HQ==}
 
-  '@types/pg@8.12.0':
-    resolution: {integrity: sha512-a9Z11ecnpNPFu2iT4Qo9SSYgM2r1l4UqLIQ454zhCDRzxqOh/vsi57FFovbc64oBGPBotXw5cRhUQtJEHCb/OA==}
+  '@types/pg@8.15.0':
+    resolution: {integrity: sha512-JFxVIO0hZCbQXQGbRBQjbRWNCG3CujfEUBD4Ny2l0QqDyE0vqAPiMSyx0AIszMS0KdLZxz2GxZUUF3FBUXhOXA==}
 
   '@types/pg@8.6.1':
     resolution: {integrity: sha512-1Kc4oAGzAl7uqUStZCDvaLFqZrW9qWSjXOmBfdgyBP5La7Us6Mg4GBvRlSoaZMhQF/zSj1C8CtKMBkoiT8eL8w==}
@@ -10847,10 +10844,6 @@ snapshots:
     dependencies:
       '@types/node': 22.15.14
 
-  '@types/node@22.15.11':
-    dependencies:
-      undici-types: 6.21.0
-
   '@types/node@22.15.14':
     dependencies:
       undici-types: 6.21.0
@@ -10861,11 +10854,11 @@ snapshots:
 
   '@types/pg-pool@2.0.6':
     dependencies:
-      '@types/pg': 8.12.0
+      '@types/pg': 8.15.0
 
-  '@types/pg@8.12.0':
+  '@types/pg@8.15.0':
     dependencies:
-      '@types/node': 22.15.11
+      '@types/node': 22.15.14
       pg-protocol: 1.9.5
       pg-types: 4.0.2
 
