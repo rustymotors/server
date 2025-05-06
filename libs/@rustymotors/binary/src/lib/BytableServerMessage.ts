@@ -168,10 +168,6 @@ export class BytableServerMessage extends Bytable {
 			return;
 		}
 
-		if (!field) {
-			throw new Error(`Field ${name} not found, and could not be created`);
-		}
-
 		field.setValue(value);
 	}
 
