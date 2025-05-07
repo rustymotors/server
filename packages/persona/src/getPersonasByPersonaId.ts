@@ -1,6 +1,14 @@
 import { personaRecords } from "./internal.js";
 import type { PersonaRecord } from "./PersonaMapsMessage.js";
 
+/**
+ * Retrieves personas based on the provided persona ID.
+ *
+ * @param params - The parameters required to fetch personas.
+ * @param params.personaId - The unique identifier for the persona.
+ *
+ * @returns A promise that resolves to an array of persona records matching the given persona ID.
+ */
 export async function getPersonasByPersonaId({
 	personaId
 }: {
@@ -9,14 +17,8 @@ export async function getPersonasByPersonaId({
 PersonaRecord,
 "customerId" | "personaId" | "personaName" | "shardId"
 >[]> {
-	const results = personaRecords.filter((persona) => {
+	return personaRecords.filter((persona) => {
 		const match = personaId === persona.personaId;
 		return match;
 	});
-	if (results.length === 0) {
-		const err = Error(`Unable to locate a persona for id: ${personaId}`);
-		throw err;
-	}
-
-	return results;
 }

@@ -6,6 +6,20 @@ import { getServerLogger } from "rusty-motors-shared";
 
 const defaultLogger = getServerLogger("PersonaServer");
 
+/**
+ * Retrieves persona information based on the provided connection ID and message.
+ *
+ * @param params - The parameters required to fetch persona information.
+ * @param params.connectionId - The unique identifier for the connection.
+ * @param params.message - The legacy message containing the request data.
+ * @param params.log - Optional logger instance for debugging (defaults to `defaultLogger`).
+ * 
+ * @returns A promise that resolves to an object containing:
+ * - `connectionId`: The same connection ID passed in the request.
+ * - `messages`: An array of serialized buffer messages containing the persona information.
+ * 
+ * @throws Will throw an error if the persona cannot be found for the given persona ID.
+ */
 export async function getPersonaInfo({
 	connectionId,
 	message,
