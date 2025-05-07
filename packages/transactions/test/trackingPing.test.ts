@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, test } from "vitest";
 import { OldServerMessage } from "rusty-motors-shared";
 import { trackingPing } from "../src/trackingPing.js";
 
