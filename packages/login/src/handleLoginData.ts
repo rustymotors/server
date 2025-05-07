@@ -2,11 +2,10 @@ import {
 	NPSMessage,
 	ServerLogger,
 } from "rusty-motors-shared";
-import { messageHandlers } from "./internal.js";
+import { getMessageHandlerOrFallback  } from "./internal.js";
 import { getServerLogger } from "rusty-motors-shared";
 import { GamePacket } from "rusty-motors-shared-packets";
 import { BytableMessage } from "@rustymotors/binary";
-import {getHandlers} from "rusty-motors-personas";
 
 const defaultLogger = getServerLogger("LoginServer");
 
@@ -40,28 +39,15 @@ export async function handleLoginData({
 	// The packet needs to be an NPSMessage
 	const inboundMessage = new NPSMessage();
 	inboundMessage.deserialize(message.serialize());
-	let supportedHandler;
+	let messageHandler;
 
-	supportedHandler = messageHandlers.find((h) => {
-		return h.opCode === inboundMessage._header.id;
-	});
-
-	if (typeof supportedHandler === "undefined") {
-		// There is a change this is a message for the persona service
-		const handlers = getHandlers();
-		supportedHandler = handlers.find((h) => {
-			return h.opCode === inboundMessage._header.id;
-		});
-
-		if (typeof supportedHandler === "undefined") {
-			throw Error(
-				`[${connectionId}] UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
-			);
-		}
-	}
-
+	messageHandler = getMessageHandlerOrFallback(
+		message.header.messageId,
+		
+	);
+	
 	try {
-		const result = await supportedHandler.handler({
+		const result = await messageHandler({
 			connectionId,
 			message,
 			log,

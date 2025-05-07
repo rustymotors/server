@@ -19,11 +19,26 @@ import { login } from "./login.js";
 import { GamePacket } from "rusty-motors-shared-packets";
 import { BytableMessage } from "@rustymotors/binary";
 
+export type LoginMessageHandlerFn = (args: {
+	connectionId: string;
+	message: BytableMessage;
+	log: ServerLogger;
+}) => Promise<{
+	connectionId: string;
+	messages: GamePacket[];
+}>;
+
+export type LoginMessageHandlerEntry = {
+	opCode: number;
+	name: string;
+	handler: LoginMessageHandlerFn;
+};
+
 /**
  * An array of message handlers for processing different types of messages.
  * Each handler is associated with an operation code (opCode) and a name.
  * 
- * @type {Array<{opCode: number, name: string, handler: function}>}
+ * @type {LoginMessageHandlerEntry}
  * 
  * @property {number} opCode - The operation code that identifies the type of message.
  * @property {string} name - The name of the message handler.
@@ -33,21 +48,34 @@ import { BytableMessage } from "@rustymotors/binary";
  * @property {ServerLogger} handler.args.log - The logger for server logging.
  * @returns {Promise<{connectionId: string, messages: GamePacket[]}>} - A promise that resolves to an object containing the connection ID and an array of messages.
  */
-export const messageHandlers: {
-	opCode: number;
-	name: string;
-	handler: (args: {
-		connectionId: string;
-		message: BytableMessage;
-		log: ServerLogger;
-	}) => Promise<{
-		connectionId: string;
-		messages: GamePacket[];
-	}>;
-}[] = [
+const messageHandlers: LoginMessageHandlerEntry[] = [
 	{
 		opCode: 1281, // 0x0501
 		name: "UserLogin",
 		handler: login,
 	},
 ];
+
+function loginMessageHandlerFallback({
+	connectionId,
+	message,
+	log,
+}: {
+	connectionId: string;
+	message: BytableMessage;
+	log: ServerLogger;
+}): Promise<{
+	connectionId: string;
+	messages: GamePacket[];
+}> {
+	log.error(
+		`[${connectionId}] No handler found for message with opCode: ${message.header.messageId}`,
+	);
+	throw new Error(`No handler found for message with opCode: ${message.header.messageId}`);
+}	
+
+export function getMessageHandlerOrFallback(
+	opCode: number,
+): LoginMessageHandlerFn {
+	return messageHandlers.find((h) => h.opCode === opCode)?.handler ?? loginMessageHandlerFallback;
+}
