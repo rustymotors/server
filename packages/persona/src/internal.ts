@@ -25,7 +25,6 @@ import { _gameLogout } from "./_gameLogout.js";
 import { _getFirstBuddy } from "./_getFirstBuddy.js";
 import { _selectGamePersona } from "./_selectGamePersona.js";
 import { validatePersonaName } from "./handlers/validatePersonaName.js";
-import { getPersonaInfo } from "./handlers/getPersonaInfo.js";
 import { getServerLogger } from "rusty-motors-shared";
 
 
@@ -65,11 +64,6 @@ export const messageHandlers: {
 		opCode: 1295, // 0x50F
 		name: "Game logout",
 		handler: _gameLogout,
-	},
-	{
-		opCode: 1305, // 0x519
-		name: "Get persona info",
-		handler: getPersonaInfo,
 	},
 	{
 		opCode: 1330, // 0x532
