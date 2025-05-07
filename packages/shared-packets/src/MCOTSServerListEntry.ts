@@ -29,7 +29,6 @@ export class MCOTSServerListEntry extends BufferSerializer {
 		offset += 2;
 
 		buffer.writeUInt16LE(this.dutyFlags, offset);
-		offset += 2;
 
 		return buffer;
 	}
