@@ -472,6 +472,9 @@ importers:
       '@sentry/profiling-node':
         specifier: 9.15.0
         version: 9.15.0
+      zod:
+        specifier: ^3.24.3
+        version: 3.24.3
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.1.2
