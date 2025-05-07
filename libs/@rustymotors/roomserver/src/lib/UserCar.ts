@@ -31,11 +31,9 @@ export class UserCar extends BinaryMember {
 			);
 		}
 
-        let value = v;
-
 		try {
 			let offset = 0;
-            value = v.slice(offset, offset + this._carId.size());
+            let value = v.slice(offset, offset + this._carId.size());
             this._carId.set(value);
             offset += this._carId.size();
             value = v.slice(offset, offset + this._brandedPartId.size());
