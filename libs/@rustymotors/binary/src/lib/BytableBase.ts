@@ -1,3 +1,32 @@
+/**
+ * The `BytableBase` class serves as a base class for handling binary data operations.
+ * It provides utility methods for working with buffers, validating values, and
+ * converting data to and from binary formats. Subclasses are expected to implement
+ * specific serialization and deserialization logic.
+ *
+ * @remarks
+ * This class is designed to be extended and should not be used directly.
+ * Subclasses must override the `toString`, `deserialize`, `serialize`, and
+ * `serializeSize` methods to provide specific functionality.
+ *
+ * @example
+ * ```typescript
+ * class MyBytable extends BytableBase {
+ *     toString() {
+ *         // Implement string representation logic
+ *     }
+ *     deserialize(buffer: Buffer) {
+ *         // Implement deserialization logic
+ *     }
+ *     serialize() {
+ *         // Implement serialization logic
+ *     }
+ *     get serializeSize() {
+ *         // Return the size of the serialized data
+ *     }
+ * }
+ * ```
+ */
 export class BytableBase {
     protected buffer: DataView = new DataView(new ArrayBuffer(1));
 
@@ -71,7 +100,7 @@ export class BytableBase {
     }
 
     protected align8(value: number) {
-        return value + (8 - (value % 8));
+        return Math.ceil(value / 8) * 8;
     }
 
     get serializeSize(): number {
