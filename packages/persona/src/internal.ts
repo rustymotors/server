@@ -88,7 +88,13 @@ export const messageHandlers: {
 ];
 
 /**
- * Return string as buffer
+ * Creates a fixed-size buffer containing the UTF-8 encoded bytes of a string.
+ *
+ * The resulting buffer will be exactly {@link size} bytes long, with the string's bytes at the start and any remaining space zero-filled.
+ *
+ * @param name - The string to encode into the buffer.
+ * @param size - The desired length of the output buffer.
+ * @returns A buffer of length {@link size} containing the encoded string.
  */
 export function generateNameBuffer(name: string, size: number): Buffer {
     const nameBuffer = Buffer.alloc(size);
@@ -126,9 +132,10 @@ export const personaRecords: Pick<
 ];
 
 /**
+ * Retrieves all persona records associated with the specified customer ID.
  *
- * @param {number} customerId
-//  * @return {Promise<PersonaRecord[]>}
+ * @param customerId - The unique identifier of the customer whose personas are to be retrieved.
+ * @returns A promise that resolves to an array of persona records for the given customer.
  */
 async function getPersonasByCustomerId(
     customerId: number,
@@ -145,12 +152,14 @@ async function getPersonasByCustomerId(
 }
 
 /**
- * Lookup all personas owned by the customer id
+ * Retrieves all persona records associated with the specified customer ID.
  *
- * TODO: Store in a database, instead of being hard-coded
+ * Returns an array of persona records for the given {@link customerId}, or an empty array if none are found.
  *
- * @param {number} customerId
- * @return {Promise<PersonaRecord[]>}
+ * @param customerId - The unique identifier of the customer whose personas are to be retrieved.
+ * @returns A promise resolving to an array of persona records for the customer.
+ *
+ * @remark Only customer ID 5551212 is currently supported; all other IDs return an empty array.
  */
 async function getPersonaMapsByCustomerId(
     customerId: number,
@@ -169,15 +178,15 @@ async function getPersonaMapsByCustomerId(
 }
 
 /**
- * Handle a get persona maps packet
- * @param {object} args
- * @param {string} args.connectionId
- * @param {LegacyMessage} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ name: "LoginServer" })]
- * @returns {Promise<{
- *  connectionId: string,
- * messages: SerializedBufferOld[],
- * }>}
+ * Processes a "Get persona maps" request and returns serialized persona data for a given customer.
+ *
+ * Extracts the customer ID from the incoming message, retrieves associated persona records, serializes them into a response message, and returns the result for network transmission.
+ *
+ * @param connectionId - The identifier for the client connection.
+ * @param message - The incoming legacy message containing the request data.
+ * @returns An object containing the connection ID and an array with the serialized persona maps message.
+ *
+ * @throws {Error} If serialization of the persona maps message fails.
  */
 async function getPersonaMaps({
     connectionId,
@@ -263,6 +272,12 @@ async function getPersonaMaps({
     }
 }
 
+/**
+ * Returns a formatted string representation of a persona record.
+ *
+ * @param persona - Partial persona record to format.
+ * @returns A string displaying the {@link persona}'s customerId, personaId, personaName, and shardId.
+ */
 export function personaToString(persona: Partial<PersonaRecord>): string {
     return ''.concat(
         `PersonaRecord: customerId=${persona.customerId}, `,

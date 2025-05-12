@@ -80,15 +80,12 @@ export class BytableBase {
 }
 
 /**
- * Coerces a given value to a Buffer.
+ * Converts a string, number, or Buffer to a Buffer.
  *
- * This function takes a value of type string, number, or Buffer and converts it to a Buffer.
- * - If the value is a string, it creates a Buffer from the string.
- * - If the value is a number, it creates a 4-byte Buffer and writes the number as a 32-bit unsigned integer in little-endian format.
- * - If the value is already a Buffer, it returns the value as is.
+ * If the input is a string, returns a Buffer containing the string's bytes. If the input is a number, returns a 4-byte Buffer containing the number as a 32-bit unsigned integer in little-endian format. If the input is already a Buffer, returns it unchanged.
  *
- * @param value - The value to be coerced to a Buffer. It can be a string, number, or Buffer.
- * @returns The coerced Buffer.
+ * @param value - The value to convert.
+ * @returns A Buffer representation of the input value.
  */
 export function coerceValueToBuffer(
     value: string | number | Buffer<ArrayBufferLike>,

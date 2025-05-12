@@ -3,19 +3,19 @@ import { SerializableInterface } from 'rusty-motors-shared-packets';
 export const BINARY_ALIGNMENT = 4;
 
 /**
- * Converts a 16-bit number from host byte order to network byte order.
+ * Converts a 16-bit unsigned integer from host to network byte order (big-endian).
  *
- * @param {number} n - The 16-bit number to convert.
- * @returns {number} The converted 16-bit number in network byte order.
+ * @param n - The 16-bit unsigned integer to convert.
+ * @returns The value of {@link n} with its bytes swapped to network byte order.
  */
 export function htons(n: number): number {
     return ((n & 0xff) << 8) | ((n >> 8) & 0xff);
 }
 /**
- * Converts a 32-bit number from host byte order to network byte order.
+ * Converts a 32-bit integer from host byte order to network byte order (big-endian).
  *
- * @param {number} n - The 32-bit number to be converted.
- * @returns {number} - The converted 32-bit number in network byte order.
+ * @param n - The 32-bit integer to convert.
+ * @returns The 32-bit integer in network (big-endian) byte order.
  */
 export function htonl(n: number): number {
     return (
@@ -28,38 +28,38 @@ export function htonl(n: number): number {
 /**
  * Converts a 16-bit number from network byte order to host byte order.
  *
- * @param {number} n - The 16-bit number in network byte order.
- * @returns {number} - The 16-bit number in host byte order.
+ * @param n - The 16-bit number in network byte order.
+ * @returns The number converted to host byte order.
  */
 export function ntohs(n: number): number {
     return htons(n);
 }
 /**
- * Converts a network byte order integer to host byte order.
+ * Converts a 32-bit integer from network byte order to host byte order.
  *
- * @param {number} n - The number in network byte order.
- * @returns {number} - The number in host byte order.
+ * @param n - The 32-bit integer in network byte order.
+ * @returns The integer in host byte order.
  */
 export function ntohl(n: number): number {
     return htonl(n);
 }
 
 /**
- * Aligns a given number to the specified alignment.
+ * Rounds a number up to the nearest multiple of the specified alignment.
  *
- * @param {number} n - The number to be aligned.
- * @param {number} alignment - The alignment boundary.
- * @returns {number} - The aligned number.
+ * @param n - The number to align.
+ * @param alignment - The alignment boundary.
+ * @returns The smallest multiple of {@link alignment} greater than or equal to {@link n}.
  */
 export function align(n: number, alignment: number): number {
     return (n + alignment - 1) & ~(alignment - 1);
 }
 /**
- * Adds padding to a buffer to align its length to the specified alignment.
+ * Returns a new buffer padded with zeros so its length is a multiple of the specified alignment.
  *
- * @param {Uint8Array} buffer - The buffer to which padding will be added.
- * @param {number} alignment - The alignment boundary to which the buffer length should be aligned.
- * @returns {Uint8Array} A new buffer with the original buffer's content and the added padding.
+ * @param buffer - The input buffer to pad.
+ * @param alignment - The byte alignment boundary.
+ * @returns A new buffer containing the original data followed by zero padding as needed.
  */
 export function addAlignementPadding(
     buffer: Uint8Array,
@@ -71,11 +71,11 @@ export function addAlignementPadding(
     return new Uint8Array([...buffer, ...padding]);
 }
 /**
- * Verifies that the length of the buffer is aligned to the specified alignment.
+ * Throws an error if the buffer's length is not a multiple of the specified alignment.
  *
- * @param {Uint8Array} buffer - The buffer to verify
- * @param {number} alignment - The alignment value to check against.
- * @throws {Error} If the buffer length is not aligned to the specified alignment.
+ * @param buffer - The buffer to check.
+ * @param alignment - The required alignment in bytes.
+ * @throws {Error} If {@link buffer} length is not a multiple of {@link alignment}.
  */
 export function verifyAlignment(buffer: Uint8Array, alignment: number) {
     if (buffer.length % alignment !== 0) {

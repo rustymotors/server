@@ -384,6 +384,14 @@ export class BytableMessage extends Bytable {
     }
 }
 
+/**
+ * Creates a version 0 {@link BytableMessage} with a single 'data' field of type Buffer.
+ *
+ * If a buffer is provided, the message is deserialized from it.
+ *
+ * @param buffer - Optional buffer to deserialize into the message.
+ * @returns A {@link BytableMessage} instance configured for raw data.
+ */
 export function createRawMessage(buffer?: Buffer) {
     const message = new BytableMessage(0);
     message.setSerializeOrder([
@@ -400,6 +408,14 @@ export function createRawMessage(buffer?: Buffer) {
     return message;
 }
 
+/**
+ * Creates a version 1 `BytableMessage` with a single `data` field of type `Buffer`.
+ *
+ * If a buffer is provided, the message is deserialized from it.
+ *
+ * @param buffer - Optional buffer to deserialize into the message.
+ * @returns A `BytableMessage` instance configured for game messages.
+ */
 export function createGameMessage(buffer?: Buffer) {
     const message = new BytableMessage(1);
     message.setSerializeOrder([

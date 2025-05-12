@@ -1,3 +1,14 @@
+/**
+ * Splits a buffer into packets using a specified separator buffer.
+ *
+ * Searches for the separator starting from the third byte of {@link data}. If no separator is found, returns the entire buffer as a single packet. Throws an error if the separator is found at the end of the buffer.
+ *
+ * @param data - The buffer to split into packets.
+ * @param separator - The buffer used as the separator between packets.
+ * @returns An array of buffer packets split by the separator.
+ *
+ * @throws {Error} If the separator is found at the end of the buffer.
+ */
 export function splitPackets(data: Buffer, separator: Buffer): Buffer[] {
     const packets: Buffer[] = [];
 

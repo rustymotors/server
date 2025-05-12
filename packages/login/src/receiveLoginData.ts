@@ -20,14 +20,18 @@ import { getServerLogger } from 'rusty-motors-shared';
 import { BytableMessage } from '@rustymotors/binary';
 
 /**
- * Handles the reception of login data, deserializes the incoming message, and processes it.
+ * Processes incoming login data for a connection and returns the resulting service response.
  *
- * @param {Object} params - The parameters for the function.
- * @param {string} params.connectionId - The ID of the connection.
- * @param {BufferSerializer} params.message - The serialized message buffer.
- * @param {ServerLogger} [params.log=getServerLogger("receiveLoginData")] - Optional logger instance.
- * @returns {Promise<ServiceResponse>} - The response from the login data handler.
- * @throws {Error} - Throws an error if there is an issue processing the login data.
+ * Awaits handling of the login data, logs entry and exit, and converts the response messages to the required serialization format before returning.
+ *
+ * @param connectionId - Unique identifier for the connection.
+ * @param message - Serialized login data message.
+ * @param log - Optional logger instance.
+ * @returns A promise resolving to the processed service response with messages converted to {@link BufferSerializer} format.
+ *
+ * @throws {Error} If an error occurs during login data processing, including the connection ID in the error message.
+ *
+ * @remark The conversion of response messages is a temporary workaround for legacy serialization compatibility.
  */
 export async function receiveLoginData({
     connectionId,
@@ -65,6 +69,16 @@ export async function receiveLoginData({
     }
 }
 
+/**
+ * Converts an array of {@link GamePacket} objects into an array of {@link BufferSerializer} instances.
+ *
+ * Each packet is serialized and then deserialized into a new {@link BufferSerializer}.
+ *
+ * @param packets - The array of game packets to convert.
+ * @returns An array of {@link BufferSerializer} objects representing the serialized packets.
+ *
+ * @remark This conversion is a temporary workaround for compatibility with an older serialization format.
+ */
 function GamePacketArrayToBufferSerializerArray(
     packets: GamePacket[],
 ): BufferSerializer[] {
