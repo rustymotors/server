@@ -6,7 +6,13 @@ export class BytableByte extends BytableBase implements BytableObject {
     protected name_: string = '';
 
     override deserialize(buffer: Buffer) {
+        if (buffer.length < 1) {
+            throw new Error(
+                'Cannot deserialize buffer with insufficient length',
+            );
+        }
         this.value_ = buffer.readUInt8(0);
+        return this;
     }
 
     override get serializeSize() {
