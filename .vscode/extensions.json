@@ -5,6 +5,7 @@
         "usernamehw.errorlens",
         "biomejs.biome",
         "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode"
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-containers"
     ]
 }

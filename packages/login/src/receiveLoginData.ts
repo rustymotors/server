@@ -13,15 +13,11 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import {
-	ServerLogger,
-	type ServiceResponse,
-} from "rusty-motors-shared";
-import { handleLoginData } from "./handleLoginData.js";
-import { BufferSerializer, GamePacket } from "rusty-motors-shared-packets";
-import { getServerLogger } from "rusty-motors-shared";
-import { BytableMessage } from "@rustymotors/binary";
-
+import { ServerLogger, type ServiceResponse } from 'rusty-motors-shared';
+import { handleLoginData } from './handleLoginData.js';
+import { BufferSerializer, GamePacket } from 'rusty-motors-shared-packets';
+import { getServerLogger } from 'rusty-motors-shared';
+import { BytableMessage } from '@rustymotors/binary';
 
 /**
  * Handles the reception of login data, deserializes the incoming message, and processes it.
@@ -34,48 +30,49 @@ import { BytableMessage } from "@rustymotors/binary";
  * @throws {Error} - Throws an error if there is an issue processing the login data.
  */
 export async function receiveLoginData({
-	connectionId,
-	message,
-	log = getServerLogger("receiveLoginData"),
+    connectionId,
+    message,
+    log = getServerLogger('receiveLoginData'),
 }: {
-	connectionId: string;
-	message: BytableMessage;
-	log?: ServerLogger;
+    connectionId: string;
+    message: BytableMessage;
+    log?: ServerLogger;
 }): Promise<ServiceResponse> {
-	try {
-		log.debug(`[${connectionId}] Entering login module`);
-		const response = await handleLoginData({
-			connectionId,
-			message,
-			log,
-		});
-		log.debug(
-			`[${connectionId}] Exiting login module ${response.messages.length} messages`,
-		);
+    try {
+        log.debug(`[${connectionId}] Entering login module`);
+        const response = await handleLoginData({
+            connectionId,
+            message,
+            log,
+        });
+        log.debug(
+            `[${connectionId}] Exiting login module ${response.messages.length} messages`,
+        );
 
-		// @ts-ignore-next-line - This is a temporary workaround for the old serialization format
-		response.messages = GamePacketArrayToBufferSerializerArray(response.messages);
+        // @ts-ignore-next-line - This is a temporary workaround for the old serialization format
+        response.messages = GamePacketArrayToBufferSerializerArray(
+            response.messages,
+        );
 
-		// @ts-ignore-next-line - This is a temporary workaround for the old serialization format
-		return response;
-	} catch (error) {
-		const err = new Error(
-			`[${connectionId}] Error in login service: ${(error as Error).message}`,
-			{ cause: error },
-		);
-		throw err;
-	}
+        // @ts-ignore-next-line - This is a temporary workaround for the old serialization format
+        return response;
+    } catch (error) {
+        const err = new Error(
+            `[${connectionId}] Error in login service: ${(error as Error).message}`,
+            { cause: error },
+        );
+        throw err;
+    }
 }
 
 function GamePacketArrayToBufferSerializerArray(
-	packets: GamePacket[],
+    packets: GamePacket[],
 ): BufferSerializer[] {
-	let bufferSerializers: BufferSerializer[] = [];
-	for (const packet of packets) {
-		const bufferSerializer = new BufferSerializer();
-		bufferSerializer.deserialize(packet.serialize());
-		bufferSerializers.push(bufferSerializer);
-	}
-	return bufferSerializers;
+    let bufferSerializers: BufferSerializer[] = [];
+    for (const packet of packets) {
+        const bufferSerializer = new BufferSerializer();
+        bufferSerializer.deserialize(packet.serialize());
+        bufferSerializers.push(bufferSerializer);
+    }
+    return bufferSerializers;
 }
-

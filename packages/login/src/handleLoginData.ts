@@ -1,13 +1,10 @@
-import {
-	NPSMessage,
-	ServerLogger,
-} from "rusty-motors-shared";
-import { messageHandlers } from "./internal.js";
-import { getServerLogger } from "rusty-motors-shared";
-import { GamePacket } from "rusty-motors-shared-packets";
-import { BytableMessage } from "@rustymotors/binary";
+import { NPSMessage, ServerLogger } from 'rusty-motors-shared';
+import { getMessageHandlerOrFallback } from './internal.js';
+import { getServerLogger } from 'rusty-motors-shared';
+import { GamePacket } from 'rusty-motors-shared-packets';
+import { BytableMessage } from '@rustymotors/binary';
 
-const defaultLogger = getServerLogger("LoginServer");
+const defaultLogger = getServerLogger('LoginServer');
 
 /**
  * Handles the reception of login data, deserializes the incoming message, and processes it.
@@ -23,48 +20,43 @@ const defaultLogger = getServerLogger("LoginServer");
  * @throws {Error} - Throws an error if there is an issue processing the login data.
  */
 export async function handleLoginData({
-	connectionId,
-	message,
-	log = defaultLogger,
+    connectionId,
+    message,
+    log = defaultLogger,
 }: {
-	connectionId: string;
-	message: BytableMessage;
-	log?: ServerLogger;
+    connectionId: string;
+    message: BytableMessage;
+    log?: ServerLogger;
 }): Promise<{
-	connectionId: string;
-	messages: GamePacket[];
+    connectionId: string;
+    messages: GamePacket[];
 }> {
-	log.debug(`[${connectionId}] Entering handleLoginData`);
+    log.debug(`[${connectionId}] Entering handleLoginData`);
 
-	// The packet needs to be an NPSMessage
-	const inboundMessage = new NPSMessage();
-	inboundMessage._doDeserialize(message.serialize());
+    // The packet needs to be an NPSMessage
+    const inboundMessage = new NPSMessage();
+    inboundMessage.deserialize(message.serialize());
+    let messageHandler;
 
-	const supportedHandler = messageHandlers.find((h) => {
-		return h.opCode === inboundMessage._header.id;
-	});
+    messageHandler = getMessageHandlerOrFallback(message.header.messageId);
 
-	if (typeof supportedHandler === "undefined") {
-		// We do not yet support this message code
-		throw Error(
-			`[${connectionId}] UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
-		);
-	}
-
-	try {
-		const result = await supportedHandler.handler({
-			connectionId,
-			message,
-			log,
-		});
-		log.debug(
-			`[${connectionId}] Leaving handleLoginData with ${result.messages.length} messages`,
-		);
-		return result;
-	} catch (error) {
-		const err = Error(`[${connectionId}] Error in login service`, {
-			cause: error,
-		});
-		throw err;
-	}
+    try {
+        const result = await messageHandler({
+            connectionId,
+            message,
+            log,
+        });
+        log.debug(
+            `[${connectionId}] Leaving handleLoginData with ${result.messages.length} messages`,
+        );
+        return {
+            connectionId,
+            messages: result.messages,
+        };
+    } catch (error) {
+        const err = Error(`[${connectionId}] Error in login service`, {
+            cause: error,
+        });
+        throw err;
+    }
 }
