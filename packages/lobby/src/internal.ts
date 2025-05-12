@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { SerializedBufferOld, ServerLogger } from 'rusty-motors-shared';
+import { SerializedBufferOld } from 'rusty-motors-shared';
 import { NPSMessage } from 'rusty-motors-shared';
 import { LegacyMessage } from 'rusty-motors-shared';
 import { handleEncryptedNPSCommand } from './handlers/encryptedCommand.js';
 import { handleTrackingPing } from './handlers/handleTrackingPing.js';
 import { _npsRequestGameConnectServer } from './handlers/requestConnectGameServer.js';
-import { getServerLogger } from 'rusty-motors-shared';
+import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 import { BytableMessage } from '@rustymotors/binary';
 
 /**

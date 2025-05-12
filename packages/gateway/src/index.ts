@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Socket } from "node:net";
-import { randomUUID } from "node:crypto";
-import { tagSocket } from "./socketUtility.js";
-import { getPortRouter } from "./portRouters.js";
-import * as Sentry from "@sentry/node";
-import { getServerLogger, ServerLogger } from "rusty-motors-shared";
+import { Socket } from 'node:net';
+import { randomUUID } from 'node:crypto';
+import { tagSocket } from './socketUtility.js';
+import { getPortRouter } from './portRouters.js';
+import * as Sentry from '@sentry/node';
+import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 
 /**
  * Handle incoming TCP connections
@@ -30,36 +30,32 @@ import { getServerLogger, ServerLogger } from "rusty-motors-shared";
  *
  */
 export function onSocketConnection({
-	incomingSocket,
-	log = getServerLogger( "onSocketConnection" ),
+    incomingSocket,
+    log = getServerLogger('onSocketConnection'),
 }: {
-	incomingSocket: Socket;
-	log?: ServerLogger;
+    incomingSocket: Socket;
+    log?: ServerLogger;
 }) {
-	// Get the local port and remote address
-	const { localPort, remoteAddress } = incomingSocket;
+    // Get the local port and remote address
+    const { localPort, remoteAddress } = incomingSocket;
 
-	// If the local port or remote address is undefined, throw an error
-	if (localPort === undefined || remoteAddress === undefined) {
-		const s = JSON.stringify(incomingSocket);
-		throw Error("localPort or remoteAddress is undefined: " + s);
-	}
+    // If the local port or remote address is undefined, throw an error
+    if (localPort === undefined || remoteAddress === undefined) {
+        const s = JSON.stringify(incomingSocket);
+        throw Error('localPort or remoteAddress is undefined: ' + s);
+    }
 
-	const socketWithId = tagSocket(
-		incomingSocket,
-		Date.now(),
-		randomUUID(),
-	);
+    const socketWithId = tagSocket(incomingSocket, Date.now(), randomUUID());
 
-	/*
-	 * At this point, we have a tagged socket with an ID.
-	 */
+    /*
+     * At this point, we have a tagged socket with an ID.
+     */
 
-	const portRouter = getPortRouter(localPort);
+    const portRouter = getPortRouter(localPort);
 
-	// Hand the socket to the port router
-	portRouter({ taggedSocket: socketWithId }).catch((error) => {
-		Sentry.captureException(error);
-		log.error(`Error in port router: ${error.message}`);
-	});
+    // Hand the socket to the port router
+    portRouter({ taggedSocket: socketWithId }).catch((error) => {
+        Sentry.captureException(error);
+        log.error(`Error in port router: ${error.message}`);
+    });
 }

@@ -6,11 +6,10 @@
  */
 
 // eslint-disable-next-line no-unused-vars
-import { Cipher, Decipher } from "crypto";
-import { SerializedBufferOld } from "./SerializedBufferOld.js";
-import { BufferSerializer } from "rusty-motors-shared-packets";
-import { ServerLogger } from "../index.js";
-
+import { Cipher, Decipher } from 'crypto';
+import { SerializedBufferOld } from './SerializedBufferOld.js';
+import { BufferSerializer } from 'rusty-motors-shared-packets';
+import { ServerLogger } from 'rusty-motors-logger';
 
 /**
  * State management for the gateway server.
@@ -40,120 +39,120 @@ import { ServerLogger } from "../index.js";
  * A pair of encryption ciphers.
  */
 export class McosEncryptionPair {
-	_cipher: Cipher;
-	_decipher: Decipher;
-	/**
-	 * Create a new encryption pair.
-	 *
-	 * This function creates a new encryption pair. It is used to encrypt and
-	 * decrypt data sent to and from the client.
-	 *
-	 * @param {module:crypto.Cipher} cipher The cipher to use for encryption.
-	 * @param {module:crypto.Decipher} decipher The decipher to use for decryption.
-	 */
-	constructor(cipher: Cipher, decipher: Decipher) {
-		this._cipher = cipher;
-		this._decipher = decipher;
-	}
+    _cipher: Cipher;
+    _decipher: Decipher;
+    /**
+     * Create a new encryption pair.
+     *
+     * This function creates a new encryption pair. It is used to encrypt and
+     * decrypt data sent to and from the client.
+     *
+     * @param {module:crypto.Cipher} cipher The cipher to use for encryption.
+     * @param {module:crypto.Decipher} decipher The decipher to use for decryption.
+     */
+    constructor(cipher: Cipher, decipher: Decipher) {
+        this._cipher = cipher;
+        this._decipher = decipher;
+    }
 
-	/**
-	 * @param {Buffer} data The data to encrypt.
-	 * @returns {Buffer} The encrypted data.
-	 */
-	encrypt(data: Buffer): Buffer {
-		return this._cipher.update(data);
-	}
+    /**
+     * @param {Buffer} data The data to encrypt.
+     * @returns {Buffer} The encrypted data.
+     */
+    encrypt(data: Buffer): Buffer {
+        return this._cipher.update(data);
+    }
 
-	/**
-	 * @param {Buffer} data The data to decrypt.
-	 * @returns {Buffer} The decrypted data.
-	 */
-	decrypt(data: Buffer): Buffer {
-		return this._decipher.update(data);
-	}
+    /**
+     * @param {Buffer} data The data to decrypt.
+     * @returns {Buffer} The decrypted data.
+     */
+    decrypt(data: Buffer): Buffer {
+        return this._decipher.update(data);
+    }
 }
 
 /**
  * The encryption settings for a session.
  */
 export class McosEncryption {
-	connectionId: string;
-	_commandEncryptionPair: McosEncryptionPair;
-	_dataEncryptionPair: McosEncryptionPair;
-	/**
-	 * Create a new encryption object.
-	 *
-	 * @param {object} args
-	 * @param {string} args.connectionId The connection id of the session that
-	 *                                   this encryption is for.
-	 * @param {McosEncryptionPair} args.commandEncryptionPair The encryption
-	 *                                                        pair for
-	 *                                                       command packets.
-	 * @param {McosEncryptionPair} args.dataEncryptionPair The encryption pair
-	 *                                                    for data packets.
-	 */
-	constructor({
-		connectionId,
-		commandEncryptionPair,
-		dataEncryptionPair,
-	}: {
-		connectionId: string;
-		commandEncryptionPair: McosEncryptionPair;
-		dataEncryptionPair: McosEncryptionPair;
-	}) {
-		this.connectionId = connectionId;
-		this._commandEncryptionPair = commandEncryptionPair;
-		this._dataEncryptionPair = dataEncryptionPair;
-	}
+    connectionId: string;
+    _commandEncryptionPair: McosEncryptionPair;
+    _dataEncryptionPair: McosEncryptionPair;
+    /**
+     * Create a new encryption object.
+     *
+     * @param {object} args
+     * @param {string} args.connectionId The connection id of the session that
+     *                                   this encryption is for.
+     * @param {McosEncryptionPair} args.commandEncryptionPair The encryption
+     *                                                        pair for
+     *                                                       command packets.
+     * @param {McosEncryptionPair} args.dataEncryptionPair The encryption pair
+     *                                                    for data packets.
+     */
+    constructor({
+        connectionId,
+        commandEncryptionPair,
+        dataEncryptionPair,
+    }: {
+        connectionId: string;
+        commandEncryptionPair: McosEncryptionPair;
+        dataEncryptionPair: McosEncryptionPair;
+    }) {
+        this.connectionId = connectionId;
+        this._commandEncryptionPair = commandEncryptionPair;
+        this._dataEncryptionPair = dataEncryptionPair;
+    }
 
-	get commandEncryption() {
-		return this._commandEncryptionPair;
-	}
+    get commandEncryption() {
+        return this._commandEncryptionPair;
+    }
 
-	get dataEncryption() {
-		return this._dataEncryptionPair;
-	}
+    get dataEncryption() {
+        return this._dataEncryptionPair;
+    }
 }
 
 /**
  * A client session.
  */
 export class McosSession {
-	connectionId: string;
-	gameId: number;
-	/**
-	 * Create a new session.
-	 *
-	 * @param {object} args
-	 * @param {string} args.connectionId A unique identifier for this session.
-	 * @param {number} args.username The username of the user who owns this
-	 *                              session.
-	 */
-	constructor({
-		connectionId,
-		gameId,
-	}: {
-		connectionId: string;
-		gameId: number;
-	}) {
-		this.connectionId = connectionId;
-		this.gameId = gameId;
-	}
+    connectionId: string;
+    gameId: number;
+    /**
+     * Create a new session.
+     *
+     * @param {object} args
+     * @param {string} args.connectionId A unique identifier for this session.
+     * @param {number} args.username The username of the user who owns this
+     *                              session.
+     */
+    constructor({
+        connectionId,
+        gameId,
+    }: {
+        connectionId: string;
+        gameId: number;
+    }) {
+        this.connectionId = connectionId;
+        this.gameId = gameId;
+    }
 }
 
 type OnDataHandlerArgs = {
-	connectionId: string;
-	message: BufferSerializer;
-	log?: ServerLogger;
+    connectionId: string;
+    message: BufferSerializer;
+    log?: ServerLogger;
 };
 
 export interface ServiceResponse {
-	connectionId: string;
-	messages: SerializedBufferOld[];
+    connectionId: string;
+    messages: SerializedBufferOld[];
 }
 
 export type OnDataHandler = (
-	args: OnDataHandlerArgs,
+    args: OnDataHandlerArgs,
 ) => Promise<ServiceResponse>;
 /**
  * @param {OnDataHandlerArgs} args The arguments for the handler.
@@ -177,12 +176,12 @@ export type OnDataHandler = (
  * @interface
  */
 export interface State {
-	filePaths: Record<string, string>;
-	// sockets: Record<string, WrappedSocket>;
-	encryptions: Record<string, McosEncryption>;
-	sessions: Record<string, McosSession>;
-	// queuedConnections: Record<string, WrappedSocket>;
-	save: (state?: State) => void;
+    filePaths: Record<string, string>;
+    // sockets: Record<string, WrappedSocket>;
+    encryptions: Record<string, McosEncryption>;
+    sessions: Record<string, McosSession>;
+    // queuedConnections: Record<string, WrappedSocket>;
+    save: (state?: State) => void;
 }
 
 /**
@@ -202,27 +201,27 @@ export interface State {
  * @returns The initial state.
  */
 export function createInitialState({
-	saveFunction = saveStateToDatabase,
+    saveFunction = saveStateToDatabase,
 }: {
-	saveFunction?: (state: State) => void;
+    saveFunction?: (state: State) => void;
 }): State {
-	return {
-		filePaths: {},
-		// sockets: {},
-		encryptions: {},
-		sessions: {},
-		// queuedConnections: {},
-		save: function (state?: State) {
-			if (typeof state === "undefined") {
-				state = this as State;
-			}
-			if (typeof saveFunction === "undefined") {
-				saveStateToDatabase(state);
-				return;
-			}
-			saveFunction(state);
-		},
-	};
+    return {
+        filePaths: {},
+        // sockets: {},
+        encryptions: {},
+        sessions: {},
+        // queuedConnections: {},
+        save: function (state?: State) {
+            if (typeof state === 'undefined') {
+                state = this as State;
+            }
+            if (typeof saveFunction === 'undefined') {
+                saveStateToDatabase(state);
+                return;
+            }
+            saveFunction(state);
+        },
+    };
 }
 
 /**
@@ -238,12 +237,12 @@ export function createInitialState({
  * @returns {State} - The state with the encryption added.
  */
 export function addEncryption(state: State, encryption: McosEncryption): State {
-	const encryptions = state.encryptions;
-	encryptions[encryption.connectionId] = encryption;
-	return {
-		...state,
-		encryptions,
-	};
+    const encryptions = state.encryptions;
+    encryptions[encryption.connectionId] = encryption;
+    return {
+        ...state,
+        encryptions,
+    };
 }
 
 /**
@@ -256,10 +255,10 @@ export function addEncryption(state: State, encryption: McosEncryption): State {
  * @returns {McosEncryption | undefined} The encryption with the given connection id, or undefined if no encryption
  */
 export function getEncryption(
-	state: State,
-	connectionId: string,
+    state: State,
+    connectionId: string,
 ): McosEncryption | undefined {
-	return state.encryptions[connectionId];
+    return state.encryptions[connectionId];
 }
 
 /**
@@ -275,15 +274,15 @@ export function getEncryption(
  * @returns {State} The state with the encryption updated.
  */
 export function updateEncryption(
-	state: State,
-	encryption: McosEncryption,
+    state: State,
+    encryption: McosEncryption,
 ): State {
-	const encryptions = state.encryptions;
-	encryptions[encryption.connectionId] = encryption;
-	return {
-		...state,
-		encryptions,
-	};
+    const encryptions = state.encryptions;
+    encryptions[encryption.connectionId] = encryption;
+    return {
+        ...state,
+        encryptions,
+    };
 }
 
 /**
@@ -299,12 +298,12 @@ export function updateEncryption(
  * @returns {State} The state with the encryption removed.
  */
 export function removeEncryption(state: State, connectionId: string): State {
-	const encryptions = state.encryptions;
-	delete encryptions[connectionId];
-	return {
-		...state,
-		encryptions,
-	};
+    const encryptions = state.encryptions;
+    delete encryptions[connectionId];
+    return {
+        ...state,
+        encryptions,
+    };
 }
 
 /**
@@ -320,12 +319,12 @@ export function removeEncryption(state: State, connectionId: string): State {
  * @returns {State} The state with the session added.
  */
 export function addSession(state: State, session: McosSession): State {
-	const sessions = state.sessions;
-	sessions[session.connectionId] = session;
-	return {
-		...state,
-		sessions,
-	};
+    const sessions = state.sessions;
+    sessions[session.connectionId] = session;
+    return {
+        ...state,
+        sessions,
+    };
 }
 
 /**
@@ -342,19 +341,19 @@ export function addSession(state: State, session: McosSession): State {
  * @returns {State} The state with the session removed.
  */
 export function removeSession(state: State, connectionId: string): State {
-	const sessions = state.sessions;
-	delete sessions[connectionId];
-	return {
-		...state,
-		sessions,
-	};
+    const sessions = state.sessions;
+    delete sessions[connectionId];
+    return {
+        ...state,
+        sessions,
+    };
 }
 
 export function findSessionByConnectionId(
-	state: State,
-	connectionId: string,
+    state: State,
+    connectionId: string,
 ): McosSession | undefined {
-	return state.sessions[connectionId];
+    return state.sessions[connectionId];
 }
 
 /**
@@ -365,7 +364,7 @@ export function findSessionByConnectionId(
  * @returns {State} The state from the database.
  */
 export function fetchStateFromDatabase(): State {
-	return globalStateDatabase;
+    return globalStateDatabase;
 }
 
 /**
@@ -376,7 +375,7 @@ export function fetchStateFromDatabase(): State {
  * @param {State} state The state to save to the database.
  */
 function saveStateToDatabase(state: State) {
-	globalStateDatabase = state;
+    globalStateDatabase = state;
 }
 
 let globalStateDatabase = createInitialState({});

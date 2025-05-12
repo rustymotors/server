@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerLogger } from 'rusty-motors-shared';
 import { login } from './login.js';
 import { GamePacket } from 'rusty-motors-shared-packets';
 import { BytableMessage } from '@rustymotors/binary';
+import { ServerLogger } from 'rusty-motors-logger';
 
 export type LoginMessageHandlerFn = (args: {
     connectionId: string;

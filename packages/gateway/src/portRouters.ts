@@ -1,5 +1,5 @@
-import type { PortRouter, PortRouterArgs } from "./types.js";
-import { getServerLogger } from "rusty-motors-shared";
+import type { PortRouter, PortRouterArgs } from './types.js';
+import { getServerLogger } from 'rusty-motors-logger';
 
 /**
  * A map that associates port numbers with their corresponding router functions.
@@ -15,10 +15,10 @@ const portRouters = new Map<number, PortRouter>();
  */
 
 export function addPortRouter(port: number, router: PortRouter) {
-	if (!Number.isInteger(port) || port < 0 || port > 65535) {
-		throw new Error(`Invalid port number: ${port}`);
-	}
-	portRouters.set(port, router);
+    if (!Number.isInteger(port) || port < 0 || port > 65535) {
+        throw new Error(`Invalid port number: ${port}`);
+    }
+    portRouters.set(port, router);
 }
 /**
  * Handles the case where no router is found for the given socket.
@@ -31,16 +31,16 @@ export function addPortRouter(port: number, router: PortRouter) {
  */
 
 async function notFoundRouter({
-	taggedSocket,
-	log = getServerLogger("gateway.notFoundRouter"),
+    taggedSocket,
+    log = getServerLogger('gateway.notFoundRouter'),
 }: PortRouterArgs) {
-	taggedSocket.rawSocket.on("error", (error) => {
-		console.error(`[${taggedSocket.connectionId}] Socket error: ${error}`);
-	});
-	taggedSocket.rawSocket.end();
-	log.warn(
-		`[${taggedSocket.connectionId}] No router found for port ${taggedSocket.rawSocket.localPort}`,
-	);
+    taggedSocket.rawSocket.on('error', (error) => {
+        console.error(`[${taggedSocket.connectionId}] Socket error: ${error}`);
+    });
+    taggedSocket.rawSocket.end();
+    log.warn(
+        `[${taggedSocket.connectionId}] No router found for port ${taggedSocket.rawSocket.localPort}`,
+    );
 }
 /**
  * Retrieves the router function associated with a given port.
@@ -51,14 +51,14 @@ async function notFoundRouter({
  */
 
 export function getPortRouter(port: number): PortRouter {
-	if (!Number.isInteger(port) || port < 0 || port > 65535) {
-		throw new Error(`Invalid port number: ${port}`);
-	}
-	const router = portRouters.get(port);
-	if (typeof router === "undefined") {
-		return notFoundRouter;
-	}
-	return router;
+    if (!Number.isInteger(port) || port < 0 || port > 65535) {
+        throw new Error(`Invalid port number: ${port}`);
+    }
+    const router = portRouters.get(port);
+    if (typeof router === 'undefined') {
+        return notFoundRouter;
+    }
+    return router;
 }
 
 /**
@@ -68,5 +68,5 @@ export function getPortRouter(port: number): PortRouter {
  * effectively resetting it to an empty state.
  */
 export function clearPortRouters() {
-	portRouters.clear();
+    portRouters.clear();
 }

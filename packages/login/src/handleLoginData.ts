@@ -1,6 +1,6 @@
-import { NPSMessage, ServerLogger } from 'rusty-motors-shared';
+import { NPSMessage } from 'rusty-motors-shared';
 import { getMessageHandlerOrFallback } from './internal.js';
-import { getServerLogger } from 'rusty-motors-shared';
+import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 import { GamePacket } from 'rusty-motors-shared-packets';
 import { BytableMessage } from '@rustymotors/binary';
 

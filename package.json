@@ -51,6 +51,7 @@
         "rusty-motors-database": "link:packages/database",
         "rusty-motors-gateway": "link:packages/gateway",
         "rusty-motors-lobby": "link:packages/lobby",
+        "rusty-motors-logger": "workspace:^",
         "rusty-motors-login": "link:packages/login",
         "rusty-motors-nps": "link:packages/nps",
         "rusty-motors-personas": "link:packages/persona",
@@ -134,6 +135,11 @@
     "pnpm": {
         "overrides": {
             "tinymce": "^7.8.0"
-        }
+        },
+        "onlyBuiltDependencies": [
+            "@sentry/cli",
+            "bcrypt",
+            "nx"
+        ]
     }
 }

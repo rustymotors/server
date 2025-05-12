@@ -71,6 +71,9 @@ importers:
       rusty-motors-lobby:
         specifier: link:packages/lobby
         version: link:packages/lobby
+      rusty-motors-logger:
+        specifier: workspace:^
+        version: link:packages/logger
       rusty-motors-login:
         specifier: link:packages/login
         version: link:packages/login
@@ -309,9 +312,34 @@ importers:
       fastify:
         specifier: ^5.3.2
         version: 5.3.2
+      rusty-motors-logger:
+        specifier: workspace:^
+        version: link:../logger
       rusty-motors-shared:
         specifier: workspace:1.0.0-next.0
         version: link:../shared
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: 3.1.3
+        version: 3.1.3(vitest@3.1.3)
+      vitest:
+        specifier: ^3.1.3
+        version: 3.1.3(@types/debug@4.1.12)(@types/node@22.15.17)(@vitest/ui@3.1.3)(jiti@2.4.2)(tsx@4.19.4)(yaml@2.7.1)
+
+  packages/logger:
+    dependencies:
+      fastify:
+        specifier: ^5.3.2
+        version: 5.3.2
+      pino:
+        specifier: ^9.6.0
+        version: 9.6.0
+      pino-pretty:
+        specifier: ^13.0.0
+        version: 13.0.0
+      rusty-motors-shared-packets:
+        specifier: workspace:1.0.0-next.0
+        version: link:../shared-packets
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.1.3
@@ -360,6 +388,9 @@ importers:
       '@sentry/profiling-node':
         specifier: 9.17.0
         version: 9.17.0
+      rusty-motors-logger:
+        specifier: workspace:^
+        version: link:../logger
       short-unique-id:
         specifier: ^5.2.2
         version: 5.2.2
@@ -395,6 +426,9 @@ importers:
       pino-pretty:
         specifier: ^13.0.0
         version: 13.0.0
+      rusty-motors-logger:
+        specifier: workspace:^
+        version: link:../logger
       rusty-motors-shared-packets:
         specifier: workspace:1.0.0-next.0
         version: link:../shared-packets
@@ -424,6 +458,9 @@ importers:
       '@sentry/profiling-node':
         specifier: 9.17.0
         version: 9.17.0
+      rusty-motors-logger:
+        specifier: workspace:^
+        version: link:../logger
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.1.3

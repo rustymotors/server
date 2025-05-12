@@ -1,7 +1,7 @@
 import { databaseManager, findCustomerByContext } from 'rusty-motors-database';
 import { getServerConfiguration, NetworkMessage } from 'rusty-motors-shared';
 import { NPSUserStatus } from './NPSUserStatus.js';
-import { ServerLogger, getServerLogger } from 'rusty-motors-shared';
+import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 import { GamePacket } from 'rusty-motors-shared-packets';
 import { BytableMessage } from '@rustymotors/binary';
 

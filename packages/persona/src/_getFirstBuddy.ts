@@ -2,7 +2,7 @@ import { SerializedBufferOld } from 'rusty-motors-shared';
 import { NPSMessage } from 'rusty-motors-shared';
 import { LegacyMessage } from 'rusty-motors-shared';
 import { BuddyCount, BuddyInfoMessage, BuddyList } from './BuddyInfoMessage.js';
-import { getServerLogger, ServerLogger } from 'rusty-motors-shared';
+import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 
 const defaultLogger = getServerLogger('PersonaServer');
 

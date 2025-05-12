@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { SerializedBufferOld, ServerLogger } from 'rusty-motors-shared';
+import { SerializedBufferOld } from 'rusty-motors-shared';
 import { LegacyMessage } from 'rusty-motors-shared';
 import {
     PersonaList,
@@ -26,7 +26,7 @@ import { _getFirstBuddy } from './_getFirstBuddy.js';
 import { _selectGamePersona } from './_selectGamePersona.js';
 import { validatePersonaName } from './handlers/validatePersonaName.js';
 import { getPersonaInfo } from './handlers/getPersonaInfo.js';
-import { getServerLogger } from 'rusty-motors-shared';
+import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 
 /**
  * Array of supported message handlers

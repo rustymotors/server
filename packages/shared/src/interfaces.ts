@@ -2,10 +2,10 @@
  * @module interfaces
  */
 
-import type { SerializedBufferOld } from "./SerializedBufferOld.js";
-import { ServerLogger } from "../index.js";
+import type { SerializedBufferOld } from './SerializedBufferOld.js';
+import type { ServerLogger } from 'rusty-motors-logger';
 
-export const name = "interfaces";
+export const name = 'interfaces';
 
 /**
  * @exports
@@ -13,64 +13,64 @@ export const name = "interfaces";
  */
 
 export interface DatabaseManager {
-	updateSessionKey: (
-		arg0: number,
-		arg1: string,
-		arg2: string,
-		arg3: string,
-	) => Promise<void>;
-	fetchSessionKeyByCustomerId: (arg0: number) => Promise<SessionKeys>;
+    updateSessionKey: (
+        arg0: number,
+        arg1: string,
+        arg2: string,
+        arg3: string,
+    ) => Promise<void>;
+    fetchSessionKeyByCustomerId: (arg0: number) => Promise<SessionKeys>;
 }
 
 /**
  * @exports
  */
 export interface ConnectionRecord {
-	customerId: number;
-	connectionId: string;
-	sessionKey: string;
-	sKey: string;
-	contextId: string;
+    customerId: number;
+    connectionId: string;
+    sessionKey: string;
+    sKey: string;
+    contextId: string;
 }
 
 interface SessionKeys {
-	sessionKey: string;
-	sKey: string;
+    sessionKey: string;
+    sKey: string;
 }
 
 export interface GameMessageOpCode {
-	name: string;
-	value: number;
-	module: "Lobby" | "Login";
+    name: string;
+    value: number;
+    module: 'Lobby' | 'Login';
 }
 
 export interface UserRecordMini {
-		contextId: string;
-		customerId: number;
-		profileId: number;
-	}
+    contextId: string;
+    customerId: number;
+    profileId: number;
+}
 
 /**
  * @exports
  */
 export interface RaceLobbyRecord {
-	lobbyId: number;
-	raceTypeId: number;
-	turfId: number;
-	riffName: string;
-	eTurfName: string;
+    lobbyId: number;
+    raceTypeId: number;
+    turfId: number;
+    riffName: string;
+    eTurfName: string;
 }
 
 export interface ServiceArgs {
-	connectionId: string;
-	message: SerializedBufferOld;
-	log?: ServerLogger;
+    connectionId: string;
+    message: SerializedBufferOld;
+    log?: ServerLogger;
 }
 
 export interface KeypressEvent {
-	sequence: string;
-	name: string;
-	ctrl: boolean;
-	meta: boolean;
-	shift: boolean;
+    sequence: string;
+    name: string;
+    ctrl: boolean;
+    meta: boolean;
+    shift: boolean;
 }

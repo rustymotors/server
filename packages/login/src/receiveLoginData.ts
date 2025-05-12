@@ -13,10 +13,10 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import { ServerLogger, type ServiceResponse } from 'rusty-motors-shared';
+import { type ServiceResponse } from 'rusty-motors-shared';
 import { handleLoginData } from './handleLoginData.js';
 import { BufferSerializer, GamePacket } from 'rusty-motors-shared-packets';
-import { getServerLogger } from 'rusty-motors-shared';
+import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 import { BytableMessage } from '@rustymotors/binary';
 
 /**

@@ -9,7 +9,7 @@ import { BytableDword } from './BytableDword.js';
 import { BytableHeader } from './BytableHeader.js';
 import { BytableWord } from './BytableWord.js';
 import { BytableObject } from './types.js';
-import { getServerLogger } from 'rusty-motors-shared';
+import { getServerLogger } from 'rusty-motors-logger';
 
 export class BytableStructure extends BytableBase implements BytableObject {
     protected fields_: Array<BytableObject> = [];

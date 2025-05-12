@@ -2,13 +2,12 @@ import {
     LegacyMessage,
     NPSMessage,
     SerializedBufferOld,
-    ServerLogger,
 } from 'rusty-motors-shared';
 import { createGameProfile } from 'rusty-motors-nps';
 import { getPersonasByPersonaId } from '../getPersonasByPersonaId.js';
 import { personaToString } from '../internal.js';
 
-import { getServerLogger } from 'rusty-motors-shared';
+import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 
 const defaultLogger = getServerLogger('PersonaServer');
 
