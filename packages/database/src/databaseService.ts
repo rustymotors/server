@@ -103,7 +103,7 @@ export const DatabaseImpl = {
         const user = query.get(
             username,
             hashedPassword,
-        ) as UserRecordMini | null;
+        ) as unknown as UserRecordMini | null;
         if (user == null) {
             throw new Error('User not found');
         }
@@ -121,7 +121,7 @@ export const DatabaseImpl = {
      */
     getAllUsers(database: DatabaseSync): UserRecordMini[] {
         const query = database.prepare(SQL.GET_ALL_USERS);
-        const users = query.all() as UserRecordMini[];
+        const users = query.all() as unknown as UserRecordMini[];
         return users;
     },
 
