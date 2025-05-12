@@ -7,17 +7,13 @@ import { BytableMessage } from '@rustymotors/binary';
 const defaultLogger = getServerLogger('LoginServer');
 
 /**
- * Handles the reception of login data, deserializes the incoming message, and processes it.
+ * Processes an incoming login data message by deserializing it and invoking the appropriate handler.
  *
- * @param {Object} params - The parameters for the function.
- * @param {string} params.connectionId - The ID of the connection.
- * @param {GamePacket} params.message - The serialized message buffer.
- * @param {ServerLogger} [params.log=defaultLogger] - Optional logger instance.
- * @returns {Promise<{
- *  connectionId: string,
- *  messages: GamePacket[],
- * }>} - The response from the login data handler.
- * @throws {Error} - Throws an error if there is an issue processing the login data.
+ * @param connectionId - Unique identifier for the connection.
+ * @param message - The serialized login data message to process.
+ * @returns An object containing the connection ID and an array of resulting {@link GamePacket} messages.
+ *
+ * @throws {Error} If an error occurs during message handling or processing.
  */
 export async function handleLoginData({
     connectionId,

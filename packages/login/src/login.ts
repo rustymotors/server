@@ -6,16 +6,16 @@ import { GamePacket } from 'rusty-motors-shared-packets';
 import { BytableMessage } from '@rustymotors/binary';
 
 /**
- * Process a UserLogin packet
- * @private
- * @param {object} args
- * @param {string} args.connectionId
- * @param {SerializedBufferOld} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ name: "LoginServer" })]
- * @returns {Promise<{
- *  connectionId: string,
- * messages: SerializedBufferOld[],
- * }>}
+ * Processes a user login packet, validates the user, updates the session key, and returns the login response messages.
+ *
+ * Attempts to locate the user record by context ID, updates the session key in the database, and constructs the outbound login response. Returns an object containing the connection ID and two identical login response messages.
+ *
+ * @param connectionId - Identifier for the connection.
+ * @param message - The incoming login message packet.
+ * @returns An object containing the {@link connectionId} and an array of two identical login response messages.
+ *
+ * @throws {Error} If the user record cannot be found for the provided context ID.
+ * @throws {Error} If updating the session key in the database fails.
  */
 export async function login({
     connectionId,

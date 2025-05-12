@@ -56,6 +56,14 @@ export class Bytable extends BytableBase implements BytableObject {
     }
 }
 
+/**
+ * Validates that the provided buffer is defined and non-empty.
+ *
+ * @param buf - The buffer to validate.
+ * @param direction - A string describing the operation being performed (e.g., "serialize" or "deserialize").
+ *
+ * @throws {Error} If {@link buf} is undefined or has zero byte length.
+ */
 export function validateBuffer(
     buf: DataView<ArrayBufferLike> | ArrayBufferLike,
     direction: string,

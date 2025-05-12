@@ -26,9 +26,13 @@ import * as Sentry from '@sentry/node';
 // addRoomServer(server01);
 
 /**
- * Handles routing for the NPS (Network Play System) ports.
+ * Routes and processes incoming socket connections for the Network Play System (NPS), handling packet parsing, multi-packet detection, and response dispatch based on the local port.
  *
- * @param taggedSocket - The socket that has been tagged with additional metadata.
+ * Listens for data events on the provided socket, splits and parses incoming packets, routes them according to the port, and sends appropriate responses. Handles errors and logs detailed debug information throughout the process.
+ *
+ * @param taggedSocket - The socket connection with associated metadata to be routed.
+ *
+ * @remark If the socket's local port is undefined, the connection is closed immediately. On port 7003, an "ok to login" packet is sent upon connection.
  */
 
 export async function npsPortRouter({
@@ -137,10 +141,14 @@ export async function npsPortRouter({
 }
 
 /**
- * Parses the initial message from a buffer and returns a `GamePacket` object.
+ * Parses a raw buffer into a `BytableMessage` representing the initial game packet.
  *
- * @param data - The buffer containing the initial message data.
- * @returns A `GamePacket` object deserialized from the buffer.
+ * Sets the message version based on the packet ID, then deserializes the buffer into a message object.
+ *
+ * @param data - The buffer containing the raw initial message.
+ * @returns The parsed `BytableMessage` object.
+ *
+ * @throws {Error} If the buffer cannot be parsed into a valid message.
  */
 function parseInitialMessage(data: Buffer): BytableMessage {
     try {
@@ -174,15 +182,17 @@ function parseInitialMessage(data: Buffer): BytableMessage {
 }
 
 /**
- * Routes the initial message to the appropriate handler based on the port number.
- * Handles different types of packets such as lobby data, login data, chat data, and persona data.
- * Logs the routing process and the number of responses sent back to the client.
+ * Routes an initial game packet to the appropriate handler based on the connection port and returns the serialized response(s).
  *
- * @param connectionId - The connection ID of the client.
- * @param connectionPort - The port number to determine the type of packet.
- * @param initialPacket - The initial packet received from the client.
- * @param log - The logger to use for logging messages.
- * @returns A promise that resolves to a Buffer containing the serialized responses.
+ * Depending on the port, this function delegates processing to the lobby, login, or persona data handlers, and aggregates their responses for the client.
+ *
+ * @param connectionId - Unique identifier for the client connection.
+ * @param connectionPort - Local port number used to select the appropriate handler.
+ * @param initialPacket - The parsed initial packet received from the client.
+ * @param log - Optional logger for debug and warning messages.
+ * @returns A buffer containing the concatenated serialized responses from the selected handler.
+ *
+ * @remark If no handler exists for the specified {@link connectionPort}, an empty buffer is returned.
  */
 async function routeInitialMessage(
     connectionId: string,

@@ -68,15 +68,16 @@ export const messageHandlers: {
 ];
 
 /**
- * @param {object} args
- * @param {string} args.connectionId
- * @param {SerializedBufferOld} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ name: "PersonaServer" })]
- * @returns {Promise<{
- *  connectionId: string,
- * messages: SerializedBufferOld[],
- * }>}
- * @throws {Error} Unknown code was received
+ * Processes an incoming lobby data message, dispatching it to the appropriate handler based on its operation code.
+ *
+ * Determines the message type (legacy or NPS), deserializes the data, and invokes the corresponding handler. Returns the handler's response, which includes the connection ID and any resulting messages.
+ *
+ * @param connectionId - Identifier for the connection associated with the incoming message.
+ * @param message - The incoming lobby message to process.
+ * @param log - Optional logger instance; defaults to a logger named 'lobby.receiveLobbyData'.
+ * @returns An object containing the connection ID and an array of response messages.
+ *
+ * @throws {Error} If the message is too short to deserialize or if the operation code is unsupported.
  */
 export async function receiveLobbyData({
     connectionId,

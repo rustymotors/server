@@ -6,6 +6,17 @@ import { getServerLogger, ServerLogger } from 'rusty-motors-shared';
 
 const defaultLogger = getServerLogger('PersonaServer');
 
+/**
+ * Processes a legacy buddy information request and returns a serialized buddy count message.
+ *
+ * Deserializes the incoming message to extract the persona ID, constructs a buddy count message (currently always zero), and returns it as a serialized response.
+ *
+ * @param connectionId - The identifier for the client connection.
+ * @param message - The incoming legacy message containing the buddy request.
+ * @returns An object containing the {@link connectionId} and an array with the serialized buddy count message.
+ *
+ * @remark Only the buddy count message is returned; buddy details are constructed but not sent. The buddy list is currently hardcoded and not looked up by persona ID.
+ */
 export async function _getFirstBuddy({
     connectionId,
     message,

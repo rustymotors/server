@@ -347,9 +347,10 @@ export class PersonaMapsMessage extends NPSMessage {
 }
 
 /**
- * Serializes a string to a buffer. The buffer will be prefixed with the length of the string.
- * @param {string} str
- * @returns {Buffer}
+ * Serializes a string into a buffer with a 2-byte big-endian length prefix.
+ *
+ * @param str - The string to serialize.
+ * @returns A buffer containing the length-prefixed UTF-8 encoded string.
  */
 export function serializeString(str: string): Buffer {
     const buf = Buffer.alloc(str.length + 2);

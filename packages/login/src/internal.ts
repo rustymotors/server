@@ -56,6 +56,13 @@ const messageHandlers: LoginMessageHandlerEntry[] = [
     },
 ];
 
+/**
+ * Handles messages with unrecognized operation codes during login.
+ *
+ * Logs an error and throws if no handler exists for the message's {@link BytableMessage.header.messageId}.
+ *
+ * @throws {Error} Always thrown to indicate that no handler was found for the given message operation code.
+ */
 function loginMessageHandlerFallback({
     connectionId,
     message,
@@ -76,6 +83,12 @@ function loginMessageHandlerFallback({
     );
 }
 
+/**
+ * Retrieves the login message handler function for a given operation code, or returns a fallback handler if none is found.
+ *
+ * @param opCode - The operation code identifying the message type.
+ * @returns The corresponding login message handler function, or a fallback that throws if the code is unrecognized.
+ */
 export function getMessageHandlerOrFallback(
     opCode: number,
 ): LoginMessageHandlerFn {
