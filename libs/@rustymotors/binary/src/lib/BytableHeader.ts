@@ -1,11 +1,11 @@
 import { Bytable } from './Bytable.js';
 
 export class BytableHeader extends Bytable {
-    protected messageId_: number = 0;
-    protected messageLength_: number = 0;
+    protected messageId_ = 0;
+    protected messageLength_ = 0;
     protected messageVersion_: 0 | 1 = 0;
-    protected reserved_: number = 0;
-    protected checksum_: number = 0;
+    protected reserved_ = 0;
+    protected checksum_ = 0;
     protected data_: Buffer = Buffer.alloc(0);
 
     override get json() {

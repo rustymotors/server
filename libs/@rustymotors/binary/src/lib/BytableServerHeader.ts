@@ -3,10 +3,10 @@ import { BytableObject } from './types.js';
 
 export class BytableServerHeader extends BytableBase implements BytableObject {
     // All fields are in Little Endian
-    protected messageLength_: number = 0; // 2 bytes
+    protected messageLength_ = 0; // 2 bytes
     protected messageSignature_ = 'TOMC'; // 4 bytes
-    protected messageSequence_: number = 0; // 4 bytes
-    protected messageFlags_: number = 0; // 1 byte bitfield
+    protected messageSequence_ = 0; // 4 bytes
+    protected messageFlags_ = 0; // 1 byte bitfield
 
     get name(): string {
         return 'ServerHeader';

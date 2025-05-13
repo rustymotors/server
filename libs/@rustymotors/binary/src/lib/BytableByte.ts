@@ -2,8 +2,8 @@ import { BytableBase } from './BytableBase.js';
 import { BytableObject } from './types.js';
 
 export class BytableByte extends BytableBase implements BytableObject {
-    protected value_: number = 0;
-    protected name_: string = '';
+    protected value_ = 0;
+    protected name_ = '';
 
     override deserialize(buffer: Buffer) {
         if (buffer.length < 1) {

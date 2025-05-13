@@ -102,7 +102,7 @@ export async function _npsRequestGameConnectServer({
 
             addEncryption(state, newEncryption).save();
         } catch (error) {
-            const err = Error(`Error creating encryption`);
+            const err = Error("Error creating encryption");
             err.cause = error;
             throw err;
         }

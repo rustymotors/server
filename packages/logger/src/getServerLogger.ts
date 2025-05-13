@@ -36,7 +36,7 @@ export function getServerLogger(name?: string): Logger {
                 {
                     target: 'pino/file',
                     options: {
-                        destination: `./logs/server.log`,
+                        destination: "./logs/server.log",
                         mkdir: true,
                         append: false,
                     },

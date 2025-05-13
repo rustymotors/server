@@ -89,7 +89,7 @@ export function handleReceiveEmailMessage(message: ChatMessage): Buffer[] {
     const email = requestedEmail;
 
     if (!parsedMessage.headerOnly) {
-        defaultLogger.debug(`Email body requested`);
+        defaultLogger.debug("Email body requested");
     }
 
     const buffers: Buffer[] = [];

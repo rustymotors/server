@@ -266,7 +266,7 @@ async function getPersonaMaps({
             messages: [outboundMessage],
         };
     } catch (error) {
-        const err = Error(`Error serializing personaMapsMsg`);
+        const err = Error("Error serializing personaMapsMsg");
         err.cause = error;
         throw err;
     }

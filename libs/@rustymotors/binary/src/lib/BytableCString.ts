@@ -3,9 +3,9 @@ import { BytableObject } from './types.js';
 
 export class BytableCString extends BytableBase implements BytableObject {
     private value_: string | number | Buffer = '';
-    private nullTerminated: boolean = true;
-    private length: number = 0;
-    private name_: string = '';
+    private nullTerminated = true;
+    private length = 0;
+    private name_ = '';
 
     /**
      * Set the value of the container.

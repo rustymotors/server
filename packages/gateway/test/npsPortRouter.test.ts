@@ -14,7 +14,7 @@ vi.mock('rusty-motors-database', () => ({
     },
 }));
 
-vi.mocked(await import('rusty-motors-database')).databaseManager;
+
 
 describe('npsPortRouter', () => {
     beforeEach(() => {

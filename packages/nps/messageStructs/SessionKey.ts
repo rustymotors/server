@@ -6,8 +6,8 @@ const defaultLogger = getServerLogger('nps.SessionKey');
 
 export class SessionKey extends BaseSerializable {
     private key: Buffer = Buffer.alloc(0);
-    private timestamp: number = 0;
-    private _isSet: boolean = false;
+    private timestamp = 0;
+    private _isSet = false;
 
     constructor({ key, timestamp }: { key?: Buffer; timestamp?: number }) {
         super();

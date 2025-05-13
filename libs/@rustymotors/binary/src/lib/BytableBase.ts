@@ -33,7 +33,7 @@ export class BytableBase {
     protected getUint16(
         this: BytableBase,
         offset: number,
-        littleEndian: boolean = false,
+        littleEndian = false,
     ) {
         return this.buffer.getUint16(offset, littleEndian);
     }
@@ -41,7 +41,7 @@ export class BytableBase {
     protected getUint32(
         this: BytableBase,
         offset: number,
-        littleEndian: boolean = false,
+        littleEndian = false,
     ) {
         return this.buffer.getUint32(offset, littleEndian);
     }

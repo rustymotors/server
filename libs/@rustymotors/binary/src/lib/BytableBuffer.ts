@@ -1,7 +1,7 @@
 import { BytableObject } from './types.js';
 
 export class BytableBuffer implements BytableObject {
-    protected name_: string = '';
+    protected name_ = '';
     protected value_: Buffer = Buffer.alloc(0);
 
     deserialize(buffer: Buffer) {

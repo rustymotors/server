@@ -4,7 +4,7 @@ export class BytableDword extends Bytable {
     private static validateBufferLength(
         buffer: Buffer,
         minLength: number,
-        offset: number = 0,
+        offset = 0,
     ) {
         if (buffer.length < offset + minLength) {
             throw new Error(

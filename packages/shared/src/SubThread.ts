@@ -18,7 +18,7 @@ export class SubThread extends EventEmitter {
     constructor(
         name: string,
         log: ServerLogger = getServerLogger('SubThread'),
-        loopInterval: number = 100,
+        loopInterval = 100,
     ) {
         super();
         this.name = name;
@@ -30,7 +30,7 @@ export class SubThread extends EventEmitter {
 
     init() {
         this.emit('initialized');
-        // @ts-ignore
+        // @ts-expect-error
         this.timer = setInterval(this.run.bind(this), this.loopInterval);
     }
 

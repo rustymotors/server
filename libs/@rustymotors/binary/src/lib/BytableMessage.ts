@@ -17,7 +17,7 @@ export class BytableStructure extends BytableBase implements BytableObject {
         name: string;
         field: keyof typeof BytableFieldTypes;
     }> = [];
-    protected name_: string = '';
+    protected name_ = '';
 
     override deserialize(buffer: Buffer) {
         let offset = 0;

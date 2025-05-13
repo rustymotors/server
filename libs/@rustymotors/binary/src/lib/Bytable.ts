@@ -2,7 +2,7 @@ import { BytableBase } from './BytableBase.js';
 import { BytableObject } from './types.js';
 
 export class Bytable extends BytableBase implements BytableObject {
-    protected name_: string = '';
+    protected name_ = '';
     protected value_: string | number | Buffer = '';
 
     protected deserializeFields(buffer: Buffer) {

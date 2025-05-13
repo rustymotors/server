@@ -6,9 +6,9 @@ export class BytableShortContainer
     implements BytableObject
 {
     private value_: string | number | Buffer = '';
-    private nullTerminated: boolean = false;
-    private length: number = 0;
-    private name_: string = '';
+    private nullTerminated = false;
+    private length = 0;
+    private name_ = '';
 
     /**
      * Set the value of the container.
@@ -140,9 +140,9 @@ export class BytableShortContainer
 
 export class BytableContainer extends BytableBase implements BytableObject {
     private value_: string | number | Buffer = '';
-    private nullTerminated: boolean = false;
-    private length: number = 0;
-    private name_: string = '';
+    private nullTerminated = false;
+    private length = 0;
+    private name_ = '';
 
     /**
      * Set the value of the container.
