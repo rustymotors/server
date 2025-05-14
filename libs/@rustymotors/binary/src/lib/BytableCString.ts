@@ -76,20 +76,13 @@ export class BytableCString extends BytableBase implements BytableObject {
      * @returns void
      */
     override deserialize(buffer: Buffer) {
-        const offset = 0;
         if (this.nullTerminated) {
             let length = 0;
-            let cursor = 0;
-            do {
-                this.setValue(
-                    buffer.subarray(offset, offset + length).toString('utf-8'),
-                );
-                cursor++;
-            } while (buffer[offset + cursor] !== 0);
-            this.setValue(
-                buffer.subarray(offset, offset + length).toString('utf-8'),
-            );
-            this.length = length + 1;
+            while (buffer[length] !== 0) {
+                length++;
+            }
+            this.setValue(buffer.subarray(0, length).toString('utf-8'));
+            this.length = length; // Exclude the null terminator from the length
         } else {
             throw new Error('Cannot deserialize CString');
         }

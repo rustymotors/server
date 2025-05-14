@@ -101,8 +101,9 @@ export class BinaryMember implements SerializableInterface {
         }
         if (this.shouldPad) {
             this.value = addAlignementPadding(v, BINARY_ALIGNMENT);
+        } else {
+            this.value = v;
         }
-        this.value = v;
     }
     get() {
         return this.value;
