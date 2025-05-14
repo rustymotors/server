@@ -12,7 +12,8 @@ import { BytableMessage, createRawMessage } from '@rustymotors/binary';
 // import { addRoomServer, getRoomServerByPort } from 'rusty-motors-database';
 import { splitPackets } from './utility.js';
 import * as Sentry from '@sentry/node';
-import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
+import { getServerLogger, Logger, ServerLogger } from 'rusty-motors-logger';
+import { Socket } from 'net';
 
 // const server01 = new RoomServer({
 //     id: 224,
@@ -58,6 +59,7 @@ export async function npsPortRouter({
 
     // return;
 
+    // TODO: Document this
     if (port === 7003) {
         // Sent ok to login packet
         log.debug(`[${id}] Sending ok to login packet`);
@@ -65,64 +67,7 @@ export async function npsPortRouter({
     }
 
     // Handle the socket connection here
-    socket.on('data', async (data) => {
-        try {
-            log.debug(`[${id}] Received data: ${data.toString('hex')}`);
-            log.debug(`[${id}] Data length: ${data.length}`);
-
-            let packets: Buffer[] = [];
-
-            const separator = Buffer.from([0x11, 0x01]);
-            // Count the number of packets
-            const packetCount =
-                data.toString('hex').split(separator.toString('hex')).length -
-                1;
-            log.debug(`[${id}] Number of packets: ${packetCount}`);
-            if (packetCount > 1) {
-                log.debug(`[${id}] More than one packet detected`);
-                // Split the packets
-                packets = splitPackets(data, separator);
-                log.debug(
-                    `[${id}] Split packets: ${packets.map((p) => p.toString('hex'))}`,
-                );
-            } else {
-                log.debug(`[${id}] One packet detected`);
-                // No need to split the packets
-                packets = [data];
-            }
-
-            for (const packet of packets) {
-                const initialPacket = parseInitialMessage(packet);
-                log.debug(`[${id}] Initial packet(str): ${initialPacket}`);
-                log.debug(
-                    `[${id}] initial Packet(hex): ${initialPacket.toString()}`,
-                );
-                await routeInitialMessage(id, port, initialPacket)
-                    .then((response) => {
-                        // Send the response back to the client
-                        log.debug(
-                            `[${id}] Sending response to socket: ${response.toString('hex')}`,
-                        );
-                        socket.write(response);
-                    })
-                    .catch((error) => {
-                        throw new Error(
-                            `[${id}] Error routing initial nps message: ${error}`,
-                            {
-                                cause: error,
-                            },
-                        );
-                    });
-            }
-        } catch (error) {
-            if (error instanceof RangeError) {
-                log.warn(`[${id}] Error parsing initial nps message: ${error}`);
-            } else {
-                Sentry.captureException(error);
-                log.error(`[${id}] Error handling data: ${error}`);
-            }
-        }
-    });
+    socket.on('data', processSocketData(log, id, port, socket));
 
     socket.on('end', () => {
         // log.debug(`[${id}] Socket closed by client for port ${port}`);
@@ -135,6 +80,104 @@ export async function npsPortRouter({
         }
         log.error(`[${id}] Socket error: ${error}`);
     });
+}
+
+/**
+ * Processes incoming socket data, splits it into packets if necessary, and routes
+ * the initial message for further handling. Sends the response back to the client
+ * through the socket.
+ *
+ * @param log - The logger instance used for logging debug, warning, and error messages.
+ * @param id - A unique identifier for the current connection or session.
+ * @param port - The port number associated with the socket connection.
+ * @param socket - The socket instance used for communication with the client.
+ * @returns A function that processes incoming data buffers from the socket.
+ *
+ * The returned function:
+ * - Logs the received data and its length.
+ * - Splits the data into packets based on a predefined separator if multiple packets are detected.
+ * - Parses the initial message from each packet.
+ * - Routes the initial message and sends the response back to the client.
+ * - Handles errors during parsing, routing, or response sending, logging them appropriately.
+ */
+export function processSocketData(
+    log: Logger,
+    id: string,
+    port: number,
+    socket: Socket,
+): (data: Buffer) => void {
+    return async (data) => {
+        try {
+            log.debug(`[${id}] Received data: ${data.toString('hex')}`);
+            log.debug(`[${id}] Data length: ${data.length}`);
+
+            const separator = Buffer.from([0x11, 0x01]);
+            const packets = splitDataIntoPackets(data, separator, log, id);
+
+            for (const packet of packets) {
+                const initialPacket = parseInitialMessage(packet);
+                log.debug(`[${id}] Initial packet(str): ${initialPacket}`);
+                log.debug(
+                    `[${id}] initial Packet(hex): ${initialPacket.toString()}`,
+                );
+                await handlePacketRouting(id, port, initialPacket, socket, log);
+            }
+        } catch (error) {
+            handleSocketError(error, log, id);
+        }
+    };
+}
+
+function splitDataIntoPackets(
+    data: Buffer,
+    separator: Buffer,
+    log: Logger,
+    id: string,
+): Buffer[] {
+    const packetCount =
+        data.toString('hex').split(separator.toString('hex')).length - 1;
+    log.debug(`[${id}] Number of packets: ${packetCount}`);
+
+    if (packetCount > 1) {
+        log.debug(`[${id}] More than one packet detected`);
+        const packets = splitPackets(data, separator);
+        log.debug(
+            `[${id}] Split packets: ${packets.map((p) => p.toString('hex'))}`,
+        );
+        return packets;
+    } else {
+        log.debug(`[${id}] One packet detected`);
+        return [data];
+    }
+}
+
+async function handlePacketRouting(
+    id: string,
+    port: number,
+    initialPacket: BytableMessage,
+    socket: Socket,
+    log: Logger,
+): Promise<void> {
+    try {
+        const response = await routeInitialMessage(id, port, initialPacket);
+        log.debug(
+            `[${id}] Sending response to socket: ${response.toString('hex')}`,
+        );
+        socket.write(response);
+    } catch (error) {
+        throw new Error(`[${id}] Error routing initial nps message: ${error}`, {
+            cause: error,
+        });
+    }
+}
+
+function handleSocketError(error: unknown, log: Logger, id: string): void {
+    if (error instanceof RangeError) {
+        log.warn(`[${id}] Error parsing initial nps message: ${error}`);
+    } else {
+        Sentry.captureException(error);
+        log.error(`[${id}] Error handling data: ${error}`);
+    }
 }
 
 /**

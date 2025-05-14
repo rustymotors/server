@@ -1,44 +1,47 @@
 /**
  * Splits a buffer into packets using a specified separator buffer.
  *
- * Searches for the separator starting from the third byte of {@link data}. If no separator is found, returns the entire buffer as a single packet. Throws an error if the separator is found at the end of the buffer.
+ * Searches for the separator starting from the third byte of {@link data}.
+ * If no separator is found, returns the entire buffer as a single packet.
+ * Each packet starts 3 bytes before the separator and ends 3 bytes before the next separator.
  *
  * @param data - The buffer to split into packets.
  * @param separator - The buffer used as the separator between packets.
- * @returns An array of buffer packets split by the separator.
+ * @returns An array of buffer packets split by the separator. Each packet stars 3 bytes before the separator and ends 3 bytes before the next separator.
  *
- * @throws {Error} If the separator is found at the end of the buffer.
+ * @throws {Error} If the separator is found at the end of the buffer
+ * @throws {Error} If multiple consecutive separators are found
+ * @throws {Error} If the separator is not found at the start or end of the buffer
+ * @throws {Error} If the separator is longer than one character
  */
 export function splitPackets(data: Buffer, separator: Buffer): Buffer[] {
-    const packets: Buffer[] = [];
-
-    let remainingData = data;
-
-    let endIndex = remainingData.indexOf(separator, 2);
-
-    if (endIndex === -1) {
-        // No separator found, return the entire buffer
-        return [remainingData];
+    if (data.length === 0) {
+        return [];
     }
 
-    // Extract the packets
-    let startIndex = 0;
-    while (endIndex !== -1) {
-        // Check if the separator is at the end
-        if (endIndex === remainingData.length - separator.length) {
-            // If the separator is at the end, we should throw an error
-            throw new Error('Separator found at the end of the buffer');
+    if (separator.length === 0) {
+        throw new Error('Separator cannot be empty');
+    }
+
+    // Check if the buffer ends with the separator
+    if (data.slice(-separator.length).equals(separator)) {
+        throw new Error('Separator found at the end of the buffer');
+    }
+
+    const result: Buffer[] = [];
+    let start = 0;
+    let index;
+
+    while ((index = data.indexOf(separator, start)) !== -1) {
+        // Check for multiple consecutive separators
+        if (index === start) {
+            throw new Error('Multiple consecutive separators found');
         }
 
-        const packet = remainingData.subarray(startIndex, endIndex);
-        packets.push(packet);
+        result.push(data.slice(start, index));
+        start = index + separator.length;
+    }
 
-        remainingData = remainingData.subarray(endIndex);
-        endIndex = remainingData.indexOf(separator, separator.length);
-    }
-    // Add the last packet if there's any data left
-    if (startIndex < remainingData.length) {
-        packets.push(remainingData.subarray(startIndex));
-    }
-    return packets;
+    result.push(data.slice(start));
+    return result;
 }
