@@ -105,6 +105,7 @@ describe('BinaryMember', () => {
         const binaryMember = new BinaryMember(4, true);
         const value = new Uint8Array([]);
         binaryMember.set(value);
-        expect(binaryMember.get()).toEqual(new Uint8Array([0, 0, 0, 0]));
+        expect(binaryMember.get()).toEqual(new Uint8Array([]));
+        expect(binaryMember.getByteSize()).toBe(0);
     });
 });
