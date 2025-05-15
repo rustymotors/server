@@ -118,12 +118,14 @@ export async function receiveLobbyData({
     );
 
     const supportedHandler = messageHandlers.find((h) => {
-        return h.opCode === inboundMessage._header.id;
+        return h.opCode === inboundMessage._header.messageId;
     });
 
     if (typeof supportedHandler === 'undefined') {
         // We do not yet support this message code
-        throw Error(`UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`);
+        throw Error(
+            `UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.messageId}`,
+        );
     }
 
     const buff = new SerializedBufferOld();

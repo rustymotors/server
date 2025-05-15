@@ -1,5 +1,4 @@
-import { NPSHeader } from './NPSHeader.js';
-import { BytableMessage } from '@rustymotors/binary'; // Ensure this path is correct
+import { BytableHeader, BytableMessage } from '@rustymotors/binary'; // Ensure this path is correct
 
 /**
  * A NPS message is a message that matches version 1.1 of the nps protocol. It has a 12 byte header. @see {@link NPSHeader}
@@ -8,27 +7,27 @@ import { BytableMessage } from '@rustymotors/binary'; // Ensure this path is cor
  */
 
 export class NPSMessage extends BytableMessage {
-    _header: NPSHeader;
+    _header: BytableHeader;
     constructor() {
         super();
-        this._header = new NPSHeader();
+        this._header = new BytableHeader();
     }
 
     override deserialize(buffer: Buffer) {
         this._header.deserialize(buffer);
-        this.setBody(buffer.subarray(this._header._size));
+        this.setBody(buffer.subarray(this._header.serializeSize));
         return this;
     }
 
     override serialize() {
-        const buffer = Buffer.alloc(this._header.length);
+        const buffer = Buffer.alloc(this._header.messageLength);
         this._header.serialize().copy(buffer);
-        this.data.copy(buffer, this._header._size);
+        this.data.copy(buffer, this._header.serializeSize);
         return buffer;
     }
 
     size() {
-        return this._header.length + this.data.length;
+        return this._header.serializeSize + this.data.length;
     }
 
     override toString() {

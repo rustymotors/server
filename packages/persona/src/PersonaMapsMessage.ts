@@ -1,5 +1,4 @@
-import { NPSMessage } from 'rusty-motors-shared';
-import { NPSHeader } from 'rusty-motors-shared';
+import { BytableMessage } from '@rustymotors/binary';
 
 /**
  *
@@ -276,7 +275,7 @@ export class PersonaList {
         return `PersonaList: ${JSON.stringify(this._personaRecords)}`;
     }
 }
-export class PersonaMapsMessage extends NPSMessage {
+export class PersonaMapsMessage extends BytableMessage {
     _personaRecords: PersonaList | undefined;
     raw: Buffer | undefined;
     constructor() {
@@ -291,8 +290,8 @@ export class PersonaMapsMessage extends NPSMessage {
      */
     override deserialize(buffer: Buffer): this {
         try {
-            this._header._doDeserialize(buffer);
-            this.setBody(buffer.subarray(NPSHeader.size()));
+            this.header.deserialize(buffer);
+            this.setBody(buffer.subarray(this.header.serializeSize));
             this.raw = buffer;
             return this;
         } catch (error) {
@@ -312,15 +311,16 @@ export class PersonaMapsMessage extends NPSMessage {
             if (!this._personaRecords) {
                 throw Error('PersonaRecords is undefined');
             }
-            this._header.length =
-                NPSHeader.size() + 2 + this._personaRecords.size();
-            const buffer = Buffer.alloc(this._header.length);
-            this._header.serialize().copy(buffer);
+            this.header.setMessageLength(
+                this.header.serializeSize + 2 + this._personaRecords.size(),
+            );
+            const buffer = Buffer.alloc(this.header.messageLength);
+            this.header.serialize().copy(buffer);
 
             // Write the persona count. This is known to be correct at offset 12
             buffer.writeUInt16BE(this._personaRecords.personaCount(), 12);
             // This is a serialized PersonaList
-            this.data.copy(buffer, NPSHeader.size() + 2);
+            this.data.copy(buffer, this.header.serializeSize + 2);
             return buffer;
         } catch (error) {
             const err = Error(
@@ -333,14 +333,14 @@ export class PersonaMapsMessage extends NPSMessage {
 
     asJSON() {
         return {
-            header: this._header,
+            header: this.header,
             personaRecords: this._personaRecords,
         };
     }
 
     override toString() {
         return `PersonaMapsMessage: ${JSON.stringify({
-            header: this._header,
+            header: this.header,
             personaRecords: this._personaRecords,
         })}`;
     }

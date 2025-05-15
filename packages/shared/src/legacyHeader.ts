@@ -82,4 +82,8 @@ export class legacyHeader extends SerializableMixin(AbstractSerializable) {
     static override get Size() {
         return 4;
     }
+
+    get messageId() {
+        return this.id;
+    }
 }

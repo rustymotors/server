@@ -246,7 +246,7 @@ async function getPersonaMaps({
             );
         });
 
-        personaMapsMessage._header.id = 0x607;
+        personaMapsMessage.header.setMessageId(0x607);
         personaMapsMessage._personaRecords = personaList;
         personaMapsMessage.setBody(personaList.serialize());
         log.debug(
@@ -266,7 +266,7 @@ async function getPersonaMaps({
             messages: [outboundMessage],
         };
     } catch (error) {
-        const err = Error("Error serializing personaMapsMsg");
+        const err = Error('Error serializing personaMapsMsg');
         err.cause = error;
         throw err;
     }
