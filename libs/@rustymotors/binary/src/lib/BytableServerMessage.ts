@@ -17,8 +17,11 @@ export class BytableServerMessage extends Bytable {
 
     protected override deserializeFields(buffer: Buffer) {
         let offset = 0;
+        // Clear fields before deserializing
+        this.fields_ = [];
 
-        if (this.fields_.length === 0) {
+        // Only set default serializeOrder_ if it is empty
+        if (this.serializeOrder_.length === 0) {
             this.setSerializeOrder([
                 {
                     name: 'data',
@@ -43,7 +46,8 @@ export class BytableServerMessage extends Bytable {
 
     override deserialize(buffer: Buffer) {
         try {
-            const header = new BytableServerHeader();
+            // Use the current header_ instance (may be a mock)
+            const header = this.header_;
             header.deserialize(buffer.subarray(0, header.serializeSize));
             this.deserializeFields(buffer.subarray(header.serializeSize));
         } catch (error) {
@@ -176,6 +180,8 @@ export class BytableServerMessage extends Bytable {
     }
 
     setBody(buffer: Buffer) {
+        // Clear fields before setting body
+        this.fields_ = [];
         this.deserializeFields(buffer);
     }
 
