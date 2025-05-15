@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { BinaryMember } from './BinaryMember';
+import { BinaryMember, Uint16_t } from './BinaryMember';
 
 describe('BinaryMember', () => {
     it('should initialize with the correct size and padding', () => {
@@ -107,5 +107,28 @@ describe('BinaryMember', () => {
         binaryMember.set(value);
         expect(binaryMember.get()).toEqual(new Uint8Array([]));
         expect(binaryMember.getByteSize()).toBe(0);
+    });
+});
+
+describe('Uint16_t', () => {
+    it('should initialize with the correct size and padding', () => {
+        const uint16 = new Uint16_t();
+        expect(uint16.size()).toBe(2);
+        expect(uint16.get()).toEqual(new Uint8Array(2));
+    });
+
+    it('should set and get values correctly', () => {
+        const uint16 = new Uint16_t();
+        const value = new Uint8Array([1, 2]);
+        uint16.set(value);
+        expect(uint16.get()).toEqual(value);
+    });
+
+    it('should throw an error if value exceeds max size', () => {
+        const uint16 = new Uint16_t();
+        const value = new Uint8Array([1, 2, 3]);
+        expect(() => uint16.set(value)).toThrowError(
+            'Value exceeds maximum size of 2',
+        );
     });
 });

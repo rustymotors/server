@@ -91,7 +91,7 @@ export class BinaryMember implements SerializableInterface {
     protected maxSize: number;
     protected shouldPad: boolean;
 
-    constructor(size = 0, shouldPad = true) {
+    constructor(size = 0, shouldPad = false) {
         this.value = new Uint8Array(size);
         this.maxSize = size;
         this.shouldPad = shouldPad;
@@ -162,7 +162,7 @@ export class Uint16_t extends BinaryMember {
      */
     getLE(): number {
         const byte0 = this.value[0] || 0;
-        const byte1 = this.value[1] || 0 << 8;
+        const byte1 = (this.value[1] || 0) << 8;
         return byte0 | byte1;
     }
 
@@ -172,7 +172,7 @@ export class Uint16_t extends BinaryMember {
      * @returns {number} The 16-bit big-endian integer representation of the first two bytes.
      */
     getBE(): number {
-        const byte0 = this.value[0] || 0 << 8;
+        const byte0 = (this.value[0] || 0) << 8;
         const byte1 = this.value[1] || 0;
         return byte0 | byte1;
     }
