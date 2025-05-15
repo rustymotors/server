@@ -53,6 +53,7 @@ docker-init: ## Start the project in docker
 
 .PHONY: clean
 clean: ## Clean the project
+	@rm -rf node_modules -v
 	@rm -rf */**/node_modules -v
 	@rm -rf dist -v
 
