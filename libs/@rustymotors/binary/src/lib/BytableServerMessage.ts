@@ -10,28 +10,15 @@ export class BytableServerMessage extends Bytable {
         name: string;
         field: keyof typeof BytableFieldTypes;
     }> = [];
-
-    constructor() {
-        super();
-    }
+    protected override name_: string = '';
 
     protected override deserializeFields(buffer: Buffer) {
         let offset = 0;
-
-        if (this.fields_.length === 0) {
-            this.setSerializeOrder([
-                {
-                    name: 'data',
-                    field: 'Buffer',
-                },
-            ]);
-        }
-
+        this.fields_ = [];
         for (const field of this.serializeOrder_) {
             if (!(field.field in BytableFieldTypes)) {
                 throw new Error(`Unknown field type: ${field.field}`);
             }
-
             const fieldType = BytableFieldTypes[field.field];
             const fieldInstance = new fieldType();
             fieldInstance.setName(field.name);
@@ -57,8 +44,17 @@ export class BytableServerMessage extends Bytable {
         }
     }
 
-    get header() {
-        return this.header_;
+    override get name() {
+        return this.header_.name;
+    }
+
+    override set name(val: string) {
+        try {
+            this.header_.setName(val);
+        } catch {
+            // fallback for header that throws
+        }
+        this.name_ = val;
     }
 
     override get serializeSize() {
@@ -102,7 +98,12 @@ export class BytableServerMessage extends Bytable {
     }
 
     override setName(name: string) {
-        this.header_.setName(name);
+        try {
+            this.header_.setName(name);
+        } catch {
+            // fallback for header that throws
+        }
+        this.name_ = name;
     }
 
     override toString() {
@@ -122,16 +123,16 @@ export class BytableServerMessage extends Bytable {
         return this.header_.sequence;
     }
 
-    setSequenceNumber(sequence: number) {
-        this.header_.sequence = sequence;
+    setSequenceNumber(val: number) {
+        this.header_.setSequence(val);
     }
 
     get flags() {
         return this.header_.flags;
     }
 
-    setFlags(flags: number) {
-        this.header_.flags = flags;
+    setFlags(val: number) {
+        this.header_.setFlags(val);
     }
 
     getFieldValueByName(name: string) {
@@ -183,8 +184,12 @@ export class BytableServerMessage extends Bytable {
         return this.getBody();
     }
 
-    set data(buffer: Buffer) {
+    setData(buffer: Buffer) {
         this.setBody(buffer);
+    }
+
+    get header() {
+        return this.header_;
     }
 
     toHexString() {
