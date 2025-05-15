@@ -2,7 +2,7 @@
 
 # mcos
 
-[![Node.js CI](https://github.com/drazisil/mcos/actions/workflows/node.yml/badge.svg?branch=dev)](https://github.com/drazisil/mcos/actions/workflows/node.yml) [![CodeQL](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml?branch=dev) [![codecov](https://codecov.io/gh/rustymotors/server/graph/badge.svg?token=XiwYgbHCeN)](https://codecov.io/gh/rustymotors/server)  [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![Node.js CI](https://github.com/drazisil/mcos/actions/workflows/node.yml/badge.svg?branch=dev)](https://github.com/drazisil/mcos/actions/workflows/node.yml) [![CodeQL](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml?branch=dev) [![codecov](https://codecov.io/gh/rustymotors/server/graph/badge.svg?token=XiwYgbHCeN)](https://codecov.io/gh/rustymotors/server) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) ![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/rustymotors/server?utm_source=oss&utm_medium=github&utm_campaign=rustymotors%2Fserver&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
 
 ## About
 
@@ -18,20 +18,20 @@ There's a brief explanation of the thought process here [link](https://github.co
 
 ## Server Setup
 
--   See [server docs](./docs/server.md)
+- See [server docs](./docs/server.md)
 
 ## Client Setup
 
--   See [client docs](./docs/client.md)
+- See [client docs](./docs/client.md)
 
 ## Timeline
 
--   March 6, 2016 - Started
+- March 6, 2016 - Started
 
--   October 12, 2023 - Connected to lobby
+- October 12, 2023 - Connected to lobby
 
 ![img The first non-hacked image of the MCO lobby since it was shutdown](images/2012-10-12_lobby.png)
 
 ## Current Status
 
--   [TODO Issues](https://github.com/drazisil/mcos/labels/todo%20%3Aspiral_notepad%3A)
+- [TODO Issues](https://github.com/drazisil/mcos/labels/todo%20%3Aspiral_notepad%3A)
