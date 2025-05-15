@@ -1,4 +1,4 @@
-# rusty-motors-shared
+# rusty-motors-logger
 
 ## 1.0.0-next.0
 
