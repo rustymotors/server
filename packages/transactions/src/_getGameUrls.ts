@@ -7,8 +7,11 @@ import { getServerLogger } from 'rusty-motors-logger';
 const defaultLogger = getServerLogger('handlers/_getGameUrls');
 
 /**
- * @param {MessageHandlerArgs} args
- * @return {Promise<MessageHandlerResult>}
+ * Handles a request to retrieve available game URLs and returns a response containing the URLs.
+ *
+ * Receives a request message, deserializes it, constructs a response with a predefined game URL, and returns the response packet.
+ *
+ * @returns An object containing the {@link connectionId} and an array of response packets with the game URLs.
  */
 export async function _getGameUrls({
     connectionId,

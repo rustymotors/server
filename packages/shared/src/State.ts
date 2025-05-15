@@ -185,20 +185,12 @@ export interface State {
 }
 
 /**
- * Create the initial state.
+ * Creates and returns the initial gateway server state object.
  *
- * This function creates the initial state for the gateway server.
- * You should call save on the returned state to save it to the database.
+ * The returned state includes empty file paths, encryptions, and sessions, along with a `save` method that persists the state using the provided save function or a default database save function.
  *
- * @param {object} args
- * @param {StateSaveFunction} [args.saveFunction=saveStateToDatabase] The
- *                                                                       save
- *                                                                    function
- *                                                                 to use.
- *                                                                Defaults
- *                                                            to
- *                                                        saveStateToDatabase.
- * @returns The initial state.
+ * @param saveFunction - Optional function to persist the state; defaults to saving to the database.
+ * @returns The initialized gateway server state.
  */
 export function createInitialState({
     saveFunction = saveStateToDatabase,
@@ -225,16 +217,11 @@ export function createInitialState({
 }
 
 /**
- * Add an encryption to the state.
+ * Returns a new state object with the given encryption added by connection ID.
  *
- * This function adds an encryption to the state.
- * The returned state is a new state object, and the original state is not
- * modified. You should then call the save function on the new state to update
- * the database.
+ * The original state is not modified.
  *
- * @param {State} state The state to add the encryption to.
- * @param {McosEncryption} encryption The encryption to add to the state.
- * @returns {State} - The state with the encryption added.
+ * @returns The updated state including the new encryption.
  */
 export function addEncryption(state: State, encryption: McosEncryption): State {
     const encryptions = state.encryptions;
@@ -246,13 +233,10 @@ export function addEncryption(state: State, encryption: McosEncryption): State {
 }
 
 /**
- * Get an encryption from the state.
+ * Retrieves the encryption settings associated with a given connection ID from the state.
  *
- * This function gets an encryption from the state.
- *
- * @param {State} state The state to get the encryption from.
- * @param {string} connectionId The connection id of the encryption to get.
- * @returns {McosEncryption | undefined} The encryption with the given connection id, or undefined if no encryption
+ * @param connectionId - The unique identifier for the connection whose encryption is being retrieved.
+ * @returns The {@link McosEncryption} for the specified connection ID, or undefined if not found.
  */
 export function getEncryption(
     state: State,
@@ -262,16 +246,12 @@ export function getEncryption(
 }
 
 /**
- * Update an encryption in the state.
+ * Returns a new state object with the specified encryption updated by connection ID.
  *
- * This function updates an encryption in the state.
- * The returned state is a new state object, and the original state is not
- * modified. You should then call the save function on the new state to update
- * the database.
+ * The original state is not modified.
  *
- * @param {State} state The state to update the encryption in.
- * @param {McosEncryption} encryption The encryption to update in the state.
- * @returns {State} The state with the encryption updated.
+ * @param encryption - The {@link McosEncryption} to update in the state, identified by its connection ID.
+ * @returns A new {@link State} with the updated encryption.
  */
 export function updateEncryption(
     state: State,
@@ -286,16 +266,10 @@ export function updateEncryption(
 }
 
 /**
- * Remove an encryption from the state.
+ * Returns a new state object with the encryption for the specified connection ID removed.
  *
- * This function removes an encryption from the state.
- * The returned state is a new state object, and the original state is not
- * modified. You should then call the save function on the new state to update
- * the database.
- *
- * @param state {State} The state to remove the encryption from.
- * @param {string} connectionId The connection id of the encryption to remove.
- * @returns {State} The state with the encryption removed.
+ * @param connectionId - The connection ID whose encryption should be removed.
+ * @returns The updated state without the specified encryption.
  */
 export function removeEncryption(state: State, connectionId: string): State {
     const encryptions = state.encryptions;
@@ -307,16 +281,12 @@ export function removeEncryption(state: State, connectionId: string): State {
 }
 
 /**
- * Add a session to the state.
+ * Returns a new state object with the given session added.
  *
- * This function adds a session to the state.
- * The returned state is a new state object, and the original state is not
- * modified. You should then call the save function on the new state to update
- * the database.
+ * The original state is not modified.
  *
- * @param {State} state The state to add the session to.
- * @param {McosSession} session The session to add to the state.
- * @returns {State} The state with the session added.
+ * @param session - The session to associate with its connection ID in the state.
+ * @returns A new state object including the added session.
  */
 export function addSession(state: State, session: McosSession): State {
     const sessions = state.sessions;
@@ -328,17 +298,12 @@ export function addSession(state: State, session: McosSession): State {
 }
 
 /**
- * Remove a session from the state.
+ * Removes a session from the state by its connection ID.
  *
- * This function removes a session from the state. It also removes the socket
- * and encryption for the session.
- * The returned state is a new state object, and the original state is not
- * modified. You should then call the save function on the new state to update
- * the database.
+ * Returns a new state object with the specified session removed. The original state is not modified.
  *
- * @param {State} state The state to remove the session from.
- * @param {string} connectionId The connection id of the session to remove.
- * @returns {State} The state with the session removed.
+ * @param connectionId - The connection ID of the session to remove.
+ * @returns The updated state without the specified session.
  */
 export function removeSession(state: State, connectionId: string): State {
     const sessions = state.sessions;
@@ -349,6 +314,12 @@ export function removeSession(state: State, connectionId: string): State {
     };
 }
 
+/**
+ * Retrieves the session associated with the specified connection ID.
+ *
+ * @param connectionId - The unique identifier for the connection.
+ * @returns The {@link McosSession} for the given connection ID, or undefined if not found.
+ */
 export function findSessionByConnectionId(
     state: State,
     connectionId: string,
@@ -357,22 +328,18 @@ export function findSessionByConnectionId(
 }
 
 /**
- * Fetch the state from the database.
+ * Retrieves the current gateway server state from in-memory storage.
  *
- * This function fetches the state from the database.
- *
- * @returns {State} The state from the database.
+ * @returns The latest {@link State} object representing the server's state.
  */
 export function fetchStateFromDatabase(): State {
     return globalStateDatabase;
 }
 
 /**
- * Save the state to the database.
+ * Persists the provided gateway server state in memory.
  *
- * This function saves the state to the database.
- *
- * @param {State} state The state to save to the database.
+ * Overwrites the current global state with the given {@link state}.
  */
 function saveStateToDatabase(state: State) {
     globalStateDatabase = state;

@@ -8,7 +8,13 @@ import { getServerLogger } from 'rusty-motors-logger';
 
 const defaultLogger = getServerLogger('nps.getLobMiniUserList');
 
-// Command id: 0x128
+/**
+ * Generates a serialized response containing a mini user list with a single user for the getLobMiniUserList command.
+ *
+ * @param _commandId - The command identifier (unused).
+ * @param data - The input buffer associated with the command.
+ * @returns A Promise that resolves to a Buffer containing the serialized response message.
+ */
 export async function getLobMiniUserList(
     _commandId: number,
     data: Buffer,

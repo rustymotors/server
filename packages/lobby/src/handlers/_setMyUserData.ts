@@ -3,6 +3,15 @@ import { UserInfo } from '../UserInfoMessage.js';
 import { databaseManager } from 'rusty-motors-database';
 import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 
+/**
+ * Processes a user data update request by deserializing the incoming message, updating the user's data in the database, and preparing a response.
+ *
+ * @param connectionId - Identifier for the client connection.
+ * @param message - The incoming message containing user data to update.
+ * @returns An object with the original {@link connectionId} and a null message.
+ *
+ * @throws {Error} If an error occurs during message processing or database update, with the original error attached as the cause.
+ */
 export async function _setMyUserData({
     connectionId,
     message,

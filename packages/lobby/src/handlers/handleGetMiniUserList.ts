@@ -11,10 +11,15 @@ const user1 = new UserInfo();
 user1._userId = 1;
 user1._userName = 'User 1';
 /**
- * @param {object} args
- * @param {string} args.connectionId
- * @param {LegacyMessage} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ name: "Lobby" })]
+ * Handles a request to retrieve a minimal user list and constructs the appropriate response message.
+ *
+ * Processes the incoming {@link LegacyMessage}, prepares a response containing a single hardcoded user, and returns the response as a new {@link LegacyMessage} along with the original {@link connectionId}.
+ *
+ * @param connectionId - The identifier for the client connection.
+ * @param message - The incoming request message to process.
+ * @returns An object containing the {@link connectionId} and the constructed response {@link LegacyMessage}.
+ *
+ * @throws {Error} If an error occurs during message processing or serialization.
  */
 
 export async function handleGetMiniUserList({

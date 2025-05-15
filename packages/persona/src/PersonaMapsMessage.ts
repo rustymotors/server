@@ -347,7 +347,7 @@ export class PersonaMapsMessage extends BytableMessage {
 }
 
 /**
- * Serializes a string into a buffer with a 2-byte big-endian length prefix.
+ * Converts a string to a buffer with a 2-byte big-endian length prefix followed by the UTF-8 encoded string.
  *
  * @param str - The string to serialize.
  * @returns A buffer containing the length-prefixed UTF-8 encoded string.

@@ -8,10 +8,16 @@ const defaultLogger = getServerLogger('Lobby');
 
 // const users = [user1];
 /**
- * @param {object} args
- * @param {string} args.connectionId
- * @param {LegacyMessage} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ name: "Lobby" })]
+ * Constructs and returns a response containing the list of mini riff channels for a given connection.
+ *
+ * Builds a packet with channel information and serializes it into a legacy message format to be sent to the client.
+ *
+ * @param connectionId - The identifier for the client connection.
+ * @param message - The incoming legacy message triggering this response.
+ * @param log - Optional logger for debug output.
+ * @returns An object with the original {@link connectionId} and the constructed legacy message containing channel data.
+ *
+ * @throws {Error} If an error occurs during packet construction or serialization.
  */
 export async function handleSendMiniRiffList({
     connectionId,

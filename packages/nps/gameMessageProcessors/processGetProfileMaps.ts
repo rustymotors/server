@@ -9,6 +9,16 @@ import type { GameSocketCallback } from './index.js';
 import type { UserStatus } from 'rusty-motors-nps';
 import { getServerLogger } from 'rusty-motors-logger';
 
+/**
+ * Processes a request to retrieve profile maps for a customer and sends the profile list response to the client.
+ *
+ * Extracts the customer ID from the incoming game message, retrieves associated game profiles, constructs a profile list, and responds to the client with the profile data.
+ *
+ * @param message - The incoming game message containing the customer ID.
+ * @param socketCallback - Callback function to send the response message to the client.
+ *
+ * @throws {Error} If an error occurs while sending the profile information to the client.
+ */
 export async function processGetProfileMaps(
     _connectionId: string,
     _userStatus: UserStatus,

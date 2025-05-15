@@ -8,9 +8,14 @@ import * as Sentry from '@sentry/node';
 import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 
 /**
- * Handles the routing of messages for the MCOTS (Motor City Online Transaction Server) ports.
+ * Routes and processes incoming messages on MCOTS ports using a tagged socket connection.
  *
- * @param taggedSocket - The socket object that contains the tagged information for routing.
+ * Listens for data events on the provided {@link TaggedSocket}, parses incoming packets, routes them based on the socket's local port, and sends responses back to the client. Handles errors by logging and reporting to Sentry.
+ *
+ * @param taggedSocket - The tagged socket containing the raw socket and connection ID for routing.
+ *
+ * @remark
+ * If the socket's local port is undefined, the function logs an error and closes the connection without processing data.
  */
 
 export async function mcotsPortRouter({
@@ -72,12 +77,28 @@ export async function mcotsPortRouter({
     });
 }
 
+/**
+ * Deserializes a buffer into a {@link ServerPacket} instance.
+ *
+ * @param data - The buffer containing the serialized packet data.
+ * @returns The deserialized {@link ServerPacket}.
+ */
 function parseInitialMessage(data: Buffer): ServerPacket {
     const initialPacket = new ServerPacket();
     initialPacket.deserialize(data);
     return initialPacket;
 }
 
+/**
+ * Routes an initial server packet to the appropriate handler based on the socket port and returns the serialized response(s).
+ *
+ * @param id - The unique connection identifier.
+ * @param port - The local port number of the incoming connection.
+ * @param initialPacket - The parsed server packet to be routed.
+ * @returns A buffer containing the serialized response(s) to be sent back to the client.
+ *
+ * @remark Only port 43300 is currently handled; other ports result in no response.
+ */
 async function routeInitialMessage(
     id: string,
     port: number,

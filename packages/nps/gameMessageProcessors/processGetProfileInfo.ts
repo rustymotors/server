@@ -12,6 +12,16 @@ import { getServerLogger } from 'rusty-motors-logger';
 
 const defaultLogger = getServerLogger('nps.processGetProfileInfo');
 
+/**
+ * Processes a request to retrieve game profiles for a customer and sends the profile list to the client.
+ *
+ * Extracts the customer ID from the incoming {@link message}, retrieves associated game profiles, constructs a response message with the appropriate header, and sends the serialized profile list using the provided {@link socketCallback}.
+ *
+ * @param message - The incoming game message containing the customer ID.
+ * @param socketCallback - Callback function to send the response message to the client.
+ *
+ * @throws {Error} If an error occurs while sending the profile information to the client.
+ */
 export async function processGetProfileInfo(
     _connectionId: string,
     _userStatus: UserStatus,

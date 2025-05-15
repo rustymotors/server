@@ -52,7 +52,15 @@ export interface ConnectionRecord {
     contextId: string;
 }
 
-// Function to convert ARGB to 32-bit integer
+/**
+ * Combines alpha, red, green, and blue color components into a single 32-bit integer.
+ *
+ * @param alpha - Alpha channel value (0–255).
+ * @param red - Red channel value (0–255).
+ * @param green - Green channel value (0–255).
+ * @param blue - Blue channel value (0–255).
+ * @returns A 32-bit integer representing the ARGB color.
+ */
 export function argbToInt(
     alpha: number,
     red: number,
@@ -67,7 +75,12 @@ export function argbToInt(
     );
 }
 
-// Function to convert 32-bit integer to ARGB
+/**
+ * Converts a 32-bit integer into its ARGB color components.
+ *
+ * @param int - The 32-bit integer representing an ARGB color.
+ * @returns An object with `alpha`, `red`, `green`, and `blue` properties, each ranging from 0 to 255.
+ */
 export function intToArgb(int: number) {
     return {
         alpha: (int >> 24) & 0xff,

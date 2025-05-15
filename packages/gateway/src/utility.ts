@@ -1,18 +1,15 @@
 /**
- * Splits a buffer into packets using a specified separator buffer.
+ * Splits a buffer into an array of packets using a specified separator buffer.
  *
- * Searches for the separator starting from the third byte of {@link data}.
- * If no separator is found, returns the entire buffer as a single packet.
- * Each packet starts 3 bytes before the separator and ends 3 bytes before the next separator.
+ * Returns an array of buffer slices separated by {@link separator}. Throws an error if the separator is empty, found at the end of the buffer, or if multiple consecutive separators are present.
  *
- * @param data - The buffer to split into packets.
+ * @param data - The buffer to split.
  * @param separator - The buffer used as the separator between packets.
- * @returns An array of buffer packets split by the separator. Each packet stars 3 bytes before the separator and ends 3 bytes before the next separator.
+ * @returns An array of buffer packets split by the separator.
  *
- * @throws {Error} If the separator is found at the end of the buffer
- * @throws {Error} If multiple consecutive separators are found
- * @throws {Error} If the separator is not found at the start or end of the buffer
- * @throws {Error} If the separator is longer than one character
+ * @throws {Error} If {@link separator} is empty.
+ * @throws {Error} If {@link separator} is found at the end of {@link data}.
+ * @throws {Error} If multiple consecutive separators are found in {@link data}.
  */
 export function splitPackets(data: Buffer, separator: Buffer): Buffer[] {
     if (data.length === 0) {

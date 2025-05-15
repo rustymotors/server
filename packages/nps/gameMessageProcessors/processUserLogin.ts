@@ -12,6 +12,17 @@ import { getServerLogger } from 'rusty-motors-logger';
 
 const defaultLogger = getServerLogger('nps.processUserLogin');
 
+/**
+ * Processes a user login game message, updates user status, and sends a login response.
+ *
+ * Parses the incoming {@link message} to extract persona and profile information, validates and updates the user's status, and responds with user info via the provided socket callback.
+ *
+ * @param message - The game message containing login data.
+ * @param socketCallback - Callback to send the response message.
+ *
+ * @throws {Error} If the customer ID cannot be found for the extracted persona ID.
+ * @throws {Error} If no user status exists for the resolved customer ID.
+ */
 export async function processUserLogin(
     _connectionId: string,
     _userStatus: UserStatus,

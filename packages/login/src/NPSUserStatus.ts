@@ -152,10 +152,12 @@ export class NPSUserStatus extends LegacyMessage {
 }
 
 /**
- * Parses a buffer to extract the NPS session key and its expiration time.
+ * Extracts the session key length, session key (as a hex string), and expiration time from a buffer containing NPS session key data.
  *
- * @param buffer - The buffer containing the session key data.
- * @returns An object containing the session key length, session key (in hex format), and expiration time.
+ * @param buffer - Buffer containing the encoded session key and expiration information.
+ * @returns An object with the session key length, session key in hexadecimal format, and expiration timestamp.
+ *
+ * @throws {Error} If the buffer cannot be parsed as a valid NPS session key.
  */
 export function parseNPSSessionKey(buffer: Buffer): NPSSessionKey {
     try {

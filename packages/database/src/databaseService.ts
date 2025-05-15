@@ -173,8 +173,11 @@ export const DatabaseImpl = {
 let databaseInstance: DatabaseSync | null = null;
 
 /**
- * Initializes and returns a database service instance
- * @returns DatabaseService interface with database operations
+ * Initializes the database if needed and returns a singleton database service instance.
+ *
+ * On first invocation, sets up the database schema, inserts a default admin user, and creates initial session records.
+ *
+ * @returns An implementation of the {@link DatabaseService} interface for user and session management.
  */
 function initializeDatabaseService(): DatabaseService {
     if (databaseInstance === null) {
@@ -204,6 +207,12 @@ function initializeDatabaseService(): DatabaseService {
     return DatabaseImpl.createDatabaseService(databaseInstance);
 }
 
+/**
+ * Retrieves the user record associated with a given session context ID.
+ *
+ * @param contextId - The session context identifier to look up.
+ * @returns The user record linked to the specified {@link contextId}, or undefined if no session is found.
+ */
 export function findCustomerByContext(
     contextId: string,
 ): UserRecordMini | undefined {

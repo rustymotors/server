@@ -40,16 +40,15 @@ export const messageHandlers: {
 }[] = [];
 
 /**
- * Takes an plaintext command packet and return the encrypted bytes
+ * Encrypts a plaintext command message for a specific connection.
  *
- * @param {object} args
- * @param {string} args.connectionId
- * @param {LegacyMessage | MessageBuffer} args.message
- * @param {ServerLogger} [args.log] Logger
- * @returns {Promise<{
- * connectionId: string,
- * message: LegacyMessage | MessageBuffer,
- * }>}
+ * Retrieves the encryption session for the given {@link connectionId}, encrypts the message data, updates the session state, and returns the encrypted message.
+ *
+ * @param connectionId - The identifier for the connection whose encryption session is used.
+ * @param message - The plaintext command message to encrypt.
+ * @returns An object containing the {@link connectionId} and the encrypted {@link message}.
+ *
+ * @throws {Error} If no encryption session is found for the specified {@link connectionId}.
  */
 async function encryptCmd({
     connectionId,
@@ -88,16 +87,15 @@ async function encryptCmd({
 }
 
 /**
- * Takes an encrypted command packet and returns the decrypted bytes
+ * Decrypts an encrypted command message for a given connection.
  *
- * @param {object} args
- * @param {string} args.connectionId
- * @param {LegacyMessage} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ name: "Lobby" })]
- * @returns {Promise<{
- *  connectionId: string,
- * message: LegacyMessage,
- * }>}
+ * Retrieves the encryption session for the specified {@link connectionId}, decrypts the provided {@link message}, updates the session state, and returns the decrypted message.
+ *
+ * @param connectionId - The identifier for the connection whose encryption session is used.
+ * @param message - The encrypted command message to decrypt.
+ * @returns An object containing the {@link connectionId} and the decrypted {@link message}.
+ *
+ * @throws {Error} If no encryption session is found for the given {@link connectionId}.
  */
 async function decryptCmd({
     connectionId,
@@ -167,16 +165,14 @@ const npsCommandHandlers: NpsCommandHandler[] = [
 ];
 
 /**
+ * Dispatches a decrypted NPS command message to the appropriate handler based on its opcode.
  *
+ * @param connectionId - The identifier for the client connection.
+ * @param message - The decrypted command message to process.
+ * @param log - Optional logger instance.
+ * @returns An object containing the {@link connectionId} and the handler's response message, or {@code null} if no response is needed.
  *
- * @param {object} args
- * @param {string} args.connectionId
- * @param {LegacyMessage} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ name: "Lobby" })]
- * @return {Promise<{
- * connectionId: string,
- * message: MessageBuffer | LegacyMessage,
- * }>}}
+ * @throws {Error} If the command opcode is not recognized.
  */
 async function handleCommand({
     connectionId,
@@ -215,17 +211,11 @@ async function handleCommand({
 }
 
 /**
+ * Processes an incoming encrypted NPS command, decrypts it, dispatches it to the appropriate handler, and returns an encrypted response.
  *
+ * Decrypts the provided message, invokes the corresponding command handler, and encrypts the response. If the handler returns no response, an empty array is returned.
  *
- * @param {object} args
- * @param {string} args.connectionId
- * @param {SerializedBufferOld} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ name: "Lobby" })]
-  * @returns {Promise<{
-*  connectionId: string,
-* messages: SerializedBufferOld[],
-* }>}
-
+ * @returns An object containing the {@link connectionId} and an array of encrypted response messages. If no response is generated, the messages array will be empty.
  */
 export async function handleEncryptedNPSCommand({
     connectionId,

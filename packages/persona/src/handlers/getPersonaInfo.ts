@@ -12,12 +12,12 @@ import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 const defaultLogger = getServerLogger('PersonaServer');
 
 /**
- * Processes a legacy message to retrieve persona information and returns a serialized response.
+ * Retrieves persona information from a legacy message and returns a serialized response message.
  *
  * Deserializes the incoming {@link message}, extracts the persona ID, fetches the corresponding persona, and constructs a response containing the persona's profile information. The response is serialized and returned as an outbound message.
  *
- * @param connectionId - The identifier for the client connection.
- * @param message - The incoming legacy message containing the persona request.
+ * @param connectionId - Unique identifier for the client connection.
+ * @param message - The legacy message containing the persona request.
  * @returns An object with the original {@link connectionId} and an array containing the serialized response message.
  *
  * @throws {Error} If no persona is found for the extracted persona ID.

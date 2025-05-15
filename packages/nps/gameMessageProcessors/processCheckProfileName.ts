@@ -7,6 +7,12 @@ import { getServerLogger } from 'rusty-motors-logger';
 
 const defaultLogger = getServerLogger('nps.processCheckProfileName');
 
+/**
+ * Handles a profile name check request by extracting the requested persona name and customer ID from the incoming message, then sends a response message via the provided callback.
+ *
+ * @param message - The incoming game message containing the profile name check request.
+ * @param socketCallback - Callback function to send the response message.
+ */
 export async function processCheckProfileName(
     _connectionId: string,
     _userStatus: UserStatus,

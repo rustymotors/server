@@ -6,6 +6,13 @@ import { getServerLogger } from 'rusty-motors-logger';
 
 const defaultLogger = getServerLogger('nps.processSelectPersona');
 
+/**
+ * Handles a "Select Persona" game message by updating the user's persona ID and sending an acknowledgment.
+ *
+ * Extracts the customer ID, persona ID, and shard ID from the message buffer, updates the corresponding user status with the new persona ID, and sends an acknowledgment through the provided socket callback.
+ *
+ * @throws {Error} If no user status is found for the extracted customer ID.
+ */
 export async function processSelectPersona(
     _connectionId: string,
     _userStatus: UserStatus,

@@ -3,15 +3,11 @@ import { LegacyMessage } from 'rusty-motors-shared';
 import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 
 /**
- * Handle game logout
- * @param {object} args
- * @param {string} args.connectionId
- * @param {LegacyMessage} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ name: "LoginServer" })]
- * @returns {Promise<{
- *  connectionId: string,
- * messages: SerializedBufferOld[],
- * }>}
+ * Processes a game logout request and returns a serialized logout response message.
+ *
+ * @param connectionId - The identifier for the client connection.
+ * @param message - The incoming logout request message.
+ * @returns An object containing the {@link connectionId} and an array with the serialized logout response message.
  */
 
 export async function _gameLogout({

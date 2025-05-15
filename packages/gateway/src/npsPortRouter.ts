@@ -24,9 +24,9 @@ import { Socket } from 'net';
 // addRoomServer(server01);
 
 /**
- * Routes and processes incoming socket connections for the Network Play System (NPS), handling packet parsing, multi-packet detection, and response dispatch based on the local port.
+ * Handles incoming socket connections for the Network Play System (NPS), parsing and routing packets based on the socket's local port.
  *
- * Listens for data events on the provided socket, splits and parses incoming packets, routes them according to the port, and sends appropriate responses. Handles errors and logs detailed debug information throughout the process.
+ * Sets up event listeners to process incoming data, detect and split multiple packets, parse each packet, and dispatch responses according to the connection port. Closes the connection if the local port is undefined and sends an "ok to login" packet immediately for port 7003. Logs detailed debug information and manages socket errors appropriately.
  *
  * @param taggedSocket - The socket connection with associated metadata to be routed.
  *
@@ -83,22 +83,15 @@ export async function npsPortRouter({
 }
 
 /**
- * Processes incoming socket data, splits it into packets if necessary, and routes
- * the initial message for further handling. Sends the response back to the client
- * through the socket.
+ * Returns a function that processes incoming socket data by splitting it into packets, parsing each packet, routing it based on connection details, and sending the appropriate response to the client.
  *
- * @param log - The logger instance used for logging debug, warning, and error messages.
- * @param id - A unique identifier for the current connection or session.
- * @param port - The port number associated with the socket connection.
- * @param socket - The socket instance used for communication with the client.
- * @returns A function that processes incoming data buffers from the socket.
+ * @param log - Logger for debug and error messages.
+ * @param id - Unique identifier for the connection.
+ * @param port - Port number associated with the connection.
+ * @param socket - Socket instance for client communication.
+ * @returns A function that handles incoming data buffers from the socket.
  *
- * The returned function:
- * - Logs the received data and its length.
- * - Splits the data into packets based on a predefined separator if multiple packets are detected.
- * - Parses the initial message from each packet.
- * - Routes the initial message and sends the response back to the client.
- * - Handles errors during parsing, routing, or response sending, logging them appropriately.
+ * @remark Errors during packet processing are handled internally and logged; the socket remains open unless a critical error occurs elsewhere.
  */
 export function processSocketData(
     log: Logger,
@@ -128,6 +121,16 @@ export function processSocketData(
     };
 }
 
+/**
+ * Splits a data buffer into multiple packets using a specified separator.
+ *
+ * If the separator is found more than once in the buffer, the data is split into separate packet buffers; otherwise, the original buffer is returned as a single packet.
+ *
+ * @param data - The buffer containing raw packet data.
+ * @param separator - The byte sequence used to delimit packets.
+ * @param id - Identifier for logging context.
+ * @returns An array of buffers, each representing an individual packet.
+ */
 function splitDataIntoPackets(
     data: Buffer,
     separator: Buffer,
@@ -151,6 +154,17 @@ function splitDataIntoPackets(
     }
 }
 
+/**
+ * Routes an initial network packet and sends the response to the client socket.
+ *
+ * @param id - The unique identifier for the connection.
+ * @param port - The local port number associated with the connection.
+ * @param initialPacket - The parsed initial packet to be routed.
+ * @param socket - The client socket to which the response will be sent.
+ * @param log - Logger for debug output.
+ *
+ * @throws {Error} If routing the initial packet fails.
+ */
 async function handlePacketRouting(
     id: string,
     port: number,
@@ -171,6 +185,11 @@ async function handlePacketRouting(
     }
 }
 
+/**
+ * Handles errors that occur during socket data processing.
+ *
+ * Logs parsing errors as warnings if they are {@link RangeError}s; otherwise, reports the error to Sentry and logs it as an error.
+ */
 function handleSocketError(error: unknown, log: Logger, id: string): void {
     if (error instanceof RangeError) {
         log.warn(`[${id}] Error parsing initial nps message: ${error}`);
@@ -183,10 +202,10 @@ function handleSocketError(error: unknown, log: Logger, id: string): void {
 /**
  * Parses a raw buffer into a `BytableMessage` representing the initial game packet.
  *
- * Sets the message version based on the packet ID, then deserializes the buffer into a message object.
+ * Determines the message version based on the packet ID and deserializes the buffer into a message object.
  *
  * @param data - The buffer containing the raw initial message.
- * @returns The parsed `BytableMessage` object.
+ * @returns The parsed `BytableMessage`.
  *
  * @throws {Error} If the buffer cannot be parsed into a valid message.
  */
@@ -222,9 +241,9 @@ function parseInitialMessage(data: Buffer): BytableMessage {
 }
 
 /**
- * Routes an initial game packet to the appropriate handler based on the connection port and returns the serialized response(s).
+ * Routes a parsed initial packet to the appropriate handler based on the connection port and returns the serialized response(s).
  *
- * Depending on the port, this function delegates processing to the lobby, login, or persona data handlers, and aggregates their responses for the client.
+ * Delegates processing to the lobby, login, or persona data handlers depending on the port, and aggregates their responses for the client.
  *
  * @param connectionId - Unique identifier for the client connection.
  * @param connectionPort - Local port number used to select the appropriate handler.
@@ -232,7 +251,7 @@ function parseInitialMessage(data: Buffer): BytableMessage {
  * @param log - Optional logger for debug and warning messages.
  * @returns A buffer containing the concatenated serialized responses from the selected handler.
  *
- * @remark If no handler exists for the specified {@link connectionPort}, an empty buffer is returned.
+ * @remark Returns an empty buffer if no handler exists for the specified {@link connectionPort}.
  */
 async function routeInitialMessage(
     connectionId: string,

@@ -18,11 +18,12 @@ import { databaseManager } from 'rusty-motors-database';
 import { getServerLogger } from 'rusty-motors-logger';
 
 /**
- * Convert to zero padded hex
+ * Converts a buffer to an uppercase hexadecimal string with zero-padded bytes.
  *
- * @export
- * @param {Buffer} data
- * @return {string}
+ * Each byte in {@link data} is represented as a two-character uppercase hex value.
+ *
+ * @param data - The buffer to convert.
+ * @returns The zero-padded uppercase hexadecimal string representation of {@link data}.
  */
 export function toHex(data: Buffer): string {
     /** @type {string[]} */
@@ -34,14 +35,14 @@ export function toHex(data: Buffer): string {
 }
 
 /**
- * Handle a request to connect to a game server packet
+ * Processes a game server connection request, handling persona lookup, encryption key management, and response message generation.
  *
- * @private
- * @param {ServiceArgs} args
- * @returns {Promise<{
- *  connectionId: string,
- * messages: SerializedBufferOld[],
- * }>}
+ * Attempts to retrieve the user's persona and associated session keys, initializes encryption for the connection if necessary, and returns a serialized response message for the client.
+ *
+ * @param args - The service arguments containing the connection ID, inbound message, and optional logger.
+ * @returns An object with the connection ID and an array containing the serialized response message.
+ *
+ * @throws {Error} If no personas are found for the user or if session keys cannot be retrieved or encryption cannot be created.
  */
 export async function _npsRequestGameConnectServer({
     connectionId,

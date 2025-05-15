@@ -5,8 +5,10 @@ export const BINARY_ALIGNMENT = 4;
 /**
  * Converts a 16-bit unsigned integer from host to network byte order (big-endian).
  *
+ * Swaps the byte order of a 16-bit unsigned integer to ensure correct transmission between systems with different endianness.
+ *
  * @param n - The 16-bit unsigned integer to convert.
- * @returns The value of {@link n} with its bytes swapped to network byte order.
+ * @returns The input value with its bytes swapped to network byte order.
  */
 export function htons(n: number): number {
     return ((n & 0xff) << 8) | ((n >> 8) & 0xff);
@@ -15,7 +17,7 @@ export function htons(n: number): number {
  * Converts a 32-bit integer from host byte order to network byte order (big-endian).
  *
  * @param n - The 32-bit integer to convert.
- * @returns The 32-bit integer in network (big-endian) byte order.
+ * @returns The integer with its bytes rearranged to big-endian order.
  */
 export function htonl(n: number): number {
     return (
@@ -26,19 +28,19 @@ export function htonl(n: number): number {
     );
 }
 /**
- * Converts a 16-bit number from network byte order to host byte order.
+ * Converts a 16-bit unsigned integer from network byte order (big-endian) to host byte order.
  *
- * @param n - The 16-bit number in network byte order.
- * @returns The number converted to host byte order.
+ * @param n - The 16-bit integer in network byte order.
+ * @returns The integer in host byte order.
  */
 export function ntohs(n: number): number {
     return htons(n);
 }
 /**
- * Converts a 32-bit integer from network byte order to host byte order.
+ * Converts a 32-bit integer from network byte order (big-endian) to host byte order.
  *
  * @param n - The 32-bit integer in network byte order.
- * @returns The integer in host byte order.
+ * @returns The integer converted to host byte order.
  */
 export function ntohl(n: number): number {
     return htonl(n);
@@ -47,20 +49,24 @@ export function ntohl(n: number): number {
 /**
  * Rounds a number up to the nearest multiple of the specified alignment.
  *
- * @param n - The number to align.
- * @param alignment - The alignment boundary.
+ * @param n - The value to be aligned.
+ * @param alignment - The alignment boundary; must be greater than 0.
  * @returns The smallest multiple of {@link alignment} greater than or equal to {@link n}.
+ *
+ * @throws {Error} If {@link alignment} is less than or equal to 0.
  */
 export function align(n: number, alignment: number): number {
     if (alignment <= 0) throw new Error('Alignment must be > 0');
     return Math.ceil(n / alignment) * alignment;
 }
 /**
- * Returns a new buffer padded with zeros so its length is a multiple of the specified alignment.
+ * Pads a buffer with zeros to ensure its length is a multiple of the specified alignment.
  *
- * @param buffer - The input buffer to pad.
- * @param alignment - The byte alignment boundary.
- * @returns A new buffer containing the original data followed by zero padding as needed.
+ * @param buffer - The buffer to pad.
+ * @param alignment - The alignment boundary to pad to.
+ * @returns A new Uint8Array with zero padding added if necessary.
+ *
+ * @remark If the buffer length is already aligned, the returned buffer is identical to the input.
  */
 export function addAlignementPadding(
     buffer: Uint8Array,
@@ -72,11 +78,11 @@ export function addAlignementPadding(
     return new Uint8Array([...buffer, ...padding]);
 }
 /**
- * Throws an error if the buffer's length is not a multiple of the specified alignment.
+ * Ensures that the buffer's length is a multiple of the specified alignment.
  *
- * @param buffer - The buffer to check.
- * @param alignment - The required alignment in bytes.
- * @throws {Error} If {@link buffer} length is not a multiple of {@link alignment}.
+ * @param buffer - The buffer to verify.
+ * @param alignment - The required byte alignment.
+ * @throws {Error} If the buffer length is not a multiple of the alignment.
  */
 export function verifyAlignment(buffer: Uint8Array, alignment: number) {
     if (buffer.length % alignment !== 0) {

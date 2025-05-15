@@ -8,10 +8,12 @@ import { getServerLogger } from 'rusty-motors-logger';
 const portRouters = new Map<number, PortRouter>();
 
 /**
- * Registers a router function for a specific port.
+ * Associates a router function with a TCP port number.
  *
- * @param port - The port number to associate with the router.
- * @param router - A function that handles the socket connection for the specified port.
+ * @param port - The TCP port number to register.
+ * @param router - The router function to handle socket connections for the specified port.
+ *
+ * @throws {Error} If {@link port} is not an integer between 0 and 65535.
  */
 
 export function addPortRouter(port: number, router: PortRouter) {
@@ -21,13 +23,11 @@ export function addPortRouter(port: number, router: PortRouter) {
     portRouters.set(port, router);
 }
 /**
- * Handles the case where no router is found for the given socket.
+ * Handles incoming socket connections for ports without a registered router.
  *
- * This function will terminate the socket connection and throw an error
- * indicating that no router was found for the port.
+ * Attaches an error listener to the socket, logs a warning, and terminates the connection.
  *
  * @param taggedSocket - The socket connection that could not be routed.
- * @throws {Error} Throws an error indicating no router was found for the port.
  */
 
 async function notFoundRouter({
@@ -43,11 +43,14 @@ async function notFoundRouter({
     );
 }
 /**
- * Retrieves the router function associated with a given port.
+ * Returns the router function registered for the specified TCP port, or a fallback if none exists.
  *
- * @param port - The port number for which to retrieve the router.
- * @returns A function that takes a socket and returns a promise resolving to void.
- *          If no router is found for the given port, returns the `notFoundRouter` function.
+ * If no router is registered for the given port, the {@link notFoundRouter} function is returned.
+ *
+ * @param port - TCP port number to look up.
+ * @returns The router function for the port, or {@link notFoundRouter} if not found.
+ *
+ * @throws {Error} If {@link port} is not an integer between 0 and 65535.
  */
 
 export function getPortRouter(port: number): PortRouter {
@@ -62,10 +65,7 @@ export function getPortRouter(port: number): PortRouter {
 }
 
 /**
- * Clears all entries from the portRouters map.
- *
- * This function removes all key-value pairs from the portRouters map,
- * effectively resetting it to an empty state.
+ * Removes all port-to-router associations, resetting the port router mapping to empty.
  */
 export function clearPortRouters() {
     portRouters.clear();

@@ -4,6 +4,11 @@ import type { UserStatus } from '../messageStructs/UserStatus.js';
 import type { GameSocketCallback } from './index.js';
 import { getServerLogger } from 'rusty-motors-logger';
 
+/**
+ * Handles the creation of a game profile from an incoming message and sends a response.
+ *
+ * Parses the incoming {@link message} as a {@link GameProfile}, logs the request and response, and sends a serialized response using the provided {@link socketCallback}.
+ */
 export async function processCreateProfile(
     _connectionId: string,
     _userStatus: UserStatus,

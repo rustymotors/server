@@ -12,6 +12,14 @@ import { getServerLogger } from 'rusty-motors-logger';
 
 const defaultLogger = getServerLogger('nps.processFirstBuddy');
 
+/**
+ * Handles a "GetFirstBuddy" game message by extracting the profile ID and sending a fixed response via the socket callback.
+ *
+ * @param message - The incoming game message containing the profile ID.
+ * @param socketCallback - Callback function to send the response message.
+ *
+ * @returns A promise that resolves when the response has been sent.
+ */
 export async function processFirstBuddy(
     _connectionId: string,
     _userStatus: UserStatus,

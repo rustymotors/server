@@ -7,6 +7,12 @@ import { getServerLogger } from 'rusty-motors-logger';
 
 const defaultLogger = getServerLogger('nps.processPing');
 
+/**
+ * Handles an incoming ping message by logging it and sending an acknowledgment response.
+ *
+ * @param message - The received ping {@link GameMessage}.
+ * @param socketCallback - Callback used to send the acknowledgment.
+ */
 export async function processPing(
     _connectionId: string,
     _userStatus: UserStatus,

@@ -2,6 +2,17 @@ import * as Sentry from '@sentry/node';
 import pino from 'pino';
 import { Logger } from './interfaces.js';
 
+/**
+ * Returns a singleton server logger instance with Pino and Sentry integration.
+ *
+ * If a logger already exists, returns a child logger with the specified {@link name} context. Otherwise, initializes a new logger with console and file transports, log level from the `MCO_LOG_LEVEL` environment variable (defaulting to "debug"), and error reporting to Sentry.
+ *
+ * @param name - Optional context name for the logger instance.
+ * @returns A logger implementing standard logging methods and Sentry error reporting.
+ *
+ * @remark
+ * The logger writes logs to both the console (pretty-printed) and `./logs/server.log`, overwriting the file on each start. Errors logged via the `error` method are also sent to Sentry.
+ */
 export function getServerLogger(name?: string): Logger {
     if (logger) {
         return logger.child({ name });

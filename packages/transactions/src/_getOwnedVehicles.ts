@@ -14,10 +14,23 @@ const vehicleList = [
     },
 ];
 
+/**
+ * Retrieves all vehicles owned by the specified person.
+ *
+ * @param personId - The unique identifier of the person whose vehicles are to be retrieved.
+ * @returns An array of vehicle records associated with the given {@link personId}.
+ */
 export function getVehiclesForPerson(personId: number) {
     return vehicleList.filter((vehicle) => vehicle.personId === personId);
 }
 
+/**
+ * Handles a request to retrieve all vehicles owned by a specific person and returns them in a response message.
+ *
+ * Processes the incoming packet to extract the person ID, gathers the associated vehicles, constructs an owned vehicles message, and returns it as a response packet.
+ *
+ * @returns An object containing the {@link connectionId} and an array with the response packet listing the owned vehicles.
+ */
 export async function _getOwnedVehicles({
     connectionId,
     packet,

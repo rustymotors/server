@@ -14,12 +14,25 @@ import { getServerLogger } from 'rusty-motors-logger';
 
 const defaultLogger = getServerLogger('nps.processGameLogin');
 
+/**
+ * Loads and returns the contents of a private key file as a UTF-8 string.
+ *
+ * @param path - The file system path to the private key file.
+ * @returns The private key as a UTF-8 encoded string.
+ */
 export function loadPrivateKey(path: string): string {
     const privateKey = fs.readFileSync(path);
 
     return privateKey.toString('utf8');
 }
 
+/**
+ * Decrypts an encrypted session key using the provided RSA private key.
+ *
+ * @param encryptedSessionKey - The session key as a hex-encoded string.
+ * @param privateKey - The RSA private key in PEM format.
+ * @returns The decrypted session key as a hex-encoded string.
+ */
 export function decryptSessionKey(
     encryptedSessionKey: string,
     privateKey: string,
@@ -32,6 +45,12 @@ export function decryptSessionKey(
     return sessionKeyStructure.toString('hex');
 }
 
+/**
+ * Extracts and decrypts the session key, game ID, and context token from a serialized user login message.
+ *
+ * @param message - The serialized user login message to unpack.
+ * @returns An object containing the decrypted session key, the game ID, and the context token.
+ */
 export function unpackUserLoginMessage(message: ISerializable): {
     sessionKey: string;
     gameId: string;
@@ -104,7 +123,13 @@ export function unpackUserLoginMessage(message: ISerializable): {
 }
 
 /**
- * This is the initial connection to the Login server
+ * Handles a game login request by validating the user, decrypting the session key, updating user status, and sending appropriate responses.
+ *
+ * Processes the initial login message, verifies the context token, and updates the user's status if authentication succeeds. Sends acknowledgment and user status messages to the client, or an error response if the user is not found.
+ *
+ * @param userStatus - The user status object to update upon successful login.
+ * @param message - The login message containing authentication data.
+ * @param socketCallback - Callback to send responses to the client.
  */
 export async function processGameLogin(
     _connectionId: string,

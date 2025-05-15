@@ -88,13 +88,13 @@ export const messageHandlers: {
 ];
 
 /**
- * Creates a fixed-size buffer containing the UTF-8 encoded bytes of a string.
+ * Returns a buffer of the specified size containing the UTF-8 encoded bytes of the given string, zero-padded if necessary.
  *
- * The resulting buffer will be exactly {@link size} bytes long, with the string's bytes at the start and any remaining space zero-filled.
+ * The string is encoded at the start of the buffer, and any unused bytes are filled with zeros to ensure the buffer is exactly {@link size} bytes long.
  *
- * @param name - The string to encode into the buffer.
- * @param size - The desired length of the output buffer.
- * @returns A buffer of length {@link size} containing the encoded string.
+ * @param name - The string to encode.
+ * @param size - The length of the resulting buffer.
+ * @returns A buffer containing the encoded string, padded with zeros if the string is shorter than {@link size}.
  */
 export function generateNameBuffer(name: string, size: number): Buffer {
     const nameBuffer = Buffer.alloc(size);
@@ -132,10 +132,10 @@ export const personaRecords: Pick<
 ];
 
 /**
- * Retrieves all persona records associated with the specified customer ID.
+ * Returns all persona records matching the given customer ID.
  *
- * @param customerId - The unique identifier of the customer whose personas are to be retrieved.
- * @returns A promise that resolves to an array of persona records for the given customer.
+ * @param customerId - The customer ID to filter persona records by.
+ * @returns A promise resolving to an array of persona records for the specified customer.
  */
 async function getPersonasByCustomerId(
     customerId: number,
@@ -152,14 +152,12 @@ async function getPersonasByCustomerId(
 }
 
 /**
- * Retrieves all persona records associated with the specified customer ID.
+ * Retrieves persona records for the specified customer ID, if supported.
  *
- * Returns an array of persona records for the given {@link customerId}, or an empty array if none are found.
+ * @param customerId - The customer ID to look up.
+ * @returns A promise resolving to an array of persona records for the customer, or an empty array if unsupported.
  *
- * @param customerId - The unique identifier of the customer whose personas are to be retrieved.
- * @returns A promise resolving to an array of persona records for the customer.
- *
- * @remark Only customer ID 5551212 is currently supported; all other IDs return an empty array.
+ * @remark Only customer ID 5551212 is supported; all other IDs return an empty array.
  */
 async function getPersonaMapsByCustomerId(
     customerId: number,
@@ -178,15 +176,15 @@ async function getPersonaMapsByCustomerId(
 }
 
 /**
- * Processes a "Get persona maps" request and returns serialized persona data for a given customer.
+ * Handles a "Get persona maps" request by retrieving and serializing persona records for a specified customer.
  *
- * Extracts the customer ID from the incoming message, retrieves associated persona records, serializes them into a response message, and returns the result for network transmission.
+ * Extracts the customer ID from the incoming message, fetches associated persona records, serializes them into a legacy response format, and returns the result for network transmission.
  *
- * @param connectionId - The identifier for the client connection.
+ * @param connectionId - Unique identifier for the client connection.
  * @param message - The incoming legacy message containing the request data.
- * @returns An object containing the connection ID and an array with the serialized persona maps message.
+ * @returns An object with the connection ID and an array containing the serialized persona maps message.
  *
- * @throws {Error} If serialization of the persona maps message fails.
+ * @throws {Error} If persona maps message serialization fails.
  */
 async function getPersonaMaps({
     connectionId,
@@ -273,10 +271,10 @@ async function getPersonaMaps({
 }
 
 /**
- * Returns a formatted string representation of a persona record.
+ * Formats a persona record as a string with key fields.
  *
- * @param persona - Partial persona record to format.
- * @returns A string displaying the {@link persona}'s customerId, personaId, personaName, and shardId.
+ * @param persona - The persona record to format.
+ * @returns A string containing the {@link persona}'s customerId, personaId, personaName, and shardId.
  */
 export function personaToString(persona: Partial<PersonaRecord>): string {
     return ''.concat(

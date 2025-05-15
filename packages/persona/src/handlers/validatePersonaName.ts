@@ -6,7 +6,15 @@ import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 const defaultLogger = getServerLogger('PersonaServer');
 
 /**
- * Check if a new persona name is valid
+ * Constructs a response indicating whether a requested persona name is valid.
+ *
+ * Always responds with a duplicate user code, regardless of input.
+ *
+ * @param connectionId - The identifier for the client connection.
+ * @param message - The incoming legacy message containing the persona name request.
+ * @returns An object containing the {@link connectionId} and an array with a single serialized response message.
+ *
+ * @remark This function currently does not perform actual validation and always returns a duplicate user response.
  */
 
 export async function validatePersonaName({

@@ -7,6 +7,11 @@ import { getServerLogger } from 'rusty-motors-logger';
 
 const defaultLogger = getServerLogger('nps.processCheckPlateText');
 
+/**
+ * Processes a game message to extract and acknowledge a requested plate text.
+ *
+ * Extracts the plate type and requested plate text from the message data, logs the information, and sends an acknowledgment via the provided callback.
+ */
 export async function processCheckPlateText(
     _connectionId: string,
     _userStatus: UserStatus,

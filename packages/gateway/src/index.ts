@@ -22,12 +22,12 @@ import * as Sentry from '@sentry/node';
 import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 
 /**
- * Handle incoming TCP connections
+ * Handles an incoming TCP socket connection by tagging it with a unique ID and routing it based on the local port.
  *
- * @param {object} options
- * @param {Socket} options.incomingSocket The incoming socket
- * @param {Logger} [options.log=getServerLogger({ name: "onDataHandler" })] The logger to use
+ * @param incomingSocket - The TCP socket representing the incoming connection.
+ * @param log - Optional logger instance for error reporting.
  *
+ * @throws {Error} If the socket's local port or remote address is undefined.
  */
 export function onSocketConnection({
     incomingSocket,

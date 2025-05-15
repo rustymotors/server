@@ -45,8 +45,11 @@ class PurchaseStockCarMessage extends ServerPacket {
 }
 
 /**
- * @param {MessageHandlerArgs} args
- * @return {Promise<MessageHandlerResult>}
+ * Processes a car purchase request from a dealer and returns a reply message.
+ *
+ * Deserializes the incoming purchase request, logs the details, and constructs a generic reply indicating success with a new car ID.
+ *
+ * @returns An object containing the connection ID and an array with the response packet.
  */
 export async function _buyCarFromDealer({
     connectionId,

@@ -10,12 +10,25 @@ import { getServerLogger } from 'rusty-motors-logger';
 
 const defaultLogger = getServerLogger('nps.processDeleteProfile');
 
+/**
+ * Loads a private key file from the specified path and returns its contents as a UTF-8 string.
+ *
+ * @param path - Filesystem path to the private key file.
+ * @returns The private key as a UTF-8 encoded string.
+ */
 export function loadPrivateKey(path: string): string {
     const privateKey = fs.readFileSync(path);
 
     return privateKey.toString('utf8');
 }
 
+/**
+ * Decrypts an encrypted session key using the provided private key.
+ *
+ * @param encryptedSessionKey - The session key as a hex-encoded string.
+ * @param privateKey - The PEM-formatted private key used for decryption.
+ * @returns The decrypted session key as a hex-encoded string.
+ */
 export function decryptSessionKey(
     encryptedSessionKey: string,
     privateKey: string,
@@ -28,6 +41,14 @@ export function decryptSessionKey(
     return sessionKeyStructure.toString('hex');
 }
 
+/**
+ * Extracts and decrypts the session key, game ID, and context token from a user login message.
+ *
+ * @param message - The {@link GameMessage} containing the login data.
+ * @returns An object with the decrypted session key, game ID, and context token.
+ *
+ * @remark The private key is loaded from a fixed path ('./data/private_key.pem') to decrypt the session key.
+ */
 export function unpackUserLoginMessage(message: GameMessage): {
     sessionKey: string;
     gameId: string;
@@ -86,6 +107,15 @@ export function unpackUserLoginMessage(message: GameMessage): {
     };
 }
 
+/**
+ * Handles a user profile deletion request and sends a login acknowledgment response.
+ *
+ * @param message - The incoming game message representing the delete profile request.
+ * @param socketCallback - Callback used to send the acknowledgment message back to the client.
+ *
+ * @remark
+ * The actual profile deletion logic is not implemented; only an acknowledgment is sent.
+ */
 export async function processDeleteProfile(
     _connectionId: string,
     _userStatus: UserStatus,

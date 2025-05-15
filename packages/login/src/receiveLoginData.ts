@@ -20,18 +20,17 @@ import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 import { BytableMessage } from '@rustymotors/binary';
 
 /**
- * Processes incoming login data for a connection and returns the resulting service response.
+ * Handles incoming login data for a connection and returns a service response with messages converted for legacy serialization compatibility.
  *
- * Awaits handling of the login data, logs entry and exit, and converts the response messages to the required serialization format before returning.
+ * Awaits processing of the login data, logs entry and exit, and transforms response messages to {@link BufferSerializer} format before returning.
  *
  * @param connectionId - Unique identifier for the connection.
  * @param message - Serialized login data message.
- * @param log - Optional logger instance.
- * @returns A promise resolving to the processed service response with messages converted to {@link BufferSerializer} format.
+ * @returns A promise resolving to the processed service response with messages in {@link BufferSerializer} format.
  *
  * @throws {Error} If an error occurs during login data processing, including the connection ID in the error message.
  *
- * @remark The conversion of response messages is a temporary workaround for legacy serialization compatibility.
+ * @remark Response message conversion is a temporary workaround for compatibility with an older serialization format.
  */
 export async function receiveLoginData({
     connectionId,
@@ -70,14 +69,14 @@ export async function receiveLoginData({
 }
 
 /**
- * Converts an array of {@link GamePacket} objects into an array of {@link BufferSerializer} instances.
+ * Converts an array of {@link GamePacket} objects to an array of {@link BufferSerializer} instances.
  *
- * Each packet is serialized and then deserialized into a new {@link BufferSerializer}.
+ * For each packet, serializes it and deserializes the result into a new {@link BufferSerializer}.
  *
- * @param packets - The array of game packets to convert.
- * @returns An array of {@link BufferSerializer} objects representing the serialized packets.
+ * @param packets - The game packets to convert.
+ * @returns An array of {@link BufferSerializer} instances containing the serialized packet data.
  *
- * @remark This conversion is a temporary workaround for compatibility with an older serialization format.
+ * @remark This function is a temporary workaround to maintain compatibility with an older serialization format.
  */
 function GamePacketArrayToBufferSerializerArray(
     packets: GamePacket[],

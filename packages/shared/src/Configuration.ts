@@ -109,6 +109,18 @@ export class Configuration {
     }
 }
 
+/**
+ * Retrieves the value of an environment variable, optionally enforcing its presence.
+ *
+ * If the variable is required and not set, logs a fatal error and terminates the process.
+ *
+ * @param name - The name of the environment variable to retrieve.
+ * @param required - Whether the environment variable must be present.
+ * @param defaultValue - The value to return if the variable is not set and not required.
+ * @returns The value of the environment variable, the {@link defaultValue} if provided, or an empty string.
+ *
+ * @remark If {@link required} is true and the variable is missing, the process will exit with code 1.
+ */
 function getEnvVariable(
     name: string,
     required: boolean,
@@ -123,6 +135,13 @@ function getEnvVariable(
     return value || defaultValue || '';
 }
 
+/**
+ * Retrieves server configuration parameters from environment variables.
+ *
+ * @returns An object containing server configuration values for host, certificate, keys, and log level.
+ *
+ * @remark If any required environment variable is missing, the process will terminate with an error.
+ */
 export function getServerConfiguration(): Configuration {
     return {
         host: getEnvVariable('EXTERNAL_HOST', false, ''),

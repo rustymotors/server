@@ -7,8 +7,11 @@ import { getServerLogger } from 'rusty-motors-logger';
 const defaultLogger = getServerLogger('handlers/_getArcadeCarInfo');
 
 /**
- * @param {MessageHandlerArgs} args
- * @return {Promise<MessageHandlerResult>}
+ * Handles an incoming arcade car info request and returns a response with predefined car information.
+ *
+ * Deserializes the incoming request, logs it, constructs a response message containing a single car (Bel-air, lobby 0), and returns it in the expected server message format.
+ *
+ * @returns An object containing the original {@link connectionId} and an array with the response message.
  */
 export async function _getArcadeCarInfo({
     connectionId,

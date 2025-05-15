@@ -17,6 +17,18 @@ import { getServerLogger } from 'rusty-motors-logger';
 
 const defaultLogger = getServerLogger('nps.processEncryptedGameCommand');
 
+/**
+ * Handles an incoming encrypted game message by decrypting it, processing the command, encrypting the response, and sending it back over the network.
+ *
+ * Establishes or retrieves an encryption session for the connection, decrypts the incoming message, dispatches it to the appropriate command processor, and returns the encrypted response via the provided callback.
+ *
+ * @param connectionId - Unique identifier for the network connection.
+ * @param userStatus - User status object containing customer and session information.
+ * @param message - The encrypted game message to process.
+ * @param socketCallback - Callback function to send the encrypted response.
+ *
+ * @throws {Error} If an encryption session cannot be created or if no processor exists for the decrypted message ID.
+ */
 export async function processEncryptedGameCommand(
     connectionId: string,
     userStatus: UserStatus,

@@ -5,15 +5,13 @@ import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 const defaultLogger = getServerLogger('PersonaServer');
 
 /**
- * Selects a game persona and marks it as in use
- * @param {object} args
- * @param {string} args.connectionId
- * @param {LegacyMessage} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ name: "LoginServer" })]
- * @returns {Promise<{
- *  connectionId: string,
- * messages: SerializedBufferOld[],
- * }>}
+ * Handles the selection of a game persona and prepares a response indicating the persona is in use.
+ *
+ * Constructs a fixed-size response packet with a success code and returns it as a serialized message for the specified connection.
+ *
+ * @param connectionId - The identifier for the client connection.
+ * @param message - The incoming {@link LegacyMessage} request.
+ * @returns An object containing the {@link connectionId} and an array with the serialized response message.
  */
 
 export async function _selectGamePersona({
