@@ -23,9 +23,8 @@ describe('BytableServerHeader', () => {
         expect(header.serializeSize).toBe(11);
     });
 
-    it('should be able to set name', () => {
-        header.setName('NewHeader');
-        expect(header.name).toBe('NewHeader');
+    it('should throw on setName', () => {
+        expect(() => header.setName('foo')).toThrow('Method not implemented.');
     });
 
     it('should throw on get value', () => {
@@ -38,8 +37,8 @@ describe('BytableServerHeader', () => {
 
     it('should return correct json', () => {
         header.setMessageLength(42);
-        header.setSequence(1234);
-        header.setFlags(7);
+        header.sequence = 1234;
+        header.flags = 7;
         const json = header.json;
         expect(json).toEqual({
             name: 'ServerHeader',
@@ -53,8 +52,8 @@ describe('BytableServerHeader', () => {
 
     it('should return correct toString', () => {
         header.setMessageLength(10);
-        header.setSequence(99);
-        header.setFlags(1);
+        header.sequence = 99;
+        header.flags = 1;
         expect(header.toString()).toBe(
             'Message Length: 10, Message Signature: TOMC, Message Sequence: 99, Message Flags: 1',
         );
@@ -66,19 +65,19 @@ describe('BytableServerHeader', () => {
     });
 
     it('should set and get sequence', () => {
-        header.setSequence(555);
+        header.sequence = 555;
         expect(header.sequence).toBe(555);
     });
 
     it('should set and get flags', () => {
-        header.setFlags(3);
+        header.flags = 3;
         expect(header.flags).toBe(3);
     });
 
     it('should serialize to buffer correctly', () => {
         header.setMessageLength(0x1234);
-        header.setSequence(0x87654321);
-        header.setFlags(0xab);
+        header.sequence = 0x87654321;
+        header.flags = 0xab;
         const buf = header.serialize();
         expect(buf).toBeInstanceOf(Buffer);
         expect(buf.length).toBe(11);
