@@ -38,8 +38,8 @@
         "@mikro-orm/postgresql": "^6.4.15",
         "@mikro-orm/reflection": "^6.4.15",
         "@rustymotors/binary": "workspace:^",
-        "@sentry/node": "^9.18.0",
-        "@sentry/profiling-node": "9.18.0",
+        "@sentry/node": "^9.19.0",
+        "@sentry/profiling-node": "9.19.0",
         "adminjs": "^7.8.15",
         "bcrypt": "^6.0.0",
         "debug": "^4.4.1",
@@ -83,7 +83,7 @@
         "@tsconfig/node20": "^20.1.5",
         "@types/bcrypt": "^5.0.2",
         "@types/chai": "5.2.2",
-        "@types/node": "^22.15.17",
+        "@types/node": "^22.15.18",
         "@types/sinon": "17.0.4",
         "@types/sinon-chai": "4.0.0",
         "@typescript-eslint/eslint-plugin": "^8.32.1",
@@ -133,13 +133,12 @@
     },
     "packageManager": "pnpm@10.11.0+sha512.6540583f41cc5f628eb3d9773ecee802f4f9ef9923cc45b69890fb47991d4b092964694ec3a4f738a420c918a333062c8b925d312f42e4f0c263eb603551f977",
     "pnpm": {
-        "overrides": {
-            "tinymce": "^7.8.0"
-        },
         "onlyBuiltDependencies": [
             "@sentry-internal/node-cpu-profiler",
             "@sentry/cli",
+            "@swc/core",
             "bcrypt",
+            "esbuild",
             "nx"
         ]
     }
