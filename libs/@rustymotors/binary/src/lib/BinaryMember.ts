@@ -52,7 +52,8 @@ export function ntohl(n: number): number {
  * @returns The smallest multiple of {@link alignment} greater than or equal to {@link n}.
  */
 export function align(n: number, alignment: number): number {
-    return (n + alignment - 1) & ~(alignment - 1);
+    if (alignment <= 0) throw new Error('Alignment must be > 0');
+    return Math.ceil(n / alignment) * alignment;
 }
 /**
  * Returns a new buffer padded with zeros so its length is a multiple of the specified alignment.
