@@ -16,6 +16,7 @@ export class BytableData extends BytableBase implements BytableObject {
 
     override deserialize(buffer: Buffer) {
         try {
+            this.fields_ = []; // Clear fields before deserialization
             let offset = 0;
             for (const field of this.serializeOrder_) {
                 if (!(field.field in BytableFieldTypes)) {
@@ -79,6 +80,14 @@ export class BytableData extends BytableBase implements BytableObject {
         }>,
     ) {
         this.serializeOrder_ = serializeOrder;
+        this.fields_ = serializeOrder.map(({ name, field }) => {
+            if (!(field in BytableFieldTypes)) {
+                throw new Error(`Unknown field type: ${field}`);
+            }
+            const fieldInstance = new BytableFieldTypes[field]();
+            fieldInstance.setName(name);
+            return fieldInstance;
+        });
     }
 
     getFieldValueByName(name: string) {
