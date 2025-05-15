@@ -97,15 +97,15 @@ export class BinaryMember implements SerializableInterface {
         this.shouldPad = shouldPad;
     }
     set(v: Uint8Array) {
-        if (v.length > this.maxSize) {
+        const raw = this.shouldPad
+            ? addAlignementPadding(v, BINARY_ALIGNMENT)
+            : v;
+        if (raw.length > this.maxSize) {
             throw new Error(`Value exceeds maximum size of ${this.maxSize}`);
         }
-        if (this.shouldPad) {
-            this.value = addAlignementPadding(v, BINARY_ALIGNMENT);
-        } else {
-            this.value = v;
-        }
+        this.value = raw;
     }
+
     get() {
         return this.value;
     }

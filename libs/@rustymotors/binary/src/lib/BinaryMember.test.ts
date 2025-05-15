@@ -70,4 +70,41 @@ describe('BinaryMember', () => {
         binaryMember.set(value);
         expect(binaryMember.toString()).toBe('1,2,3,4');
     });
+
+    it('should set value without padding when shouldPad is false', () => {
+        const binaryMember = new BinaryMember(4, false);
+        const value = new Uint8Array([10, 20, 30, 40]);
+        binaryMember.set(value);
+        expect(binaryMember.get()).toEqual(value);
+    });
+
+    it('should set value with padding when shouldPad is true and value length is not aligned', () => {
+        const binaryMember = new BinaryMember(4, true);
+        const value = new Uint8Array([1, 2]);
+        binaryMember.set(value);
+        // BINARY_ALIGNMENT is 4, so expect 2 bytes of padding
+        expect(binaryMember.get()).toEqual(new Uint8Array([1, 2, 0, 0]));
+    });
+
+    it('should set value with no padding when shouldPad is true and value length is already aligned', () => {
+        const binaryMember = new BinaryMember(4, true);
+        const value = new Uint8Array([1, 2, 3, 4]);
+        binaryMember.set(value);
+        expect(binaryMember.get()).toEqual(value);
+    });
+
+    it('should throw if value length exceeds maxSize', () => {
+        const binaryMember = new BinaryMember(3, true);
+        const value = new Uint8Array([1, 2, 3, 4]);
+        expect(() => binaryMember.set(value)).toThrowError(
+            'Value exceeds maximum size of 3',
+        );
+    });
+
+    it('should allow setting an empty Uint8Array', () => {
+        const binaryMember = new BinaryMember(4, true);
+        const value = new Uint8Array([]);
+        binaryMember.set(value);
+        expect(binaryMember.get()).toEqual(new Uint8Array([0, 0, 0, 0]));
+    });
 });
