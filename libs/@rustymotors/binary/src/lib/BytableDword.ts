@@ -1,6 +1,7 @@
-import { Bytable } from './Bytable';
+import { Bytable } from './Bytable.js';
+import { BytableObject } from './types.js';
 
-export class BytableDword extends Bytable {
+export class BytableDword extends Bytable implements BytableObject {
     private static validateBufferLength(
         buffer: Buffer,
         minLength: number,

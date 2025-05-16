@@ -115,7 +115,7 @@ class MockHeader {
 }
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { BytableServerMessage } from './BytableServerMessage';
+import { BytableServerMessage } from './BytableServerMessage.js';
 
 describe('BytableServerMessage', () => {
     let msg: BytableServerMessage;

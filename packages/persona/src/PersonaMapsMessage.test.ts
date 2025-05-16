@@ -4,7 +4,7 @@ import {
     PersonaList,
     PersonaRecord,
     serializeString,
-} from './PersonaMapsMessage';
+} from './PersonaMapsMessage.js';
 import { BytableHeader } from '@rustymotors/binary';
 
 describe('PersonaMapsMessage', () => {

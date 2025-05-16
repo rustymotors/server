@@ -1,6 +1,6 @@
 import { SerializedBufferOld, LegacyMessage } from 'rusty-motors-shared';
 import type { BufferSerializer } from 'rusty-motors-shared-packets';
-import { messageHandlers } from './internal';
+import { messageHandlers } from './internal.js';
 import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 
 /**
