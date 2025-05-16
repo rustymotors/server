@@ -1,7 +1,5 @@
-import type { ConnectionRecord } from "rusty-motors-shared";
-import { Sequelize } from "sequelize";
-
-
+import type { ConnectionRecord } from 'rusty-motors-shared';
+import { Sequelize } from 'sequelize';
 
 // This is a fake database table that holds sessions of currently logged in users
 const _sessions: ConnectionRecord[] = [];
@@ -18,32 +16,34 @@ const _users: Map<number, Buffer> = new Map();
 * @throws {Error} If the user record is not found
  */
 async function updateUser(user: {
-	userId: number;
-	userData: Buffer;
+    userId: number;
+    userData: Buffer;
 }): Promise<void> {
-	try {
-		_users.set(user.userId, user.userData);
-		return Promise.resolve();
-	} catch (error) {
-		throw Error(`Error updating user: ${String(error)}`);
-	}
+    try {
+        _users.set(user.userId, user.userData);
+        return Promise.resolve();
+    } catch (error) {
+        throw Error(`Error updating user: ${String(error)}`);
+    }
 }
 
 /**
  * Locate customer session encryption key in the database
  *
+ * @param {number} customerId
+ * @returns {Promise<ConnectionRecord>}
  * @throws {Error} If the session key is not found
  */
 async function fetchSessionKeyByCustomerId(
-	customerId: number,
+    customerId: number,
 ): Promise<ConnectionRecord> {
-	const record = _sessions.find((session) => {
-		return session.customerId === customerId;
-	});
-	if (typeof record === "undefined") {
-		throw Error(`Session key not found for customer ${customerId}`);
-	}
-	return Promise.resolve(record);
+    const record = _sessions.find((session) => {
+        return session.customerId === customerId;
+    });
+    if (typeof record === 'undefined') {
+        throw Error(`Session key not found for customer ${customerId}`);
+    }
+    return Promise.resolve(record);
 }
 
 /**
@@ -56,28 +56,28 @@ async function fetchSessionKeyByCustomerId(
  * @returns {Promise<void>}
  */
 async function updateSessionKey(
-	customerId: number,
-	sessionKey: string,
-	contextId: string,
-	connectionId: string,
+    customerId: number,
+    sessionKey: string,
+    contextId: string,
+    connectionId: string,
 ): Promise<void> {
-	const sKey = sessionKey.slice(0, 16);
+    const sKey = sessionKey.slice(0, 16);
 
-	const updatedSession: ConnectionRecord = {
-		customerId,
-		sessionKey,
-		sKey,
-		contextId,
-		connectionId,
-	};
+    const updatedSession: ConnectionRecord = {
+        customerId,
+        sessionKey,
+        sKey,
+        contextId,
+        connectionId,
+    };
 
-	const record = _sessions.findIndex((session) => {
-		return session.customerId === customerId;
-	});
+    const record = _sessions.findIndex((session) => {
+        return session.customerId === customerId;
+    });
 
-	_sessions.splice(record, 1, updatedSession);
+    _sessions.splice(record, 1, updatedSession);
 
-	return Promise.resolve();
+    return Promise.resolve();
 }
 
 /**
@@ -88,44 +88,43 @@ async function updateSessionKey(
  * @throws {Error} If the session key is not found
  */
 async function fetchSessionKeyByConnectionId(
-	connectionId: string,
+    connectionId: string,
 ): Promise<ConnectionRecord> {
-	const record = _sessions.find((session) => {
-		return session.connectionId === connectionId;
-	});
-	if (typeof record === "undefined") {
-		throw Error(`Session key not found for connection ${connectionId}`);
-	}
-	return Promise.resolve(record);
+    const record = _sessions.find((session) => {
+        return session.connectionId === connectionId;
+    });
+    if (typeof record === 'undefined') {
+        throw Error(`Session key not found for connection ${connectionId}`);
+    }
+    return Promise.resolve(record);
 }
 
 let database: Sequelize;
 
-
 export function getDatabase(): Sequelize {
-	if (!database) {
-		const databaseUrl = process.env["DATABASE_URL"];
-		if ( typeof databaseUrl === "undefined" ) {
-			throw new Error("DATABASE_URL is not defined");
-		}
+    if (!database) {
+        const databaseUrl = process.env['DATABASE_URL'];
+        if (typeof databaseUrl === 'undefined') {
+            throw new Error('DATABASE_URL is not defined');
+        }
 
-		database = new Sequelize(databaseUrl, {
-			logging: false,
-		});
-	}
-	return database;
+        database = new Sequelize(databaseUrl, {
+            logging: false,
+        });
+    }
+    return database;
 }
 
 export interface DatabaseManager {
-	updateUser: typeof updateUser;
-	fetchSessionKeyByCustomerId: typeof fetchSessionKeyByCustomerId;
-	updateSessionKey: typeof updateSessionKey;
-	fetchSessionKeyByConnectionId: typeof fetchSessionKeyByConnectionId;
+    updateUser: typeof updateUser;
+    fetchSessionKeyByCustomerId: typeof fetchSessionKeyByCustomerId;
+    updateSessionKey: typeof updateSessionKey;
+    fetchSessionKeyByConnectionId: typeof fetchSessionKeyByConnectionId;
 }
 
 export const databaseManager: DatabaseManager = {
-	updateUser,
-	fetchSessionKeyByCustomerId,
-	updateSessionKey,
-	fetchSessionKeyByConnectionId,
+    updateUser,
+    fetchSessionKeyByCustomerId,
+    updateSessionKey,
+    fetchSessionKeyByConnectionId,
 };
