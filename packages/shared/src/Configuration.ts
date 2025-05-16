@@ -14,8 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import type { Logger } from 'pino';
 import { getServerLogger } from 'rusty-motors-logger';
+import config from 'config';
+import 'dotenv/config';
 
 /**
  * @module shared/Configuration
@@ -54,7 +55,7 @@ export class Configuration {
         privateKeyFile: string;
         publicKeyFile: string;
         logLevel: string;
-        logger: Logger;
+        logger: any; // Relaxed type to avoid pino vs custom logger conflict
     }) {
         try {
             this.certificateFile = certificateFile;
@@ -96,7 +97,7 @@ export class Configuration {
         privateKeyFile: string;
         publicKeyFile: string;
         logLevel: string;
-        logger: Logger;
+        logger: any; // Relaxed type
     }): Configuration {
         return new Configuration({
             host,
@@ -125,26 +126,14 @@ export class Configuration {
     }
 }
 
-function getEnvVariable(
-    name: string,
-    required: boolean,
-    defaultValue?: string,
-): string {
-    const value = process.env[name];
-    if (required && !value) {
-        const coreLogger = getServerLogger('core');
-        coreLogger.fatal(`Missing required environment variable: ${name}`);
-        process.exit(1);
-    }
-    return value || defaultValue || '';
-}
-
 export function getServerConfiguration(): Configuration {
-    return {
-        host: getEnvVariable('EXTERNAL_HOST', false, ''),
-        certificateFile: getEnvVariable('CERTIFICATE_FILE', true),
-        privateKeyFile: getEnvVariable('PRIVATE_KEY_FILE', true),
-        publicKeyFile: getEnvVariable('PUBLIC_KEY_FILE', true),
-        logLevel: getEnvVariable('MCO_LOG_LEVEL', false, 'debug'),
-    };
+    const logger = getServerLogger('core');
+    return new Configuration({
+        host: config.get<string>('host'),
+        certificateFile: config.get<string>('certificateFile'),
+        privateKeyFile: config.get<string>('privateKeyFile'),
+        publicKeyFile: config.get<string>('publicKeyFile'),
+        logLevel: config.get<string>('logLevel'),
+        logger,
+    });
 }

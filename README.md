@@ -19,6 +19,7 @@ There's a brief explanation of the thought process here [link](https://github.co
 ## Server Setup
 
 - See [server docs](./docs/server.md)
+- See [configuration docs](./config/README.md)
 
 ## Client Setup
 
