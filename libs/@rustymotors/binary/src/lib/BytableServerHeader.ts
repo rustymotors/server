@@ -17,6 +17,20 @@
 import { BytableBase } from './BytableBase.js';
 import { BytableObject } from './types.js';
 
+/**
+ * Represents a server message header that can be serialized and deserialized to and from a binary format.
+ *
+ * The header contains the following fields (all in Little Endian):
+ * - `messageLength_` (2 bytes): The length of the message.
+ * - `messageSignature_` (4 bytes): A fixed signature string, defaulting to 'TOMC'.
+ * - `messageSequence_` (4 bytes): The sequence number of the message.
+ * - `messageFlags_` (1 byte): A bitfield representing message flags.
+ *
+ * Provides methods for serialization, deserialization, and JSON representation.
+ *
+ * @extends BytableBase
+ * @implements BytableObject
+ */
 export class BytableServerHeader extends BytableBase implements BytableObject {
     // All fields are in Little Endian
     protected messageLength_ = 0; // 2 bytes
