@@ -133,14 +133,21 @@ class MockHeader {
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { BytableServerMessage } from './BytableServerMessage.js';
 
+const setupMsg = (
+    serializeOrder = [{ name: 'foo', field: 'Buffer' as any }],
+    headerClass: any = MockHeader,
+) => {
+    const msg = new BytableServerMessage();
+    // @ts-ignore
+    msg.header_ = new headerClass();
+    msg.setSerializeOrder(serializeOrder);
+    return msg;
+};
+
 describe('BytableServerMessage', () => {
     let msg: BytableServerMessage;
-
     beforeEach(() => {
-        msg = new BytableServerMessage();
-        // Patch header_ and fields_ for easier testing
-        // @ts-ignore
-        msg.header_ = new MockHeader();
+        msg = setupMsg();
         // @ts-ignore
         msg.fields_ = [];
         // @ts-ignore
@@ -203,11 +210,7 @@ describe('BytableServerMessage', () => {
         msg.setFieldValueByName('foo', 42);
         const buf = msg.serialize();
         expect(Buffer.isBuffer(buf)).toBe(true);
-
-        const msg2 = new BytableServerMessage();
-        // @ts-ignore
-        msg2.header_ = new MockHeader();
-        msg2.setSerializeOrder([{ name: 'foo', field: 'Buffer' }]);
+        const msg2 = setupMsg();
         msg2.deserialize(buf);
         expect(msg2.getFieldValueByName('foo')).toBeDefined();
     });
@@ -239,11 +242,7 @@ describe('BytableServerMessage', () => {
         msg.setFieldValueByName('foo', 1);
         const body = msg.getBody();
         expect(Buffer.isBuffer(body)).toBe(true);
-
-        const msg2 = new BytableServerMessage();
-        // @ts-ignore
-        msg2.header_ = new MockHeader();
-        msg2.setSerializeOrder([{ name: 'foo', field: 'Buffer' }]);
+        const msg2 = setupMsg();
         msg2.setBody(body);
         expect(msg2.getFieldValueByName('foo')).toBeDefined();
     });
@@ -253,11 +252,7 @@ describe('BytableServerMessage', () => {
         msg.setFieldValueByName('foo', 1);
         const data = msg.data;
         expect(Buffer.isBuffer(data)).toBe(true);
-
-        const msg2 = new BytableServerMessage();
-        // @ts-ignore
-        msg2.header_ = new MockHeader();
-        msg2.setSerializeOrder([{ name: 'foo', field: 'Buffer' }]);
+        const msg2 = setupMsg();
         msg2.data = data;
         expect(msg2.getFieldValueByName('foo')).toBeDefined();
     });
@@ -279,15 +274,13 @@ describe('BytableServerMessage', () => {
     });
 
     it('should throw on error in deserialize', () => {
-        // Patch header to throw
         class BadHeader extends MockHeader {
             override deserialize() {
                 throw new Error('bad header');
             }
         }
-        // @ts-ignore
-        msg.header_ = new BadHeader();
-        expect(() => msg.deserialize(Buffer.alloc(10))).toThrow(
+        const badMsg = setupMsg([{ name: 'foo', field: 'Buffer' }], BadHeader);
+        expect(() => badMsg.deserialize(Buffer.alloc(10))).toThrow(
             /Error deserializing message/,
         );
     });

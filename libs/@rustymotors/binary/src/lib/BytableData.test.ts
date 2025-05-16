@@ -102,86 +102,62 @@ class MockCStringField implements BytableObject {
 // Register MockCStringField for tests
 (BytableFieldTypes as any)['MockCStringField'] = MockCStringField;
 
+const setupBytableData = (
+    fields: { name: string; field: any }[],
+    values: Record<string, string>,
+) => {
+    const bytableData = new BytableData();
+    bytableData.setSerializeOrder(fields);
+    for (const [name, value] of Object.entries(values)) {
+        bytableData.setFieldValueByName(name, value);
+    }
+    return bytableData;
+};
+
 describe('BytableData', () => {
     let bytableData: BytableData;
-
     beforeEach(() => {
         bytableData = new BytableData();
     });
 
-    it('should serialize and deserialize correctly', () => {
-        bytableData.setSerializeOrder([
+    it('should serialize and deserialize correctly (MockField)', () => {
+        const fields = [
             { name: 'field1', field: 'MockField' as any },
             { name: 'field2', field: 'MockField' as any },
-        ]);
-
-        bytableData.setFieldValueByName('field1', 'test1');
-        bytableData.setFieldValueByName('field2', 'test2');
-
-        const serialized = bytableData.serialize();
+        ];
+        const values = { field1: 'test1', field2: 'test2' };
+        const data = setupBytableData(fields, values);
+        const serialized = data.serialize();
         const deserializedData = new BytableData();
-        deserializedData.setSerializeOrder([
-            { name: 'field1', field: 'MockField' as any },
-            { name: 'field2', field: 'MockField' as any },
-        ]);
+        deserializedData.setSerializeOrder(fields);
         deserializedData.deserialize(serialized);
-
         expect(deserializedData.getFieldValueByName('field1')).toBe('test');
         expect(deserializedData.getFieldValueByName('field2')).toBe('test');
     });
 
-    it('should serialize and deserialize correctly with MockCStringField', () => {
-        bytableData.setSerializeOrder([
+    it('should serialize and deserialize correctly (MockCStringField)', () => {
+        const fields = [
             { name: 'cstring1', field: 'MockCStringField' as any },
             { name: 'cstring2', field: 'MockCStringField' as any },
-        ]);
-
-        bytableData.setFieldValueByName('cstring1', 'hello');
-        bytableData.setFieldValueByName('cstring2', 'world');
-
-        const serialized = bytableData.serialize();
+        ];
+        const values = { cstring1: 'hello', cstring2: 'world' };
+        const data = setupBytableData(fields, values);
+        const serialized = data.serialize();
         const deserializedData = new BytableData();
-        deserializedData.setSerializeOrder([
-            { name: 'cstring1', field: 'MockCStringField' as any },
-            { name: 'cstring2', field: 'MockCStringField' as any },
-        ]);
+        deserializedData.setSerializeOrder(fields);
         deserializedData.deserialize(serialized);
-
-        expect(deserializedData.getFieldValueByName('cstring1')).toBe('hello');
-        expect(deserializedData.getFieldValueByName('cstring2')).toBe('world');
-    });
-
-    it('should serialize and deserialize correctly with MockCStringField (null-terminated)', () => {
-        bytableData.setSerializeOrder([
-            { name: 'cstring1', field: 'MockCStringField' as any },
-            { name: 'cstring2', field: 'MockCStringField' as any },
-        ]);
-
-        bytableData.setFieldValueByName('cstring1', 'hello');
-        bytableData.setFieldValueByName('cstring2', 'world');
-
-        const serialized = bytableData.serialize();
-        const deserializedData = new BytableData();
-        deserializedData.setSerializeOrder([
-            { name: 'cstring1', field: 'MockCStringField' as any },
-            { name: 'cstring2', field: 'MockCStringField' as any },
-        ]);
-        deserializedData.deserialize(serialized);
-
         expect(deserializedData.getFieldValueByName('cstring1')).toBe('hello');
         expect(deserializedData.getFieldValueByName('cstring2')).toBe('world');
     });
 
     it('should calculate serializeSize correctly', () => {
-        bytableData.setSerializeOrder([
+        const fields = [
             { name: 'field1', field: 'MockField' as any },
             { name: 'field2', field: 'MockField' as any },
-        ]);
-
-        bytableData.setFieldValueByName('field1', 'test1');
-        bytableData.setFieldValueByName('field2', 'test2');
-
-        expect(bytableData.serializeSize).toBe(8); // 4 bytes per field
+        ];
+        const values = { field1: 'test1', field2: 'test2' };
+        const data = setupBytableData(fields, values);
+        expect(data.serializeSize).toBe(8); // 4 bytes per field
     });
 
     it('should throw an error for unknown field types during deserialization', () => {
@@ -196,13 +172,10 @@ describe('BytableData', () => {
     });
 
     it('should return the correct JSON representation', () => {
-        bytableData.setSerializeOrder([
-            { name: 'field1', field: 'MockField' as any },
-        ]);
-
-        bytableData.setFieldValueByName('field1', 'test1');
-
-        expect(bytableData.json).toEqual({
+        const fields = [{ name: 'field1', field: 'MockField' as any }];
+        const values = { field1: 'test1' };
+        const data = setupBytableData(fields, values);
+        expect(data.json).toEqual({
             name: 'BytableData',
             serializeSize: 4,
             fields: [{ name: 'field1', value: 'test1' }],
