@@ -105,8 +105,10 @@ export class PersonaRecord {
      * @returns {Buffer}
      */
     serialize(): Buffer {
-        const buffer = Buffer.alloc(PersonaRecord.size());
         try {
+            const size = PersonaRecord.size();
+            const buffer = Buffer.alloc(size);
+            if (size === 0) return buffer;
             let offset = 0;
             buffer.writeUInt32BE(this.customerId, offset); // 4 - Unknown if this is correct
             offset += 4; // offset = 4
@@ -118,49 +120,31 @@ export class PersonaRecord {
             offset += 4; // offset = 14
             // We don't know what goes here yet
             offset += 4; // offset = 18
-            serializeString(this.personaName).copy(buffer, offset); // 34 - Known to be correct
+            // Write personaName as 2-byte length + up to 32 bytes UTF-8, padded with zeros
+            const nameBuf = Buffer.alloc(34, 0); // 2 bytes length + 32 bytes name
+            const nameLen = Buffer.byteLength(this.personaName, 'utf8');
+            nameBuf.writeUInt16BE(nameLen, 0);
+            if (nameLen > 0) {
+                nameBuf.write(this.personaName, 2, 32, 'utf8');
+            }
+            nameBuf.copy(buffer, offset);
             // offset = 52
-
-            // buffer.writeUInt32BE(this.serverDataId, offset); // 4
-            // offset += 4; // offset = 56
-            // buffer.writeUInt32BE(this.createDate, offset); // 4
-            // offset += 4; // offset = 60
-            // buffer.writeUInt32BE(this.lastLogin, offset); // 4
-            // offset += 4; // offset = 64
-            // buffer.writeUInt32BE(this.numberOfGames, offset); // 4 (Max personas))
-            // offset += 4; // offset = 68
-            // buffer.writeUInt16BE(this.isOnline, offset); // 2
-            // offset += 2; // offset = 70
-            // buffer.writeUInt32BE(this.purchaseTimestamp, offset); // 4
-            // offset += 4; // offset = 74
-            // buffer.write(this.gameSerialNumber, offset, 33, "utf8"); // 33
-            // offset += 33; // offset = 107
-            // buffer.writeUInt32BE(this.timeOnline, offset); // 4
-            // offset += 4; // offset = 111
-            // buffer.writeUInt32BE(this.timeInGame, offset); // 4
-            // offset += 4; // offset = 115
-            // this.extraData.copy(buffer, offset, 512); // 512
-            // offset += 512; // offset = 627
-            // this.personaData.copy(buffer, offset, 256); // 256
-            // offset += 256; // offset = 883
-            // this.pictureData.copy(buffer, offset, 1); // 1
-            // offset += 1; // offset = 884
-            // buffer.writeUInt16BE(this.dnd, offset); // 2
-            // offset += 2; // offset = 886
-            // buffer.writeUInt32BE(this.startedPlayingTimestamp, offset); // 4
-            // offset += 4; // offset = 890
-            // buffer.write(this.hashedKey, offset, 400, "utf8"); // 400
-            // offset += 400; // offset = 1290
-            // buffer.writeUInt16BE(this.personaLevel, offset); // 2
-            // offset += 2; // offset = 1292
+            return buffer;
         } catch (error) {
-            const err = Error(
-                `Error serializing PersonaRecord buffer: ${String(error)}`,
-            );
-            err.cause = error;
-            throw err;
+            if (error instanceof Error) {
+                const err = new Error(
+                    `Error serializing PersonaRecord buffer: ${error.message}`,
+                );
+                err.cause = error;
+                throw err;
+            } else {
+                const err = new Error(
+                    `Error serializing PersonaRecord buffer: ${String(error)}`,
+                );
+                err.cause = error;
+                throw err;
+            }
         }
-        return buffer;
     }
 
     static size() {
