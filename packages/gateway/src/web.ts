@@ -23,6 +23,7 @@ import {
     handleGetRegistry,
 } from 'rusty-motors-shard';
 import { getServerConfiguration } from 'rusty-motors-shared';
+import { generateTicket, retrieveUserAccount } from 'rusty-motors-database';
 
 type WebHandlerResponse = {
     headers: Record<string, string>;
@@ -242,63 +243,4 @@ export function processHttpRequest(
 
     response.statusCode = 404;
     response.end('Not found');
-}
-
-const UserAccounts = [
-    {
-        username: 'new',
-        ticket: '5213dee3a6bcdb133373b2d4f3b9962758',
-        password: 'new',
-        customerId: '123456',
-    },
-    {
-        username: 'admin',
-        ticket: 'd316cd2dd6bf870893dfbaaf17f965884e',
-        password: 'admin',
-        customerId: '654321',
-    },
-];
-
-const AuthTickets = [
-    {
-        ticket: '5213dee3a6bcdb133373b2d4f3b9962758',
-        customerId: '123456',
-    },
-    {
-        ticket: 'd316cd2dd6bf870893dfbaaf17f965884e',
-        customerId: '654321',
-    },
-];
-
-/**
- * Generates a ticket for the given customer ID.
- *
- * @param customerId - The ID of the customer for whom the ticket is being generated.
- * @returns The ticket associated with the given customer ID, or an empty string if no ticket is found.
- */
-function generateTicket(customerId: string): string {
-    const ticket = AuthTickets.find((t) => t.customerId === customerId);
-    if (ticket) {
-        return ticket.ticket;
-    }
-    return '';
-}
-
-/**
- * Retrieves a user account based on the provided username and password.
- *
- * @param username - The username of the account to retrieve.
- * @param password - The password of the account to retrieve.
- * @returns An object containing the username, ticket, and customerId if the account is found, or null if not.
- */
-function retrieveUserAccount(
-    username: string,
-    password: string,
-): { username: string; ticket: string; customerId: string } | null {
-    const customer = UserAccounts.find(
-        (account) =>
-            account.username === username && account.password === password,
-    );
-
-    return customer ?? null;
 }
