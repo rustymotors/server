@@ -18,14 +18,12 @@ import { describe, it, expect } from 'vitest';
 import {
     BinaryMember,
     Uint8_t,
-    Uint16_t,
     Uint32_t,
     Uint8_tArray,
     align,
     addAlignmentPadding,
     verifyAlignment,
     Endian,
-    BINARY_ALIGNMENT,
 } from './BinaryMember.js';
 
 describe('BinaryMember', () => {

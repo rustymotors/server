@@ -26,7 +26,9 @@ vi.mock('./BytableServerHeader.js', () => ({
         setName(name: string) {
             this.name = name;
         }
-        setMessageLength() {}
+        setMessageLength() {
+            // Mock implementation
+        }
         deserialize() {
             (this.constructor as any).deserializeCalled = true;
         }
@@ -117,7 +119,9 @@ class MockHeader {
     setName(name: string) {
         this.name = name;
     }
-    setMessageLength() {}
+    setMessageLength() {
+        // Mock implementation
+    }
     deserialize() {
         (this.constructor as any).deserializeCalled = true;
     }

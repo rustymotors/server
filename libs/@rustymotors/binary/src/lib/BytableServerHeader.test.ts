@@ -19,7 +19,9 @@ import { BytableServerHeader } from './BytableServerHeader.js';
 
 // Mock BytableBase since it's not provided
 class MockBytableBase {
-    deserialize(_buffer: Buffer) {}
+    deserialize(_buffer: Buffer) {
+        // Mock implementation
+    }
 }
 Object.setPrototypeOf(BytableServerHeader.prototype, MockBytableBase.prototype);
 
