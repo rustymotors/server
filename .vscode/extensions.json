@@ -2,11 +2,10 @@
     "recommendations": [
         "ms-vscode.makefile-tools",
         "usernamehw.errorlens",
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
         "ms-azuretools.vscode-containers",
         "kisstkondoros.vscode-codemetrics",
         "mhutchie.git-graph",
-        "vitest.explorer"
+        "vitest.explorer",
+        "biomejs.biome"
     ]
 }
