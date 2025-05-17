@@ -4,40 +4,22 @@ import { splitPackets } from './utility.js';
 const buf = (str: string) => Buffer.from(str);
 
 describe('splitPackets', () => {
-    it('should return the entire buffer as a single packet if no separator is found', () => {
-        const data = buf('abcdef');
-        const separator = buf('xyz');
-        const result = splitPackets(data, separator);
-        expect(result).toEqual([data]);
+    it('returns the entire buffer as a single packet if no separator is found', () => {
+        expect(splitPackets(buf('abcdef'), buf('xyz'))).toEqual([buf('abcdef')]);
     });
 
-    it('should split the buffer into packets using the separator', () => {
-        const data = buf('abc|def|ghi');
-        const separator = buf('|');
-        const result = splitPackets(data, separator);
-        expect(result).toEqual([buf('abc'), buf('def'), buf('ghi')]);
-    });
-
-    it('should throw an error if the separator is found at the end of the buffer', () => {
-        const data = buf('abc|def|');
-        const separator = buf('|');
-        expect(() => splitPackets(data, separator)).toThrow(
-            'Separator found at the end of the buffer',
-        );
-    });
-
-    it('should handle buffers with no data correctly', () => {
-        const data = buf('');
-        const separator = buf('|');
-        const result = splitPackets(data, separator);
-        expect(result).toEqual([]);
-    });
-
-    it('should handle cases where the separator is not at the start or end', () => {
-        const data = buf('abc|def|ghi|jkl');
-        const separator = buf('|');
-        const result = splitPackets(data, separator);
-        expect(result).toEqual([
+    it('splits the buffer into packets using the separator', () => {
+        expect(splitPackets(buf('abc|def|ghi'), buf('|'))).toEqual([
+            buf('abc'),
+            buf('def'),
+            buf('ghi'),
+        ]);
+        expect(splitPackets(buf('abc--def--ghi'), buf('--'))).toEqual([
+            buf('abc'),
+            buf('def'),
+            buf('ghi'),
+        ]);
+        expect(splitPackets(buf('abc|def|ghi|jkl'), buf('|'))).toEqual([
             buf('abc'),
             buf('def'),
             buf('ghi'),
@@ -45,18 +27,16 @@ describe('splitPackets', () => {
         ]);
     });
 
-    it('should handle cases where the separator is longer than one character', () => {
-        const data = buf('abc--def--ghi');
-        const separator = buf('--');
-        const result = splitPackets(data, separator);
-        expect(result).toEqual([buf('abc'), buf('def'), buf('ghi')]);
-    });
-
-    it('should throw an error if multiple consecutive separators are found', () => {
-        const data = buf('abc||def');
-        const separator = buf('|');
-        expect(() => splitPackets(data, separator)).toThrow(
+    it('throws an error for invalid separator positions or consecutive separators', () => {
+        expect(() => splitPackets(buf('abc|def|'), buf('|'))).toThrow(
+            'Separator found at the end of the buffer',
+        );
+        expect(() => splitPackets(buf('abc||def'), buf('|'))).toThrow(
             'Multiple consecutive separators found',
         );
+    });
+
+    it('returns an empty array for empty data', () => {
+        expect(splitPackets(buf(''), buf('|'))).toEqual([]);
     });
 });
