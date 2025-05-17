@@ -104,18 +104,14 @@ export class BytableShortContainer
     override deserialize(buffer: Buffer) {
         const offset = 0;
         if (this.nullTerminated) {
-            let length = 0;
-            let cursor = 0;
-            do {
-                this.setValue(
-                    buffer.subarray(offset, offset + length).toString('utf-8'),
-                );
-                cursor++;
-            } while (buffer[offset + cursor] !== 0);
-            this.setValue(
-                buffer.subarray(offset, offset + length).toString('utf-8'),
-            );
-            this.length = length + 1;
+            // Find the first null byte (0x00)
+            const nullIdx = buffer.indexOf(0, offset);
+            if (nullIdx === -1) {
+                throw new Error('Null terminator not found in buffer');
+            }
+            const str = buffer.subarray(offset, nullIdx).toString('utf-8');
+            this.setValue(str);
+            this.length = Buffer.from(str).length;
         } else {
             const length = buffer.readUInt16BE(offset);
             this.setValue(
@@ -238,18 +234,14 @@ export class BytableContainer extends BytableBase implements BytableObject {
     override deserialize(buffer: Buffer) {
         const offset = 0;
         if (this.nullTerminated) {
-            let length = 0;
-            let cursor = 0;
-            do {
-                this.setValue(
-                    buffer.subarray(offset, offset + length).toString('utf-8'),
-                );
-                cursor++;
-            } while (buffer[offset + cursor] !== 0);
-            this.setValue(
-                buffer.subarray(offset, offset + length).toString('utf-8'),
-            );
-            this.length = length + 1;
+            // Find the first null byte (0x00)
+            const nullIdx = buffer.indexOf(0, offset);
+            if (nullIdx === -1) {
+                throw new Error('Null terminator not found in buffer');
+            }
+            const str = buffer.subarray(offset, nullIdx).toString('utf-8');
+            this.setValue(str);
+            this.length = Buffer.from(str).length;
         } else {
             const length = buffer.readUInt32BE(offset);
             this.setValue(
