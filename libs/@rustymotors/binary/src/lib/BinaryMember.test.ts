@@ -16,19 +16,17 @@
 
 import { describe, it, expect } from 'vitest';
 import {
-    align,
-    addAlignementPadding,
-    verifyAlignment,
-    htons,
-    htonl,
-    ntohs,
-    ntohl,
-    Uint32_t,
+    BinaryMember,
     Uint8_t,
+    Uint16_t,
+    Uint32_t,
     Uint8_tArray,
+    align,
+    addAlignmentPadding,
+    verifyAlignment,
+    Endian,
     BINARY_ALIGNMENT,
 } from './BinaryMember.js';
-import { BinaryMember } from './BinaryMember.js';
 
 describe('BinaryMember', () => {
     it('should initialize with the correct size and padding', () => {
@@ -97,7 +95,7 @@ describe('BinaryMember', () => {
         const binaryMember = new BinaryMember(4);
         const value = new Uint8Array([1, 2, 3, 4]);
         binaryMember.set(value);
-        expect(binaryMember.toString()).toBe('1,2,3,4');
+        expect(binaryMember.toString()).toBe('01020304');
     });
 
     it('should set value without padding when shouldPad is false', () => {
@@ -151,14 +149,14 @@ describe('align', () => {
     });
 });
 
-describe('addAlignementPadding', () => {
+describe('addAlignmentPadding', () => {
     it('should pad buffer to alignment', () => {
         const buf = new Uint8Array([1, 2, 3]);
-        expect(addAlignementPadding(buf, 4)).toEqual(new Uint8Array([1, 2, 3, 0]));
+        expect(addAlignmentPadding(buf, 4)).toEqual(new Uint8Array([1, 2, 3, 0]));
     });
     it('should not pad if already aligned', () => {
         const buf = new Uint8Array([1, 2, 3, 4]);
-        expect(addAlignementPadding(buf, 4)).toEqual(buf);
+        expect(addAlignmentPadding(buf, 4)).toEqual(buf);
     });
 });
 
@@ -173,15 +171,14 @@ describe('verifyAlignment', () => {
 
 describe('htons/ntohs', () => {
     it('should swap bytes for 16-bit values', () => {
-        expect(htons(0x1234)).toBe(0x3412);
-        expect(ntohs(0x1234)).toBe(0x3412);
+        expect(Endian.htons(0x1234)).toBe(0x3412);
+        expect(Endian.ntohs(0x1234)).toBe(0x3412);
     });
 });
-
 describe('htonl/ntohl', () => {
     it('should swap bytes for 32-bit values', () => {
-        expect(htonl(0x12345678)).toBe(0x78563412);
-        expect(ntohl(0x12345678)).toBe(0x78563412);
+        expect(Endian.htonl(0x12345678)).toBe(0x78563412);
+        expect(Endian.ntohl(0x12345678)).toBe(0x78563412);
     });
 });
 

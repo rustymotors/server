@@ -18,67 +18,32 @@ import { SerializableInterface } from 'rusty-motors-shared-packets';
 
 export const BINARY_ALIGNMENT = 4;
 
-/**
- * Converts a 16-bit unsigned integer from host to network byte order (big-endian).
- *
- * @param n - The 16-bit unsigned integer to convert.
- * @returns The value of {@link n} with its bytes swapped to network byte order.
- */
-export function htons(n: number): number {
-    return ((n & 0xff) << 8) | ((n >> 8) & 0xff);
-}
-/**
- * Converts a 32-bit integer from host byte order to network byte order (big-endian).
- *
- * @param n - The 32-bit integer to convert.
- * @returns The 32-bit integer in network (big-endian) byte order.
- */
-export function htonl(n: number): number {
-    return (
-        ((n & 0xff) << 24) |
-        ((n & 0xff00) << 8) |
-        ((n & 0xff0000) >> 8) |
-        ((n >> 24) & 0xff)
-    );
-}
-/**
- * Converts a 16-bit number from network byte order to host byte order.
- *
- * @param n - The 16-bit number in network byte order.
- * @returns The number converted to host byte order.
- */
-export function ntohs(n: number): number {
-    return htons(n);
-}
-/**
- * Converts a 32-bit integer from network byte order to host byte order.
- *
- * @param n - The 32-bit integer in network byte order.
- * @returns The integer in host byte order.
- */
-export function ntohl(n: number): number {
-    return htonl(n);
-}
+// --- Utility functions ---
+export const Endian = {
+    htons(n: number): number {
+        return ((n & 0xff) << 8) | ((n >> 8) & 0xff);
+    },
+    htonl(n: number): number {
+        return (
+            ((n & 0xff) << 24) |
+            ((n & 0xff00) << 8) |
+            ((n & 0xff0000) >> 8) |
+            ((n >> 24) & 0xff)
+        );
+    },
+    ntohs(n: number): number {
+        return this.htons(n);
+    },
+    ntohl(n: number): number {
+        return this.htonl(n);
+    },
+};
 
-/**
- * Rounds a number up to the nearest multiple of the specified alignment.
- *
- * @param n - The number to align.
- * @param alignment - The alignment boundary.
- * @returns The smallest multiple of {@link alignment} greater than or equal to {@link n}.
- */
 export function align(n: number, alignment: number): number {
     if (alignment <= 0) throw new Error('Alignment must be > 0');
     return Math.ceil(n / alignment) * alignment;
 }
-/**
- * Returns a new buffer padded with zeros so its length is a multiple of the specified alignment.
- *
- * @param buffer - The input buffer to pad.
- * @param alignment - The byte alignment boundary.
- * @returns A new buffer containing the original data followed by zero padding as needed.
- */
-export function addAlignementPadding(
+export function addAlignmentPadding(
     buffer: Uint8Array,
     alignment: number,
 ): Uint8Array {
@@ -87,13 +52,6 @@ export function addAlignementPadding(
     );
     return new Uint8Array([...buffer, ...padding]);
 }
-/**
- * Throws an error if the buffer's length is not a multiple of the specified alignment.
- *
- * @param buffer - The buffer to check.
- * @param alignment - The required alignment in bytes.
- * @throws {Error} If {@link buffer} length is not a multiple of {@link alignment}.
- */
 export function verifyAlignment(buffer: Uint8Array, alignment: number) {
     if (buffer.length % alignment !== 0) {
         throw new Error(
@@ -102,6 +60,7 @@ export function verifyAlignment(buffer: Uint8Array, alignment: number) {
     }
 }
 
+// --- BinaryMember base class ---
 export class BinaryMember implements SerializableInterface {
     protected value: Uint8Array;
     protected maxSize: number;
@@ -114,37 +73,31 @@ export class BinaryMember implements SerializableInterface {
     }
     set(v: Uint8Array) {
         const raw = this.shouldPad
-            ? addAlignementPadding(v, BINARY_ALIGNMENT)
+            ? addAlignmentPadding(v, BINARY_ALIGNMENT)
             : v;
         if (raw.length > this.maxSize) {
             throw new Error(`Value exceeds maximum size of ${this.maxSize}`);
         }
         this.value = raw;
     }
-
     get() {
         return this.value;
     }
     size() {
         return this.value.length;
     }
-
-    toString() {
-        return this.value.toString();
-    }
-
-    serialize(): Buffer {
-        return Buffer.from(this.get());
-    }
-
-    deserialize(data: Buffer) {
-        this.set(new Uint8Array(data));
-    }
-
     getByteSize(): number {
         return this.size();
     }
-
+    toString() {
+        return this.toHexString();
+    }
+    serialize(): Buffer {
+        return Buffer.from(this.get());
+    }
+    deserialize(data: Buffer) {
+        this.set(new Uint8Array(data));
+    }
     toHexString(): string {
         return this.get().reduce(
             (acc, v) => acc + v.toString(16).padStart(2, '0'),
@@ -154,7 +107,7 @@ export class BinaryMember implements SerializableInterface {
 }
 
 export class Uint8_t extends BinaryMember {
-    constructor(shouldPad = true) {
+    constructor(shouldPad = false) {
         super(1, shouldPad);
     }
 }
@@ -163,62 +116,28 @@ export class Uint16_t extends BinaryMember {
     constructor() {
         super(2);
     }
-
     getShort(endian: 'LE' | 'BE' = 'LE'): number {
-        if (endian === 'BE') {
-            return this.getBE();
-        }
-        return this.getLE();
+        return endian === 'BE' ? this.getBE() : this.getLE();
     }
-
-    /**
-     * Converts the first two bytes of the `value` array to a 16-bit little-endian integer.
-     *
-     * @returns {number} The 16-bit little-endian integer representation of the first two bytes.
-     */
     getLE(): number {
         const byte0 = this.value[0] || 0;
         const byte1 = (this.value[1] || 0) << 8;
         return byte0 | byte1;
     }
-
-    /**
-     * Converts the first two bytes of the `value` array to a 16-bit big-endian integer.
-     *
-     * @returns {number} The 16-bit big-endian integer representation of the first two bytes.
-     */
     getBE(): number {
         const byte0 = (this.value[0] || 0) << 8;
         const byte1 = this.value[1] || 0;
         return byte0 | byte1;
     }
-
     setShort(value: number, endian: 'LE' | 'BE' = 'LE') {
         if (value < 0 || value > 0xffff) {
             throw new Error(`Value ${value} is not a 16-bit integer`);
         }
-
-        if (endian === 'BE') {
-            this.setBE(value);
-        } else {
-            this.setLE(value);
-        }
+        endian === 'BE' ? this.setBE(value) : this.setLE(value);
     }
-
-    /**
-     * Sets the value of the binary member to a 16-bit little-endian integer.
-     *
-     * @param {number} value - The 16-bit little-endian integer value to set.
-     */
     setLE(value: number) {
         this.value = new Uint8Array([value & 0xff, (value >> 8) & 0xff]);
     }
-
-    /**
-     * Sets the value of the binary member to a 16-bit big-endian integer.
-     *
-     * @param {number} value - The 16-bit big-endian integer value to set.
-     */
     setBE(value: number) {
         this.value = new Uint8Array([(value >> 8) & 0xff, value & 0xff]);
     }
@@ -228,19 +147,9 @@ export class Uint32_t extends BinaryMember {
     constructor() {
         super(4);
     }
-
     getInt(endian: 'LE' | 'BE' = 'LE'): number {
-        if (endian === 'BE') {
-            return this.getBE();
-        }
-        return this.getLE();
+        return endian === 'BE' ? this.getBE() : this.getLE();
     }
-
-    /**
-     * Converts the first four bytes of the `value` array to a 32-bit little-endian integer.
-     *
-     * @returns {number} The 32-bit little-endian integer representation of the first four bytes.
-     */
     getLE(): number {
         const byte0 = this.value[0] || 0;
         const byte1 = (this.value[1] || 0) << 8;
@@ -248,12 +157,6 @@ export class Uint32_t extends BinaryMember {
         const byte3 = (this.value[3] || 0) << 24;
         return byte0 | byte1 | byte2 | byte3;
     }
-
-    /**
-     * Converts the first four bytes of the `value` array to a 32-bit big-endian integer.
-     *
-     * @returns {number} The 32-bit big-endian integer representation of the first four bytes.
-     */
     getBE(): number {
         const byte0 = (this.value[0] || 0) << 24;
         const byte1 = (this.value[1] || 0) << 16;
@@ -261,24 +164,12 @@ export class Uint32_t extends BinaryMember {
         const byte3 = this.value[3] || 0;
         return byte0 | byte1 | byte2 | byte3;
     }
-
     setInt(value: number, endian: 'LE' | 'BE' = 'LE') {
         if (value < 0 || value > 0xffffffff) {
             throw new Error(`Value ${value} is not a 32-bit integer`);
         }
-
-        if (endian === 'BE') {
-            this.setBE(value);
-        } else {
-            this.setLE(value);
-        }
+        endian === 'BE' ? this.setBE(value) : this.setLE(value);
     }
-
-    /**
-     * Sets the value of the binary member to a 32-bit little-endian integer.
-     *
-     * @param {number} value - The 32-bit little-endian integer value to set.
-     */
     setLE(value: number) {
         this.value = new Uint8Array([
             value & 0xff,
@@ -287,12 +178,6 @@ export class Uint32_t extends BinaryMember {
             (value >> 24) & 0xff,
         ]);
     }
-
-    /**
-     * Sets the value of the binary member to a 32-bit big-endian integer.
-     *
-     * @param {number} value - The 32-bit big-endian integer value to set.
-     */
     setBE(value: number) {
         this.value = new Uint8Array([
             (value >> 24) & 0xff,
