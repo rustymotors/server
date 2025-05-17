@@ -17,22 +17,18 @@
 import { BytableBase } from './BytableBase.js';
 import { BytableObject } from './types.js';
 
-export class BytableShortContainer
-    extends BytableBase
-    implements BytableObject
-{
-    private value_: string | number | Buffer = '';
-    private nullTerminated = false;
-    private length = 0;
-    private name_ = '';
+abstract class BytableContainerBase extends BytableBase implements BytableObject {
+    protected value_: string | number | Buffer = '';
+    protected nullTerminated = false;
+    protected length = 0;
+    protected name_ = '';
 
-    /**
-     * Set the value of the container.
-     * @param value - The value to set.
-     * @returns void
-     * @throws Error if the container is null terminated and the value is an empty string
-     */
-    setValue(value: string | number | Buffer) {
+    abstract get json(): Record<string, unknown>;
+    abstract override get serializeSize(): number;
+    abstract override serialize(): Buffer;
+    abstract override deserialize(buffer: Buffer): void;
+
+    setValue(value: string | number | Buffer): void {
         this.validateValue(value);
         if (this.nullTerminated && typeof value === 'string') {
             this.validateString(value);
@@ -41,15 +37,15 @@ export class BytableShortContainer
         this.length = this.getByteLength(value);
     }
 
-    getValue() {
+    getValue(): string | number | Buffer {
         return this.value_;
     }
 
-    setNullTerminated(_nullTerminated: boolean) {
-        throw new Error('Method not implemented.');
+    setNullTerminated(nullTerminated: boolean): void {
+        this.nullTerminated = nullTerminated;
     }
 
-    getNullTerminated() {
+    getNullTerminated(): boolean {
         return this.nullTerminated;
     }
 
@@ -59,7 +55,7 @@ export class BytableShortContainer
      * @returns void
      * @throws Error if the container is set to null terminated
      */
-    setLength(length: number) {
+    setLength(length: number): void {
         if (this.nullTerminated) {
             throw new Error('Cannot set length for null terminated container');
         } else {
@@ -67,16 +63,30 @@ export class BytableShortContainer
         }
     }
 
-    getLength() {
+    getLength(): number {
         return this.length;
     }
 
+    setName(name: string): void {
+        this.name_ = name;
+    }
+
+    get name(): string {
+        return this.name_;
+    }
+
+    get value(): string | number | Buffer {
+        return this.value_;
+    }
+
+    override toString(): string {
+        throw new Error('Method not implemented.');
+    }
+}
+
+export class BytableShortContainer extends BytableContainerBase {
     override get serializeSize() {
-        if (this.nullTerminated) {
-            return this.length + 1;
-        } else {
-            return this.length + 2;
-        }
+        return this.nullTerminated ? this.length + 1 : this.length + 2;
     }
 
     /**
@@ -132,81 +142,11 @@ export class BytableShortContainer
             serializeSize: this.serializeSize,
         };
     }
-
-    setName(name: string) {
-        this.name_ = name;
-    }
-
-    get name() {
-        return this.name_;
-    }
-
-    get value() {
-        return this.value_;
-    }
-
-    override toString(): string {
-        throw new Error('Method not implemented.');
-    }
 }
 
-export class BytableContainer extends BytableBase implements BytableObject {
-    private value_: string | number | Buffer = '';
-    private nullTerminated = false;
-    private length = 0;
-    private name_ = '';
-
-    /**
-     * Set the value of the container.
-     * @param value - The value to set.
-     * @returns void
-     * @throws Error if the container is null terminated and the value is an empty string
-     */
-    setValue(value: string | number | Buffer) {
-        this.validateValue(value);
-        if (this.nullTerminated && typeof value === 'string') {
-            this.validateString(value);
-        }
-        this.value_ = value;
-        this.length = this.getByteLength(value);
-    }
-
-    getValue() {
-        return this.value_;
-    }
-
-    setNullTerminated(nullTerminated: boolean) {
-        this.nullTerminated = nullTerminated;
-    }
-
-    getNullTerminated() {
-        return this.nullTerminated;
-    }
-
-    /**
-     * Set the length of the container.
-     * @param length - The length of the container.
-     * @returns void
-     * @throws Error if the container is set to null terminated
-     */
-    setLength(length: number) {
-        if (this.nullTerminated) {
-            throw new Error('Cannot set length for null terminated container');
-        } else {
-            this.length = length;
-        }
-    }
-
-    getLength() {
-        return this.length;
-    }
-
+export class BytableContainer extends BytableContainerBase {
     override get serializeSize() {
-        if (this.nullTerminated) {
-            return this.length + 1;
-        } else {
-            return this.length + 4;
-        }
+        return this.nullTerminated ? this.length + 1 : this.length + 4;
     }
 
     /**
@@ -260,21 +200,5 @@ export class BytableContainer extends BytableBase implements BytableObject {
             nullTerminated: this.nullTerminated,
             serializeSize: this.serializeSize,
         };
-    }
-
-    setName(name: string) {
-        this.name_ = name;
-    }
-
-    get name() {
-        return this.name_;
-    }
-
-    get value() {
-        return this.value_;
-    }
-
-    override toString(): string {
-        throw new Error('Method not implemented.');
     }
 }
