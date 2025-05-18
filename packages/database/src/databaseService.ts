@@ -17,8 +17,13 @@
 import { hashSync } from 'bcrypt';
 import { DatabaseSync } from 'node:sqlite';
 import { getServerLogger } from 'rusty-motors-logger';
-import type { UserRecordMini } from 'rusty-motors-shared';
+import type { UserRecordMini, ConnectionRecord } from 'rusty-motors-shared';
 import { SQL, DATABASE_PATH } from './databaseConstrants.js';
+import { Sequelize } from 'sequelize';
+
+// In-memory session and user stores (for legacy/fallback/testing)
+const _sessions: ConnectionRecord[] = [];
+const _users: Map<number, Buffer> = new Map();
 
 // Database Service Interface
 export interface DatabaseService {
@@ -36,10 +41,19 @@ export interface DatabaseService {
         userId: number,
     ) => void;
     findSessionByContext: (contextId: string) => UserRecordMini | undefined;
+    updateUser: (user: { userId: number; userData: Buffer }) => Promise<void>;
+    fetchSessionKeyByCustomerId: (customerId: number) => Promise<ConnectionRecord>;
+    updateSessionKey: (customerId: number, sessionKey: string, contextId: string, connectionId: string) => Promise<void>;
+    fetchSessionKeyByConnectionId: (connectionId: string) => Promise<ConnectionRecord>;
+    retrieveUserAccount: (
+        username: string,
+        password: string,
+    ) => { username: string; ticket: string; customerId: string } | null;
+    generateTicket: (customerId: string) => string;
 }
 
 // Database Implementation
-export const DatabaseImpl = {
+const DatabaseImpl = {
     /**
      * Generates a hashed password using bcrypt
      * @param password - The plain text password to hash
@@ -179,8 +193,58 @@ export const DatabaseImpl = {
             findUser: (...args) => this.findUser(db, ...args),
             getAllUsers: () => this.getAllUsers(db),
             updateSession: (...args) => this.updateSession(db, ...args),
-            findSessionByContext: (...args) =>
-                this.findSessionByContext(db, ...args),
+            findSessionByContext: (contextId: string) => {
+                return DatabaseImpl.findSessionByContext(db, contextId);
+            },
+            updateUser: async (user) => {
+                try {
+                    _users.set(user.userId, user.userData);
+                    return Promise.resolve();
+                } catch (error) {
+                    throw Error(`Error updating user: ${String(error)}`);
+                }
+            },
+            fetchSessionKeyByCustomerId: async (customerId: number) => {
+                const record = _sessions.find((session) => session.customerId === customerId);
+                if (typeof record === 'undefined') {
+                    throw Error(`Session key not found for customer ${customerId}`);
+                }
+                return Promise.resolve(record);
+            },
+            updateSessionKey: async (customerId: number, sessionKey: string, contextId: string, connectionId: string) => {
+                const sKey = sessionKey.slice(0, 16);
+                const updatedSession: ConnectionRecord = {
+                    customerId,
+                    sessionKey,
+                    sKey,
+                    contextId,
+                    connectionId,
+                };
+                const record = _sessions.findIndex((session) => session.customerId === customerId);
+                _sessions.splice(record, 1, updatedSession);
+                return Promise.resolve();
+            },
+            fetchSessionKeyByConnectionId: async (connectionId: string) => {
+                const record = _sessions.find((session) => session.connectionId === connectionId);
+                if (typeof record === 'undefined') {
+                    throw Error(`Session key not found for connection ${connectionId}`);
+                }
+                return Promise.resolve(record);
+            },
+            retrieveUserAccount: (username: string, password: string) => {
+                const customer = UserAccounts.find(
+                    (account) =>
+                        account.username === username && account.password === password,
+                );
+                return customer ?? null;
+            },
+            generateTicket: (customerId: string) => {
+                const ticket = AuthTickets.find((t) => t.customerId === customerId);
+                if (ticket) {
+                    return ticket.ticket;
+                }
+                return '';
+            },
         };
     },
 } as const;
@@ -220,14 +284,6 @@ function initializeDatabaseService(): DatabaseService {
     return DatabaseImpl.createDatabaseService(databaseInstance);
 }
 
-export function findCustomerByContext(
-    contextId: string,
-): UserRecordMini | undefined {
-    const database = initializeDatabaseService();
-    const user = database.findSessionByContext(contextId);
-    return user;
-}
-
 const UserAccounts = [
     {
         username: 'new',
@@ -254,38 +310,9 @@ const AuthTickets = [
     },
 ];
 
-/**
- * Generates a ticket for the given customer ID.
- *
- * @param customerId - The ID of the customer for whom the ticket is being generated.
- * @returns The ticket associated with the given customer ID, or an empty string if no ticket is found.
- */
-export function generateTicket(customerId: string): string {
-    const ticket = AuthTickets.find((t) => t.customerId === customerId);
-    if (ticket) {
-        return ticket.ticket;
-    }
-    return '';
-}
 
-/**
- * Retrieves a user account based on the provided username and password.
- *
- * @param username - The username of the account to retrieve.
- * @param password - The password of the account to retrieve.
- * @returns An object containing the username, ticket, and customerId if the account is found, or null if not.
- */
-export function retrieveUserAccount(
-    username: string,
-    password: string,
-): { username: string; ticket: string; customerId: string } | null {
-    const customer = UserAccounts.find(
-        (account) =>
-            account.username === username && account.password === password,
-    );
-
-    return customer ?? null;
-}
+// --- Begin migrated DatabaseManager API ---
+// --- End migrated DatabaseManager API ---
 
 // Exported Database Service Instance
 export const databaseService: DatabaseService = initializeDatabaseService();

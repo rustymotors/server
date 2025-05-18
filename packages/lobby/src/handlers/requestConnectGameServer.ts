@@ -14,7 +14,7 @@ import {
 } from 'rusty-motors-shared';
 import { SerializedBufferOld } from 'rusty-motors-shared';
 import { UserInfoMessage } from '../UserInfoMessage.js';
-import { databaseManager } from 'rusty-motors-database';
+import { databaseService } from 'rusty-motors-database';
 import { getServerLogger } from 'rusty-motors-logger';
 
 /**
@@ -78,7 +78,7 @@ export async function _npsRequestGameConnectServer({
     if (!existingEncryption) {
         // Set the encryption keys on the lobby connection
         const keys =
-            await databaseManager.fetchSessionKeyByCustomerId(customerId);
+            await databaseService.fetchSessionKeyByCustomerId(customerId);
 
         if (keys === undefined) {
             throw Error('Error fetching session keys!');

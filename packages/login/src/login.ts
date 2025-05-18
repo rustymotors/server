@@ -1,4 +1,4 @@
-import { databaseManager, findCustomerByContext } from 'rusty-motors-database';
+import { databaseService,  } from 'rusty-motors-database';
 import { getServerConfiguration, NetworkMessage } from 'rusty-motors-shared';
 import { NPSUserStatus } from './NPSUserStatus.js';
 import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
@@ -47,7 +47,7 @@ export async function login({
     userStatus.dumpPacket();
 
     // Load the customer record by contextId
-    const userRecord = findCustomerByContext(contextId);
+    const userRecord = databaseService.findSessionByContext(contextId);
 
     if (typeof userRecord === 'undefined') {
         // We were not able to locate the user's record
@@ -57,7 +57,7 @@ export async function login({
     }
 
     // Save sessionkey in database under customerId
-    await databaseManager
+    await databaseService
         .updateSessionKey(
             userRecord.customerId,
             sessionKey ?? '',

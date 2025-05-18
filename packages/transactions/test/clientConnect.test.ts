@@ -1,10 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
 import { clientConnect } from "../src/clientConnect.js";
-import { ConnectionRecord, ServerLogger } from "rusty-motors-shared";
+import { ConnectionRecord, } from "rusty-motors-shared";
+import { ServerLogger } from "rusty-motors-logger";
 
 vi.mock("rusty-motors-database", () => ({
-	databaseManager: {
+	databaseService: {
 		updateSessionKey: vi.fn(),
 		fetchSessionKeyByConnectionId: vi.fn(),
 		fetchSessionKeyByCustomerId: vi.fn().mockImplementation(() => {
@@ -16,7 +17,7 @@ vi.mock("rusty-motors-database", () => ({
 
 const mockDatabaseManager = vi.mocked(
 	await import("rusty-motors-database"),
-).databaseManager;
+).databaseService;
 
 describe("clientConnect", () => {
 	it("throws when connection is not found", async () => {

@@ -1,6 +1,6 @@
 import { LegacyMessage } from 'rusty-motors-shared';
 import { UserInfo } from '../UserInfoMessage.js';
-import { databaseManager } from 'rusty-motors-database';
+import { databaseService } from 'rusty-motors-database';
 import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 
 export async function _setMyUserData({
@@ -22,7 +22,7 @@ export async function _setMyUserData({
         log.debug(`User ID: ${incomingMessage._userId}`);
 
         // Update the user's data
-        databaseManager.updateUser({
+        databaseService.updateUser({
             userId: incomingMessage._userId,
             userData: incomingMessage._userData,
         });

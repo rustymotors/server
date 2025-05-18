@@ -46,39 +46,7 @@ async function fetchSessionKeyByCustomerId(
     return Promise.resolve(record);
 }
 
-/**
- * Create or overwrite a customer's session key record
- *
- * @param {number} customerId
- * @param {string} sessionKey
- * @param {string} contextId
- * @param {string} connectionId
- * @returns {Promise<void>}
- */
-async function updateSessionKey(
-    customerId: number,
-    sessionKey: string,
-    contextId: string,
-    connectionId: string,
-): Promise<void> {
-    const sKey = sessionKey.slice(0, 16);
 
-    const updatedSession: ConnectionRecord = {
-        customerId,
-        sessionKey,
-        sKey,
-        contextId,
-        connectionId,
-    };
-
-    const record = _sessions.findIndex((session) => {
-        return session.customerId === customerId;
-    });
-
-    _sessions.splice(record, 1, updatedSession);
-
-    return Promise.resolve();
-}
 
 /**
  * Locate customer session encryption key in the database

@@ -23,7 +23,7 @@ import {
     handleGetRegistry,
 } from 'rusty-motors-shard';
 import { getServerConfiguration } from 'rusty-motors-shared';
-import { generateTicket, retrieveUserAccount } from 'rusty-motors-database';
+import { databaseService } from 'rusty-motors-database';
 
 type WebHandlerResponse = {
     headers: Record<string, string>;
@@ -177,10 +177,10 @@ function handleAuthLogin(
         'https://winehq.com',
     );
 
-    const user = retrieveUserAccount(username, password);
+    const user = databaseService.retrieveUserAccount(username, password);
 
     if (user !== null) {
-        const ticket = generateTicket(user.customerId);
+        const ticket = databaseService.generateTicket(user.customerId);
         if (ticket !== '') {
             authResponse = AuthLoginResponse.createValid(ticket);
         }
