@@ -22,7 +22,7 @@ export async function _setMyUserData({
         log.debug(`User ID: ${incomingMessage._userId}`);
 
         // Update the user's data
-        databaseService.updateUser({
+        await databaseService.updateUser({
             userId: incomingMessage._userId,
             userData: incomingMessage._userData,
         });

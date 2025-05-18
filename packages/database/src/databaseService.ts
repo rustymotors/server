@@ -19,7 +19,32 @@ import { DatabaseSync } from 'node:sqlite';
 import { getServerLogger } from 'rusty-motors-logger';
 import type { UserRecordMini, ConnectionRecord } from 'rusty-motors-shared';
 import { SQL, DATABASE_PATH } from './databaseConstrants.js';
-import { Sequelize } from 'sequelize';
+import { Sequelize, DataTypes, Model } from 'sequelize';
+
+// Sequelize models for UserAccount and AuthTicket
+const sequelize = new Sequelize(process.env['DATABASE_URL'] || 'sqlite::memory:', { logging: false });
+
+class UserAccount extends Model {
+    declare username: string;
+    declare password: string;
+    declare ticket: string;
+    declare customerId: string;
+}
+UserAccount.init({
+    username: { type: DataTypes.STRING, allowNull: false, unique: true },
+    password: { type: DataTypes.STRING, allowNull: false },
+    ticket: { type: DataTypes.STRING, allowNull: false },
+    customerId: { type: DataTypes.STRING, allowNull: false, unique: true },
+}, { sequelize, modelName: 'UserAccount', tableName: 'user_accounts', timestamps: false });
+
+class AuthTicket extends Model {
+    declare ticket: string;
+    declare customerId: string;
+}
+AuthTicket.init({
+    ticket: { type: DataTypes.STRING, allowNull: false, unique: true },
+    customerId: { type: DataTypes.STRING, allowNull: false },
+}, { sequelize, modelName: 'AuthTicket', tableName: 'auth_tickets', timestamps: false });
 
 // In-memory session and user stores (for legacy/fallback/testing)
 const _sessions: ConnectionRecord[] = [];
@@ -50,6 +75,11 @@ export interface DatabaseService {
         password: string,
     ) => { username: string; ticket: string; customerId: string } | null;
     generateTicket: (customerId: string) => string;
+    generateTicketAsync: (customerId: string) => Promise<string>;
+    retrieveUserAccountAsync: (
+        username: string,
+        password: string,
+    ) => Promise<{ username: string; ticket: string; customerId: string } | null>;
 }
 
 // Database Implementation
@@ -231,20 +261,15 @@ const DatabaseImpl = {
                 }
                 return Promise.resolve(record);
             },
-            retrieveUserAccount: (username: string, password: string) => {
-                const customer = UserAccounts.find(
-                    (account) =>
-                        account.username === username && account.password === password,
-                );
-                return customer ?? null;
+            // Synchronous stubs for legacy API, always throw
+            generateTicket: (_customerId: string) => {
+                throw new Error('generateTicket should be called as an async method');
             },
-            generateTicket: (customerId: string) => {
-                const ticket = AuthTickets.find((t) => t.customerId === customerId);
-                if (ticket) {
-                    return ticket.ticket;
-                }
-                return '';
+            retrieveUserAccount: (_username: string, _password: string) => {
+                throw new Error('retrieveUserAccount should be called as an async method');
             },
+            generateTicketAsync: generateTicketAsync,
+            retrieveUserAccountAsync: retrieveUserAccountAsync,
         };
     },
 } as const;
@@ -284,31 +309,18 @@ function initializeDatabaseService(): DatabaseService {
     return DatabaseImpl.createDatabaseService(databaseInstance);
 }
 
-const UserAccounts = [
-    {
-        username: 'new',
-        ticket: '5213dee3a6bcdb133373b2d4f3b9962758',
-        password: 'new',
-        customerId: '123456',
-    },
-    {
-        username: 'admin',
-        ticket: 'd316cd2dd6bf870893dfbaaf17f965884e',
-        password: 'admin',
-        customerId: '654321',
-    },
-];
+// Add async version for real use
+export async function generateTicketAsync(customerId: string): Promise<string> {
+    const ticket = await AuthTicket.findOne({ where: { customerId } });
+    return ticket ? ticket.ticket : '';
+}
 
-const AuthTickets = [
-    {
-        ticket: '5213dee3a6bcdb133373b2d4f3b9962758',
-        customerId: '123456',
-    },
-    {
-        ticket: 'd316cd2dd6bf870893dfbaaf17f965884e',
-        customerId: '654321',
-    },
-];
+// Add async version for real use
+export async function retrieveUserAccountAsync(username: string, password: string): Promise<{ username: string; ticket: string; customerId: string } | null> {
+    const user = await UserAccount.findOne({ where: { username, password } });
+    if (!user) return null;
+    return { username: user.username, ticket: user.ticket, customerId: user.customerId };
+}
 
 
 // --- Begin migrated DatabaseManager API ---

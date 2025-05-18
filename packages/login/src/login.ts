@@ -47,7 +47,7 @@ export async function login({
     userStatus.dumpPacket();
 
     // Load the customer record by contextId
-    const userRecord = databaseService.findSessionByContext(contextId);
+    const userRecord = await databaseService.findSessionByContext(contextId);
 
     if (typeof userRecord === 'undefined') {
         // We were not able to locate the user's record

@@ -33,7 +33,7 @@ type WebHandlerResponse = {
 type WebHandler = (
     request: http.IncomingMessage,
     response: http.ServerResponse,
-) => WebHandlerResponse;
+) => WebHandlerResponse | Promise<WebHandlerResponse>;
 
 class AuthLoginResponse {
     valid: boolean = false;
@@ -81,7 +81,7 @@ export function initializeRouteHandlers() {
     routeHandlers.set('/AuthLogin', handleAuthLogin);
     routeHandlers.set('/ShardList/', handleShardList);
     routeHandlers.set('/ticker', handleTicker);
-    routeHandlers.set('/cert', () => {
+    routeHandlers.set('/cert', (_req, _res) => {
         return {
             headers: {
                 'Content-Type': 'octet-stream',
@@ -90,7 +90,7 @@ export function initializeRouteHandlers() {
             body: handleGetCert(getServerConfiguration()),
         };
     });
-    routeHandlers.set('/key', () => {
+    routeHandlers.set('/key', (_req, _res) => {
         return {
             headers: {
                 'Content-Type': 'octet-stream',
@@ -99,7 +99,7 @@ export function initializeRouteHandlers() {
             body: handleGetKey(getServerConfiguration()),
         };
     });
-    routeHandlers.set('/registry', () => {
+    routeHandlers.set('/registry', (_req, _res) => {
         return {
             headers: {
                 'Content-Type': 'octet-stream',
@@ -159,10 +159,10 @@ function handleTicker(): WebHandlerResponse {
  * @param request - The incoming HTTP request object.
  * @param response - The HTTP response object to send the authentication response.
  */
-function handleAuthLogin(
+async function handleAuthLogin(
     request: http.IncomingMessage,
     response: http.ServerResponse,
-): WebHandlerResponse {
+): Promise<WebHandlerResponse> {
     const url = new URL(
         `http://${process.env['HOST'] ?? 'localhost'}${request.url}`,
     );
@@ -177,10 +177,10 @@ function handleAuthLogin(
         'https://winehq.com',
     );
 
-    const user = databaseService.retrieveUserAccount(username, password);
+    const user = await databaseService.retrieveUserAccountAsync(username, password);
 
     if (user !== null) {
-        const ticket = databaseService.generateTicket(user.customerId);
+        const ticket = await databaseService.generateTicketAsync(user.customerId);
         if (ticket !== '') {
             authResponse = AuthLoginResponse.createValid(ticket);
         }
@@ -221,7 +221,7 @@ function handleShardList(): WebHandlerResponse {
  * - `/registry`: Responds with registry information based on server configuration.
  * - Any other route: Responds with a 404 status code and "Not found" message.
  */
-export function processHttpRequest(
+export async function processHttpRequest(
     request: http.IncomingMessage,
     response: http.ServerResponse,
 ) {
@@ -232,7 +232,9 @@ export function processHttpRequest(
     if (routeHandlers.has(url.pathname)) {
         const handler = routeHandlers.get(url.pathname);
         if (handler) {
-            const { headers, body } = handler(request, response);
+            // Await the handler in case it's async
+            const result = await handler(request, response);
+            const { headers, body } = result;
             Object.entries(headers).forEach(([key, value]) => {
                 response.setHeader(key, value);
             });
