@@ -1,7 +1,6 @@
-import { SerializedBufferOld, ServerLogger } from "rusty-motors-shared";
-import { LegacyMessage } from "rusty-motors-shared";
-import { getServerLogger } from "rusty-motors-shared";
-
+import { SerializedBufferOld } from 'rusty-motors-shared';
+import { LegacyMessage } from 'rusty-motors-shared';
+import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 
 /**
  * Handle game logout
@@ -16,30 +15,34 @@ import { getServerLogger } from "rusty-motors-shared";
  */
 
 export async function _gameLogout({
-	connectionId,
-	message,
-	log = getServerLogger( "persona._gameLogout"),
+    connectionId,
+    message,
+    log = getServerLogger('persona._gameLogout'),
 }: {
-	connectionId: string;
-	message: LegacyMessage;
-	log?: ServerLogger;
+    connectionId: string;
+    message: LegacyMessage;
+    log?: ServerLogger;
 }): Promise<{
-	connectionId: string;
-	messages: SerializedBufferOld[];
+    connectionId: string;
+    messages: SerializedBufferOld[];
 }> {
-	const requestPacket = message;
-	log.debug(`[${connectionId}] _npsLogoutGameUser request: ${requestPacket.toHexString()}`);
+    const requestPacket = message;
+    log.debug(
+        `[${connectionId}] _npsLogoutGameUser request: ${requestPacket.toHexString()}`,
+    );
 
-	// Build the packet
-	const responsePacket = new LegacyMessage();
-	responsePacket._header.id = 519;
-	log.debug(`[${connectionId}] _npsLogoutGameUser response: ${responsePacket.toHexString()}`);
+    // Build the packet
+    const responsePacket = new LegacyMessage();
+    responsePacket._header.id = 519;
+    log.debug(
+        `[${connectionId}] _npsLogoutGameUser response: ${responsePacket.toHexString()}`,
+    );
 
-	const outboundMessage = new SerializedBufferOld();
-	outboundMessage._doDeserialize(responsePacket._doSerialize());
+    const outboundMessage = new SerializedBufferOld();
+    outboundMessage._doDeserialize(responsePacket._doSerialize());
 
-	return {
-		connectionId,
-		messages: [outboundMessage],
-	};
+    return {
+        connectionId,
+        messages: [outboundMessage],
+    };
 }

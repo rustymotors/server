@@ -1,100 +1,112 @@
-import { describe, it, expect, vi } from "vitest";
-import http from "node:http";
-import { processHttpRequest, initializeRouteHandlers } from "./web";
-import { before } from "node:test";
+import { describe, it, expect, vi } from 'vitest';
+import { IncomingMessage, ServerResponse } from 'node:http';
+import { processHttpRequest, initializeRouteHandlers } from './web.js';
+import { databaseService } from 'rusty-motors-database';
+import { before } from 'node:test';
 
-describe("processHttpRequest", () => {
-	before(() => {
-		initializeRouteHandlers();
-	});
+describe('processHttpRequest', () => {
+    before(() => {
+        initializeRouteHandlers();
+    });
 
-	it("should respond with 'Hello, world!' for the root path", () => {
-		const request = {
-			url: "/",
-		} as http.IncomingMessage;
+    it("should respond with 'Hello, world!' for the root path", async () => {
+        const request = {
+            url: '/',
+        } as IncomingMessage;
 
-		const response = {
-			setHeader: vi.fn(),
-			end: vi.fn(),
-		} as unknown as http.ServerResponse;
+        const response = {
+            setHeader: vi.fn(),
+            end: vi.fn(),
+        } as unknown as ServerResponse;
 
-		processHttpRequest(request, response);
+        await processHttpRequest(request, response);
 
-		expect(response.setHeader).toHaveBeenCalledWith(
-			"Content-Type",
-			"text/plain",
-		);
-		expect(response.end).toHaveBeenCalledWith("Hello, world!");
-	});
+        expect(response.setHeader).toHaveBeenCalledWith(
+            'Content-Type',
+            'text/plain',
+        );
+        expect(response.end).toHaveBeenCalledWith('Hello, world!');
+    });
 
-	it("should respond with 404 for unknown paths", () => {
-		const request = {
-			url: "/unknown",
-		} as http.IncomingMessage;
+    it('should respond with 404 for unknown paths', async () => {
+        const request = {
+            url: '/unknown',
+        } as IncomingMessage;
 
-		const response = {
-			setHeader: vi.fn(),
-			end: vi.fn(),
-			statusCode: 0,
-		} as unknown as http.ServerResponse;
+        const response = {
+            setHeader: vi.fn(),
+            end: vi.fn(),
+            statusCode: 0,
+        } as unknown as ServerResponse;
 
-		processHttpRequest(request, response);
+        await processHttpRequest(request, response);
 
-		expect(response.statusCode).toBe(404);
-		expect(response.end).toHaveBeenCalledWith("Not found");
-	});
+        expect(response.statusCode).toBe(404);
+        expect(response.end).toHaveBeenCalledWith('Not found');
+    });
 
-	it("should handle /AuthLogin path", () => {
-		const request = {
-			url: "/AuthLogin?username=new&password=new",
-		} as http.IncomingMessage;
+    it('should handle /AuthLogin path', async () => {
+        // Mock the databaseService methods for this test
+        const mockUser = { username: 'new', ticket: 'ticket123', customerId: '1' };
+        const originalRetrieveUserAccountAsync = databaseService.retrieveUserAccountAsync;
+        const originalGenerateTicketAsync = databaseService.generateTicketAsync;
+        databaseService.retrieveUserAccountAsync = vi.fn().mockResolvedValue(mockUser);
+        databaseService.generateTicketAsync = vi.fn().mockResolvedValue('ticket123');
 
-		const response = {
-			setHeader: vi.fn(),
-			end: vi.fn(),
-		} as unknown as http.ServerResponse;
+        const request = {
+            url: '/AuthLogin?username=new&password=new',
+        } as IncomingMessage;
 
-		processHttpRequest(request, response);
+        const response = {
+            setHeader: vi.fn(),
+            end: vi.fn(),
+        } as unknown as ServerResponse;
 
-		expect(response.setHeader).toHaveBeenCalledWith(
-			"Content-Type",
-			"text/plain",
-		);
-		expect(response.end).toHaveBeenCalledWith(
-			expect.stringContaining("Valid=TRUE"),
-		);
-	});
+        await processHttpRequest(request, response);
 
-	it("should handle /ShardList/ path", () => {
-		const request = {
-			url: "/ShardList/",
-		} as http.IncomingMessage;
+        expect(response.setHeader).toHaveBeenCalledWith(
+            'Content-Type',
+            'text/plain',
+        );
+        expect(response.end).toHaveBeenCalledWith(
+            expect.stringContaining('Valid=TRUE'),
+        );
 
-		const response = {
-			setHeader: vi.fn(),
-			end: vi.fn(),
-		} as unknown as http.ServerResponse;
+        // Restore original methods
+        databaseService.retrieveUserAccountAsync = originalRetrieveUserAccountAsync;
+        databaseService.generateTicketAsync = originalGenerateTicketAsync;
+    });
+
+    it('should handle /ShardList/ path', async () => {
+        const request = {
+            url: '/ShardList/',
+        } as IncomingMessage;
+
+        const response = {
+            setHeader: vi.fn(),
+            end: vi.fn(),
+        } as unknown as ServerResponse;
 
         const originalEnv = process.env;
         const testEnv = {
-            EXTERNAL_HOST: "localhost",
-            CERTIFICATE_FILE: "cert.pem",
-            PRIVATE_KEY_FILE: "key.pem",
-            PUBLIC_KEY_FILE: "public.pem",
-            LOG_LEVEL: "info",
+            EXTERNAL_HOST: 'localhost',
+            CERTIFICATE_FILE: 'cert.pem',
+            PRIVATE_KEY_FILE: 'key.pem',
+            PUBLIC_KEY_FILE: 'public.pem',
+            LOG_LEVEL: 'info',
         };
 
         process.env = {
             ...originalEnv,
             ...testEnv,
-        }
+        };
 
-		processHttpRequest(request, response);
+        await processHttpRequest(request, response);
 
-		expect(response.setHeader).toHaveBeenCalledWith(
-			"Content-Type",
-			"text/plain",
-		);
-		expect(response.end).toHaveBeenCalledWith(expect.any(String));
-	});
+        expect(response.setHeader).toHaveBeenCalledWith(
+            'Content-Type',
+            'text/plain',
+        );
+        expect(response.end).toHaveBeenCalledWith(expect.any(String));
+    });
 });

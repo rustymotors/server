@@ -1,8 +1,8 @@
-import { SerializedBufferOld, ServerLogger } from "rusty-motors-shared";
-import { LegacyMessage } from "rusty-motors-shared";
-import { getServerLogger } from "rusty-motors-shared";
+import { SerializedBufferOld } from 'rusty-motors-shared';
+import { LegacyMessage } from 'rusty-motors-shared';
+import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 
-const defaultLogger = getServerLogger("PersonaServer");
+const defaultLogger = getServerLogger('PersonaServer');
 
 /**
  * Selects a game persona and marks it as in use
@@ -17,45 +17,45 @@ const defaultLogger = getServerLogger("PersonaServer");
  */
 
 export async function _selectGamePersona({
-	connectionId,
-	message,
-	log = defaultLogger,
+    connectionId,
+    message,
+    log = defaultLogger,
 }: {
-	connectionId: string;
-	message: LegacyMessage;
-	log?: ServerLogger;
+    connectionId: string;
+    message: LegacyMessage;
+    log?: ServerLogger;
 }): Promise<{
-	connectionId: string;
-	messages: SerializedBufferOld[];
+    connectionId: string;
+    messages: SerializedBufferOld[];
 }> {
-	log.debug("_npsSelectGamePersona...");
-	const requestPacket = message;
-	log.debug(
-		`LegacyMsg request object from _npsSelectGamePersona ${requestPacket
-			._doSerialize()
-			.toString("hex")}`,
-	);
+    log.debug('_npsSelectGamePersona...');
+    const requestPacket = message;
+    log.debug(
+        `LegacyMsg request object from _npsSelectGamePersona ${requestPacket
+            ._doSerialize()
+            .toString('hex')}`,
+    );
 
-	// Create the packet content
-	const packetContent = Buffer.alloc(251);
+    // Create the packet content
+    const packetContent = Buffer.alloc(251);
 
-	// Build the packet
-	// Response Code
-	// 207 = success
-	const responsePacket = new LegacyMessage();
-	responsePacket._header.id = 519;
-	responsePacket.setBuffer(packetContent);
-	log.debug(
-		`LegacyMsg response object from _npsSelectGamePersona ${responsePacket
-			._doSerialize()
-			.toString("hex")} `,
-	);
+    // Build the packet
+    // Response Code
+    // 207 = success
+    const responsePacket = new LegacyMessage();
+    responsePacket._header.id = 519;
+    responsePacket.setBuffer(packetContent);
+    log.debug(
+        `LegacyMsg response object from _npsSelectGamePersona ${responsePacket
+            ._doSerialize()
+            .toString('hex')} `,
+    );
 
-	const outboundMessage = new SerializedBufferOld();
-	outboundMessage.setBuffer(responsePacket._doSerialize());
+    const outboundMessage = new SerializedBufferOld();
+    outboundMessage.setBuffer(responsePacket._doSerialize());
 
-	return {
-		connectionId,
-		messages: [outboundMessage],
-	};
+    return {
+        connectionId,
+        messages: [outboundMessage],
+    };
 }

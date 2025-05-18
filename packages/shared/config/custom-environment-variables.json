@@ -1,0 +1,7 @@
+{
+  "host": "EXTERNAL_HOST",
+  "logLevel": "MCO_LOG_LEVEL",
+  "certificateFile": "CERTIFICATE_FILE",
+  "privateKeyFile": "PRIVATE_KEY_FILE",
+  "publicKeyFile": "PUBLIC_KEY_FILE"
+}

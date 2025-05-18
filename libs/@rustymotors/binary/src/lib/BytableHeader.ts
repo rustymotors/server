@@ -1,105 +1,113 @@
-import { Bytable } from "./Bytable";
+// mcos is a game server, written from scratch, for an old game
+// Copyright (C) <2017>  <Drazi Crendraven>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+import { Bytable } from './Bytable.js';
 
 export class BytableHeader extends Bytable {
-	protected messageId_: number = 0;
-	protected messageLength_: number = 0;
-	protected messageVersion_: 0 | 1 = 0;
-	protected reserved_: number = 0;
-	protected checksum_: number = 0;
-	protected data_: Buffer = Buffer.alloc(0);
+    protected messageId_ = 0;
+    protected messageLength_ = 0;
+    protected messageVersion_: 0 | 1 = 0;
+    protected reserved_ = 0;
+    protected checksum_ = 0;
+    protected data_: Buffer = Buffer.alloc(0);
 
-	static override fromBuffer(buffer: Buffer, offset: number) {
-		const header = new this();
-		header.deserialize(buffer.subarray(offset));
+    override get json() {
+        return {
+            name: this.name,
+            id: this.messageId,
+            len: this.messageLength,
+            version: this.messageVersion,
+            serializeSize: this.serializeSize,
+        };
+    }
 
-		return header;
-	}
+    override toString(): string {
+        return `Message ID: ${this.messageId}, Message Length: ${this.messageLength}, Message Version: ${this.messageVersion}`;
+    }
 
-	override get json() {
-		return {
-			name: this.name,
-			id: this.messageId,
-			len: this.messageLength,
-			version: this.messageVersion,
-			serializeSize: this.serializeSize,
-		};
-	}
+    setMessageId(messageId: number) {
+        this.messageId_ = messageId;
+    }
 
-	override toString(): string {
-		return `Message ID: ${this.messageId}, Message Length: ${this.messageLength}, Message Version: ${this.messageVersion}`;
-	}
+    setMessageLength(messageLength: number) {
+        this.messageLength_ = messageLength;
+    }
 
-	setMessageId(messageId: number) {
-		this.messageId_ = messageId;
-	}
+    setMessageVersion(messageVersion: 0 | 1) {
+        this.messageVersion_ = messageVersion;
+    }
 
-	setMessageLength(messageLength: number) {
-		this.messageLength_ = messageLength;
-	}
+    setReserved(reserved: number) {
+        this.reserved_ = reserved;
+    }
 
-	setMessageVersion(messageVersion: 0 | 1) {
-		this.messageVersion_ = messageVersion;
-	}
+    setChecksum(checksum: number) {
+        this.checksum_ = checksum;
+    }
 
-	setReserved(reserved: number) {
-		this.reserved_ = reserved;
-	}
+    get messageId() {
+        return this.messageId_;
+    }
 
-	setChecksum(checksum: number) {
-		this.checksum_ = checksum;
-	}
+    get messageLength() {
+        return this.messageLength_;
+    }
 
-	get messageId() {
-		return this.messageId_;
-	}
+    get messageVersion() {
+        return this.messageVersion_;
+    }
 
-	get messageLength() {
-		return this.messageLength_;
-	}
+    get reserved() {
+        return this.reserved_;
+    }
 
-	get messageVersion() {
-		return this.messageVersion_;
-	}
+    get checksum() {
+        return this.checksum_;
+    }
 
-	get reserved() {
-		return this.reserved_;
-	}
+    override get serializeSize() {
+        return this.messageVersion === 0 ? 4 : 12;
+    }
 
-	get checksum() {
-		return this.checksum_;
-	}
+    override serialize() {
+        const buffer = Buffer.alloc(this.serializeSize);
+        buffer.writeUInt16BE(this.messageId, 0);
+        buffer.writeUInt16BE(this.messageLength, 2);
+        if (this.messageVersion !== 0) {
+            buffer.writeUInt16BE(257, 4);
+            buffer.writeUInt16BE(this.reserved, 6);
+            buffer.writeUInt32BE(this.checksum, 8);
+        }
+        return buffer;
+    }
 
-	override get serializeSize() {
-		return this.messageVersion === 0 ? 4 : 12;
-	}
+    override deserialize(buffer: Buffer) {
+        this.setMessageId(buffer.readUInt16BE(0));
+        this.setMessageLength(buffer.readUInt16BE(2));
 
-	override serialize() {
-		const buffer = Buffer.alloc(this.serializeSize);
-		buffer.writeUInt16BE(this.messageId, 0);
-		buffer.writeUInt16BE(this.messageLength, 2);
-		if (this.messageVersion !== 0) {
-			buffer.writeUInt16BE(257, 4);
-			buffer.writeUInt16BE(this.reserved, 6);
-			buffer.writeUInt32BE(this.checksum, 8);
-		}
-		return buffer;
-	}
+        // If the length is less than 12, there is no room for the message, so we assume version 0
+        if (buffer.byteLength >= 12 && buffer.readUInt16BE(4) === 257) {
+            this.setMessageVersion(1);
+        } else {
+            this.setMessageVersion(0);
+        }
 
-	override deserialize(buffer: Buffer) {
-		super.deserialize(buffer);
-		this.setMessageId(this.getUint16(0));
-		this.setMessageLength(this.getUint16(2));
-
-		// If the length is less than 12, there is no room for the message, so we assume version 0
-		if (buffer.byteLength >= 12 && this.getUint16(4) === 257) {
-			this.setMessageVersion(1);
-		} else {
-			this.setMessageVersion(0);
-		}
-
-		if (this.messageVersion === 1) {
-			this.setReserved(this.getUint16(6));
-			this.setChecksum(this.getUint32(8));
-		}
-	}
+        if (this.messageVersion === 1) {
+            this.setReserved(buffer.readUInt16BE(6));
+            this.setChecksum(buffer.readUInt32BE(8));
+        }
+    }
 }

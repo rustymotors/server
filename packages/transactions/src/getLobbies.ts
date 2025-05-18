@@ -1,10 +1,10 @@
-import {  OldServerMessage } from "rusty-motors-shared";
-import { EntryFeePurseMessage, PurseEntry } from "./EntryFeePurseMessage.js";
-import { LobbyInfo, LobbyMessage } from "./LobbyMessage.js";
-import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
-import { getServerLogger } from "rusty-motors-shared";
+import { OldServerMessage } from 'rusty-motors-shared';
+import { EntryFeePurseMessage, PurseEntry } from './EntryFeePurseMessage.js';
+import { LobbyInfo, LobbyMessage } from './LobbyMessage.js';
+import type { MessageHandlerArgs, MessageHandlerResult } from './handlers.js';
+import { getServerLogger } from 'rusty-motors-logger';
 
-const defaultLogger = getServerLogger("handlers/getLobbies");
+const defaultLogger = getServerLogger('handlers/getLobbies');
 
 /**
  * @param {MessageHandlerArgs} args
@@ -12,77 +12,82 @@ const defaultLogger = getServerLogger("handlers/getLobbies");
  */
 
 async function _getLobbies({
-	connectionId,
-	packet,
+    connectionId,
+    packet,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
-	defaultLogger.debug(`[${connectionId}] Received getLobbies packet ${packet.toString()}`);
+    defaultLogger.debug(
+        `[${connectionId}] Received getLobbies packet ${packet.toString()}`,
+    );
 
-	defaultLogger.debug(`[${connectionId}] Sending lobbies response...`);
+    defaultLogger.debug(`[${connectionId}] Sending lobbies response...`);
 
-	// Create new response packet
-	const lobbiesResponsePacket = new OldServerMessage();
-	lobbiesResponsePacket._header.sequence = packet.sequenceNumber;
-	lobbiesResponsePacket._header.flags = 8;
+    // Create new response packet
+    const lobbiesResponsePacket = new OldServerMessage();
+    lobbiesResponsePacket._header.sequence = packet.sequenceNumber;
+    lobbiesResponsePacket._header.flags = 8;
 
-	const lobbyResponse = new LobbyMessage();
-	lobbyResponse._msgNo = 325;
-	lobbyResponse._shouldExpectMoreMessages = false;
+    const lobbyResponse = new LobbyMessage();
+    lobbyResponse._msgNo = 325;
+    lobbyResponse._shouldExpectMoreMessages = false;
 
-	const lobby = new LobbyInfo();
-	lobby._lobbyId = 2;
-	lobby._lobbyName = "LOBBY";
-	lobby._topDog = "Drazi Crendraven";
-	lobby._maxNumberPlayers = 8;
+    const lobby = new LobbyInfo();
+    lobby._lobbyId = 2;
+    lobby._lobbyName = 'LOBBY';
+    lobby._topDog = 'Drazi Crendraven';
+    lobby._maxNumberPlayers = 8;
 
-	defaultLogger.debug(`[${connectionId}] Sending lobby: ${lobby.toString()}`);
+    defaultLogger.debug(`[${connectionId}] Sending lobby: ${lobby.toString()}`);
 
-	lobbyResponse.addLobby(lobby);
+    lobbyResponse.addLobby(lobby);
 
-	defaultLogger.debug(`[${connectionId}] Sending lobbyResponse: ${lobbyResponse.toString()}`
-	);
+    defaultLogger.debug(
+        `[${connectionId}] Sending lobbyResponse: ${lobbyResponse.toString()}`,
+    );
 
-	lobbiesResponsePacket.setBuffer(lobbyResponse.serialize());
+    lobbiesResponsePacket.setBuffer(lobbyResponse.serialize());
 
-	// Handle purse entries
-	const purseEntry = new PurseEntry();
-	purseEntry._entryFee = 100;
-	purseEntry._purse = 1000;
+    // Handle purse entries
+    const purseEntry = new PurseEntry();
+    purseEntry._entryFee = 100;
+    purseEntry._purse = 1000;
 
-	const perseEntryResponse = new EntryFeePurseMessage();
-	perseEntryResponse._msgNo = 408;
-	perseEntryResponse._shouldExpectMoreMessages = false;
-	perseEntryResponse.addEntry(purseEntry);
+    const perseEntryResponse = new EntryFeePurseMessage();
+    perseEntryResponse._msgNo = 408;
+    perseEntryResponse._shouldExpectMoreMessages = false;
+    perseEntryResponse.addEntry(purseEntry);
 
-	defaultLogger.debug(`[${connectionId}] Sending purseEntryResponse: ${perseEntryResponse.toString()}`);
+    defaultLogger.debug(
+        `[${connectionId}] Sending purseEntryResponse: ${perseEntryResponse.toString()}`,
+    );
 
-	const perseEntriesResponsePacket = new OldServerMessage();
-	perseEntriesResponsePacket._header.sequence = packet.sequenceNumber;
-	perseEntriesResponsePacket._header.flags = 8;
+    const perseEntriesResponsePacket = new OldServerMessage();
+    perseEntriesResponsePacket._header.sequence = packet.sequenceNumber;
+    perseEntriesResponsePacket._header.flags = 8;
 
-	perseEntriesResponsePacket.setBuffer(perseEntryResponse.serialize());
+    perseEntriesResponsePacket.setBuffer(perseEntryResponse.serialize());
 
-	return {
-		connectionId,
-		messages: [lobbiesResponsePacket, perseEntriesResponsePacket],
-	};
+    return {
+        connectionId,
+        messages: [lobbiesResponsePacket, perseEntriesResponsePacket],
+    };
 }
 /**
  * @param {MessageHandlerArgs} args
  * @return {Promise<MessageHandlerResult>}
  */
 export async function getLobbies({
-	connectionId,
-	packet,
-	log = defaultLogger,
+    connectionId,
+    packet,
+    log = defaultLogger,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
-	const result = await _getLobbies({ connectionId, packet, log });
-	log.debug("Dumping Lobbies response packet...");
-	result.messages.forEach((msg) => {
-		log.debug(msg.toString());
-	});
-	log.debug(result.messages.join().toString());
-	return {
-		connectionId,
-		messages: result.messages,
-	};
+    const result = await _getLobbies({ connectionId, packet, log });
+    log.debug('Dumping Lobbies response packet...');
+    result.messages.forEach((msg) => {
+        log.debug(msg.toString());
+    });
+    log.debug(result.messages.join().toString());
+    return {
+        connectionId,
+        messages: result.messages,
+    };
 }

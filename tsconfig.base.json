@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "lib": ["es2022"],
-        "module": "CommonJS",
+        "module": "NodeNext",
         "target": "es2022",
         "allowUnusedLabels": false,
         "allowUnreachableCode": false,
@@ -22,6 +22,7 @@
         "noFallthroughCasesInSwitch": true,
         "noUncheckedIndexedAccess": true,
         "noPropertyAccessFromIndexSignature": true,
+        "moduleResolution": "nodenext",
         "declaration": true,
         "declarationMap": true,
         "sourceMap": true,
@@ -34,7 +35,7 @@
         "skipLibCheck": true,
         "isolatedModules": true,
         "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
+        "emitDecoratorMetadata": true
     },
     "files": [],
     "references": [

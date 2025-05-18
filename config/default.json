@@ -1,0 +1,7 @@
+{
+  "host": "localhost",
+  "logLevel": "debug",
+  "certificateFile": "./data/mcouniverse.crt",
+  "privateKeyFile": "./data/private_key.pem",
+  "publicKeyFile": "./data/pub.key"
+}

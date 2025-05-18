@@ -1,40 +1,42 @@
 import {
-	GameMessage,
-	MiniRiffInfo,
-	MiniRiffList,
-	getAsHex,
-} from "rusty-motors-nps";
-import { getServerLogger } from "rusty-motors-shared";
+    GameMessage,
+    MiniRiffInfo,
+    MiniRiffList,
+    getAsHex,
+} from 'rusty-motors-nps';
+import { getServerLogger } from 'rusty-motors-logger';
 
-const defaultLogger = getServerLogger("nps.getLobMiniRiffList");
+const defaultLogger = getServerLogger('nps.getLobMiniRiffList');
 
 // Command id: 0x30c
 export async function getLobMiniRiffList(
-	_commandId: number,
-	data: Buffer,
+    _commandId: number,
+    data: Buffer,
 ): Promise<Buffer> {
-	defaultLogger.debug("getLobMiniRiffList called");
-	defaultLogger.info(`Processing getLobMiniRiffList command: ${getAsHex(data)}`);
+    defaultLogger.debug('getLobMiniRiffList called');
+    defaultLogger.info(
+        `Processing getLobMiniRiffList command: ${getAsHex(data)}`,
+    );
 
-	const riffList = new MiniRiffList();
+    const riffList = new MiniRiffList();
 
-	riffList.addRiff(new MiniRiffInfo("CTRL", 0, 1));
-	riffList.addRiff(new MiniRiffInfo("MC141", 141, 0));
-	riffList.addRiff(new MiniRiffInfo("MCCHAT", 191, 0));
+    riffList.addRiff(new MiniRiffInfo('CTRL', 0, 1));
+    riffList.addRiff(new MiniRiffInfo('MC141', 141, 0));
+    riffList.addRiff(new MiniRiffInfo('MCCHAT', 191, 0));
 
-	defaultLogger.info(`getLobMiniRiffList: ${riffList.toString()}`);
+    defaultLogger.info(`getLobMiniRiffList: ${riffList.toString()}`);
 
-	const responseMessage = new GameMessage(0);
-	responseMessage.header.setId(0x404);
-	responseMessage.setData(riffList);
+    const responseMessage = new GameMessage(0);
+    responseMessage.header.setId(0x404);
+    responseMessage.setData(riffList);
 
-	defaultLogger.info("Dumping responseMessage: ");
+    defaultLogger.info('Dumping responseMessage: ');
 
-	defaultLogger.info(
-		`responseMessage: ${
-			responseMessage.serialize().length
-		} bytes - ${getAsHex(responseMessage.serialize())}`,
-	);
+    defaultLogger.info(
+        `responseMessage: ${
+            responseMessage.serialize().length
+        } bytes - ${getAsHex(responseMessage.serialize())}`,
+    );
 
-	return responseMessage.serialize();
+    return responseMessage.serialize();
 }

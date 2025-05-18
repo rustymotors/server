@@ -1,71 +1,94 @@
-import { get } from "http";
-import { BytableBase } from "./BytableBase";
-import { BytableObject } from "./types";
-import { getServerLogger } from "rusty-motors-shared";
+// mcos is a game server, written from scratch, for an old game
+// Copyright (C) <2017>  <Drazi Crendraven>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+import { BytableBase } from './BytableBase.js';
+import { BytableObject } from './types.js';
 
 export class Bytable extends BytableBase implements BytableObject {
-	protected name_: string = "";
-	protected value_: string | number | Buffer = "";
+    protected name_ = '';
+    protected value_: string | number | Buffer = '';
 
-	static fromBuffer(buffer: Buffer, offset: number) {
-		const bytable = new this();
+    protected deserializeFields(buffer: Buffer) {
+        this.buffer = new DataView(Uint8Array.from(buffer).buffer);
+    }
 
-		if  (buffer.length === 4 && offset === 4) {
-			// Some messages only consist of a id and a length
-			getServerLogger().warn(`Buffer length is 4, skipping deserialization`);
-			return bytable;
-		}
-		
-		if (!buffer || offset < 0 || offset >= buffer.length) {
-			getServerLogger().error(`Cannot deserialize buffer with invalid offset: ${offset}`);
-			return bytable;
-		}
-		bytable.deserialize(buffer.subarray(offset));
-		return bytable;
-	}
+    override deserialize(buffer: Buffer) {
+        validateBuffer(buffer, 'deserialize');
+        return this.deserializeFields(buffer);
+    }
 
-	override serialize() {
-		if (!this.buffer || this.buffer.byteLength === 0) {
-			throw new Error('Cannot serialize empty buffer');
-		}
-		return Buffer.from(this.buffer.buffer);
-	}
+    protected serializeFields(): Buffer {
+        return Buffer.from(this.buffer.buffer);
+    }
 
-	override deserialize(buffer: Buffer) {
-		if (!buffer || buffer.length === 0) {
-			throw new Error('Cannot deserialize empty buffer');
-		}
-		this.buffer = new DataView(Uint8Array.from(buffer).buffer);
-	}
+    override serialize(): Buffer {
+        validateBuffer(this.buffer, 'serialize');
+        return this.serializeFields();
+    }
 
-	get json() {
-		return {
-			name: this.name_,
-			serializeSize: this.serializeSize,
-		};
-	}
+    get json() {
+        return {
+            name: this.name_,
+            serializeSize: this.serializeSize,
+        };
+    }
 
-	get serializeSize() {
-		return this.buffer.byteLength;
-	}
+    override get serializeSize(): number {
+        return this.buffer.byteLength;
+    }
 
-	setName(name: string) {
-		this.name_ = name;
-	}
+    setName(name: string) {
+        this.name_ = name;
+    }
 
-	get name() {
-		return this.name_;
-	}
+    get name() {
+        return this.name_;
+    }
 
-	get value() {
-		return this.value_;
-	}
+    get value() {
+        return this.value_;
+    }
 
+    setValue(value: string | number | Buffer) {
+        this.validateValue(value);
+        this.value_ = value;
+    }
 
-
-	setValue(value: string | number | Buffer) {
-		this.validateValue(value);
-		this.value_ = value;
-	}
+    override toString() {
+        return `BytableBase { name: ${this.name_}, value: ${this.value_} }`;
+    }
 }
 
+/**
+ * Validates that the provided buffer is defined and non-empty.
+ *
+ * @param buf - The buffer to validate.
+ * @param direction - A string describing the operation being performed (e.g., "serialize" or "deserialize").
+ *
+ * @throws {Error} If {@link buf} is undefined or has zero byte length.
+ */
+export function validateBuffer(
+    buf: DataView<ArrayBufferLike> | ArrayBufferLike,
+    direction: string,
+) {
+    if (typeof buf === 'undefined') {
+        throw new Error(`Cannot ${direction} undefined buffer`);
+    }
+
+    if (buf.byteLength === 0) {
+        throw new Error(`Cannot ${direction} empty buffer`);
+    }
+}

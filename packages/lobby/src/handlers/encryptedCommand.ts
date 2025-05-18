@@ -1,16 +1,15 @@
 import {
-	fetchStateFromDatabase,
-	getEncryption,
-	ServerLogger,
-	updateEncryption,
-} from "rusty-motors-shared";
-import { MessageBufferOld } from "rusty-motors-shared";
-import { SerializedBufferOld } from "rusty-motors-shared";
-import { LegacyMessage } from "rusty-motors-shared";
-import { _setMyUserData } from "./_setMyUserData.js";
-import { handleGetMiniUserList } from "./handleGetMiniUserList.js";
-import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";
-import { getServerLogger } from "rusty-motors-shared";
+    fetchStateFromDatabase,
+    getEncryption,
+    updateEncryption,
+} from 'rusty-motors-shared';
+import { MessageBufferOld } from 'rusty-motors-shared';
+import { SerializedBufferOld } from 'rusty-motors-shared';
+import { LegacyMessage } from 'rusty-motors-shared';
+import { _setMyUserData } from './_setMyUserData.js';
+import { handleGetMiniUserList } from './handleGetMiniUserList.js';
+import { handleSendMiniRiffList } from './handleSendMiniRiffList.js';
+import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 
 /**
  * Array of supported command handlers
@@ -28,16 +27,16 @@ import { getServerLogger } from "rusty-motors-shared";
  * }>}[]}
  */
 export const messageHandlers: {
-	opCode: number;
-	name: string;
-	handler: (args: {
-		connectionId: string;
-		message: SerializedBufferOld;
-		log: ServerLogger;
-	}) => Promise<{
-		connectionId: string;
-		messages: SerializedBufferOld[];
-	}>;
+    opCode: number;
+    name: string;
+    handler: (args: {
+        connectionId: string;
+        message: SerializedBufferOld;
+        log: ServerLogger;
+    }) => Promise<{
+        connectionId: string;
+        messages: SerializedBufferOld[];
+    }>;
 }[] = [];
 
 /**
@@ -53,39 +52,39 @@ export const messageHandlers: {
  * }>}
  */
 async function encryptCmd({
-	connectionId,
-	message,
-	log = getServerLogger( "lobby.encryptCmd"),
+    connectionId,
+    message,
+    log = getServerLogger('lobby.encryptCmd'),
 }: {
-	connectionId: string;
-	message: LegacyMessage | MessageBufferOld;
-	log?: ServerLogger;
+    connectionId: string;
+    message: LegacyMessage | MessageBufferOld;
+    log?: ServerLogger;
 }): Promise<{
-	connectionId: string;
-	message: LegacyMessage | MessageBufferOld;
+    connectionId: string;
+    message: LegacyMessage | MessageBufferOld;
 }> {
-	const state = fetchStateFromDatabase();
+    const state = fetchStateFromDatabase();
 
-	const encryption = getEncryption(state, connectionId);
+    const encryption = getEncryption(state, connectionId);
 
-	if (typeof encryption === "undefined") {
-		throw Error(
-			`Unable to locate encryption session for connection id ${connectionId}`,
-		);
-	}
+    if (typeof encryption === 'undefined') {
+        throw Error(
+            `Unable to locate encryption session for connection id ${connectionId}`,
+        );
+    }
 
-	const result = encryption.commandEncryption.encrypt(message.data);
+    const result = encryption.commandEncryption.encrypt(message.data);
 
-	updateEncryption(state, encryption).save();
+    updateEncryption(state, encryption).save();
 
-	log.debug(`[ciphered Cmd: ${result.toString("hex")}`);
+    log.debug(`[ciphered Cmd: ${result.toString('hex')}`);
 
-	message.setBuffer(result);
+    message.setBuffer(result);
 
-	return {
-		connectionId,
-		message,
-	};
+    return {
+        connectionId,
+        message,
+    };
 }
 
 /**
@@ -101,70 +100,70 @@ async function encryptCmd({
  * }>}
  */
 async function decryptCmd({
-	connectionId,
-	message,
-	log = getServerLogger( "lobby.decryptCmd"),
+    connectionId,
+    message,
+    log = getServerLogger('lobby.decryptCmd'),
 }: {
-	connectionId: string;
-	message: LegacyMessage;
-	log?: ServerLogger;
+    connectionId: string;
+    message: LegacyMessage;
+    log?: ServerLogger;
 }): Promise<{
-	connectionId: string;
-	message: LegacyMessage;
+    connectionId: string;
+    message: LegacyMessage;
 }> {
-	const state = fetchStateFromDatabase();
+    const state = fetchStateFromDatabase();
 
-	const encryption = getEncryption(state, connectionId);
+    const encryption = getEncryption(state, connectionId);
 
-	if (typeof encryption === "undefined") {
-		throw Error(
-			`Unable to locate encryption session for connection id ${connectionId}`,
-		);
-	}
+    if (typeof encryption === 'undefined') {
+        throw Error(
+            `Unable to locate encryption session for connection id ${connectionId}`,
+        );
+    }
 
-	const result = encryption.commandEncryption.decrypt(message.data);
+    const result = encryption.commandEncryption.decrypt(message.data);
 
-	updateEncryption(state, encryption).save();
+    updateEncryption(state, encryption).save();
 
-	log.debug(`[Deciphered Cmd: ${result.toString("hex")}`);
+    log.debug(`[Deciphered Cmd: ${result.toString('hex')}`);
 
-	message.setBuffer(result);
+    message.setBuffer(result);
 
-	return {
-		connectionId,
-		message,
-	};
+    return {
+        connectionId,
+        message,
+    };
 }
 
 export type NpsCommandHandler = {
-	opCode: number;
-	name: string;
-	handler: (args: {
-		connectionId: string;
-		message: LegacyMessage;
-		log: ServerLogger;
-	}) => Promise<{
-		connectionId: string;
-		message: LegacyMessage | null;
-	}>;
+    opCode: number;
+    name: string;
+    handler: (args: {
+        connectionId: string;
+        message: LegacyMessage;
+        log: ServerLogger;
+    }) => Promise<{
+        connectionId: string;
+        message: LegacyMessage | null;
+    }>;
 };
 
 const npsCommandHandlers: NpsCommandHandler[] = [
-	{
-		opCode: 0x128,
-		name: "NPS_GET_MINI_USER_LIST",
-		handler: handleGetMiniUserList,
-	},
-	{
-		opCode: 0x30c,
-		name: "NPS_SEND_MINI_RIFF_LIST",
-		handler: handleSendMiniRiffList,
-	},
-	{
-		opCode: 0x103,
-		name: "NPS_SET_MY_USER_DATA",
-		handler: _setMyUserData,
-	},
+    {
+        opCode: 0x128,
+        name: 'NPS_GET_MINI_USER_LIST',
+        handler: handleGetMiniUserList,
+    },
+    {
+        opCode: 0x30c,
+        name: 'NPS_SEND_MINI_RIFF_LIST',
+        handler: handleSendMiniRiffList,
+    },
+    {
+        opCode: 0x103,
+        name: 'NPS_SET_MY_USER_DATA',
+        handler: _setMyUserData,
+    },
 ];
 
 /**
@@ -180,39 +179,39 @@ const npsCommandHandlers: NpsCommandHandler[] = [
  * }>}}
  */
 async function handleCommand({
-	connectionId,
-	message,
-	log = getServerLogger( "lobby.handleCommand"),
+    connectionId,
+    message,
+    log = getServerLogger('lobby.handleCommand'),
 }: {
-	connectionId: string;
-	message: LegacyMessage;
-	log?: ServerLogger;
+    connectionId: string;
+    message: LegacyMessage;
+    log?: ServerLogger;
 }): Promise<{
-	connectionId: string;
-	message: MessageBufferOld | LegacyMessage | null;
+    connectionId: string;
+    message: MessageBufferOld | LegacyMessage | null;
 }> {
-	const incommingRequest = message;
+    const incommingRequest = message;
 
-	log.debug(
-		`[${connectionId}] Received command: ${incommingRequest._doSerialize().toString("hex")}`,
-	);
+    log.debug(
+        `[${connectionId}] Received command: ${incommingRequest._doSerialize().toString('hex')}`,
+    );
 
-	// What is the command?
-	const command = incommingRequest.data.readUInt16BE(0);
+    // What is the command?
+    const command = incommingRequest.data.readUInt16BE(0);
 
-	log.debug(`Command: ${command}`);
+    log.debug(`Command: ${command}`);
 
-	const handler = npsCommandHandlers.find((h) => h.opCode === command);
+    const handler = npsCommandHandlers.find((h) => h.opCode === command);
 
-	if (typeof handler === "undefined") {
-		throw Error(`Unknown command: ${command}`);
-	}
+    if (typeof handler === 'undefined') {
+        throw Error(`Unknown command: ${command}`);
+    }
 
-	return handler.handler({
-		connectionId,
-		message,
-		log,
-	});
+    return handler.handler({
+        connectionId,
+        message,
+        log,
+    });
 }
 
 /**
@@ -229,53 +228,53 @@ async function handleCommand({
 
  */
 export async function handleEncryptedNPSCommand({
-	connectionId,
-	message,
-	log = getServerLogger( "lobby.handleEncryptedNPSCommand"),
+    connectionId,
+    message,
+    log = getServerLogger('lobby.handleEncryptedNPSCommand'),
 }: {
-	connectionId: string;
-	message: SerializedBufferOld;
-	log?: ServerLogger;
+    connectionId: string;
+    message: SerializedBufferOld;
+    log?: ServerLogger;
 }): Promise<{
-	connectionId: string;
-	messages: SerializedBufferOld[];
+    connectionId: string;
+    messages: SerializedBufferOld[];
 }> {
-	const inboundMessage = new LegacyMessage();
-	inboundMessage._doDeserialize(message.data);
+    const inboundMessage = new LegacyMessage();
+    inboundMessage._doDeserialize(message.data);
 
-	// Decipher
-	const decipheredMessage = await decryptCmd({
-		connectionId,
-		message: inboundMessage,
-		log,
-	});
+    // Decipher
+    const decipheredMessage = await decryptCmd({
+        connectionId,
+        message: inboundMessage,
+        log,
+    });
 
-	const response = await handleCommand({
-		connectionId,
-		message: decipheredMessage.message,
-		log,
-	});
+    const response = await handleCommand({
+        connectionId,
+        message: decipheredMessage.message,
+        log,
+    });
 
-	if (response.message === null) {
-		log.debug(`[${connectionId}] No response to send`);
-		return {
-			connectionId,
-			messages: [],
-		};
-	}
+    if (response.message === null) {
+        log.debug(`[${connectionId}] No response to send`);
+        return {
+            connectionId,
+            messages: [],
+        };
+    }
 
-	// Encipher
-	const encryptedResponse = encryptCmd({
-		connectionId,
-		message: response.message,
-		log,
-	});
+    // Encipher
+    const encryptedResponse = encryptCmd({
+        connectionId,
+        message: response.message,
+        log,
+    });
 
-	const outboundMessage = new SerializedBufferOld();
-	outboundMessage.setBuffer((await encryptedResponse).message.serialize());
+    const outboundMessage = new SerializedBufferOld();
+    outboundMessage.setBuffer((await encryptedResponse).message.serialize());
 
-	return {
-		connectionId,
-		messages: [outboundMessage],
-	};
+    return {
+        connectionId,
+        messages: [outboundMessage],
+    };
 }

@@ -14,20 +14,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { SerializedBufferOld, ServerLogger } from "rusty-motors-shared";
-import { LegacyMessage } from "rusty-motors-shared";
+import { SerializedBufferOld } from 'rusty-motors-shared';
+import { LegacyMessage } from 'rusty-motors-shared';
 import {
-	PersonaList,
-	PersonaMapsMessage,
-	PersonaRecord,
-} from "./PersonaMapsMessage.js";
-import { _gameLogout } from "./_gameLogout.js";
-import { _getFirstBuddy } from "./_getFirstBuddy.js";
-import { _selectGamePersona } from "./_selectGamePersona.js";
-import { validatePersonaName } from "./handlers/validatePersonaName.js";
-import { getPersonaInfo } from "./handlers/getPersonaInfo.js";
-import { getServerLogger } from "rusty-motors-shared";
-
+    PersonaList,
+    PersonaMapsMessage,
+    PersonaRecord,
+} from './PersonaMapsMessage.js';
+import { _gameLogout } from './_gameLogout.js';
+import { _getFirstBuddy } from './_getFirstBuddy.js';
+import { _selectGamePersona } from './_selectGamePersona.js';
+import { validatePersonaName } from './handlers/validatePersonaName.js';
+import { getPersonaInfo } from './handlers/getPersonaInfo.js';
+import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 
 /**
  * Array of supported message handlers
@@ -45,56 +44,62 @@ import { getServerLogger } from "rusty-motors-shared";
  * }>}[]}
  */
 export const messageHandlers: {
-	opCode: number;
-	name: string;
-	handler: (args: {
-		connectionId: string;
-		message: LegacyMessage;
-		log: ServerLogger;
-	}) => Promise<{
-		connectionId: string;
-		messages: SerializedBufferOld[];
-	}>;
+    opCode: number;
+    name: string;
+    handler: (args: {
+        connectionId: string;
+        message: LegacyMessage;
+        log: ServerLogger;
+    }) => Promise<{
+        connectionId: string;
+        messages: SerializedBufferOld[];
+    }>;
 }[] = [
-	{
-		opCode: 1283, // 0x503
-		name: "Game login",
-		handler: _selectGamePersona,
-	},
-	{
-		opCode: 1295, // 0x50F
-		name: "Game logout",
-		handler: _gameLogout,
-	},
-	{
-		opCode: 1305, // 0x519
-		name: "Get persona info",
-		handler: getPersonaInfo,
-	},
-	{
-		opCode: 1330, // 0x532
-		name: "Get persona maps",
-		handler: getPersonaMaps,
-	},
-	{
-		opCode: 1331, // 0x533
-		name: "Validate persona name",
-		handler: validatePersonaName,
-	},
-	{
-		opCode: 1291, // 0x50B
-		name: "Get first buddy",
-		handler: _getFirstBuddy,
-	},
+    {
+        opCode: 1283, // 0x503
+        name: 'Game login',
+        handler: _selectGamePersona,
+    },
+    {
+        opCode: 1295, // 0x50F
+        name: 'Game logout',
+        handler: _gameLogout,
+    },
+    {
+        opCode: 1305, // 0x519
+        name: 'Get persona info',
+        handler: getPersonaInfo,
+    },
+    {
+        opCode: 1330, // 0x532
+        name: 'Get persona maps',
+        handler: getPersonaMaps,
+    },
+    {
+        opCode: 1331, // 0x533
+        name: 'Validate persona name',
+        handler: validatePersonaName,
+    },
+    {
+        opCode: 1291, // 0x50B
+        name: 'Get first buddy',
+        handler: _getFirstBuddy,
+    },
 ];
 
 /**
- * Return string as buffer
+ * Creates a fixed-size buffer containing the UTF-8 encoded bytes of a string.
+ *
+ * The resulting buffer will be exactly {@link size} bytes long, with the string's bytes at the start and any remaining space zero-filled.
+ *
+ * @param name - The string to encode into the buffer.
+ * @param size - The desired length of the output buffer.
+ * @returns A buffer of length {@link size} containing the encoded string.
  */
 export function generateNameBuffer(name: string, size: number): Buffer {
-	const nameBuffer = Buffer.alloc(size);
-	Buffer.from(name, "utf8").copy(nameBuffer);
-	return nameBuffer;
+    const nameBuffer = Buffer.alloc(size);
+    Buffer.from(name, 'utf8').copy(nameBuffer);
+    return nameBuffer;
 }
 
 /**
@@ -103,164 +108,181 @@ export function generateNameBuffer(name: string, size: number): Buffer {
  * @type {PersonaRecord[]}
  */
 export const personaRecords: Pick<
-	PersonaRecord,
-	"customerId" | "personaId" | "personaName" | "shardId"
+    PersonaRecord,
+    'customerId' | 'personaId' | 'personaName' | 'shardId'
 >[] = [
-	{
-		customerId: 2868969472,
-		personaId: 20,
-		personaName: "Molly",
-		shardId: 44,
-	},
-	{
-		customerId: 5551212, // 0x54 0xB4 0x6C
-		personaId: 21,
-		personaName: "Dr Brown",
-		shardId: 44,
-	},
-	{
-		customerId: 0,
-		personaId: 22,
-		personaName: "Admin",
-		shardId: 44,
-	},
+    {
+        customerId: 2868969472,
+        personaId: 20,
+        personaName: 'Molly',
+        shardId: 44,
+    },
+    {
+        customerId: 5551212, // 0x54 0xB4 0x6C
+        personaId: 21,
+        personaName: 'Dr Brown',
+        shardId: 44,
+    },
+    {
+        customerId: 0,
+        personaId: 22,
+        personaName: 'Admin',
+        shardId: 44,
+    },
 ];
 
 /**
+ * Retrieves all persona records associated with the specified customer ID.
  *
- * @param {number} customerId
-//  * @return {Promise<PersonaRecord[]>}
+ * @param customerId - The unique identifier of the customer whose personas are to be retrieved.
+ * @returns A promise that resolves to an array of persona records for the given customer.
  */
 async function getPersonasByCustomerId(
-	customerId: number,
+    customerId: number,
 ): Promise<
-	Pick<PersonaRecord, "customerId" | "personaId" | "personaName" | "shardId">[]
+    Pick<
+        PersonaRecord,
+        'customerId' | 'personaId' | 'personaName' | 'shardId'
+    >[]
 > {
-	const results = personaRecords.filter(
-		(persona) => persona.customerId === customerId,
-	);
-	return results;
+    const results = personaRecords.filter(
+        (persona) => persona.customerId === customerId,
+    );
+    return results;
 }
 
 /**
- * Lookup all personas owned by the customer id
+ * Retrieves all persona records associated with the specified customer ID.
  *
- * TODO: Store in a database, instead of being hard-coded
+ * Returns an array of persona records for the given {@link customerId}, or an empty array if none are found.
  *
- * @param {number} customerId
- * @return {Promise<PersonaRecord[]>}
+ * @param customerId - The unique identifier of the customer whose personas are to be retrieved.
+ * @returns A promise resolving to an array of persona records for the customer.
+ *
+ * @remark Only customer ID 5551212 is currently supported; all other IDs return an empty array.
  */
 async function getPersonaMapsByCustomerId(
-	customerId: number,
+    customerId: number,
 ): Promise<
-	Pick<PersonaRecord, "customerId" | "personaId" | "personaName" | "shardId">[]
+    Pick<
+        PersonaRecord,
+        'customerId' | 'personaId' | 'personaName' | 'shardId'
+    >[]
 > {
-	switch (customerId) {
-		case 5551212:
-			return getPersonasByCustomerId(customerId);
-		default:
-			return [];
-	}
+    switch (customerId) {
+        case 5551212:
+            return getPersonasByCustomerId(customerId);
+        default:
+            return [];
+    }
 }
 
 /**
- * Handle a get persona maps packet
- * @param {object} args
- * @param {string} args.connectionId
- * @param {LegacyMessage} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ name: "LoginServer" })]
- * @returns {Promise<{
- *  connectionId: string,
- * messages: SerializedBufferOld[],
- * }>}
+ * Processes a "Get persona maps" request and returns serialized persona data for a given customer.
+ *
+ * Extracts the customer ID from the incoming message, retrieves associated persona records, serializes them into a response message, and returns the result for network transmission.
+ *
+ * @param connectionId - The identifier for the client connection.
+ * @param message - The incoming legacy message containing the request data.
+ * @returns An object containing the connection ID and an array with the serialized persona maps message.
+ *
+ * @throws {Error} If serialization of the persona maps message fails.
  */
 async function getPersonaMaps({
-	connectionId,
-	message,
-	log = getServerLogger("PersonaServer/_getPersonaMaps"),
+    connectionId,
+    message,
+    log = getServerLogger('PersonaServer/_getPersonaMaps'),
 }: {
-	connectionId: string;
-	message: LegacyMessage;
-	log?: ServerLogger;
+    connectionId: string;
+    message: LegacyMessage;
+    log?: ServerLogger;
 }): Promise<{
-	connectionId: string;
-	messages: SerializedBufferOld[];
+    connectionId: string;
+    messages: SerializedBufferOld[];
 }> {
-	log.debug("_npsGetPersonaMaps...");
+    log.debug('_npsGetPersonaMaps...');
 
-	const requestPacket = message;
-	log.debug(
-		`NPSMsg request object from _npsGetPersonaMaps ${requestPacket
-			._doSerialize()
-			.toString("hex")} `,
-	);
+    const requestPacket = message;
+    log.debug(
+        `NPSMsg request object from _npsGetPersonaMaps ${requestPacket
+            ._doSerialize()
+            .toString('hex')} `,
+    );
 
-	const customerId = requestPacket.data.readUInt32BE(8);
+    const customerId = requestPacket.data.readUInt32BE(8);
 
-	const personas = await getPersonaMapsByCustomerId(customerId);
-	log.debug(`${personas.length} personas found for ${customerId}`);
+    const personas = await getPersonaMapsByCustomerId(customerId);
+    log.debug(`${personas.length} personas found for ${customerId}`);
 
-	const personaMapsMessage = new PersonaMapsMessage();
+    const personaMapsMessage = new PersonaMapsMessage();
 
-	// this is a GLDP_PersonaList::GLDP_PersonaList
+    // this is a GLDP_PersonaList::GLDP_PersonaList
 
-	try {
-		/** @type {PersonaList} */
-		let personaList: PersonaList = new PersonaList();
+    try {
+        /** @type {PersonaList} */
+        let personaList: PersonaList = new PersonaList();
 
-		if (personas.length > 1) {
-			log.warn(`More than one persona found for customer Id: ${customerId}`);
-		}
+        if (personas.length > 1) {
+            log.warn(
+                `More than one persona found for customer Id: ${customerId}`,
+            );
+        }
 
-		personas.forEach((persona) => {
-			const personaRecord = new PersonaRecord();
+        personas.forEach((persona) => {
+            const personaRecord = new PersonaRecord();
 
-			personaRecord.customerId = persona.customerId;
-			personaRecord.personaId = persona.personaId;
-			personaRecord.personaName = persona.personaName;
-			personaRecord.shardId = persona.shardId;
-			personaRecord.numberOfGames = personas.length;
+            personaRecord.customerId = persona.customerId;
+            personaRecord.personaId = persona.personaId;
+            personaRecord.personaName = persona.personaName;
+            personaRecord.shardId = persona.shardId;
+            personaRecord.numberOfGames = personas.length;
 
-			personaList.addPersonaRecord(personaRecord);
+            personaList.addPersonaRecord(personaRecord);
 
-			log.debug(
-				`Persona record: ${JSON.stringify({
-					personaRecord: personaRecord.toJSON(),
-				})}`,
-			);
-		});
+            log.debug(
+                `Persona record: ${JSON.stringify({
+                    personaRecord: personaRecord.toJSON(),
+                })}`,
+            );
+        });
 
-		personaMapsMessage._header.id = 0x607;
-		personaMapsMessage._personaRecords = personaList;
-		personaMapsMessage.setBuffer(personaList.serialize());
-		log.debug(
-			`PersonaMapsMessage object from _npsGetPersonaMaps',
+        personaMapsMessage.header.setMessageId(0x607);
+        personaMapsMessage._personaRecords = personaList;
+        personaMapsMessage.setBody(personaList.serialize());
+        log.debug(
+            `PersonaMapsMessage object from _npsGetPersonaMaps',
             ${JSON.stringify({
-							personaMapsMessage: personaMapsMessage
-								.serialize()
-								.toString("hex"),
-						})}`,
-		);
+                personaMapsMessage: personaMapsMessage
+                    .serialize()
+                    .toString('hex'),
+            })}`,
+        );
 
-		const outboundMessage = new SerializedBufferOld();
-		outboundMessage._doDeserialize(personaMapsMessage.serialize());
+        const outboundMessage = new SerializedBufferOld();
+        outboundMessage._doDeserialize(personaMapsMessage.serialize());
 
-		return {
-			connectionId,
-			messages: [outboundMessage],
-		};
-	} catch (error) {
-		const err = Error(`Error serializing personaMapsMsg`);
-		err.cause = error;
-		throw err;
-	}
+        return {
+            connectionId,
+            messages: [outboundMessage],
+        };
+    } catch (error) {
+        const err = Error('Error serializing personaMapsMsg');
+        err.cause = error;
+        throw err;
+    }
 }
 
+/**
+ * Returns a formatted string representation of a persona record.
+ *
+ * @param persona - Partial persona record to format.
+ * @returns A string displaying the {@link persona}'s customerId, personaId, personaName, and shardId.
+ */
 export function personaToString(persona: Partial<PersonaRecord>): string {
-	return "".concat(
-		`PersonaRecord: customerId=${persona.customerId}, `,
-		`personaId=${persona.personaId}, `,
-		`name=${persona.personaName}, `,
-		`shardId=${persona.shardId}`,
-	);
+    return ''.concat(
+        `PersonaRecord: customerId=${persona.customerId}, `,
+        `personaId=${persona.personaId}, `,
+        `name=${persona.personaName}, `,
+        `shardId=${persona.shardId}`,
+    );
 }

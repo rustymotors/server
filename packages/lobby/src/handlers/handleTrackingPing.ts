@@ -1,27 +1,27 @@
-import { SerializedBufferOld, ServerLogger } from "rusty-motors-shared";
-import { getServerLogger } from "rusty-motors-shared";
+import { SerializedBufferOld } from 'rusty-motors-shared';
+import { getServerLogger, ServerLogger } from 'rusty-motors-logger';
 
-const defaultLogger = getServerLogger("Lobby");
+const defaultLogger = getServerLogger('Lobby');
 
 export async function handleTrackingPing({
-	connectionId,
-	message,
-	log = defaultLogger,
+    connectionId,
+    message,
+    log = defaultLogger,
 }: {
-	connectionId: string;
-	message: SerializedBufferOld;
-	log?: ServerLogger;
+    connectionId: string;
+    message: SerializedBufferOld;
+    log?: ServerLogger;
 }): Promise<{
-	connectionId: string;
-	messages: SerializedBufferOld[];
+    connectionId: string;
+    messages: SerializedBufferOld[];
 }> {
-	log.debug("Handling NPS_TRACKING_PING");
-	log.debug(`Received command: ${message.toString()}`);
+    log.debug('Handling NPS_TRACKING_PING');
+    log.debug(`Received command: ${message.toString()}`);
 
-	log.debug("Skipping response");
+    log.debug('Skipping response');
 
-	return {
-		connectionId,
-		messages: [],
-	};
+    return {
+        connectionId,
+        messages: [],
+    };
 }
