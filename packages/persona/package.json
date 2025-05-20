@@ -18,7 +18,7 @@
 	"author": "",
 	"license": "AGPL-3.0",
 	"dependencies": {
-		"@sentry/profiling-node": "9.21.0",
+		"@sentry/profiling-node": "9.22.0",
 		"short-unique-id": "^5.3.2"
 	},
 	"description": "",
