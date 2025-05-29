@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  tinymce: ^7.9.0
+  tinymce: ^7.9.1
 
 importers:
 
@@ -6861,8 +6861,8 @@ packages:
     resolution: {integrity: sha512-mEwzpUgrLySlveBwEVDMKk5B57bhLPYovRfPAXD5gA/98Opn0rCDj3GtLwFvCvH5RK9uPCExUROW5NjDwvqkxw==}
     engines: {node: '>=12.0.0'}
 
-  tinymce@7.9.0:
-    resolution: {integrity: sha512-tTrUmUGWqy1BY1WwDYh4WiuHm23LiRTcE1Xq3WLO8HKFzde/d0bTF/hXWOa97zqGh0ndJHx/nysQaNC9Gcd16g==}
+  tinymce@7.9.1:
+    resolution: {integrity: sha512-zaOHwmiP1EqTeLRXAvVriDb00JYnfEjWGPdKEuac7MiZJ5aiDMZ4Unc98Gmajn+PBljOmO1GKV6G0KwWn3+k8A==}
 
   tinypool@1.0.2:
     resolution: {integrity: sha512-al6n+QEANGFOMf/dmUMsuS5/r9B06uwlyNjZZql/zv8J7ybHCgoihBNORZCY2mzUuAnomQa2JdhyHKzZxPCrFA==}
@@ -10113,7 +10113,7 @@ snapshots:
       prop-types: 15.8.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-      tinymce: 7.9.0
+      tinymce: 7.9.1
 
   '@tiptap/core@2.1.13(@tiptap/pm@2.1.13)':
     dependencies:
@@ -14820,7 +14820,7 @@ snapshots:
       fdir: 6.4.4(picomatch@4.0.2)
       picomatch: 4.0.2
 
-  tinymce@7.9.0: {}
+  tinymce@7.9.1: {}
 
   tinypool@1.0.2: {}
 
