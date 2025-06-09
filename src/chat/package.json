@@ -19,6 +19,6 @@
     "@sentry/profiling-node": "9.27.0"
   },
   "devDependencies": {
-    "vitest": "^3.2.2"
+    "vitest": "^3.2.3"
   }
 }
