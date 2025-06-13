@@ -16,7 +16,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@sentry/profiling-node": "9.28.1"
+    "@sentry/profiling-node": "9.29.0"
   },
   "devDependencies": {
     "vitest": "^3.2.3"

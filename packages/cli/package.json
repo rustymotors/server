@@ -22,7 +22,7 @@
 		"vitest": "^3.2.3"
 	},
 	"dependencies": {
-		"@sentry/profiling-node": "9.28.1"
+		"@sentry/profiling-node": "9.29.0"
 	},
 	"description": ""
 }
