@@ -79,7 +79,7 @@
         "@swc/core": "~1.12.1",
         "@swc/helpers": "~0.5.17",
         "@tsconfig/node-lts": "^22.0.1",
-        "@tsconfig/node20": "^20.1.5",
+        "@tsconfig/node20": "^20.1.6",
         "@types/bcrypt": "^5.0.2",
         "@types/chai": "5.2.2",
         "@types/node": "^22.15.31",
