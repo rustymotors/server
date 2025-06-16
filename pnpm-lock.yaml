@@ -109,8 +109,8 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3(typescript@5.8.3)
       '@databases/pg-schema-cli':
-        specifier: ^4.4.0
-        version: 4.4.0(typescript@5.8.3)
+        specifier: ^4.5.0
+        version: 4.5.0(typescript@5.8.3)
       '@databases/pg-test':
         specifier: ^3.1.2
         version: 3.1.2(typescript@5.8.3)
@@ -1250,6 +1250,9 @@ packages:
   '@databases/pg-config@3.2.0':
     resolution: {integrity: sha512-hoPAK/F8gLcLgEJ8mLSnNvRlKqShwx5+GglDHIIfQhKF+Zz6M6QceiOefckS4WSjA0x2HClPvpercnXp9i24ag==}
 
+  '@databases/pg-config@3.3.0':
+    resolution: {integrity: sha512-3obBPt06ze6UIYXbkfHgaVsV/m3jJOOsPAX14aAaJRAvthAYij9DQpFCF/0qjJIGA+Z3xZ2JUo2Kwu7NWDZ1/g==}
+
   '@databases/pg-connection-string@1.0.0':
     resolution: {integrity: sha512-8czOF9jlv7PlS7BPjnL82ynpDs1t8cu+C2jvdtMr37e8daPKMS7n1KfNE9xtr2Gq4QYKjynep097eYa5yIwcLA==}
 
@@ -1263,15 +1266,15 @@ packages:
     resolution: {integrity: sha512-mUKbVYiACRZJOhE96Y5Fr2IIJ2iBNPVM6L3LgBypH9zIQMOLixGpJ6ZS0oabtNIFJhjncXl5FVEtYaa8x5KkoA==}
     hasBin: true
 
-  '@databases/pg-schema-cli@4.4.0':
-    resolution: {integrity: sha512-pwLEjFrPl8Gk+7KmSbHHW9kYnUIWN9/V8DCb9Gwee7hXRkZeEZg9thdprG/ngxIdf983MfHyA/8np78IyNyhqg==}
+  '@databases/pg-schema-cli@4.5.0':
+    resolution: {integrity: sha512-W9NkyzNRXsk+NxffcVnp/v2LIZVmSXC2amNDDCHuS/mTjEs+MaLMdmc2R0KNMB6mBejN5e85TcmvYu7Om9k4KQ==}
     hasBin: true
 
   '@databases/pg-schema-introspect@4.2.0':
     resolution: {integrity: sha512-WaN79kbMwiQCS78XlCVOPE+Q6Go2gF3FNqatGWUZHnbHn+NR8I/5/1uC7T8HTruC5UfTe3CcCNPUglVad2YoVg==}
 
-  '@databases/pg-schema-print-types@4.5.0':
-    resolution: {integrity: sha512-HlCHVPuu+qm1oNgkp+v3exdvmeJxflZnDTL6D6eSr3yMSClMQ7JBzCthymazWyZ9s4qsHO6gXfNhgUgjUz6LFw==}
+  '@databases/pg-schema-print-types@4.6.0':
+    resolution: {integrity: sha512-/DEmluaHdkXYAnmfeHfG41kjotzM7+0sesPn8D3fG3rEcPYuzOcEo6/GmVxhfFeTtb6iUg4Lp4O4NP3lfZa+FA==}
     peerDependencies:
       '@databases/pg-schema-introspect': '*'
 
@@ -8410,6 +8413,13 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
+  '@databases/pg-config@3.3.0(typescript@5.8.3)':
+    dependencies:
+      cosmiconfig: 8.3.6(typescript@5.8.3)
+      funtypes: 4.2.0
+    transitivePeerDependencies:
+      - typescript
+
   '@databases/pg-connection-string@1.0.0': {}
 
   '@databases/pg-data-type-id@3.0.0': {}
@@ -8432,11 +8442,11 @@ snapshots:
       - pg-native
       - typescript
 
-  '@databases/pg-schema-cli@4.4.0(typescript@5.8.3)':
+  '@databases/pg-schema-cli@4.5.0(typescript@5.8.3)':
     dependencies:
-      '@databases/pg-config': 3.2.0(typescript@5.8.3)
+      '@databases/pg-config': 3.3.0(typescript@5.8.3)
       '@databases/pg-schema-introspect': 4.2.0(typescript@5.8.3)
-      '@databases/pg-schema-print-types': 4.5.0(@databases/pg-schema-introspect@4.2.0(typescript@5.8.3))(typescript@5.8.3)
+      '@databases/pg-schema-print-types': 4.6.0(@databases/pg-schema-introspect@4.2.0(typescript@5.8.3))(typescript@5.8.3)
       chalk: 4.1.2
       interrogator: 2.0.1
       is-interactive: 1.0.0
@@ -8452,9 +8462,9 @@ snapshots:
       - pg-native
       - typescript
 
-  '@databases/pg-schema-print-types@4.5.0(@databases/pg-schema-introspect@4.2.0(typescript@5.8.3))(typescript@5.8.3)':
+  '@databases/pg-schema-print-types@4.6.0(@databases/pg-schema-introspect@4.2.0(typescript@5.8.3))(typescript@5.8.3)':
     dependencies:
-      '@databases/pg-config': 3.2.0(typescript@5.8.3)
+      '@databases/pg-config': 3.3.0(typescript@5.8.3)
       '@databases/pg-data-type-id': 3.0.0
       '@databases/pg-schema-introspect': 4.2.0(typescript@5.8.3)
       '@databases/shared-print-types': 1.2.0
