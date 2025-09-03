@@ -95,7 +95,7 @@ class AuthServer {
 		// Initialize server components here (e.g., HTTP server, routes, etc.)
 		const server = createServer((this.handleRequest).bind(this));
 		
-		const port = parseInt(this.config["port"] || "3000", 10);
+		const port = parseInt("3000", 10);
 		server.listen(port, '0.0.0.0', () => {
 			this.log.info(`AuthServer listening on port ${port}`);
 		});
