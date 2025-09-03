@@ -30,15 +30,10 @@ const coreLogger = getServerLogger(APP_NAME);
 
 async function main(config = getConfig(), logger = coreLogger) {
 	coreLogger.info("Starting Auth Server...");
-	if (!authDB.isDatabaseConnected) {
-		throw new Error("Database connection failed");
-	}
-
 	const authServer = new AuthServer(config, logger);
 
 	console.log("Starting server...");
 	authServer.start();
-
 }
 
 main().catch((err) => {
