@@ -20,7 +20,7 @@
 	"license": "AGPL-3.0",
 	"dependencies": {
 		"@fastify/sensible": "^6.0.3",
-		"@rustymotors/binary": "workspace:^",
+		"@rustymotors/binary": "",
 		"fastify": "^5.4.0"
 	},
 	"directories": {
