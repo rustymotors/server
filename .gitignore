@@ -25,7 +25,5 @@ package-lock.json
 
 
 
-.nx/cache
-.nx/workspace-data
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
