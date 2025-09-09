@@ -28,7 +28,7 @@ build: ## Build the project
 
 .PHONY: start
 start: ## Start the project
-	@pnpx tsx --import ./instrument.mjs --openssl-legacy-provider --env-file=.env src/server.ts
+	@pnpx tsx --import ./instrument.mjs --openssl-legacy-provider --env-file=.env src/nps_server.ts
 
 .PHONY: prod_node
 prod_node: ## Start the project in production mode

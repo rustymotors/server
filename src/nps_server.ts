@@ -24,7 +24,7 @@ import {
 import { databaseService } from "rusty-motors-database";
 
 function main() {
-	const coreLogger = getServerLogger("core");
+	const coreLogger = getServerLogger("npx/core");
 
 	try {
 		verifyLegacyCipherSupport();
