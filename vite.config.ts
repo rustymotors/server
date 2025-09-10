@@ -1,4 +1,4 @@
-import { defineConfig, coverageConfigDefaults } from "vitest/config";
+import { defineConfig, coverageConfigDefaults, configDefaults } from "vitest/config";
 
 export default defineConfig({
 
@@ -19,10 +19,16 @@ export default defineConfig({
                 "vite.config.ts",
                 "instrument.mjs",
                 "commitlint.config.js",
+                "packages/pklib-ts",
                 ...coverageConfigDefaults.exclude,
             ],
             reporter: ["lcov", "cobertura"],
         },
+        exclude: [
+            "packages/pklib-ts",
+            ...configDefaults.exclude
+
+        ],
         reporters: ["junit", "default", "hanging-process"],
 		outputFile: "mcos.junit.xml",
 		pool: "forks",
