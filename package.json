@@ -10,7 +10,7 @@
         "url": "git@github.com:drazisil/mcos.git"
     },
     "scripts": {
-        "clean": "rm --verbose -rf **/node_modules node_modules",
+        "clean": "rm -rf **/node_modules node_modules",
         "start": "make start",
         "check:all": "pnpm run -r --stream check",
         "lint:all": "pnpm run -r --stream lint",
@@ -38,7 +38,6 @@
         "@rustymotors/binary": "",
         "@sentry/node": "^9.32.0",
         "@sentry/profiling-node": "9.32.0",
-        "adminjs": "^7.8.16",
         "bcrypt": "^6.0.0",
         "concurrently": "^9.2.1",
         "debug": "^4.4.1",
@@ -55,9 +54,6 @@
         "@eslint/eslintrc": "^3.3.1",
         "@eslint/js": "^9.29.0",
         "@sentry/cli": "^2.46.0",
-        "@swc-node/register": "~1.10.10",
-        "@swc/core": "~1.12.7",
-        "@swc/helpers": "~0.5.17",
         "@tsconfig/node-lts": "^22.0.2",
         "@tsconfig/node20": "^20.1.6",
         "@types/bcrypt": "^5.0.2",
