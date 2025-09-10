@@ -1,0 +1,3 @@
+[submodule "packages/pklib-ts"]
+	path = packages/pklib-ts
+	url = git@github.com:drazisil/pklib-ts.git

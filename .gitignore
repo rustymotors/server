@@ -15,15 +15,11 @@ junit.xml
 node_modules/
 .DS_Store
 
-dist
 # Sentry Auth Token
 .sentryclirc
 *.map
 out/*
 mcos.junit.xml
-package-lock.json
-
-
 
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
