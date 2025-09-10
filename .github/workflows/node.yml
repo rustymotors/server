@@ -13,7 +13,7 @@ jobs:
 
         strategy:
             matrix:
-                node-version: [20.x, 22.x, 23.x]
+                node-version: [20.x, 22.x, 23.x, 24/x]
 
         steps:
             - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
@@ -23,12 +23,9 @@ jobs:
               uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
               with:
                   node-version: ${{ matrix.node-version }}
-            - name: Setup pnpm
-              uses: pnpm/action-setup@v4.0.0
             - name: Install and test
               run: |
-                  pnpm install
-                  make test
+                  npm install-ci-test
               env:
                   CODECOV_UPLOAD_BUNDLE_TOKEN: ${{ secrets.CODECOV_UPLOAD_BUNDLE_TOKEN }}
             - name: Codecov install cli

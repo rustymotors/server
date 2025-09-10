@@ -20,7 +20,7 @@ certs: ## Generate new certs
 
 .PHONY: test
 test: ## Run tests
-	@pnpx vitest --run
+	@npx vitest --run --coverage
 
 .PHONY: build
 build: ## Build the project

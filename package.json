@@ -16,7 +16,7 @@
         "lint:all": "pnpm run -r --stream lint",
         "format:all": "pnpm run -r --stream format",
         "test:packages": "pnpm run -r --stream test",
-        "test": "make test",
+        "test": "vitest --run --coverage",
         "types:db": "pnpm --filter=rusty-motors-database run types:db",
         "types": "dotenvx run -- pnpm run types:db",
         "migrate": "pg-migrations apply --directory migrations    ",

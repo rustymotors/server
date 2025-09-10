@@ -22,7 +22,7 @@ export default defineConfig({
                 "packages/pklib-ts",
                 ...coverageConfigDefaults.exclude,
             ],
-            reporter: ["lcov", "cobertura"],
+            reporter: ["lcov", "cobertura", "html", "text"],
         },
         exclude: [
             "packages/pklib-ts",

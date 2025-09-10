@@ -19,8 +19,6 @@
 	"author": "",
 	"license": "AGPL-3.0",
 	"dependencies": {
-		"@fastify/sensible": "^6.0.3",
-		"fastify": "^5.4.0",
 		"rusty-motors-shared": ""
 	},
 	"directories": {
