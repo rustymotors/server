@@ -36,7 +36,6 @@ You will need to open the following ports:
 - 43300
 - 43400
 - 53303
-- 9000 - 9014 (not yet used, I think they are for UDP client racing
 
 ### Running
 
