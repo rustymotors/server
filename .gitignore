@@ -21,7 +21,6 @@ dist
 *.map
 out/*
 mcos.junit.xml
-package-lock.json
 
 
 
