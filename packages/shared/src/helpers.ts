@@ -1,5 +1,40 @@
 import { Serializable } from "./types.js";
 
+export class Bool implements Serializable {
+	private _value = false
+	
+	get sizeOf() {
+		return 1
+	}
+
+	serialize() {
+		const b = Buffer.alloc(1)
+		if (this._value === true) {
+			b.writeInt8(1)
+		} else {
+			b.writeInt8(0)
+		}
+		return b
+	};
+
+	deserialize(buf: Buffer) {
+		const v = buf.readInt8()
+		if (v === 1) {
+			this._value = true
+		} else {
+			this._value = false
+		}
+	};
+
+	get value() {
+		return this._value
+	}
+
+	set value(val: boolean) {
+		this._value = val
+	}
+}
+
 export class CString implements Serializable {
 	private _string: Buffer;
 	private _maxLen: number;

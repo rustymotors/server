@@ -1,4 +1,4 @@
-import { checkMinLength, checkSize4, padBuffer, sliceBuff } from "./helpers.js";
+import { Bool, checkMinLength, checkSize4, padBuffer, sliceBuff } from "./helpers.js";
 import { MCOTSMessage, Serializable } from "./types.js";
 
 export class MessageNodeBody implements Serializable {
@@ -458,4 +458,63 @@ export class CreateRaceInfo implements Serializable {
         this._isNOSDisallowed = sliceBuff(buf, offset, 1)
     };
 
+}
+
+export class CreateRaceMessage extends MessageNode {
+    private _msgNo // 2
+    private _lobbyId // 4
+    private _entryFee // 4
+    private _isClubRace: Bool // 1
+    private _isPinkSlipRace: Bool // 1
+    private _isTeamTrial: Bool // 1
+    private _sponsorId // 4
+    private info: CreateRaceInfo
+
+    constructor() {
+        super()
+        this._msgNo = Buffer.alloc(4)
+        this._lobbyId = Buffer.alloc(4)
+        this._entryFee = Buffer.alloc(4)
+        this._isClubRace = new Bool()
+        this._isPinkSlipRace = new Bool()
+        this._isTeamTrial = new Bool()
+        this._sponsorId = Buffer.alloc(4)
+        this.info = new CreateRaceInfo()
+    }
+
+    override get sizeOf() {
+        return 2 + 4 + 4 + 1 + 1 + 1 + 4 + this.info.sizeOf
+    }
+
+    override serialize() {
+        return Buffer.concat([
+            this._msgNo,
+            this._lobbyId,
+            this._entryFee,
+            this._isClubRace.serialize(),
+            this._isPinkSlipRace.serialize(),
+            this._isTeamTrial.serialize(),
+            this._sponsorId,
+        ])
+    };
+
+    override deserialize(buf: Buffer) {
+        checkMinLength(buf, this.sizeOf)
+        let offset = 0
+        this._msgNo = sliceBuff(buf, offset, 2)
+        offset = offset + 2
+        this._lobbyId = sliceBuff(buf, offset, 4)
+        offset = offset + 4
+        this._entryFee = sliceBuff(buf, offset, 4)
+        offset = offset + 4
+        this._isClubRace.deserialize(sliceBuff(buf, offset, 1))
+        offset + offset + 1
+        this._isClubRace.deserialize(sliceBuff(buf, offset, 1))
+        offset = offset + 1
+        this._isTeamTrial.deserialize(sliceBuff(buf, offset, 1))
+        offset = offset + 1
+        this._sponsorId = sliceBuff(buf, offset, 4)
+        offset = offset + 4
+        this.info.deserialize(buf.subarray(offset))
+    };
 }

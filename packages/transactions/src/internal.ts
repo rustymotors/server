@@ -28,12 +28,11 @@ import {
 	updateEncryption,
 } from "rusty-motors-shared";
 import { OldServerMessage } from "rusty-motors-shared";
-import { messageHandlers, type MessageHandlerResult } from "./handlers.js";
+import { messageHandlers, type MessageHandlerResult, _MSG_STRING } from "./handlers.js";
 import {
 	ServerPacket,
 	type BufferSerializer,
 } from "rusty-motors-shared-packets";
-import { _MSG_STRING } from "./_MSG_STRING.js";
 import { explode } from "pklib-ts"
 
 

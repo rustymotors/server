@@ -49,87 +49,157 @@ export interface MessageHandlerResult {
 }
 
 export interface MessageHandler {
+	id: number,
 	name: string;
 	handler: (args: MessageHandlerArgs) => Promise<MessageHandlerResult>;
 }
 
 export const messageHandlers: MessageHandler[] = [
 	{
+		id: 176,
 		name: "MC_BUY_NEW_PART",
 		handler: _buyNewPart
 	},
 	{
+		id: 440,
 		name: "MC_TRACKING_MSG",
 		handler: trackingPing,
 	},
 	{
+		id: 438,
 		name: "MC_CLIENT_CONNECT_MSG",
 		handler: clientConnect,
 	},
 	{
+		id: 105,
 		name: "MC_LOGIN",
 		handler: login,
 	},
 	{
+		id: 106,
 		name: "MC_LOGOUT",
 		handler: _logout,
 	},
 	{
+		id: 145,
 		name: "MC_GET_COMPLETE_VEHICLE_INFO",
 		handler: _getCompleteVehicleInfo,
 	},
 	{
+		id: 325,
 		name: "MC_GET_LOBBIES",
 		handler: getLobbies,
 	},
 	{
+		id: 141,
 		name: "MC_STOCK_CAR_INFO",
 		handler: _getStockCarInfo,
 	},
 	{
+		id: 322,
 		name: "MC_GET_ARCADE_CARS",
 		handler: _getArcadeCarInfo,
 	},
 	{
+		id: 363,
 		name: "MC_GET_GAME_URLS",
 		handler: _getGameUrls,
 	},
 	{
+		id: 389,
 		name: "MC_GET_MCO_TUNABLES",
 		handler: _getTunables,
 	},
 	{
+		id: 172,
 		name: "MC_GET_OWNED_VEHICLES",
 		handler: _getOwnedVehicles,
 	},
 	{
+		id: 108,
 		name: "MC_GET_PLAYER_INFO",
 		handler: _getPlayerInfo,
 	},
 	{
+		id: 264,
 		name: "MC_GET_PLAYER_PHYSICAL",
 		handler: _getPlayerPhysical,
 	},
 	{
+		id: 174,
 		name: "MC_GET_OWNED_PARTS",
 		handler: _getOwnedParts,
 	},
 	{
+		id: 361,
 		name: "MC_GET_PLAYER_RACING_HISTORY",
 		handler: _getPlayerRaceHistory,
 	},
 	{
+		id: 142,
 		name: "MC_PURCHASE_STOCK_CAR",
 		handler: _buyCarFromDealer,
 	},
 	{
+		id: 455,
 		name: "MC_CRC_PRE_RACE_DATA",
 		handler: _crcPreRaceData
 	},
 	{
+		id: 163,
 		name: "MC_UPDATE_CACHED_VEHICLE",
 		handler: _updateCachedVehicle
+	},
+	{
+		id: 230,
+		name: "MC_CREATE_STANDARD_RACE",
+		handler: _createStandardRace
 	}
 ];
+/**
+ * Return the string representation of the numeric opcode
+ *
+ * @param {number} messageID
+ * @return {string}
+ */
+export function _MSG_STRING(messageID: number): string {
+	const messageIds = [
+		{ id: 105, name: "MC_LOGIN" }, // 0x69
+		{ id: 106, name: "MC_LOGOUT" }, // 0x6a
+		{ id: 108, name: "MC_GET_PLAYER_INFO" }, // 0x6c
+		{ id: 109, name: "MC_SET_OPTIONS" }, // 0x6d
+		{ id: 122, name: "MC_PLAYER_INFO" }, // 0x7a"}
+		{ id: 141, name: "MC_STOCK_CAR_INFO" }, // 0x8d
+		{ id: 142, name: "MC_PURCHASE_STOCK_CAR" }, // 0x8e
+		{ id: 145, name: "MC_GET_COMPLETE_VEHICLE_INFO" }, // 0x92
+		{ id: 163, name: "MC_UPDATE_CACHED_VEHICLE" },
+		{ id: 172, name: "MC_GET_OWNED_VEHICLES" }, // 0xac"}
+		{ id: 173, name: "MC_OWNED_VEHICLES_LIST" }, // 0xad"}
+		{ id: 174, name: "MC_GET_OWNED_PARTS" }, // 0xae"}
+		{ id: 176, name: "MC_BUY_NEW_PART" },
+		{ id: 213, name: "MC_LOGIN_COMPLETE" }, // 0xd5
+		{ id: 264, name: "MC_GET_PLAYER_PHYSICAL" }, // 0x108
+		{ id: 265, name: "MC_PLAYER_PHYSICAL_INFO" }, // 0x109
+		{ id: 363, name: "MC_GET_GAME_URLS" }, // 0x16b"}
+		{ id: 266, name: "MC_UPDATE_PLAYER_PHYSICAL" }, // 0x10a
+		{ id: 322, name: "MC_GET_ARCADE_CARS" }, // 0x142"}
+		{ id: 324, name: "MC_GET_LOBBIES" }, // 0x144
+		{ id: 325, name: "MC_LOBBIES" }, // 0x145
+		{ id: 361, name: "MC_GET_PLAYER_RACING_HISTORY" }, // 0x169"}
+		{ id: 362, name: "MC_PLAYER_RACING_HISTORY" }, // 0x16a"}
+		{ id: 389, name: "MC_GET_MCO_TUNABLES" }, // 0x185"}
+		{ id: 391, name: "MC_CLUB_GET_INVITATIONS" }, // 0x187
+		{ id: 438, name: "MC_CLIENT_CONNECT_MSG" }, // 0x1b6
+		{ id: 440, name: "MC_TRACKING_MSG" },
+		{ id: 455, name: "MC_CRC_PRE_RACE_DATA" },
+	];
+	const result = messageIds.find((id) => id.id === messageID);
+
+	if (typeof result !== "undefined") {
+		return result.name;
+	}
+
+	return "Unknown";
+}
 
 
