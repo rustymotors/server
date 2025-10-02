@@ -43,6 +43,8 @@ export { NPSHeader } from "./src/NPSHeader.js";
 export {UserData, UserInfo, SetMyUserDataMessage, } from "./src/UserData.js"
 export {RiffInfoListMessage, RiffInfo} from "./src/Lobby.js"
 export {MessageNode} from "./src/MessageNode.js"
+export {CreateRaceInfo, CreateRaceMessage} from "./src/CreateRaceMessage.js"
+export {RaceInfo, Racer, RaceCreatedMessage} from "./src/RaceInfo.js"
 export * from "./src/types.js";
 
 // Function to convert ARGB to 32-bit integer

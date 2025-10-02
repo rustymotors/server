@@ -1,4 +1,4 @@
-import { checkMinLength, checkSize4, sliceBuff } from "./helpers.js";
+import { checkMinLength, checkSize2, checkSize4, sliceBuff } from "./helpers.js";
 import { MCOTSMessage, Serializable } from "./types.js";
 
 export class MessageNodeBody implements Serializable {
@@ -23,6 +23,11 @@ export class MessageNodeBody implements Serializable {
 
     get msgNumber() {
         return this.body_.readInt16LE()
+    }
+
+    set msgNumber(val: number) {
+        checkSize2(val)
+        this.body_.writeInt16LE(val)
     }
 }
 
@@ -153,9 +158,14 @@ export class MessageNode implements MCOTSMessage {
         return this.body_.msgNumber
     }
 
+    set msgNo(val: number) {
+        checkSize2(val)
+        this.body_.msgNumber = val
+    }
+
 
     toString() {
-        return `seq: ${this.sequence_}, id: ${this.msgNo}`
+        return `MessageNode: ${JSON.stringify(this)}`
     }
 
     // TODO: change usable of these

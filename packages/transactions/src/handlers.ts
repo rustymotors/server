@@ -35,6 +35,7 @@ import { _crcPreRaceData } from "./_crcPreRaceData.js";
 import { _updateCachedVehicle } from "./_updateCachedVehicle.js";
 import { _getCompleteVehicleInfo } from "./_getFullCarInfo.js";
 import { _buyNewPart } from "./_buyNewPart.js";
+import { _createStandardRace } from "./_createStandardRace.js";
 
 
 export interface MessageHandlerArgs {
@@ -178,6 +179,7 @@ export function _MSG_STRING(messageID: number): string {
 		{ id: 174, name: "MC_GET_OWNED_PARTS" }, // 0xae"}
 		{ id: 176, name: "MC_BUY_NEW_PART" },
 		{ id: 213, name: "MC_LOGIN_COMPLETE" }, // 0xd5
+		{ id: 230, name: "MC_CREATE_STANDARD_RACE" },
 		{ id: 264, name: "MC_GET_PLAYER_PHYSICAL" }, // 0x108
 		{ id: 265, name: "MC_PLAYER_PHYSICAL_INFO" }, // 0x109
 		{ id: 363, name: "MC_GET_GAME_URLS" }, // 0x16b"}

@@ -60,6 +60,10 @@ export class CreateRaceMessage extends MessageNode {
         offset = offset + 4;
         this.info.deserialize(buf.subarray(offset));
     };
+
+    override toString(): string {
+        return JSON.stringify(this)
+    }
 }
 export class CreateRaceInfo implements Serializable {
     private _minLevel; // 4

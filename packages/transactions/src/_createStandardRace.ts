@@ -1,8 +1,6 @@
-import { OldServerMessage } from "rusty-motors-shared";
-import { GenericReplyMessage } from "./GenericReplyMessage.js";
+import { MessageNode, RaceCreatedMessage } from "rusty-motors-shared";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
-import { getServerLogger } from "rusty-motors-shared";
-import { CreateRaceMessage } from "../../shared/src/MessageNode.js";
+import { getServerLogger, CreateRaceMessage } from "rusty-motors-shared";
 
 const defaultLogger = getServerLogger("handlers/_createStandardRace");
 
@@ -18,21 +16,31 @@ export async function _createStandardRace({
     
     const createRaceMessage = new CreateRaceMessage()
     createRaceMessage.deserialize(packet.serialize())
+
+    log.debug(`createRaceMsg: ${createRaceMessage.toString()}`)
     
-    
+    // TODO Do stuff. Lots of stuff
+
+    const raceCreatedMessage = new RaceCreatedMessage()
+    raceCreatedMessage.raceId = 88
+    raceCreatedMessage.entryFee = 5
+    raceCreatedMessage.perPlayerPurseBonus = 20
+    raceCreatedMessage.setPassword("Marty")
+    raceCreatedMessage.raceHistoryId = 44
+    raceCreatedMessage.perRacePurseBonus = 3
+
+
+    log.debug(`RaceCreatedmsg: ${raceCreatedMessage.toString()}`)
     
     
     // Create new response packet
-    const pReply = new GenericReplyMessage();
-    pReply.msgNo = 101;
-    pReply.msgReply = 163;
-    const rPacket = new OldServerMessage();
-    rPacket._header.sequence = packet.sequenceNumber;
-    rPacket._header.flags = 8;
+    const rPacket = new MessageNode();
+    rPacket.sequence = packet.sequenceNumber;
+    rPacket.setPayloadEncryption(true)
 
-    rPacket.setBuffer(pReply.serialize());
+    rPacket.setBody(raceCreatedMessage)
 
     log.debug(`_createStandardRace: ${rPacket.toString()}`);
 
-    return { connectionId, messages: [] };
+    return { connectionId, messages: [rPacket] };
 }
