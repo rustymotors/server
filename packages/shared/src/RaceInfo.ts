@@ -1,4 +1,4 @@
-import { Bool, checkMinLength, checkSize4, CString, sliceBuff } from "./helpers.js";
+import { Bool, checkMinLength, checkSize4, CString, padBuffer, sliceBuff } from "./helpers.js";
 import { MessageNodeBody } from "./MessageNode.js";
 import { Serializable } from "./types.js";
 
@@ -724,6 +724,119 @@ export class RaceCreatedMessage extends MessageNodeBody {
     set perRacePurseBonus(val: number) {
         checkSize4(val)
         this._perRacePurseBonus.writeInt32LE(val)
+    }
+
+    override toString() {
+        return JSON.stringify(this)
+    }
+}
+
+export class JoinRaceMessage extends MessageNodeBody {
+    private _msgNo
+    private _raceId // 4
+    private _vehicleId // 4
+    private _powerClass // 1
+    // 1 byte padding
+   
+    constructor() {
+        super()
+        this._msgNo = 0
+        this._raceId = Buffer.alloc(4)
+        this._vehicleId = Buffer.alloc(4)
+        this._powerClass = Buffer.alloc(1)
+    }
+
+    override get sizeOf() {
+        return 12
+    } 
+
+    private _doSerialize(): Buffer<ArrayBufferLike> {
+        const msgNo = Buffer.alloc(2)
+        msgNo.writeInt16LE(this._msgNo)
+        this.body_ = padBuffer(Buffer.concat([
+            msgNo,
+            this._raceId,
+            this._vehicleId,
+            this._powerClass,
+        ]))
+        return this.body_
+    }
+
+    override serialize(): Buffer<ArrayBufferLike> {
+        return this._doSerialize()
+    }
+
+    private _doDeSerialize(buf: Buffer) {
+        checkMinLength(buf, this.sizeOf)
+        this.body_ = buf
+        let offset = 0
+        this.msgNumber = sliceBuff(buf, offset, 2).readInt16LE()
+        offset = offset + 4
+        this._vehicleId = sliceBuff(buf, offset, 4)
+        offset = offset + 4
+        this._powerClass = sliceBuff(buf, offset, 1)
+    }
+
+    override deserialize(buf: Buffer): void {
+        this._doDeSerialize(buf)
+    }
+
+    override toString() {
+        return JSON.stringify(this)
+    }
+}
+
+export class RaceJoinedMessage extends MessageNodeBody {
+    private _msgNo // 4
+    private _raceId // 4
+    private _password // 8
+
+       constructor() {
+        super()
+        this._msgNo = 224 // MC_RACE_JOIN_OK
+        this._raceId = Buffer.alloc(4)
+        this._password = new CString(8)
+    }
+
+    override get sizeOf() {
+        return 8 + this._password.sizeOf
+    } 
+
+    private _doSerialize(): Buffer<ArrayBufferLike> {
+        const msgNo = Buffer.alloc(2)
+        msgNo.writeInt16LE(this._msgNo)
+        this.body_ = Buffer.concat([
+            msgNo,
+            this._raceId,
+            this._password.serialize(),
+        ])
+        return this.body_
+    }
+
+    override serialize(): Buffer<ArrayBufferLike> {
+        return this._doSerialize()
+    }
+
+    private _doDeSerialize(buf: Buffer) {
+        checkMinLength(buf, this.sizeOf)
+        this.body_ = buf
+        let offset = 0
+        this.msgNumber = sliceBuff(buf, offset, 2).readInt16LE()
+        offset = offset + 4
+        this._password.deserialize(buf.subarray(offset))
+    }
+
+    override deserialize(buf: Buffer): void {
+        this._doDeSerialize(buf)
+    }
+
+    set raceId(val: number) {
+        checkSize4(val)
+        this._raceId.writeInt32LE(val)
+    }
+
+    setPassword(val: string) {
+        this._password.set(val)
     }
 
     override toString() {

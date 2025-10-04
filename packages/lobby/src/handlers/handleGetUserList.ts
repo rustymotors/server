@@ -56,7 +56,7 @@ export async function handleGetUserList({
         const user1 = await databaseManager.getUser(21)
 
         if (typeof user1 !== "undefined") {
-            log.debug(`Fetched userData: ${user1.userData.toString()}`)
+            log.debug(`Fetched userData: ${JSON.stringify(user1.userData)}`)
             userList.push(user1)
         }
         

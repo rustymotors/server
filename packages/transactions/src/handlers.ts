@@ -36,6 +36,7 @@ import { _updateCachedVehicle } from "./_updateCachedVehicle.js";
 import { _getCompleteVehicleInfo } from "./_getFullCarInfo.js";
 import { _buyNewPart } from "./_buyNewPart.js";
 import { _createStandardRace } from "./_createStandardRace.js";
+import { _joinRace } from "./_joinRace.js";
 
 
 export interface MessageHandlerArgs {
@@ -152,6 +153,11 @@ export const messageHandlers: MessageHandler[] = [
 		handler: _updateCachedVehicle
 	},
 	{
+		id: 218,
+		name: "MC_RACE_JOIN",
+		handler: _joinRace
+	},
+	{
 		id: 230,
 		name: "MC_CREATE_STANDARD_RACE",
 		handler: _createStandardRace
@@ -179,6 +185,7 @@ export function _MSG_STRING(messageID: number): string {
 		{ id: 174, name: "MC_GET_OWNED_PARTS" }, // 0xae"}
 		{ id: 176, name: "MC_BUY_NEW_PART" },
 		{ id: 213, name: "MC_LOGIN_COMPLETE" }, // 0xd5
+		{ id: 218, name: "MC_RACE_JOIN"},
 		{ id: 230, name: "MC_CREATE_STANDARD_RACE" },
 		{ id: 264, name: "MC_GET_PLAYER_PHYSICAL" }, // 0x108
 		{ id: 265, name: "MC_PLAYER_PHYSICAL_INFO" }, // 0x109

@@ -376,20 +376,9 @@ export async function buildVehiclePartTreeFromDB(
         {BrandedPart: vehiclePartTree.brandedPartId}
     );
 
-    log.debug(`level1Parts: ${JSON.stringify(level1Parts)}`,
-{BrandedPart: vehiclePartTree.brandedPartId});
-
     const level1PartsIds = level1Parts.map((part) => part.part_id);
 
-    log.debug(`level1PartsIds: ${level1PartsIds}`, {
-        BrandedPart: vehiclePartTree.brandedPartId
-    });
-
     for (const part of level1Parts) {
-        log.debug(
-            `Adding part: ${JSON.stringify(part)} to vehicle part tree level 1`,
-            {BrandedPart: vehiclePartTree.brandedPartId}
-        );
 
         const newPart: TPart = {
             part_id: part.part_id,
@@ -653,15 +642,10 @@ export async function buildVehiclePartTree({
     };
 
     log.debug(`Vehicle part tree created`);
-    log.debug(`Vehicle part tree: ${JSON.stringify(vehiclePartTree)}`);
 
     // Populate the vehicle part tree
     for (const part of vehicleAssembly) {
         const parentPartId = partNumbersMap.get(part.parent_abstract_part_type_id);
-
-        log.debug(
-            `parentAbstractPartTypeId: ${part.parent_abstract_part_type_id}, parentPartId: ${parentPartId}`,
-        );
 
         if (parentPartId === undefined) {
             log.error(
@@ -706,7 +690,6 @@ export async function buildVehiclePartTree({
     }
 
     log.debug(`Vehicle part tree populated`);
-    log.debug(`Vehicle part tree: ${JSON.stringify(vehiclePartTree)}`);
 
     return vehiclePartTree;
 }

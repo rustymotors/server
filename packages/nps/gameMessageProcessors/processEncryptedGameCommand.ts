@@ -87,13 +87,6 @@ export async function processEncryptedGameCommand(
 	const encryptedResponse = encryptionSession.gameCipher.update(response);
 	setEncryptionSession(encryptionSession);
 
-	// Log the encrypted response
-	defaultLogger.info(
-		`Encrypted response: ${encryptedResponse.length} bytes, ${getAsHex(
-			encryptedResponse,
-		)}`,
-	);
-
 	const responsePacket = new GameMessage(0);
 	responsePacket.header.setId(0x1101);
 
@@ -101,11 +94,6 @@ export async function processEncryptedGameCommand(
 	responseData.deserialize(encryptedResponse);
 
 	responsePacket.setData(responseData);
-	defaultLogger.info(
-		`Response packet: ${responsePacket.header.getLength()} bytes, ${getAsHex(
-			responsePacket.serialize(),
-		)}`,
-	);
 	const responseBytes = responsePacket.serialize();
 
 	socketCallback([responseBytes]);

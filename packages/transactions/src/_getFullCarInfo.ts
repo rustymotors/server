@@ -185,9 +185,7 @@ export async function _getCompleteVehicleInfo({
         }
 
         log.debug(
-            `Vehicle part tree successfully fetched: ${vehiclePartTreeToJSON(
-                vehicleFromCache,
-            )}`,
+            `Vehicle part tree successfully fetched`,
         );
 
         carInfo.msgNo = 123;

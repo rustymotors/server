@@ -132,9 +132,6 @@ async function processIncomingPackets(
             await routeInitialMessage(id, port, initialPacket)
                 .then((response) => {
                     // Send the response back to the client
-                    log.debug(
-                        `[${id}] Sending response: ${response.toString('hex')}`,
-                    );
                     socket.socket.write(response);
                 })
                 .catch(error => {
