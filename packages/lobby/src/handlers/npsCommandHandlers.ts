@@ -1,3 +1,4 @@
+import { handleSendGameServersList } from "./_handleSendGameServersList.js";
 import { _setMyUserData } from "./_setMyUserData.js";
 import { NpsCommandHandler } from "./encryptedCommand.js";
 import { handleCloseCommChannel } from "./handleCloseCommChannel.js";
@@ -48,5 +49,10 @@ export const npsCommandHandlers: NpsCommandHandler[] = [
 		opCode: 0x302,
 		name: "NPS_SEND_RIFF_LIST",
 		handler: handleSendRiffList
+	},
+	{
+		opCode: 0x309,
+		name: "NPS_SEND_GAME_SERVERS_LIST",
+		handler: handleSendGameServersList
 	}
 ];

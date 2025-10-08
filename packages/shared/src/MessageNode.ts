@@ -168,7 +168,7 @@ export class MessageNode implements MCOTSMessage {
         return `MessageNode: ${JSON.stringify(this)}`
     }
 
-    // TODO: change usable of these
+    // TODO: change usage of these
 
     /**
      * @deprecated

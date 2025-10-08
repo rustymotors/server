@@ -55,7 +55,7 @@ export class CString implements Serializable {
 		return Buffer.from(Buffer.concat([
 			lenBuf,
 			this._string,
-			Buffer.from("0x00")
+			Buffer.from("\0")
 		]));
 	}
 
@@ -77,10 +77,11 @@ export class CString implements Serializable {
 	}
 
 	set(val: string) {
-		if (val.length + 1 > this._maxLen - 1) {
+		if (val.length > this._maxLen - 1) {
 			throw new Error(`string can only be ${this._maxLen + 1} bytes long, got ${val.length}`);
 		}
-		this._string.write(val + '\n');
+		this._string = Buffer.alloc(val.length)
+		this._string.write(val);
 	}
 }
 

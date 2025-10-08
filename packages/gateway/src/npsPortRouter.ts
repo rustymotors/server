@@ -116,12 +116,6 @@ async function processSocketData(
 		const separator = Buffer.from([0x11, 0x01]);
 		const packets = splitDataIntoPackets(data, separator, log, id);
 
-		if (packets.length) {
-			console.log('S: ==================================================================')
-			console.dir(packets)
-			console.log('E: ==================================================================')
-		}
-
 		for (const packet of packets) {
 			log.debug(`raw packet: ${packet.toString("hex")}`)
 			if (packet.byteLength === 0) {

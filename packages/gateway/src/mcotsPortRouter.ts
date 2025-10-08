@@ -105,15 +105,6 @@ async function processIncomingPackets(
                 indexOfPackageSignature - 2,
                 indexOfPackageSignature + length,
             );
-            log.debug(
-                `Packet(hex): ${packet.toString('hex')}`,
-                {
-                    connectionId: id,
-                    port,
-                    length: length,
-                    lengthAction: packet.length,
-                },
-            );
             inPackets.push(packet);
         }
 

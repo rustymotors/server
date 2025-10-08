@@ -28,11 +28,9 @@ export class MessageQueue {
             }; // No work, skipping
             const item: messageQueueItem | undefined = this._queue.shift();
             if (typeof item !== "undefined") {
-                this._log.warn(`${this._name} message queue doing work ${item.id}`);
                 await this._processItemCb(item);
             }
         }
-        this._log.warn(`${this._name} message queue exiting`);
     }
 
     put(item: messageQueueItem): void {

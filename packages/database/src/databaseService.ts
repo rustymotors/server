@@ -18,7 +18,6 @@ export function generatePasswordHash(password: string, saltRounds = 10): string 
 // Database Service Interface
 export interface DatabaseService {
 	isDatabaseConnected: () => boolean;
-	getAllUsers: () => UserRecordMini[];
 	updateSession: (
 		customerId: number,
 		contextId: string,
@@ -113,19 +112,6 @@ export const DatabaseImpl = {
 		);
 	},
 
-
-
-	/**
-	 * Retrieves all users from the database
-	 * @param database - The SQLite database instance
-	 * @returns Array of UserRecordMini objects
-	 */
-	getAllUsers(database: DatabaseSync): UserRecordMini[] {
-		const query = database.prepare(SQL.GET_ALL_USERS);
-		const users = query.all() as UserRecordMini[];
-		return users;
-	},
-
 	/**
 	 * Updates or creates a new session for a user
 	 * @param database - The SQLite database instance
@@ -160,7 +146,6 @@ export const DatabaseImpl = {
 	createDatabaseService(db: DatabaseSync): DatabaseService {
 		return {
 			isDatabaseConnected: () => db !== null,
-			getAllUsers: () => this.getAllUsers(db),
 			updateSession: (...args) => this.updateSession(db, ...args),
 			findSessionByContext: (...args) => this.findSessionByContext(db, ...args),
 		};

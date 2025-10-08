@@ -4,7 +4,6 @@ import { getSlonik, getDatabase } from "./services/database.js";
 import * as Sentry from "@sentry/node";
 import { TPart } from "./models/Part.js";
 import { databaseManager } from "./DatabaseManager.js";
-import { BrandedPart } from "./__generated__/index.js";
 const { slonik, sql } = await getDatabase();
 
 const level1PartTypes = [1001, 2001, 4001, 5001, 6001, 15001, 36001, 37001];
@@ -108,25 +107,15 @@ export async function getBrand(brandName: string): Promise<TBrand | undefined> {
         return brandCache.get(brandName);
     }
 
-    return await Sentry.startSpan(
-        {
-            name: "Get next part id",
-            op: "db.query",
-            attributes: {
-                sql: "SELECT nextval('part_partid_seq')",
-                db: "postgres",
-            },
-        },
-        async () => {
-            const { slonik, sql } = await getSlonik();
+    const { slonik, sql } = await getSlonik();
 
-            const brand = await slonik.one(sql.typeAlias("brand")`
+    const brand = await slonik.one(sql.typeAlias("brand")`
         SELECT brandid, brand, isstock FROM brand WHERE brandname = ${brandName}
-    `);
-            brandCache.set(brandName, brand);
-            return brand;
-        },
-    );
+    `) as TBrand
+    brandCache.set(brandName, brand);
+    return brand;
+
+
 }
 
 const vehiclePartTreeCache = new Map<number, VehiclePartTreeType>();
@@ -167,7 +156,7 @@ export async function saveVehicle(
         };
 
         log.debug(`Saving vehicle part: ${JSON.stringify(vehiclePart)}`,
-    {vehicleId:  vehiclePartTree.vehicleId});
+            { vehicleId: vehiclePartTree.vehicleId });
         await savePart(vehiclePart).catch((error) => {
             log.error(`Error saving vehicle part: ${error}`);
             const e = new Error(`Error saving vehicle part: ${error}`);
@@ -184,7 +173,7 @@ export async function saveVehicle(
             damage_info: vehiclePartTree.damageInfo,
         };
 
-        log.debug(`Saving vehicle: ${JSON.stringify(newVehicle)}`,{
+        log.debug(`Saving vehicle: ${JSON.stringify(newVehicle)}`, {
             vehicleId: vehiclePartTree.vehicleId
         });
 
@@ -234,7 +223,7 @@ export async function saveVehiclePartTree(
     vehiclePartTree: VehiclePartTreeType,
 ): Promise<void> {
     const log = getServerLogger("database/saveVehiclePartTree")
-    try {        
+    try {
         const partIds = new Set<number>();
 
         const partTree = vehiclePartTree.partTree;
@@ -319,31 +308,19 @@ export async function buildVehiclePartTreeFromDB(
     };
 
     // Get first part
-    const part = await Sentry.startSpan(
-        {
-            name: "Get part",
-            op: "db.query",
-            attributes: {
-                sql: "SELECT partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue FROM part WHERE partid = $1",
-                db: "postgres",
-            },
-        },
-        async () => {
-            return slonik.one(sql.typeAlias("part")`
+    const part = await slonik.one(sql.typeAlias("part")`
         SELECT part_id, parent_part_id, branded_part_id, percent_damage, item_wear, attachment_point_id, owner_id, part_name, repair_cost, scrap_value
         FROM part
         WHERE part_id = ${vehicleId}
-    `);
-        },
-    );
+    `) as TPart
 
     if (!part) {
         log.error(`Part with id ${vehicleId} does not exist`);
         throw new Error(`Part with id ${vehicleId} does not exist`);
     }
 
-    vehiclePartTree.brandedPartId = part.brandedpartid;
-    vehiclePartTree.ownerID = part.ownerid;
+    vehiclePartTree.brandedPartId = part.branded_part_id;
+    vehiclePartTree.ownerID = part.owner_id;
 
     const level1Parts = await Sentry.startSpan(
         {
@@ -368,12 +345,12 @@ export async function buildVehiclePartTreeFromDB(
         throw new Error(`Vehicle with id ${vehicleId} has no parts`);
     }
 
-    log.debug(`We got parts!`,{
+    log.debug(`We got parts!`, {
         BrandedPart: vehiclePartTree.brandedPartId
     });
     log.debug(
         `There are ${level1Parts.length} level 1 parts in the vehicle assembly`,
-        {BrandedPart: vehiclePartTree.brandedPartId}
+        { BrandedPart: vehiclePartTree.brandedPartId }
     );
 
     const level1PartsIds = level1Parts.map((part) => part.part_id);
@@ -396,23 +373,12 @@ export async function buildVehiclePartTreeFromDB(
         vehiclePartTree.partTree.level1.parts.push(newPart);
     }
 
-    const level2Parts = await Sentry.startSpan(
-        {
-            name: "Get level 2 parts",
-            op: "db.query",
-            attributes: {
-                sql: "SELECT partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue FROM part WHERE parentpartid IN ($1)",
-                db: "postgres",
-            },
-        },
-        async () => {
-            return slonik.many(sql.typeAlias("part")`
+    const level2Parts = await (slonik.many(sql.typeAlias("part")`
         SELECT part_id, parent_part_id, branded_part_id, percent_damage, item_wear, attachment_point_id, owner_id, part_name, repair_cost, scrap_value
         FROM part
         WHERE parent_part_id IN (${sql.join(level1PartsIds, sql.fragment`, `)})
-    `);
-        },
-    );
+    `) as Promise<TPart[]>);
+
 
     if (level2Parts.length === 0) {
         log.error(`Vehicle with id ${vehicleId} has no level 2 parts`);
@@ -420,11 +386,11 @@ export async function buildVehiclePartTreeFromDB(
     }
 
     log.debug(`We got parts!`,
-    {BrandedPart: vehiclePartTree.brandedPartId}
+        { BrandedPart: vehiclePartTree.brandedPartId }
     );
     log.debug(
         `There are ${level2Parts.length} level 2 parts in the vehicle assembly`,
-        {BrandedPart: vehiclePartTree.brandedPartId}
+        { BrandedPart: vehiclePartTree.brandedPartId }
     );
 
     for (const part of level2Parts) {
@@ -445,9 +411,9 @@ export async function buildVehiclePartTreeFromDB(
     }
 
     log.debug(`Vehicle part tree populated`,
-        {BrandedPart: vehiclePartTree.brandedPartId}
+        { BrandedPart: vehiclePartTree.brandedPartId }
     );
-    log.debug(`Vehicle part tree: ${vehiclePartTreeToJSON(vehiclePartTree)}`,{
+    log.debug(`Vehicle part tree: ${vehiclePartTreeToJSON(vehiclePartTree)}`, {
         BrandedPart: vehiclePartTree.brandedPartId
     });
 
@@ -511,7 +477,7 @@ async function getNextPartId(): Promise<number> {
             const { slonik, sql } = await getSlonik();
             const { nextval } = await slonik.one(sql.typeAlias('nextPartId')`
             SELECT nextval('part_partid_seq')
-        `);
+        `) as { nextval: number };
             return Number(nextval);
         },
     );
@@ -571,10 +537,10 @@ export async function buildVehiclePartTree({
                 sql: 'SELECT bp.branded_part_id, bp.part_type_id, a.attachment_point_id, pt.abstract_part_type_id, apt.parent_abstract_part_type_id FROM stock_assembly a INNER JOIN branded_part bp ON a.child_branded_part_id = bp.branded_part_id inner join part_type pt on pt.part_type_id = bp.part_type_id inner join abstract_part_type apt on apt.abstract_part_type_id = pt.abstract_part_type_id WHERE a.parent_branded_part_id = $1',
                 db: 'postgres',
             },
-        },        
+        },
         async () => {
             log.debug(`Getting vehicle assembly for vehicle with branded part id ${brandedPartId}`,
-                {BrandedPart: vehiclePartTree.brandedPartId}
+                { BrandedPart: vehiclePartTree.brandedPartId }
             );
             const { slonik, sql } = await getSlonik();
             return slonik.many(sql.typeAlias('detailedPart')`
@@ -605,11 +571,11 @@ export async function buildVehiclePartTree({
 
     // But we did get parts, right?
     log.debug(`We got parts!`,
-        {BrandedPart: brandedPartId}
+        { BrandedPart: brandedPartId }
     );
     log.debug(
         `There are ${vehicleAssembly.length} parts in the vehicle assembly`,
-        {brandedPart: brandedPartId}
+        { brandedPart: brandedPartId }
     );
 
     const topPartId = await getNextPartId();
@@ -694,7 +660,7 @@ export async function buildVehiclePartTree({
     return vehiclePartTree;
 }
 
-export async function dbBuyNewPart(personiaId: number, brandedPartId: number, dealerId: number, shouldChargelayer: boolean): Promise<number> {
+export async function dbBuyNewPart(personiaId: number, brandedPartId: number, _dealerId: number, _shouldChargePlayer: boolean): Promise<number> {
     const persona = databaseManager.getUser(personiaId)
 
     if (typeof persona === "undefined") {
@@ -708,14 +674,14 @@ export async function dbBuyNewPart(personiaId: number, brandedPartId: number, de
         parent_part_id: null,
         branded_part_id: brandedPartId,
         percent_damage: 0,
-            item_wear: 0,
-            attachment_point_id: 0,
-            owner_id: personiaId,
-            part_name: null,
-            repair_cost: 0,
-            scrap_value: 0,
+        item_wear: 0,
+        attachment_point_id: 0,
+        owner_id: personiaId,
+        part_name: null,
+        repair_cost: 0,
+        scrap_value: 0,
     }
-    
-    
+
+
     return savePart(newPart).then(() => newPartId)
 }

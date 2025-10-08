@@ -40,11 +40,11 @@ export type { State } from "./src/State.js";
 export type { OnDataHandler, ServiceResponse } from "./src/State.js";
 export { LegacyMessage } from "./src/LegacyMessage.js";
 export { NPSHeader } from "./src/NPSHeader.js";
-export {UserData, UserInfo, SetMyUserDataMessage, } from "./src/UserData.js"
-export {RiffInfoListMessage, RiffInfo} from "./src/Lobby.js"
-export {MessageNode} from "./src/MessageNode.js"
-export {CreateRaceInfo, CreateRaceMessage} from "./src/CreateRaceMessage.js"
-export {RaceInfo, Racer, RaceCreatedMessage, JoinRaceMessage, RaceJoinedMessage} from "./src/RaceInfo.js"
+export { UserData, UserInfo, SetMyUserDataMessage, } from "./src/UserData.js"
+export { RiffInfoListMessage, RiffInfo, GameServerInfo, GameServerListMessage } from "./src/Lobby.js"
+export { MessageNode } from "./src/MessageNode.js"
+export { CreateRaceInfo, CreateRaceMessage } from "./src/CreateRaceMessage.js"
+export { RaceInfo, Racer, RaceCreatedMessage, JoinRaceMessage, RaceJoinedMessage } from "./src/RaceInfo.js"
 export * from "./src/types.js";
 
 // Function to convert ARGB to 32-bit integer
@@ -121,12 +121,12 @@ export function getServerLogger(name?: string): Logger {
 	const loggerName = name || "core";
 	const validLogLevels = ['fatal', 'error', 'warn', 'info', 'debug', 'trace'] as const;
 	const logLevel = process.env["MCO_LOG_LEVEL"] || "debug";
-	
+
 	if (!validLogLevels.includes(logLevel as LogLevel)) {
 		console.warn(`Invalid log level: ${logLevel}. Defaulting to "debug"`);
 	}
 
-	logger = pino({ 
+	logger = pino({
 		name: loggerName,
 		transport: {
 			targets: [

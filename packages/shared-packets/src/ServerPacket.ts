@@ -39,6 +39,7 @@ export class ServerPacket extends BaseServerPacket implements SerializableServer
 	}
 
 	override getDataBuffer(): Buffer {
+		super.setDataBuffer
 		return this.data.serialize();
 	}
 	override setDataBuffer(data: Buffer): ServerPacket {
