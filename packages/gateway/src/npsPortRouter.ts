@@ -35,7 +35,6 @@ export async function npsPortRouter({
 		socket.end();
 		return;
 	}
-	log.debug(`[${id}] NPS port router started for port ${port}`);
 	const receiveQueue = new MessageQueue("npsIn", 10, async (item: messageQueueItem) => {
 		try {
 			await processSocketData(item.data, log, taggedSocket.connectionId, taggedSocket.localPort, taggedSocket)
@@ -101,7 +100,15 @@ async function processSocketData(
 	socket: TaggedSocket,
 ): Promise<void> {
 	// Early tossing of known bad packets
-	const msgCode = data.readInt16BE()
+	const msgCode = data.readUInt16BE()
+
+		if (msgCode > 0x1301) {
+			// we know this is junk, toss it
+			socket.socket.end()
+			return
+		}
+
+	log.debug(`processSocketData for ${msgCode.toString(16)}`)
 
 	if ([0x300, 0x101, 0x4745, 0x4845, 0x1603,0x1e, 0x11,0x434e, 0x1603, 0x504f].includes(msgCode)) {
 		socket.socket.end()

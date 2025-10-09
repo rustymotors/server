@@ -8,6 +8,7 @@ import { handleGetUserList } from "./handleGetUserList.js";
 import { handleOpenCommChannel } from "./handleOpenCommChannel.js";
 import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";
 import { handleSendRiffList } from "./handleSendRiffList.js";
+import { handleStartGameServer } from "./handleStartGameServer.js";
 
 export const npsCommandHandlers: NpsCommandHandler[] = [
 	{
@@ -19,6 +20,11 @@ export const npsCommandHandlers: NpsCommandHandler[] = [
 		opCode: 0x105,
 		name: "NPS_CLOSE_COMM_CHANNEL",
 		handler: handleCloseCommChannel
+	},
+	{
+		opCode: 0x10a,
+		name: "NPS_START_GAME_SERVER",
+		handler: handleStartGameServer
 	},
 	{
 		opCode: 0x10c, // 268

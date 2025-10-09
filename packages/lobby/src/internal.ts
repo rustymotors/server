@@ -104,7 +104,7 @@ export async function receiveLobbyData({
 
 	if (typeof supportedHandler === "undefined") {
 		// We do not yet support this message code
-		throw Error(`UNSUPPORTED_MESSAGECODE: ${message.header.messageId}`);
+		throw Error(`UNSUPPORTED_MESSAGECODE: ${message.header.messageId.toString(16)}`);
 	}
 
 	try {

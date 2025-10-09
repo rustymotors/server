@@ -5,7 +5,6 @@ import {
     GameServerListMessage,
     GameServerInfo
 } from "rusty-motors-shared";
-import { chatChannelIds } from "./channels.js";
 
 export async function handleSendGameServersList({
     connectionId,

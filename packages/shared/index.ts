@@ -42,6 +42,7 @@ export { LegacyMessage } from "./src/LegacyMessage.js";
 export { NPSHeader } from "./src/NPSHeader.js";
 export { UserData, UserInfo, SetMyUserDataMessage, } from "./src/UserData.js"
 export { RiffInfoListMessage, RiffInfo, GameServerInfo, GameServerListMessage } from "./src/Lobby.js"
+export {GameServerLaunchInfo} from "./src/GameServer.js"
 export { MessageNode } from "./src/MessageNode.js"
 export { CreateRaceInfo, CreateRaceMessage } from "./src/CreateRaceMessage.js"
 export { RaceInfo, Racer, RaceCreatedMessage, JoinRaceMessage, RaceJoinedMessage } from "./src/RaceInfo.js"

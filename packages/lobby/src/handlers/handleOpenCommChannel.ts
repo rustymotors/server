@@ -1,8 +1,33 @@
 import { BytableMessage } from "@rustymotors/binary";
 import {
     getServerLogger,
+    Serializable,
     ServerLogger,
 } from "rusty-motors-shared";
+import { CBlock, CString } from "../../../shared/src/helpers.js";
+
+export class OpenCommChannelRequest implements Serializable {
+    private _connectionId // 4
+    private _commId // 4
+    private _protocol // 4
+    private _riffName // string 32
+    private _password // string 17
+    private _channelData // 256
+    private _key // 4
+    private _flags // 4
+
+    constructor() {
+        this._connectionId = Buffer.alloc(4)
+        this._commId = Buffer.alloc(4)
+        this._protocol = Buffer.alloc(4)
+        this._riffName = new CString(32)
+        this._password = new CString(17)
+        this._channelData = new CBlock(256)
+        this._key = Buffer.alloc(4)
+        this.
+
+    }
+}
 
 export async function handleOpenCommChannel({
     connectionId,
