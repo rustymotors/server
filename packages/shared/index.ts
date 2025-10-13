@@ -1,76 +1,84 @@
-import pino from "pino";
-import * as Sentry from "@sentry/node";
-export { SubThread } from "./src/SubThread.js";
-export { NetworkMessage } from "./src/NetworkMessage.js";
+import pino from 'pino';
+import * as Sentry from '@sentry/node';
+export { SubThread } from './src/SubThread.js';
+export { NetworkMessage } from './src/NetworkMessage.js';
+export { Configuration, getServerConfiguration } from './src/Configuration.js';
+export { SerializedBuffer } from './src/SerializedBuffer.js';
+export { SerializedBufferOld } from './src/SerializedBufferOld.js';
+export { RawMessage } from './src/RawMessage.js';
+export { ServerMessage } from './src/ServerMessage.js';
 export {
-	Configuration,
-	getServerConfiguration,
-} from "./src/Configuration.js";
-export { SerializedBuffer } from "./src/SerializedBuffer.js";
-export { SerializedBufferOld } from "./src/SerializedBufferOld.js";
-export { RawMessage } from "./src/RawMessage.js";
-export { ServerMessage } from "./src/ServerMessage.js";
+    AbstractSerializable,
+    SerializableMixin,
+} from './src/messageFactory.js';
+export { NPSMessage } from './src/NPSMessage.js';
+export { OldServerMessage } from './src/OldServerMessage.js';
+export { MessageBufferOld } from './src/MessageBufferOld.js';
+export { GameMessage } from './src/GameMessage.js';
+export { serializeString } from './src/serializeString.js';
+export { deserializeString } from './src/deserializeString.js';
+export { serializeStringRaw } from './src/serializeStringRaw.js';
+export { MessageNodeOld } from './src/MessageNodeOld.js';
+export { Timestamp } from './src/TimeStamp.js';
 export {
-	AbstractSerializable,
-	SerializableMixin,
-} from "./src/messageFactory.js";
-export { NPSMessage } from "./src/NPSMessage.js";
-export { OldServerMessage } from "./src/OldServerMessage.js";
-export { MessageBufferOld } from "./src/MessageBufferOld.js";
-export { GameMessage } from "./src/GameMessage.js";
-export { serializeString } from "./src/serializeString.js";
-export { deserializeString } from "./src/deserializeString.js";
-export { serializeStringRaw } from "./src/serializeStringRaw.js";
-export { MessageNodeOld } from "./src/MessageNodeOld.js";
-export { Timestamp } from "./src/TimeStamp.js";
+    McosEncryptionPair,
+    McosEncryption,
+    addSession,
+    createInitialState,
+    fetchStateFromDatabase,
+    addEncryption,
+    getEncryption,
+    McosSession,
+    findSessionByConnectionId,
+    updateEncryption,
+} from './src/State.js';
+export { ensureLegacyCipherCompatibility as verifyLegacyCipherSupport } from './src/verifyLegacyCipherSupport.js';
+export type { State } from './src/State.js';
+export type { OnDataHandler, ServiceResponse } from './src/State.js';
+export { LegacyMessage } from './src/LegacyMessage.js';
+export { NPSHeader } from './src/NPSHeader.js';
+export { UserData, UserInfo, SetMyUserDataMessage } from './src/UserData.js';
+export { RiffInfoListMessage, RiffInfo } from './src/Lobby.js';
 export {
-	McosEncryptionPair,
-	McosEncryption,
-	addSession,
-	createInitialState,
-	fetchStateFromDatabase,
-	addEncryption,
-	getEncryption,
-	McosSession,
-	findSessionByConnectionId,
-	updateEncryption,
-} from "./src/State.js";
-export { ensureLegacyCipherCompatibility as verifyLegacyCipherSupport } from "./src/verifyLegacyCipherSupport.js";
-export type { State } from "./src/State.js";
-export type { OnDataHandler, ServiceResponse } from "./src/State.js";
-export { LegacyMessage } from "./src/LegacyMessage.js";
-export { NPSHeader } from "./src/NPSHeader.js";
-export { UserData, UserInfo, SetMyUserDataMessage, } from "./src/UserData.js"
-export { RiffInfoListMessage, RiffInfo, GameServerInfo, GameServerListMessage } from "./src/Lobby.js"
-export {GameServerLaunchInfo} from "./src/GameServer.js"
-export { MessageNode } from "./src/MessageNode.js"
-export { CreateRaceInfo, CreateRaceMessage } from "./src/CreateRaceMessage.js"
-export { RaceInfo, Racer, RaceCreatedMessage, JoinRaceMessage, RaceJoinedMessage } from "./src/RaceInfo.js"
-export * from "./src/types.js";
+    GameServerLaunchInfo,
+    GameServerInfo,
+    GameServerListMessage,
+} from './src/GameServer.js';
+export { MessageNode } from './src/MessageNode.js';
+export { Bool, CBlock, CString, checkMinLength, sliceBuff } from './src/helpers.js';
+export { CreateRaceInfo, CreateRaceMessage } from './src/CreateRaceMessage.js';
+export {
+    RaceInfo,
+    Racer,
+    RaceCreatedMessage,
+    JoinRaceMessage,
+    RaceJoinedMessage,
+} from './src/RaceInfo.js';
+export * from './src/types.js';
 
 // Function to convert ARGB to 32-bit integer
 export function argbToInt(
-	alpha: number,
-	red: number,
-	green: number,
-	blue: number,
+    alpha: number,
+    red: number,
+    green: number,
+    blue: number,
 ) {
-	return (
-		((alpha & 0xff) << 24) |
-		((red & 0xff) << 16) |
-		((green & 0xff) << 8) |
-		(blue & 0xff)
-	);
+    return (
+        ((alpha & 0xff) << 24) |
+        ((red & 0xff) << 16) |
+        ((green & 0xff) << 8) |
+        (blue & 0xff)
+    );
 }
 
 // Function to convert 32-bit integer to ARGB
 export function intToArgb(int: number) {
-	return {
-		alpha: (int >> 24) & 0xff,
-		red: (int >> 16) & 0xff,
-		green: (int >> 8) & 0xff,
-		blue: int & 0xff,
-	};
+    return {
+        alpha: (int >> 24) & 0xff,
+        red: (int >> 16) & 0xff,
+        green: (int >> 8) & 0xff,
+        blue: int & 0xff,
+    };
 }
 
 //skin colors
@@ -102,75 +110,84 @@ export const cloth_grey = argbToInt(255, 146, 143, 137); //grey
 export const cloth_white = argbToInt(255, 255, 255, 255); //white
 
 export interface Logger {
-	info: (msg: string, obj?: unknown) => void;
-	warn: (msg: string, obj?: unknown) => void;
-	error: (msg: string, obj?: unknown) => void;
-	fatal: (msg: string, obj?: unknown) => void;
-	debug: (msg: string, obj?: unknown) => void;
-	trace: (msg: string, obj?: unknown) => void;
-	child: (obj: pino.Bindings) => Logger;
+    info: (msg: string, obj?: unknown) => void;
+    warn: (msg: string, obj?: unknown) => void;
+    error: (msg: string, obj?: unknown) => void;
+    fatal: (msg: string, obj?: unknown) => void;
+    debug: (msg: string, obj?: unknown) => void;
+    trace: (msg: string, obj?: unknown) => void;
+    child: (obj: pino.Bindings) => Logger;
 }
 
-type LogLevel = "fatal" | "error" | "warn" | "info" | "debug" | "trace";
+type LogLevel = 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace';
 
 let logger: pino.Logger;
 
 export function getServerLogger(name?: string): Logger {
-	if (logger) {
-		return logger.child({ name });
-	}
-	const loggerName = name || "core";
-	const validLogLevels = ['fatal', 'error', 'warn', 'info', 'debug', 'trace'] as const;
-	const logLevel = process.env["MCO_LOG_LEVEL"] || "debug";
+    if (logger) {
+        return logger.child({ name });
+    }
+    const loggerName = name || 'core';
+    const validLogLevels = [
+        'fatal',
+        'error',
+        'warn',
+        'info',
+        'debug',
+        'trace',
+    ] as const;
+    const logLevel = process.env['MCO_LOG_LEVEL'] || 'debug';
 
-	if (!validLogLevels.includes(logLevel as LogLevel)) {
-		console.warn(`Invalid log level: ${logLevel}. Defaulting to "debug"`);
-	}
+    if (!validLogLevels.includes(logLevel as LogLevel)) {
+        console.warn(`Invalid log level: ${logLevel}. Defaulting to "debug"`);
+    }
 
-	logger = pino({
-		name: loggerName,
-		transport: {
-			targets: [
-				{
-					target: "pino-pretty",
-					options: {
-						colorize: true,
-						translateTime: "SYS:standard",
-					},
-					level: logLevel,
-				},
-				{
-					target: "pino/file",
-					options: {
-						destination: `./logs/server.log`,
-						mkdir: true,
-						append: false
-					},
-					level: logLevel,
-				}
-			],
-		},
-		level: logLevel,
-	});
+    logger = pino({
+        name: loggerName,
+        transport: {
+            targets: [
+                {
+                    target: 'pino-pretty',
+                    options: {
+                        colorize: true,
+                        translateTime: 'SYS:standard',
+                    },
+                    level: logLevel,
+                },
+                {
+                    target: 'pino/file',
+                    options: {
+                        destination: `./logs/server.log`,
+                        mkdir: true,
+                        append: false,
+                    },
+                    level: logLevel,
+                },
+            ],
+        },
+        level: logLevel,
+    });
 
-	return {
-		info: logger.info.bind(logger),
-		warn: logger.warn.bind(logger),
-		error: (msg: string, obj?: unknown) => {
-			if (obj instanceof Error) {
-				Sentry.captureException(obj);
-			} else if (obj) {
-				Sentry.captureException(new Error(msg), { extra: { context: obj } });
-			} else {
-				Sentry.captureException(new Error(msg));
-			}
-			logger.error({ msg, obj });
-		},
-		fatal: logger.fatal.bind(logger),
-		debug: logger.debug.bind(logger),
-		trace: logger.trace.bind(logger),
-		child: (obj: pino.Bindings) => logger.child(obj),
-	}
+    return {
+        info: logger.info.bind(logger),
+        warn: logger.warn.bind(logger),
+        error: (msg: string, obj?: unknown) => {
+            if (obj instanceof Error) {
+                Sentry.captureException(obj);
+            } else if (obj) {
+                Sentry.captureException(new Error(msg), {
+                    extra: { context: obj },
+                });
+            } else {
+                Sentry.captureException(new Error(msg));
+            }
+            logger.error({ msg, obj });
+        },
+        fatal: logger.fatal.bind(logger),
+        debug: logger.debug.bind(logger),
+        trace: logger.trace.bind(logger),
+        child: (obj: pino.Bindings) => logger.child(obj),
+    };
 }
 
 export type ServerLogger = Logger;

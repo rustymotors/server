@@ -122,7 +122,6 @@ export async function receiveTransactionsData({
 
 	// Is the message encrypted?
 	if (inboundMessage.isPayloadEncrypted()) {
-		log.debug(`[${connectionId}] Message is encrypted`);
 		// Get the encryyption settings for this connection
 		const state = fetchStateFromDatabase();
 
@@ -144,7 +143,6 @@ export async function receiveTransactionsData({
 			connectionId,
 		);
 	} else {
-		log.debug(`[${connectionId}] Message is not encrypted`);
 		decryptedMessage = inboundMessage;
 	}
 

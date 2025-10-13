@@ -1,9 +1,8 @@
-import { Bool, checkMinLength, padBuffer, sliceBuff } from "./helpers.js";
-import { MessageNode } from "./MessageNode.js";
-import { Serializable } from "./types.js";
+import { Bool, checkMinLength, padBuffer, sliceBuff } from './helpers.js';
+import { MessageNodeBody } from './MessageNode.js';
+import { Serializable } from './types.js';
 
-
-export class CreateRaceMessage extends MessageNode {
+export class CreateRaceMessage extends MessageNodeBody {
     private _msgNo; // 2
     private _lobbyId; // 4
     private _entryFee; // 4
@@ -11,7 +10,7 @@ export class CreateRaceMessage extends MessageNode {
     private _isPinkSlipRace: Bool; // 1
     private _isTeamTrial: Bool; // 1
     private _sponsorId; // 4
-    private info: CreateRaceInfo;
+    private _info: CreateRaceInfo;
 
     constructor() {
         super();
@@ -22,15 +21,15 @@ export class CreateRaceMessage extends MessageNode {
         this._isPinkSlipRace = new Bool();
         this._isTeamTrial = new Bool();
         this._sponsorId = Buffer.alloc(4);
-        this.info = new CreateRaceInfo();
+        this._info = new CreateRaceInfo();
     }
 
     override get sizeOf() {
-        return 2 + 4 + 4 + 1 + 1 + 1 + 4 + this.info.sizeOf;
+        return 2 + 4 + 4 + 1 + 1 + 1 + 4 + this._info.sizeOf;
     }
 
     override serialize() {
-        return Buffer.concat([
+        this.body_ = Buffer.concat([
             this._msgNo,
             this._lobbyId,
             this._entryFee,
@@ -39,10 +38,12 @@ export class CreateRaceMessage extends MessageNode {
             this._isTeamTrial.serialize(),
             this._sponsorId,
         ]);
-    };
+        return this.body_;
+    }
 
     override deserialize(buf: Buffer) {
         checkMinLength(buf, this.sizeOf);
+        this.body_ = buf;
         let offset = 0;
         this._msgNo = sliceBuff(buf, offset, 2);
         offset = offset + 2;
@@ -58,11 +59,36 @@ export class CreateRaceMessage extends MessageNode {
         offset = offset + 1;
         this._sponsorId = sliceBuff(buf, offset, 4);
         offset = offset + 4;
-        this.info.deserialize(buf.subarray(offset));
-    };
+        this._info.deserialize(buf.subarray(offset));
+    }
+
+    get msgNo() {
+        return this._msgNo.readUint32LE();
+    } // 2
+    get lobbyId() {
+        return this._lobbyId.readUint32LE();
+    } // 4
+    get entryFee() {
+        return this._entryFee.readUint32LE();
+    } // 4
+    get isClubRace() {
+        return this._isClubRace.value;
+    }
+    get isPinkSlipRace() {
+        return this._isPinkSlipRace.value;
+    }
+    get isTeamTrial() {
+        return this._isTeamTrial.value;
+    }
+    get sponsorId() {
+        return this._isTeamTrial.value;
+    } // 4
+    get info(): CreateRaceInfo {
+        return this._info;
+    }
 
     override toString(): string {
-        return JSON.stringify(this)
+        return JSON.stringify(this);
     }
 }
 export class CreateRaceInfo implements Serializable {
@@ -107,31 +133,33 @@ export class CreateRaceInfo implements Serializable {
     }
 
     get sizeOf() {
-        return 34;
+        return 33;
     }
 
     serialize() {
-        return padBuffer(Buffer.concat([
-            this._minLevel,
-            this._maxLevel,
-            this._maxHP,
-            this._maxRacers,
-            this._minRacers,
-            this._numRounds,
-            this._numLaps,
-            this._isRaceBackwards,
-            this._isRaceMirrored,
-            this._isRaceAtNight,
-            this._doesRaceHaveWeather,
-            this._doesRaceHaveDamage,
-            this._doesRaceHaveTraffic,
-            this._doesRaceHaveAI,
-            this._isRaceHandicapped,
-            this._powerClass,
-            this._bodyClass,
-            this._isNOSDisallowed
-        ]));
-    };
+        return padBuffer(
+            Buffer.concat([
+                this._minLevel,
+                this._maxLevel,
+                this._maxHP,
+                this._maxRacers,
+                this._minRacers,
+                this._numRounds,
+                this._numLaps,
+                this._isRaceBackwards,
+                this._isRaceMirrored,
+                this._isRaceAtNight,
+                this._doesRaceHaveWeather,
+                this._doesRaceHaveDamage,
+                this._doesRaceHaveTraffic,
+                this._doesRaceHaveAI,
+                this._isRaceHandicapped,
+                this._powerClass,
+                this._bodyClass,
+                this._isNOSDisallowed,
+            ]),
+        );
+    }
 
     deserialize(buf: Buffer) {
         checkMinLength(buf, this.sizeOf);
@@ -171,7 +199,5 @@ export class CreateRaceInfo implements Serializable {
         this._bodyClass = sliceBuff(buf, offset, 4);
         offset = offset + 4;
         this._isNOSDisallowed = sliceBuff(buf, offset, 1);
-    };
-
+    }
 }
-

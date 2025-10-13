@@ -529,30 +529,15 @@ export async function buildVehiclePartTree({
     }
 
     // Get the vehicle assembly from the database
-    const vehicleAssembly = await Sentry.startSpan(
-        {
-            name: 'Get vehicle assembly',
-            op: 'db.query',
-            attributes: {
-                sql: 'SELECT bp.branded_part_id, bp.part_type_id, a.attachment_point_id, pt.abstract_part_type_id, apt.parent_abstract_part_type_id FROM stock_assembly a INNER JOIN branded_part bp ON a.child_branded_part_id = bp.branded_part_id inner join part_type pt on pt.part_type_id = bp.part_type_id inner join abstract_part_type apt on apt.abstract_part_type_id = pt.abstract_part_type_id WHERE a.parent_branded_part_id = $1',
-                db: 'postgres',
-            },
-        },
-        async () => {
-            log.debug(`Getting vehicle assembly for vehicle with branded part id ${brandedPartId}`,
-                { BrandedPart: vehiclePartTree.brandedPartId }
-            );
-            const { slonik, sql } = await getSlonik();
-            return slonik.many(sql.typeAlias('detailedPart')`
+    const { slonik, sql } = await getSlonik();
+    const vehicleAssembly = await slonik.many(sql.typeAlias('detailedPart')`
         SELECT bp.branded_part_id, bp.part_type_id, a.attachment_point_id, pt.abstract_part_type_id, apt.parent_abstract_part_type_id
         FROM stock_assembly a
         INNER JOIN branded_part bp ON a.child_branded_part_id = bp.branded_part_id
         inner join part_type pt on pt.part_type_id = bp.part_type_id
         inner join abstract_part_type apt on apt.abstract_part_type_id = pt.abstract_part_type_id
         WHERE a.parent_branded_part_id = ${brandedPartId}
-    `);
-        },
-    ) as {
+    `) as {
         branded_part_id: number;
         part_type_id: number;
         abstract_part_type_id: number;

@@ -75,6 +75,33 @@ export async function npsPortRouter({
 }
 
 /**
+ * The function `isPacketValid` checks if a packet of data is valid based on specific conditions
+ * related to the message code within the data buffer.
+ * @param {Buffer} data - A Buffer containing data to be checked for validity.
+ * @returns The function `isPacketValid` returns a boolean value. If the conditions for the packet data
+ * being valid are met, it returns `true`. Otherwise, if the data length is less than 4 or the message
+ * code falls within certain ranges that indicate it is invalid, it returns `false`.
+ */
+function isPacketValid(data: Buffer): boolean {
+    if (data.length < 4) {
+        return false;
+    }
+
+    // Read the message code from the start of the buffer
+    const msgCode = data.readUInt16BE();
+
+    if (
+        msgCode > 0x1301 ||
+        msgCode < 0x100 ||
+        (msgCode >= 0x902 && msgCode <= 0x1000)
+    ) {
+        // we know this is junk, toss it
+        return false;
+    }
+    return true;
+}
+
+/**
  * Processes incoming socket data, splits it into packets if necessary, and routes
  * the initial message for further handling. Sends the response back to the client
  * through the socket.
@@ -100,19 +127,9 @@ async function processSocketData(
 	socket: TaggedSocket,
 ): Promise<void> {
 	// Early tossing of known bad packets
-	const msgCode = data.readUInt16BE()
-
-		if (msgCode > 0x1301) {
-			// we know this is junk, toss it
-			socket.socket.end()
-			return
-		}
-
-	log.debug(`processSocketData for ${msgCode.toString(16)}`)
-
-	if ([0x300, 0x101, 0x4745, 0x4845, 0x1603,0x1e, 0x11,0x434e, 0x1603, 0x504f].includes(msgCode)) {
-		socket.socket.end()
-		return
+    if (!isPacketValid(data)) {
+        socket.socket.end();
+        return;
 	}
 
 
@@ -138,6 +155,23 @@ async function processSocketData(
 
 }
 
+/**
+ * The function `splitDataIntoPackets` takes a data buffer, separator buffer, server logger, and ID
+ * string, splits the data into packets based on the separator, and returns an array of buffers
+ * representing the packets.
+ * @param {Buffer} data - The `data` parameter is a Buffer containing the data that needs to be split
+ * into packets.
+ * @param {Buffer} separator - The `separator` parameter is a Buffer that is used to split the `data`
+ * Buffer into separate packets. It is used to identify the boundaries between packets in the data.
+ * @param {ServerLogger} log - The `log` parameter in the `splitDataIntoPackets` function is a
+ * `ServerLogger` object that is used for logging debug messages. It is used to log information about
+ * the packets being processed and split during the execution of the function.
+ * @param {string} id - The `id` parameter in the `splitDataIntoPackets` function is a string that
+ * represents an identifier for the data packets being processed. It is used for logging purposes to
+ * track and identify the packets as they are split and processed.
+ * @returns The function `splitDataIntoPackets` returns an array of Buffers containing the split data
+ * packets.
+ */
 function splitDataIntoPackets(
 	data: Buffer,
 	separator: Buffer,
