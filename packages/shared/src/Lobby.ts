@@ -10,6 +10,87 @@ import {
     sliceBuff,
 } from './helpers.js';
 
+export class ChannelCreated implements Serializable {
+    private _commId // 4
+    private _riff: CString // 32
+    private _protocol // 4
+    private _channelData: CBlock // 256
+    private _channelType // 2
+    private _maxReadyPlayers // 2
+
+    constructor() {
+        this._commId = Buffer.alloc(4)
+        this._riff = new CString(32)
+        this._protocol = Buffer.alloc(4)
+        this._channelData = new CBlock(256)
+        this._channelType = Buffer.alloc(2)
+        this._maxReadyPlayers = Buffer.alloc(2)
+    }
+
+    get sizeOf() {
+        return 4 + this._riff.sizeOf + 4 + this._channelData.sizeOf + 2 + 2
+    }
+
+    serialize() {
+        return Buffer.concat([
+            this._commId,
+            this._riff.serialize(),
+            this._protocol,
+            this._channelData.serialize(),
+            this._channelType,
+            this._maxReadyPlayers
+        ])        
+    };
+
+    deserialize(buf: Buffer) {
+        checkMinLength(buf, this.sizeOf)
+        let offset = 0
+        this._commId = sliceBuff(buf, offset, 4)
+        offset += 4
+        this._riff.deserialize(buf.subarray(offset))
+        offset+= this._riff.sizeOf
+        this._protocol = sliceBuff(buf, offset, 4)
+        offset +=4
+        this._channelData.deserialize(buf.subarray(offset))
+        offset += this._channelData.sizeOf
+        this._channelType = sliceBuff(buf, offset, 2)
+        offset += 2
+        this._maxReadyPlayers = sliceBuff(buf, offset, 2)
+    };
+
+    toString() {
+        return JSON.stringify(this)
+    }
+
+    set commId(val: number) {
+        checkSize4(val)
+        this._commId.writeInt32BE(val)
+    }
+
+    set riff(val: string) {
+        this._riff.set(val)
+    }
+
+    set protocol(val: number) {
+        checkSize4(val)
+        this._protocol.writeInt32BE(val)
+    }
+
+    set channelData(val: Buffer) {
+        sliceBuff(val, 0, this._channelData.sizeOf).copy(this.channelData)
+    }
+
+    set channelType(val: number) {
+        checkSize2(val)
+        this._channelType.writeInt16BE(val)
+    }
+
+    set maxReadyPlayers(val: number) {
+        checkSize2(val)
+        this._maxReadyPlayers.writeInt16BE(val)
+    }
+}
+
 export class RiffInfo implements Serializable {
     private _riffName: CString; // max 32, null term
     private _protocol: Buffer; // ulong

@@ -1,15 +1,18 @@
-import { BytableMessage } from "@rustymotors/binary";
+import { BytableMessage } from '@rustymotors/binary';
 import {
     getServerLogger,
     ServerLogger,
     GameServerListMessage,
-    GameServerInfo
-} from "rusty-motors-shared";
+    GameServerInfo,
+    RawMessage,
+    ChannelCreated,
+} from 'rusty-motors-shared';
+import {} from "@rustymotors/rooms"
 
 export async function handleSendGameServersList({
     connectionId,
     message,
-    log = getServerLogger("lobby.handleSendGameServersList"),
+    log = getServerLogger('lobby.handleSendGameServersList'),
 }: {
     connectionId: string;
     message: BytableMessage;
@@ -19,41 +22,62 @@ export async function handleSendGameServersList({
     message: BytableMessage;
 }> {
     try {
-        log.debug(`[${connectionId}] Handling NPS_SEND_GAME_SERVERS_LIST`);
-        log.debug(
-            `[${connectionId}] Received command: ${message.header.messageId}`,
-        );
+        log.debug(`Handling NPS_SEND_GAME_SERVERS_LIST`, {
+            connectionId,
+        });
+        log.debug(`Received command: ${message.header.messageId}`, {
+            connectionId,
+        });
 
         // l
         const incomingRequest = new BytableMessage();
-        incomingRequest.setSerializeOrder([{ name: "commId", field: "Dword" }]);
+        incomingRequest.setSerializeOrder([{ name: 'commId', field: 'Dword' }]);
         incomingRequest.deserialize(message.serialize());
 
+        const requestedCommId = incomingRequest.getFieldValueByName("commId") as number ?? 0
+
+        const newChannel = {
+            commId: requestedCommId,
+            riff: 'RACE',
+            protocol: 33,
+            channelType: 2,
+            maxReadyPlayers: 8
+        }
+
         // TODO: Actually have servers
-        // ppp
-        const outgoingGameMessage = new GameServerListMessage();
-        
+        const channelCreatedMessage = new RawMessage()
+        const channelCreatedBody = new ChannelCreated()
+        channelCreatedBody.commId = requestedCommId
+        channelCreatedBody.riff = 'RACE'
+        channelCreatedBody.protocol = 33
+        channelCreatedBody.channelData = Buffer.alloc(256)
+        channelCreatedBody.channelType = 3
+        channelCreatedBody.maxReadyPlayers = 8
+        channelCreatedMessage.data = channelCreatedBody.serialize()
+
+            // ppp
+            const outgoingGameMessage = new GameServerListMessage();
+
         outgoingGameMessage.id = 0x402;
 
-        const gameServer1 = new GameServerInfo("RACE", "71.186.155.248")
-        
-        outgoingGameMessage.add(gameServer1)
+        const gameServer1 = new GameServerInfo('RACE', '71.186.155.248');
 
-                log.debug(
-            `[${connectionId}] Sending gameserver response[serialize]: ${JSON.stringify(gameServer1)}`,
+        outgoingGameMessage.add(gameServer1);
+
+        log.debug(
+            `Sending gameserver response[serialize]: ${JSON.stringify(gameServer1)}`,
+            { connectionId },
         );
 
-        
         // Build the packet
         const packetResult = new BytableMessage();
-        packetResult.setSerializeOrder([
-            { name: "data", field: "Buffer" },
-        ]);
+        packetResult.setSerializeOrder([{ name: 'data', field: 'Buffer' }]);
         packetResult.setVersion(0);
         packetResult.deserialize(outgoingGameMessage.serialize());
 
         log.debug(
-            `[${connectionId}] Sending gameserver response[serialize2]: ${packetResult.serialize().toString("hex")}`,
+            `Sending gameserver response[serialize2]: ${packetResult.serialize().toString('hex')}`,
+            { connectionId },
         );
 
         return {

@@ -16,3 +16,22 @@ const primaryRoomServer = new PrimaryRoomServer(PLS_HOST, Number.parseInt(PLS_PO
 export function getPrimaryRoomServer() {
     return primaryRoomServer
 }
+
+export type ChannelData = Buffer
+
+/**
+ * riff is max 32 chars
+ * 
+ * channelData is 256 bytes
+ */
+export type ChannelDef = {
+    commId: number,
+    riff: string,
+    protocol: number,
+    channelData: ChannelData,
+    channelType: number,
+    maxReadyPlayers: number
+}
+
+export const roomList: Map<number, ChannelDef> = new Map()
+

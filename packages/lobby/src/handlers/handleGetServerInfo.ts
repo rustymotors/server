@@ -1,107 +1,103 @@
-import { BytableMessage } from "@rustymotors/binary";
-import {
-	getServerLogger,
-	ServerLogger,
-} from "rusty-motors-shared";
-import { chatChannelIds } from "./channels.js";
+import { BytableMessage } from '@rustymotors/binary';
+import { getServerLogger, ServerLogger } from 'rusty-motors-shared';
+import { chatChannelIds } from './channels.js';
 
 export async function handleGetServerInfo({
-	connectionId,
-	message,
-	log = getServerLogger("lobby.handleGetServerInfo"),
+    connectionId,
+    message,
+    log = getServerLogger('lobby.handleGetServerInfo'),
 }: {
-	connectionId: string;
-	message: BytableMessage;
-	log?: ServerLogger;
+    connectionId: string;
+    message: BytableMessage;
+    log?: ServerLogger;
 }): Promise<{
-	connectionId: string;
-	message: BytableMessage;
+    connectionId: string;
+    message: BytableMessage;
 }> {
-	try {
-		log.debug(`[${connectionId}] Handling NPS_GET_SERVER_INFO`);
-		log.debug(
-			`[${connectionId}] Received command: ${message.header.messageId}`,
-		);
+    try {
+        log.debug(`[${connectionId}] Handling NPS_GET_SERVER_INFO`);
+        log.debug(
+            `[${connectionId}] Received command: ${message.header.messageId}`,
+        );
 
-		// l
-		const incomingRequest = new BytableMessage();
-		incomingRequest.setSerializeOrder([{ name: "commId", field: "Dword" }]);
-		incomingRequest.deserialize(message.serialize());
+        // l
+        const incomingRequest = new BytableMessage();
+        incomingRequest.setSerializeOrder([{ name: 'commId', field: 'Dword' }]);
+        incomingRequest.deserialize(message.serialize());
 
-		const requestedCommId = incomingRequest.getFieldValueByName("commId") ?? -1
+        const requestedCommId =
+            incomingRequest.getFieldValueByName('commId') ?? -1;
 
-		const cID = (requestedCommId as Buffer).readInt32BE()
+        const cID = (requestedCommId as Buffer).readInt32BE();
 
-		log.debug(
-			`[${connectionId}] Received commId: ${cID}`,
-		);
+        log.debug(`Received commId: ${cID}`, {
+            connectionId,
+        });
 
-		// TODO: Actually have servers
-		let commPort;
-		let commName;
+        // TODO: Actually have servers
+        let commPort;
+        let commName;
 
-		if (cID > 0 && cID < 21) {
-			const port = chatChannelIds[cID-1]
-			if (typeof port === "undefined") {
-				throw new Error(`Why can't you find a channel id for ${cID-1}?`)
-			}
-			
-			commPort = parseInt(`90${port}`)
-			commName = `MCC${commPort}\n`
-		} else if (cID === 10001) {
-			commPort = parseInt('10001')
-			commName = 'MC100'
-		} else {
-			throw new Error(`Can't find entry for commId ${requestedCommId}`)
-		}
+        if (cID > 0 && cID < 21) {
+            const port = chatChannelIds[cID - 1];
+            if (typeof port === 'undefined') {
+                throw new Error(
+                    `Why can't you find a channel id for ${cID - 1}?`,
+                );
+            }
 
-		// plplll
-		const outgoingGameMessage = new BytableMessage();
-		outgoingGameMessage.setSerializeOrder([
-			{ name: "riffName", field: "String" },
-			{ name: "commId", field: "Dword" },
-			{ name: "ipAddress", field: "String" },
-			{ name: "port", field: "Dword" },
-			{ name: "userId", field: "Dword" },
-			{ name: "playerCount", field: "Dword" },
-		]);
+            commPort = parseInt(`90${port}`);
+            commName = `MCC${commPort}\n`;
+        } else if (cID === 10001) {
+            commPort = parseInt('10001');
+            commName = 'MC100';
+        } else {
+            throw new Error(`Can't find entry for commId ${requestedCommId}`);
+        }
 
-		outgoingGameMessage.header.setMessageId(525);
+        // plplll
+        const outgoingGameMessage = new BytableMessage();
+        outgoingGameMessage.setSerializeOrder([
+            { name: 'riffName', field: 'String' },
+            { name: 'commId', field: 'Dword' },
+            { name: 'ipAddress', field: 'String' },
+            { name: 'port', field: 'Dword' },
+            { name: 'userId', field: 'Dword' },
+            { name: 'playerCount', field: 'Dword' },
+        ]);
+
+        outgoingGameMessage.header.setMessageId(525);
         outgoingGameMessage.setVersion(0);
-		outgoingGameMessage.setFieldValueByName("riffName", commName);
-		outgoingGameMessage.setFieldValueByName("commId", requestedCommId);
-		outgoingGameMessage.setFieldValueByName(
-			"ipAddress",
-			"71.186.155.248\n",
-		);
-		outgoingGameMessage.setFieldValueByName(
-			"port",
-			commPort
-		);
-		outgoingGameMessage.setFieldValueByName("userId", 21);
-		outgoingGameMessage.setFieldValueByName("playerCount", 1);
+        outgoingGameMessage.setFieldValueByName('riffName', commName);
+        outgoingGameMessage.setFieldValueByName('commId', requestedCommId);
+        outgoingGameMessage.setFieldValueByName(
+            'ipAddress',
+            '71.186.155.248\n',
+        );
+        outgoingGameMessage.setFieldValueByName('port', commPort);
+        outgoingGameMessage.setFieldValueByName('userId', 21);
+        outgoingGameMessage.setFieldValueByName('playerCount', 1);
 
-		// Build the packet
-		const packetResult = new BytableMessage();
-		packetResult.setSerializeOrder([
-			{ name: "data", field: "Buffer" },
-		]);
-		packetResult.setVersion(0);
-		packetResult.deserialize(outgoingGameMessage.serialize());
+        // Build the packet
+        const packetResult = new BytableMessage();
+        packetResult.setSerializeOrder([{ name: 'data', field: 'Buffer' }]);
+        packetResult.setVersion(0);
+        packetResult.deserialize(outgoingGameMessage.serialize());
 
-		log.debug(
-			`[${connectionId}] Sending response[serialize2]: ${packetResult.serialize().toString("hex")}`,
-		);
+        log.debug(
+            `Sending response[serialize2]: ${packetResult.serialize().toString('hex')}`,
+            { connectionId },
+        );
 
-		return {
-			connectionId,
-			message: packetResult,
-		};
-	} catch (error) {
-		const err = Error(
-			`[${connectionId}] Error handling NPS_GET_SERVER_INFO: ${String(error)}`,
-		);
-		err.cause = error;
-		throw err;
-	}
+        return {
+            connectionId,
+            message: packetResult,
+        };
+    } catch (error) {
+        const err = Error(
+             `[${connectionId}] Error handling NPS_GET_SERVER_INFO: ${String(error)}`,
+        );
+        err.cause = error;
+        throw err;
+    }
 }

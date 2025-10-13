@@ -210,6 +210,26 @@ function splitDataIntoPackets(
 	}
 }
 
+/**
+ * This TypeScript function handles packet routing by routing an initial message and sending a response
+ * through a socket while logging any errors.
+ * @param {string} id - The `id` parameter is a string representing the unique identifier of the packet
+ * being handled.
+ * @param {number} port - The `port` parameter in the `handlePacketRouting` function is the port number
+ * on which the initial packet is received. It is used to help route the initial message to the correct
+ * destination based on the port number.
+ * @param {BytableMessage} initialPacket - The `initialPacket` parameter in the `handlePacketRouting`
+ * function is of type `BytableMessage`. It likely represents the initial packet of data that needs to
+ * be routed based on the provided `id` and `port`.
+ * @param {TaggedSocket} socket - The `socket` parameter in the `handlePacketRouting` function
+ * represents a tagged socket that is used for communication. It likely includes information such as
+ * the socket connection, address, and other relevant details for sending and receiving data over the
+ * network.
+ * @param {ServerLogger} log - The `log` parameter in the `handlePacketRouting` function is a
+ * `ServerLogger` object used for logging messages and debugging information related to the packet
+ * routing process. It is likely used to log events, errors, and other relevant information during the
+ * execution of the function.
+ */
 async function handlePacketRouting(
 	id: string,
 	port: number,
@@ -224,7 +244,7 @@ async function handlePacketRouting(
 		);
 		socket.socket.write(response);
 	} catch (error) {
-		throw new Error(`[${id}] Error routing initial nps message: ${error}`, {
+		throw new Error(`[${id}] Error routing initial nps message`, {
 			cause: error,
 		});
 	}

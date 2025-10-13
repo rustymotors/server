@@ -48,10 +48,14 @@ export function onSocketConnection({
 		return
 	}
 
+    let id = `${randomUUID()}`;
+    id = id.substring(0, id.indexOf("-"))
+    id = `${id}:${localPort}`;
+
 	const socketWithId = tagSocket(
 		incomingSocket,
 		Date.now(),
-		`${randomUUID()}:${localPort}`,
+		id,
 		localPort
 	);
 
