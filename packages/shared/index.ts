@@ -40,14 +40,20 @@ export { LegacyMessage } from './src/LegacyMessage.js';
 export { NPSHeader } from './src/NPSHeader.js';
 export { UserData, UserInfo, SetMyUserDataMessage } from './src/UserData.js';
 export { RiffInfoListMessage, RiffInfo, ChannelCreated } from './src/Lobby.js';
-export {MessageQueue} from "./src/MessageQueue.js"
+export { MessageQueue } from './src/MessageQueue.js';
 export {
     GameServerLaunchInfo,
     GameServerInfo,
     GameServerListMessage,
 } from './src/GameServer.js';
 export { MessageNode } from './src/MessageNode.js';
-export { Bool, CBlock, CString, checkMinLength, sliceBuff } from './src/helpers.js';
+export {
+    Bool,
+    CBlock,
+    CString,
+    checkMinLength,
+    sliceBuff,
+} from './src/helpers.js';
 export { CreateRaceInfo, CreateRaceMessage } from './src/CreateRaceMessage.js';
 export {
     RaceInfo,
@@ -112,12 +118,12 @@ export const cloth_grey = argbToInt(255, 146, 143, 137); //grey
 export const cloth_white = argbToInt(255, 255, 255, 255); //white
 
 export interface Logger {
-    info: (msg: string, obj?: unknown) => void;
-    warn: (msg: string, obj?: unknown) => void;
-    error: (msg: string, obj?: unknown) => void;
-    fatal: (msg: string, obj?: unknown) => void;
-    debug: (msg: string, obj?: unknown) => void;
-    trace: (msg: string, obj?: unknown) => void;
+    info: (msg: string, obj?: object) => void;
+    warn: (msg: string, obj?: object) => void;
+    error: (msg: string, obj?: object) => void;
+    fatal: (msg: string, obj?: object) => void;
+    debug: (msg: string, obj?: object) => void;
+    trace: (msg: string, obj?: object) => void;
     child: (obj: pino.Bindings) => Logger;
 }
 
@@ -125,98 +131,155 @@ type LogLevel = 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace';
 
 let logger: pino.Logger;
 
-export function getServerLogger(name?: string): Logger {
-    if (logger) {
-        return logger.child({ name });
+type extraInfo = {
+    data?: Buffer | string;
+};
+
+class ServerLoggerImpl {
+    constructor(name?: string) {
+        if (typeof logger !== 'undefined') {
+            return logger.child({ name });
+        }
+        const loggerName = name || 'core';
+        const validLogLevels = [
+            'fatal',
+            'error',
+            'warn',
+            'info',
+            'debug',
+            'trace',
+        ] as const;
+        const logLevel = process.env['MCO_LOG_LEVEL'] || 'debug';
+
+        if (!validLogLevels.includes(logLevel as LogLevel)) {
+            console.warn(
+                `Invalid log level: ${logLevel}. Defaulting to "debug"`,
+            );
+        }
+
+        logger = pino({
+            name: loggerName,
+            transport: {
+                targets: [
+                    {
+                        target: 'pino-pretty',
+                        options: {
+                            colorize: true,
+                            translateTime: 'SYS:standard',
+                        },
+                        level: logLevel,
+                    },
+                    {
+                        target: 'pino/file',
+                        options: {
+                            destination: `./logs/server.log`,
+                            mkdir: true,
+                            append: false,
+                        },
+                        level: logLevel,
+                    },
+                ],
+            },
+            level: logLevel,
+        });
+
+        const cleanData = (data: Buffer): string => {
+            return data.toString('hex');
+        };
+
+        const self = {
+            info: (msg: string, obj?: extraInfo) => {
+                if (
+                    typeof obj !== 'undefined' &&
+                    obj['data'] instanceof Buffer
+                ) {
+                    obj['data'] = cleanData(obj['data'] as Buffer);
+                }
+
+                logger.info({ msg, ...obj });
+            },
+            warn: (msg: string, obj?: object) => {
+                logger.warn({ msg, obj });
+            },
+            error: (msg: string, obj?: object) => {
+                if (obj instanceof Error) {
+                    Sentry.captureException(obj);
+                } else if (obj) {
+                    Sentry.captureException(new Error(msg), {
+                        extra: { context: obj },
+                    });
+                } else {
+                    Sentry.captureException(new Error(msg));
+                }
+                logger.error({ msg, obj });
+            },
+            fatal: (msg: string, obj?: object) => {
+                logger.fatal({ msg, obj });
+            },
+            debug: (msg: string, obj?: extraInfo) => {
+                if (
+                    typeof obj !== 'undefined' &&
+                    obj['data'] instanceof Buffer
+                ) {
+                    obj['data'] = cleanData(obj['data'] as Buffer);
+                }
+
+                logger.debug({ msg, ...obj });
+            },
+            trace: (msg: string, obj?: object) => {
+                logger.trace({ msg, obj });
+            },
+            child: (obj: pino.Bindings) => logger.child(obj),
+        };
+        serverLogger = self;
+        return self;
+    }
+}
+
+let serverLogger: ServerLogger;
+
+export function getServerLogger(name?: string): ServerLogger {
+    if (typeof serverLogger !== 'undefined') {
+        return serverLogger;
     }
     const loggerName = name || 'core';
-    const validLogLevels = [
-        'fatal',
-        'error',
-        'warn',
-        'info',
-        'debug',
-        'trace',
-    ] as const;
-    const logLevel = process.env['MCO_LOG_LEVEL'] || 'debug';
 
-    if (!validLogLevels.includes(logLevel as LogLevel)) {
-        console.warn(`Invalid log level: ${logLevel}. Defaulting to "debug"`);
-    }
-
-    logger = pino({
-        name: loggerName,
-        transport: {
-            targets: [
-                {
-                    target: 'pino-pretty',
-                    options: {
-                        colorize: true,
-                        translateTime: 'SYS:standard',
-                    },
-                    level: logLevel,
-                },
-                {
-                    target: 'pino/file',
-                    options: {
-                        destination: `./logs/server.log`,
-                        mkdir: true,
-                        append: false,
-                    },
-                    level: logLevel,
-                },
-            ],
-        },
-        level: logLevel,
-    });
-
-    return {
-        info: logger.info.bind(logger),
-        warn: logger.warn.bind(logger),
-        error: (msg: string, obj?: unknown) => {
-            if (obj instanceof Error) {
-                Sentry.captureException(obj);
-            } else if (obj) {
-                Sentry.captureException(new Error(msg), {
-                    extra: { context: obj },
-                });
-            } else {
-                Sentry.captureException(new Error(msg));
-            }
-            logger.error({ msg, obj });
-        },
-        fatal: logger.fatal.bind(logger),
-        debug: logger.debug.bind(logger),
-        trace: logger.trace.bind(logger),
-        child: (obj: pino.Bindings) => logger.child(obj),
-    };
+    serverLogger = new ServerLoggerImpl(name);
+    return serverLogger;
 }
 
 export type ServerLogger = Logger;
 
 export type SocketQueuePair = {
-    send: MessageQueue,
-    receive: MessageQueue
-}
+    send: MessageQueue;
+    receive: MessageQueue;
+};
 
-const socketQueues: Map<string, SocketQueuePair> = new Map()
+const socketQueues: Map<string, SocketQueuePair> = new Map();
 
 export function addSocketPair(connectionId: string, pair: SocketQueuePair) {
-    socketQueues.set(connectionId, pair)
+    socketQueues.set(connectionId, pair);
 }
 
-export function getSocketQueue(connectionId: string, direction: "send" | "receive"): MessageQueue {
-    const pair = socketQueues.get(connectionId)
+export function getSocketQueue(
+    connectionId: string,
+    direction: 'send' | 'receive',
+): MessageQueue {
+    const pair = socketQueues.get(connectionId);
 
-    if (typeof pair === "undefined") {
-        throw new Error(`Unable to locate queue pair for connection: ${connectionId}`)
+    if (typeof pair === 'undefined') {
+        throw new Error(
+            `Unable to locate queue pair for connection: ${connectionId}`,
+        );
     }
 
-    const queue = pair[direction]
+    const queue = pair[direction];
 
-    if (typeof queue === "undefined") {
-        throw new Error(`Unable to locate ${direction} queue for connection ${connectionId}`)
+    if (typeof queue === 'undefined') {
+        throw new Error(
+            `Unable to locate ${direction} queue for connection ${connectionId}`,
+        );
     }
 
-    return queue
+    return queue;
 }

@@ -247,21 +247,27 @@ export async function handleEncryptedNPSCommand({
     }
 
     const encryptedMessages = responses.messages.map((message) => {
-        log.debug(`Sending response: ${message.header.messageId}`, {
-            connectionId,
-        });
+        try {
+            log.debug(`Sending response: ${message.header.messageId}`, {
+                connectionId,
+            });
 
-        // Encipher
-        const result = encryptCmd({
-            connectionId,
-            message,
-        });
+            // Encipher
+            const result = encryptCmd({
+                connectionId,
+                message,
+            });
 
-        const encryptedResponse = result.message;
+            const encryptedResponse = result.message;
 
-        const outPacket = new SerializedBufferOld();
-        outPacket.deserialize(encryptedResponse.serialize());
-        return outPacket;
+            const outPacket = new SerializedBufferOld();
+            outPacket.deserialize(encryptedResponse.serialize());
+            return outPacket;
+        } catch (error) {
+            const err = new Error(`Error encrypting response`);
+            err.cause = error;
+            throw err;
+        }
     });
 
     return {

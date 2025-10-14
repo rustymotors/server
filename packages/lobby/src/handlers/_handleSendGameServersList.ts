@@ -1,4 +1,5 @@
 import { BytableMessage } from '@rustymotors/binary';
+import * as Sentry from "@sentry/node"
 import {
     getServerLogger,
     ServerLogger,
@@ -7,7 +8,7 @@ import {
     RawMessage,
     ChannelCreated,
 } from 'rusty-motors-shared';
-import {} from "@rustymotors/rooms"
+import {} from '@rustymotors/rooms';
 
 export async function handleSendGameServersList({
     connectionId,
@@ -34,29 +35,36 @@ export async function handleSendGameServersList({
         incomingRequest.setSerializeOrder([{ name: 'commId', field: 'Dword' }]);
         incomingRequest.deserialize(message.serialize());
 
-        const requestedCommId = incomingRequest.getFieldValueByName("commId") as number ?? 0
+        const requestedCommId =
+            (incomingRequest.getFieldValueByName('commId') as number) ?? 0;
 
         const newChannel = {
             commId: requestedCommId,
             riff: 'RACE',
             protocol: 33,
             channelType: 2,
-            maxReadyPlayers: 8
-        }
+            maxReadyPlayers: 8,
+        };
 
         // TODO: Actually have servers
-        const channelCreatedMessage = new RawMessage()
-        const channelCreatedBody = new ChannelCreated()
-        channelCreatedBody.commId = requestedCommId
-        channelCreatedBody.riff = 'RACE'
-        channelCreatedBody.protocol = 33
-        channelCreatedBody.channelData = Buffer.alloc(256)
-        channelCreatedBody.channelType = 3
-        channelCreatedBody.maxReadyPlayers = 8
-        channelCreatedMessage.data = channelCreatedBody.serialize()
+        const channelCreatedMessage = new RawMessage();
+        const channelCreatedBody = new ChannelCreated();
+        channelCreatedBody.commId = requestedCommId;
+        channelCreatedBody.riff = 'RACE';
+        channelCreatedBody.protocol = 33;
+        // channelCreatedBody.channelData = Buffer.alloc(256);
+        channelCreatedBody.channelType = 3;
+        channelCreatedBody.maxReadyPlayers = 8;
+        channelCreatedMessage.data = channelCreatedBody.serialize();
+        const channelCreatedBytable = new BytableMessage();
+        channelCreatedBytable.setSerializeOrder([
+            { name: 'data', field: 'Buffer' },
+        ]);
+        channelCreatedBytable.setVersion(0);
+        channelCreatedBytable.deserialize(channelCreatedMessage.serialize());
 
-            // ppp
-            const outgoingGameMessage = new GameServerListMessage();
+        // ppp
+        const outgoingGameMessage = new GameServerListMessage();
 
         outgoingGameMessage.id = 0x402;
 
@@ -89,6 +97,7 @@ export async function handleSendGameServersList({
             `[${connectionId}] Error handling NPS_SEND_GAME_SERVERS_LIST: ${String(error)}`,
         );
         err.cause = error;
+        Sentry.captureException(err)
         throw err;
     }
 }
