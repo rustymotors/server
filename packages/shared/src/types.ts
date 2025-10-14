@@ -102,8 +102,7 @@ export interface NPSMessage {
 	length: number
 }
 export type messageQueueItem = {
-	id: number;
-	socket: TaggedSocket;
+	sequenceNo: number;
 	data: Buffer<ArrayBufferLike>;
 };
 export type TaggedSocket = {

@@ -14,12 +14,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { SerializedBufferOld, ServerLogger } from "rusty-motors-shared";
-import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
-import { handleTrackingPing } from "./handlers/handleTrackingPing.js";
-import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
-import { getServerLogger } from "rusty-motors-shared";
-import { BytableMessage } from "@rustymotors/binary";
+import {
+    getSocketQueue,
+    SerializedBufferOld,
+    ServerLogger,
+} from 'rusty-motors-shared';
+import { handleEncryptedNPSCommand } from './handlers/encryptedCommand.js';
+import { handleTrackingPing } from './handlers/handleTrackingPing.js';
+import { _npsRequestGameConnectServer } from './handlers/requestConnectGameServer.js';
+import { getServerLogger } from 'rusty-motors-shared';
+import { BytableMessage } from '@rustymotors/binary';
+import { C } from 'vitest/dist/chunks/reporters.d.BFLkQcL6.js';
 
 /**
  * Array of supported message handlers
@@ -37,33 +42,33 @@ import { BytableMessage } from "@rustymotors/binary";
  * }>}[]}
  */
 export const messageHandlers: {
-	opCode: number;
-	name: string;
-	handler: (args: {
-		connectionId: string;
-		message: BytableMessage;
-		log?: ServerLogger;
-	}) => Promise<{
-		connectionId: string;
-		messages: SerializedBufferOld[];
-	}>;
+    opCode: number;
+    name: string;
+    handler: (args: {
+        connectionId: string;
+        message: BytableMessage;
+        log?: ServerLogger;
+    }) => Promise<{
+        connectionId: string;
+        messages: SerializedBufferOld[];
+    }>;
 }[] = [
-		{
-			opCode: 256, // 0x100
-			name: "User login",
-			handler: _npsRequestGameConnectServer,
-		},
-		{
-			opCode: 4353, // 0x1101
-			name: "Encrypted command",
-			handler: handleEncryptedNPSCommand,
-		},
-		{
-			opCode: 535, // 0x0217
-			name: "Tracking ping",
-			handler: handleTrackingPing,
-		},
-	];
+    {
+        opCode: 256, // 0x100
+        name: 'User login',
+        handler: _npsRequestGameConnectServer,
+    },
+    {
+        opCode: 4353, // 0x1101
+        name: 'Encrypted command',
+        handler: handleEncryptedNPSCommand,
+    },
+    {
+        opCode: 535, // 0x0217
+        name: 'Tracking ping',
+        handler: handleTrackingPing,
+    },
+];
 
 /**
  * @param {object} args
@@ -77,49 +82,58 @@ export const messageHandlers: {
  * @throws {Error} Unknown code was received
  */
 export async function receiveLobbyData({
-	connectionId,
-	message,
-	log = getServerLogger("lobby.receiveLobbyData"),
+    connectionId,
+    message,
+    log = getServerLogger('lobby.receiveLobbyData'),
 }: {
-	connectionId: string;
-	message: BytableMessage;
-	log?: ServerLogger;
+    connectionId: string;
+    message: BytableMessage;
+    log?: ServerLogger;
 }): Promise<{
-	connectionId: string;
-	messages: SerializedBufferOld[];
+    connectionId: string;
+    messages: SerializedBufferOld[];
 }> {
-	const data = message.serialize();
-	log.debug(
-		'Received Lobby packet',
-		{
-			connectionId,
-			data: data.toString("hex"),
-		}
+    const data = message.serialize();
+    log.debug('Received Lobby packet', {
+        connectionId,
+        data: data.toString('hex'),
+    });
 
-	)
+    const supportedHandler = messageHandlers.find((h) => {
+        return h.opCode === message.header.messageId;
+    });
 
-	const supportedHandler = messageHandlers.find((h) => {
-		return h.opCode === message.header.messageId;
-	});
+    if (typeof supportedHandler === 'undefined') {
+        // We do not yet support this message code
+        throw Error(
+            `UNSUPPORTED_MESSAGECODE: ${message.header.messageId.toString(16)}`,
+        );
+    }
 
-	if (typeof supportedHandler === "undefined") {
-		// We do not yet support this message code
-		throw Error(`UNSUPPORTED_MESSAGECODE: ${message.header.messageId.toString(16)}`);
-	}
+    try {
+        const result = await supportedHandler.handler({
+            connectionId,
+            message,
+        });
+        log.debug(`Returning with ${result.messages.length} messages`, {
+            connectionId,
+        });
+        log.debug('Leaving receiveLobbyData');
+        const sendQueue = getSocketQueue(connectionId, 'send');
 
-	try {
-		const result = await supportedHandler.handler({
-			connectionId,
-			message
-		});
-		log.debug(`Returning with ${result.messages.length} messages`,
-		{connectionId}
-		);
-		log.debug("Leaving receiveLobbyData");
-		return result;
-	} catch (error) {
-		const err = Error(`Error handling lobby data: ${String(error)}`);
-		err.cause = error;
-		throw err;
-	}
+        result.messages.forEach((response) =>
+            sendQueue.put({
+                sequenceNo: -1,
+                data: response.serialize(),
+            }),
+        );
+        return {
+            connectionId,
+            messages: [],
+        };
+    } catch (error) {
+        const err = Error(`Error handling lobby data: ${String(error)}`);
+        err.cause = error;
+        throw err;
+    }
 }

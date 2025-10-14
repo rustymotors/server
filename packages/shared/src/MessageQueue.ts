@@ -1,4 +1,4 @@
-import { getServerLogger, messageQueueItem } from "rusty-motors-shared";
+import { messageQueueItem } from "rusty-motors-shared";
 
 export class MessageQueue {
     private _name: string;
@@ -7,12 +7,10 @@ export class MessageQueue {
     private _tickInterval: number;
     private _isRunning = false;
     private _counter: number;
-    private _log;
 
-    constructor(name: string, interval: number, callback: (messageQueueItem: messageQueueItem) => Promise<void>, log = getServerLogger(`queue: ${name}`)) {
+    constructor(name: string, interval: number, callback: (messageQueueItem: messageQueueItem) => Promise<void>) {
         this._name = name;
         this._queue = [];
-        this._log = log;
         this._processItemCb = callback;
         this._tickInterval = interval;
         this._counter = 1;
@@ -34,7 +32,7 @@ export class MessageQueue {
     }
 
     put(item: messageQueueItem): void {
-        item.id = this._counter++;
+        item.sequenceNo = this._counter++;
         this._queue.push(item);
     }
 

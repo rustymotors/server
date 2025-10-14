@@ -8,8 +8,7 @@ import { receiveLoginData } from 'rusty-motors-login';
 import {receiveChatData} from "rusty-motors-chat"
 import { BytableMessage, createRawMessage } from '@rustymotors/binary';
 import * as Sentry from '@sentry/node';
-import { getServerLogger, messageQueueItem, ServerLogger, TaggedSocket } from 'rusty-motors-shared';
-import { MessageQueue } from './MessageQueue.js';
+import { getServerLogger, messageQueueItem, ServerLogger, TaggedSocket, MessageQueue, getSocketQueue, addSocketPair } from 'rusty-motors-shared';
 
 /**
  * Handles routing for the NPS (Network Play System) ports.
@@ -26,23 +25,34 @@ export async function npsPortRouter({
 	taggedSocket: TaggedSocket;
 	log?: ServerLogger;
 }): Promise<void> {
-	const { socket: socket, connectionId: id } = taggedSocket;
+	const { socket: socket, connectionId: id, localPort } = taggedSocket;
 
-	const port = socket.localPort || 0;
+	const port = localPort;
 
-	if (port === 0) {
-		log.error(`[${id}] Local port is undefined`);
-		socket.end();
-		return;
-	}
 	const receiveQueue = new MessageQueue("npsIn", 10, async (item: messageQueueItem) => {
 		try {
 			await processSocketData(item.data, log, taggedSocket.connectionId, taggedSocket.localPort, taggedSocket)
 		} catch (err) {
-			console.error(`Error processing item: ${err}`)
+			console.error(`Error receiving item: ${err}`)
 		}
 	})
 
+	const sendQueue = new MessageQueue(
+        'npsOut',
+        10,
+        async (item: messageQueueItem) => {
+            try {
+                socket.write(item.data)
+            } catch (err) {
+                console.error(`Error sending item: ${err}`);
+            }
+        },
+    );
+
+    addSocketPair(id, {
+        send: sendQueue,
+        receive: receiveQueue
+    })
 
 
 	// TODO: Document this
@@ -55,8 +65,7 @@ export async function npsPortRouter({
 	// Handle the socket connection here
 	socket.on('data', async (data) => {
 		receiveQueue.put({
-			id: -1,
-			socket: taggedSocket,
+			sequenceNo: -1,
 			data
 		});
 	})
@@ -71,6 +80,7 @@ export async function npsPortRouter({
 			return;
 		}
 		log.error(`[${id}] Socket error: ${error}`);
+        receiveQueue.exit();
 	});
 }
 
@@ -147,7 +157,7 @@ async function processSocketData(
 				continue
 			}
 			const initialPacket = parseInitialMessage(packet);
-			await handlePacketRouting(id, port, initialPacket, socket, log);
+			handlePacketRouting(id, port, initialPacket);
 		}
 	} catch (error) {
 		handleSocketError(error, log, id);
@@ -234,15 +244,9 @@ async function handlePacketRouting(
 	id: string,
 	port: number,
 	initialPacket: BytableMessage,
-	socket: TaggedSocket,
-	log: ServerLogger,
 ): Promise<void> {
 	try {
-		const response = await routeInitialMessage(id, port, initialPacket);
-		log.debug(
-			`[${id}] Sending response to socket: ${response.toString('hex')}`,
-		);
-		socket.socket.write(response);
+		routeInitialMessage(id, port, initialPacket);
 	} catch (error) {
 		throw new Error(`[${id}] Error routing initial nps message`, {
 			cause: error,
@@ -310,7 +314,7 @@ async function routeInitialMessage(
 	port: number,
 	initialPacket: BytableMessage,
 	log = getServerLogger("gateway.npsPortRouter/routeInitialMessage"),
-): Promise<Buffer> {
+): Promise<void> {
 	// Route the initial message to the appropriate handler
 	// Messages may be encrypted, this will be handled by the handler
 
@@ -399,8 +403,11 @@ async function routeInitialMessage(
 	// Send responses back to the client
 	log.debug(`[${id}] Sending ${responses.length} responses`);
 
-	// Serialize the responses
-	const serializedResponses = responses.map((response) => response.serialize());
+    const sendQueue = getSocketQueue(id, "send")
 
-	return Buffer.concat(serializedResponses);
+	// Serialize the responses
+	responses.forEach((response) => sendQueue.put({
+        sequenceNo: -1,
+        data: response.serialize(),
+    }));
 }

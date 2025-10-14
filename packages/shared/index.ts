@@ -1,5 +1,6 @@
 import pino from 'pino';
 import * as Sentry from '@sentry/node';
+import { MessageQueue } from './src/MessageQueue.js';
 export { SubThread } from './src/SubThread.js';
 export { NetworkMessage } from './src/NetworkMessage.js';
 export { Configuration, getServerConfiguration } from './src/Configuration.js';
@@ -39,6 +40,7 @@ export { LegacyMessage } from './src/LegacyMessage.js';
 export { NPSHeader } from './src/NPSHeader.js';
 export { UserData, UserInfo, SetMyUserDataMessage } from './src/UserData.js';
 export { RiffInfoListMessage, RiffInfo, ChannelCreated } from './src/Lobby.js';
+export {MessageQueue} from "./src/MessageQueue.js"
 export {
     GameServerLaunchInfo,
     GameServerInfo,
@@ -191,3 +193,30 @@ export function getServerLogger(name?: string): Logger {
 }
 
 export type ServerLogger = Logger;
+
+export type SocketQueuePair = {
+    send: MessageQueue,
+    receive: MessageQueue
+}
+
+const socketQueues: Map<string, SocketQueuePair> = new Map()
+
+export function addSocketPair(connectionId: string, pair: SocketQueuePair) {
+    socketQueues.set(connectionId, pair)
+}
+
+export function getSocketQueue(connectionId: string, direction: "send" | "receive"): MessageQueue {
+    const pair = socketQueues.get(connectionId)
+
+    if (typeof pair === "undefined") {
+        throw new Error(`Unable to locate queue pair for connection: ${connectionId}`)
+    }
+
+    const queue = pair[direction]
+
+    if (typeof queue === "undefined") {
+        throw new Error(`Unable to locate ${direction} queue for connection ${connectionId}`)
+    }
+
+    return queue
+}

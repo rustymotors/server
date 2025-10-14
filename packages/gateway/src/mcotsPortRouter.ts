@@ -4,8 +4,7 @@ import {
 } from "rusty-motors-shared-packets";
 import { receiveTransactionsData } from "rusty-motors-transactions";
 import * as Sentry from "@sentry/node";
-import { getServerLogger, MessageNode, ServerLogger, TaggedSocket, messageQueueItem } from "rusty-motors-shared";
-import { MessageQueue } from "./MessageQueue.js";
+import { getServerLogger, MessageNode, ServerLogger, TaggedSocket, messageQueueItem, MessageQueue } from "rusty-motors-shared";
 
 /**
  * Handles the routing of messages for the MCOTS (Motor City Online Transaction Server) ports.
@@ -42,8 +41,7 @@ export async function mcotsPortRouter({
     // Handle the socket connection here
     socket.on('data', async (data) => {
         receiveQueue.put({
-            id: -1,
-            socket: taggedSocket,
+            sequenceNo: -1,
             data
         })
     });
