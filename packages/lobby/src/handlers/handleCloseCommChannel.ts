@@ -7,14 +7,14 @@ import {
 export async function handleCloseCommChannel({
     connectionId,
     message,
-    log = getServerLogger("lobby.handleCloseCommChannel"),
+    log = getServerLogger('lobby.handleCloseCommChannel'),
 }: {
     connectionId: string;
     message: BytableMessage;
     log?: ServerLogger;
 }): Promise<{
     connectionId: string;
-    message: BytableMessage;
+    messages: BytableMessage[];
 }> {
     try {
         log.debug(`[${connectionId}] Handling NPS_CLOSE_COMM_CHANNEL`);
@@ -24,12 +24,11 @@ export async function handleCloseCommChannel({
 
         // l
         const incomingRequest = new BytableMessage();
-        incomingRequest.setSerializeOrder([
-            { name: "commId", field: "Dword" },
-        ]);
+        incomingRequest.setSerializeOrder([{ name: 'commId', field: 'Dword' }]);
         incomingRequest.deserialize(message.serialize());
 
-        const requestedCommId = incomingRequest.getFieldValueByName("commId") ?? -1
+        const requestedCommId =
+            incomingRequest.getFieldValueByName('commId') ?? -1;
 
         log.debug(
             `[${connectionId}] Requested we close channel ${(requestedCommId as Buffer).readInt32BE()}`,
@@ -40,32 +39,27 @@ export async function handleCloseCommChannel({
         // ll
         const outgoingGameMessage = new BytableMessage();
         outgoingGameMessage.setSerializeOrder([
-            { name: "commId", field: "Dword" },
-            { name: "port", field: "Dword" },
+            { name: 'commId', field: 'Dword' },
+            { name: 'port', field: 'Dword' },
         ]);
 
         outgoingGameMessage.header.setMessageId(0x209);
         outgoingGameMessage.setVersion(0);
-        outgoingGameMessage.setFieldValueByName("commId", requestedCommId);
-        outgoingGameMessage.setFieldValueByName(
-            "port",
-            7003
-        );
+        outgoingGameMessage.setFieldValueByName('commId', requestedCommId);
+        outgoingGameMessage.setFieldValueByName('port', 7003);
 
         log.debug(
             `[${connectionId}] Sending response[string]: ${outgoingGameMessage.toString()}`,
         );
         // Build the packet
         const packetResult = new BytableMessage();
-        packetResult.setSerializeOrder([
-            { name: "data", field: "Buffer" },
-        ]);
+        packetResult.setSerializeOrder([{ name: 'data', field: 'Buffer' }]);
         packetResult.setVersion(0);
         packetResult.deserialize(outgoingGameMessage.serialize());
 
         return {
             connectionId,
-            message: packetResult,
+            messages: [packetResult],
         };
     } catch (error) {
         const err = Error(

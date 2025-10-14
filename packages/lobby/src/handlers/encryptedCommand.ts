@@ -49,17 +49,17 @@ export const messageHandlers: {
  * message: LegacyMessage | MessageBuffer,
  * }>}
  */
-async function encryptCmd({
+export function encryptCmd({
     connectionId,
     message,
 }: {
     connectionId: string;
     message: BytableMessage;
     log?: ServerLogger;
-}): Promise<{
+}): {
     connectionId: string;
     message: BytableMessage;
-}> {
+} {
     const state = fetchStateFromDatabase();
 
     const encryption = getEncryption(state, connectionId);
@@ -143,7 +143,7 @@ export type NpsCommandHandler = {
         log?: ServerLogger;
     }) => Promise<{
         connectionId: string;
-        message: BytableMessage;
+        messages: BytableMessage[];
     }>;
 };
 
@@ -157,7 +157,7 @@ async function handleCommand({
     log?: ServerLogger;
 }): Promise<{
     connectionId: string;
-    message: BytableMessage;
+    messages: BytableMessage[];
 }> {
     const command = message.header.messageId;
 
@@ -176,18 +176,20 @@ async function handleCommand({
         throw Error(`Unknown command: ${command}`);
     }
 
-    const { message: response } = await handler.handler({
+    const { messages: responses } = await handler.handler({
         connectionId,
         message,
     });
 
-    log.debug(`Sending response: ${response.header.messageId}`, {
-        connectionId,
+    responses.forEach((message) => {
+        log.debug(`Sending response: ${message.header.messageId}`, {
+            connectionId,
+        });
     });
 
     return {
         connectionId,
-        message: response,
+        messages: responses,
     };
 }
 
@@ -231,12 +233,12 @@ export async function handleEncryptedNPSCommand({
         { connectionId },
     );
 
-    const response = await handleCommand({
+    const responses = await handleCommand({
         connectionId,
         message: decipheredMessage.message,
     });
 
-    if (response.message === null) {
+    if (responses.messages === null) {
         log.debug(`No response to send`, { connectionId });
         return {
             connectionId,
@@ -244,23 +246,26 @@ export async function handleEncryptedNPSCommand({
         };
     }
 
-    log.debug(`Sending response: ${response.message.header.messageId}`, {
-        connectionId,
+    const encryptedMessages = responses.messages.map((message) => {
+        log.debug(`Sending response: ${message.header.messageId}`, {
+            connectionId,
+        });
+
+        // Encipher
+        const result = encryptCmd({
+            connectionId,
+            message,
+        });
+
+        const encryptedResponse = result.message;
+
+        const outPacket = new SerializedBufferOld();
+        outPacket.deserialize(encryptedResponse.serialize());
+        return outPacket;
     });
-
-    // Encipher
-    const result = await encryptCmd({
-        connectionId,
-        message: response.message,
-    });
-
-    const encryptedResponse = result.message;
-
-    const outPacket = new SerializedBufferOld();
-    outPacket.deserialize(encryptedResponse.serialize());
 
     return {
         connectionId,
-        messages: [outPacket],
+        messages: encryptedMessages,
     };
 }

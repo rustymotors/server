@@ -83,7 +83,7 @@ export async function handleOpenCommChannel({
     log?: ServerLogger;
 }): Promise<{
     connectionId: string;
-    message: BytableMessage;
+    messages: BytableMessage[];
 }> {
     try {
         log.debug(`[${connectionId}] Handling NPS_OPEN_COMM_CHANNEL`);
@@ -121,7 +121,7 @@ export async function handleOpenCommChannel({
 
         return {
             connectionId,
-            message: packetResult,
+            messages: [packetResult],
         };
     } catch (error) {
         const err = Error(

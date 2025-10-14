@@ -50,7 +50,7 @@ export async function _setMyUserData({
 
 		return {
 			connectionId,
-			message,
+			messages: [message],
 		};
 	} catch (error) {
 		const err = Error(`[${connectionId}] Error handling NPS_SET_MY_USER_DATA: ${String(error)}`);

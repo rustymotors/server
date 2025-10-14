@@ -19,7 +19,7 @@ export async function handleSendGameServersList({
     log?: ServerLogger;
 }): Promise<{
     connectionId: string;
-    message: BytableMessage;
+    messages: BytableMessage[];
 }> {
     try {
         log.debug(`Handling NPS_SEND_GAME_SERVERS_LIST`, {
@@ -82,7 +82,7 @@ export async function handleSendGameServersList({
 
         return {
             connectionId,
-            message: packetResult,
+            messages: [packetResult],
         };
     } catch (error) {
         const err = Error(

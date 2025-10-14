@@ -12,7 +12,7 @@ export async function handleGetServerInfo({
     log?: ServerLogger;
 }): Promise<{
     connectionId: string;
-    message: BytableMessage;
+    messages: BytableMessage[];
 }> {
     try {
         log.debug(`[${connectionId}] Handling NPS_GET_SERVER_INFO`);
@@ -91,11 +91,11 @@ export async function handleGetServerInfo({
 
         return {
             connectionId,
-            message: packetResult,
+            messages: [packetResult],
         };
     } catch (error) {
         const err = Error(
-             `[${connectionId}] Error handling NPS_GET_SERVER_INFO: ${String(error)}`,
+            `[${connectionId}] Error handling NPS_GET_SERVER_INFO: ${String(error)}`,
         );
         err.cause = error;
         throw err;

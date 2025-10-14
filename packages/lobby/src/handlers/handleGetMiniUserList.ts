@@ -15,7 +15,7 @@ export async function handleGetMiniUserList({
 	log?: ServerLogger;
 }): Promise<{
 	connectionId: string;
-	message: BytableMessage;
+	messages: BytableMessage[];
 }> {
 	try {
 		log.debug(`[${connectionId}] Handling NPS_GET_MINI_USER_LIST`);
@@ -71,7 +71,7 @@ export async function handleGetMiniUserList({
 
 		return {
 			connectionId,
-			message: packetResult,
+			messages: [packetResult],
 		};
 	} catch (error) {
 		const err = Error(`Error handling NPS_MINI_USER_LIST: ${String(error)}`);

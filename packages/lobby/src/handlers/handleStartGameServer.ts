@@ -16,40 +16,40 @@ export async function handleStartGameServer({
     log?: ServerLogger;
 }): Promise<{
     connectionId: string;
-    message: BytableMessage;
+    messages: BytableMessage[];
 }> {
-    const SUPPORTED_MESSAGE = "NPS_START_GAME_SERVER"
+    const SUPPORTED_MESSAGE = 'NPS_START_GAME_SERVER';
     try {
         log.debug(`[${connectionId}] Handling ${SUPPORTED_MESSAGE}`);
         log.debug(
             `[${connectionId}] Received command: ${message.header.messageId}`,
         );
 
-        const startServerLaunchInfo = new GameServerLaunchInfo()
-        startServerLaunchInfo.deserialize(message.getBody())
+        const startServerLaunchInfo = new GameServerLaunchInfo();
+        startServerLaunchInfo.deserialize(message.getBody());
 
-        const {commId, bestHost} = startServerLaunchInfo
+        const { commId, bestHost } = startServerLaunchInfo;
 
         log.debug(
             `client requested game server launch with comm id ${commId} on IP ${bestHost}`,
-            {connectionId }
+            { connectionId },
         );
 
         // TODO: Actually have servers
 
-        const startedServerComm = Buffer.alloc(4)
-        startedServerComm.writeInt32BE(commId)
-        
-        const gameServerStartedMessage = new RawMessage()
-        gameServerStartedMessage.id = 0x21c // NPS_GAME_SERVER_STARTED
-        gameServerStartedMessage.data = startedServerComm
+        const startedServerComm = Buffer.alloc(4);
+        startedServerComm.writeInt32BE(commId);
 
-        const outgoingMessage = new BytableMessage()
-        outgoingMessage.deserialize(gameServerStartedMessage.serialize())
+        const gameServerStartedMessage = new RawMessage();
+        gameServerStartedMessage.id = 0x21c; // NPS_GAME_SERVER_STARTED
+        gameServerStartedMessage.data = startedServerComm;
+
+        const outgoingMessage = new BytableMessage();
+        outgoingMessage.deserialize(gameServerStartedMessage.serialize());
 
         return {
             connectionId,
-            message: outgoingMessage,
+            messages: [outgoingMessage],
         };
     } catch (error) {
         const err = Error(
