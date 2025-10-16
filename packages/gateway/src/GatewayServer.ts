@@ -98,7 +98,7 @@ export class Gateway {
 
 		this.status = "running";
 
-		new HotkeyManager();
+        new HotkeyManager(this);
 
 	}
 
@@ -144,6 +144,7 @@ export class Gateway {
 	 * @returns {Promise<void>} A promise that resolves when the server has stopped and the process has exited.
 	 */
 	async exit(): Promise<void> {
+        console.log("Exiting GatewayServer...");
 		// Stop the GatewayServer
 		await this.stop();
 
@@ -225,7 +226,7 @@ export class Gateway {
 
 		process.on("SIGINT", this.exit.bind(this));
 
-        process.on("beforeExit", () => {
+        process.on("exit", () => {
             console.dir(messageStats)
         })
 	}

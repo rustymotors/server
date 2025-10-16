@@ -5,8 +5,10 @@ export class HotkeyManager {
 		input: process.stdin,
 		output: process.stdout,
 	});
+    private GatewayServer: any;
 
-	constructor() {
+	constructor(gatewayServer?: any) {
+        this.GatewayServer = gatewayServer;
 		this.setupHotkeys();
 	}
 
@@ -59,9 +61,11 @@ export class HotkeyManager {
 		console.log("Hello, user!");
 	}
 
-	private exit(): void {
+	private async exit(): Promise<void> {
 		console.log("Exiting...");
 		this.rl.close();
-		process.exit(0);
+        if (this.GatewayServer) {
+            await this.GatewayServer.exit();
+        }
 	}
 }
