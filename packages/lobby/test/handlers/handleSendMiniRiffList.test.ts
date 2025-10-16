@@ -13,6 +13,7 @@ describe("handleSendMiniRiffList", () => {
 			message: incomingMessage,
 		});
 
-		expect(result.message).toBeInstanceOf(BytableMessage);
+        expect(result.messages.length).toEqual(1);
+		expect(result.messages[0]).toBeInstanceOf(BytableMessage);
 	});
 });
