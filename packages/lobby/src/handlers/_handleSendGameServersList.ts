@@ -90,7 +90,7 @@ export async function handleSendGameServersList({
 
         return {
             connectionId,
-            messages: [packetResult],
+            messages: [channelCreatedBytable, packetResult],
         };
     } catch (error) {
         const err = Error(

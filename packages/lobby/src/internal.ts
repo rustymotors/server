@@ -24,7 +24,6 @@ import { handleTrackingPing } from './handlers/handleTrackingPing.js';
 import { _npsRequestGameConnectServer } from './handlers/requestConnectGameServer.js';
 import { getServerLogger } from 'rusty-motors-shared';
 import { BytableMessage } from '@rustymotors/binary';
-import { C } from 'vitest/dist/chunks/reporters.d.BFLkQcL6.js';
 
 /**
  * Array of supported message handlers
@@ -105,9 +104,13 @@ export async function receiveLobbyData({
 
     if (typeof supportedHandler === 'undefined') {
         // We do not yet support this message code
-        throw Error(
+        log.error(
             `UNSUPPORTED_MESSAGECODE: ${message.header.messageId.toString(16)}`,
         );
+        return {
+            connectionId,
+            messages: []
+        }
     }
 
     try {

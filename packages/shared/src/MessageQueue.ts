@@ -1,4 +1,5 @@
-import { messageQueueItem } from "rusty-motors-shared";
+import { messageQueueItem } from 'rusty-motors-shared';
+import { Roarr as log } from 'roarr';
 
 export class MessageQueue {
     private _name: string;
@@ -8,7 +9,11 @@ export class MessageQueue {
     private _isRunning = false;
     private _counter: number;
 
-    constructor(name: string, interval: number, callback: (messageQueueItem: messageQueueItem) => Promise<void>) {
+    constructor(
+        name: string,
+        interval: number,
+        callback: (messageQueueItem: messageQueueItem) => Promise<void>,
+    ) {
         this._name = name;
         this._queue = [];
         this._processItemCb = callback;
@@ -21,11 +26,13 @@ export class MessageQueue {
     private async _run() {
         while (this._isRunning) {
             if (!this._queue.length) {
-                await new Promise(resolve => setTimeout(resolve, this._tickInterval));
+                await new Promise((resolve) =>
+                    setTimeout(resolve, this._tickInterval),
+                );
                 continue;
-            }; // No work, skipping
+            } // No work, skipping
             const item: messageQueueItem | undefined = this._queue.shift();
-            if (typeof item !== "undefined") {
+            if (typeof item !== 'undefined') {
                 await this._processItemCb(item);
             }
         }

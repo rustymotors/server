@@ -14,70 +14,75 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import * as Sentry from "@sentry/node";
-import { Gateway } from "rusty-motors-gateway";
+import * as Sentry from '@sentry/node';
+import { Gateway } from 'rusty-motors-gateway';
 import {
-	getServerLogger,
-	verifyLegacyCipherSupport,
-	getServerConfiguration,
-} from "rusty-motors-shared";
-import { databaseService } from "rusty-motors-database";
+    getServerLogger,
+    verifyLegacyCipherSupport,
+    getServerConfiguration,
+} from 'rusty-motors-shared';
+import { databaseService } from 'rusty-motors-database';
+import { Roarr as log, Logger } from 'roarr';
 
 function main() {
-	const coreLogger = getServerLogger("npx/core");
+    const coreLogger = getServerLogger('npx/core');
+    log.adopt(
+        () => {
+            try {
+                verifyLegacyCipherSupport();
+                if (!databaseService.isDatabaseConnected) {
+                    coreLogger.fatal('Database connection failed. Exiting.');
+                    process.exit(1);
+                }
+            } catch (err) {
+                coreLogger.fatal(`Error in core server: ${String(err)}`);
+                process.exitCode = 1;
+                return;
+            }
 
-	try {
-		verifyLegacyCipherSupport();
-		if (!databaseService.isDatabaseConnected) {
-			coreLogger.fatal("Database connection failed. Exiting.");
-			process.exit(1);
-		}
-	} catch (err) {
-		coreLogger.fatal(`Error in core server: ${String(err)}`);
-		process.exitCode = 1;
-		return;
-	}
+            try {
+                const config = getServerConfiguration();
+                const sanitizedConfig = {
+                    ...config,
+                    certificateFile: '[REDACTED]',
+                    privateKeyFile: '[REDACTED]',
+                    publicKeyFile: '[REDACTED]',
+                };
+                coreLogger.debug(
+                    `Pre-flight checks passed. Starting server with config: ${JSON.stringify(sanitizedConfig)}`,
+                );
 
-	try {
-		const config = getServerConfiguration();
-		const sanitizedConfig = {
-			...config,
-			certificateFile: "[REDACTED]",
-			privateKeyFile: "[REDACTED]",
-			publicKeyFile: "[REDACTED]",
-		};
-		coreLogger.debug(
-			`Pre-flight checks passed. Starting server with config: ${JSON.stringify(sanitizedConfig)}`,
-		);
+                const appLog = coreLogger.child({
+                    name: 'app',
+                    level: config.logLevel,
+                });
 
-		const appLog = coreLogger.child({
-			name: "app",
-			level: config.logLevel,
-		});
+                const listeningPortList = [
+                    6660, 7003, 8228, 8226, 8227, 9001, 9002, 9003, 9004, 9005,
+                    9006, 9007, 9008, 9009, 9010, 9011, 9012, 9013, 9014, 9015,
+                    9016, 9017, 9018, 9019, 9020, 10001, 43200, 43300, 43400,
+                    53303,
+                ];
 
-		const listeningPortList = [
-			6660, 7003, 8228, 8226, 8227, 
-			9001, 9002, 9003, 9004, 9005, 9006, 9007,
-			9008, 9009, 9010, 9011, 9012, 9013, 9014,
-			9015, 9016, 9017, 9018, 9019, 9020,
-			10001,
-			43200, 43300, 43400,
-			53303,
-		];
+                const gatewayServer = new Gateway({
+                    config,
+                    log: appLog,
+                    listeningPortList,
+                });
 
-		const gatewayServer = new Gateway({
-			config,
-			log: appLog,
-			listeningPortList,
-		});
-
-		gatewayServer.start();
-	} catch (err) {
-		Sentry.captureException(err);
-		coreLogger.fatal(`Error in core server: ${String(err)}`);
-		process.exitCode = 1;
-		return;
-	}
+                Sentry.logger.info('Starting server')
+                gatewayServer.start();
+            } catch (err) {
+                Sentry.captureException(err);
+                coreLogger.fatal(`Error in core server: ${String(err)}`);
+                process.exitCode = 1;
+                return;
+            }
+        },
+        {
+            application: 'mcos',
+        },
+    );
 }
 
 main();

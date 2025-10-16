@@ -17,6 +17,8 @@ import {
     getSocketQueue,
     addSocketPair,
 } from 'rusty-motors-shared';
+import { Roarr as log, Logger } from 'roarr';
+import { messageStats } from './GatewayServer.js';
 
 /**
  * Handles routing for the NPS (Network Play System) ports.
@@ -25,88 +27,109 @@ import {
  *
  * @remark If the socket's local port is undefined, the connection is closed immediately. On port 7003, an "ok to login" packet is sent upon connection.
  */
-
 export async function npsPortRouter({
     taggedSocket,
-    log = getServerLogger('gateway.npsPortRouter'),
+    logger: logger = getServerLogger('gateway.npsPortRouter'),
 }: {
     taggedSocket: TaggedSocket;
-    log?: ServerLogger;
+    logger?: ServerLogger;
 }): Promise<void> {
-    const { socket: socket, connectionId: id, localPort } = taggedSocket;
+    const { socket: socket, connectionId, localPort } = taggedSocket;
+    log.adopt(async () => {
 
-    const port = localPort;
+        
+        const port = localPort;
+        
+        const receiveQueue = new MessageQueue(
+            'npsIn',
+            10,
+            async (item: messageQueueItem) => {
+                try {
+                    log.adopt(
+                        async () => {
+                            if (!isPacketValid(item.data)) {
+                                taggedSocket.socket.end()
+                                return
+                            }
+                            
+                            log.debug(`Receiving packet in queue`)
+                            
+                            await processSocketData(
+                                item.data,
+                                log,
+                                taggedSocket.connectionId,
+                                taggedSocket.localPort,
+                                taggedSocket,
+                            );
+                        },
+                        { data: item.data.toString('hex') },
+                    );
+                } catch (err) {
+                    logger.error(`Error receiving item: ${err}`);
+                }
+            },
+        );
+        
+        const sendQueue = new MessageQueue(
+            'npsOut',
+            10,
+            async (item: messageQueueItem) => {
+                log.adopt(async () => {
 
-    const receiveQueue = new MessageQueue(
-        'npsIn',
-        10,
-        async (item: messageQueueItem) => {
-            try {
-                log.debug(`Receiving packet in queue`, {
-                    data: item.data,
-                });
-
-                await processSocketData(
-                    item.data,
-                    log,
-                    taggedSocket.connectionId,
-                    taggedSocket.localPort,
-                    taggedSocket,
-                );
-            } catch (err) {
-                log.error(`Error receiving item: ${err}`);
-            }
-        },
-    );
-
-    const sendQueue = new MessageQueue(
-        'npsOut',
-        10,
-        async (item: messageQueueItem) => {
-            try {
-                log.debug(`Sending packet in queue`, {
-                    data: item.data,
-                });
-                socket.write(item.data);
-            } catch (err) {
-                log.error(`Error sending item: ${err}`);
-            }
-        },
-    );
-
-    addSocketPair(id, {
-        send: sendQueue,
-        receive: receiveQueue,
-    });
-
-    // TODO: Document this
-    if (port === 7003) {
-        // Sent ok to login packet
-        log.debug(`[${id}] Sending ok to login packet`);
-        socket.write(Buffer.from([0x02, 0x30, 0x00, 0x04]));
-    }
-
-    // Handle the socket connection here
-    socket.on('data', async (data) => {
-        receiveQueue.put({
-            sequenceNo: -1,
-            data,
+                    try {
+                        logger.debug(`Sending packet in queue`, {
+                            data: item.data,
+                        });
+                        socket.write(item.data);
+                    } catch (err) {
+                        logger.error(`Error sending item: ${err}`);
+                    }
+                },{
+                    connectionId, data: item.data.toString("hex")
+                })
+                },
+        );
+        
+        addSocketPair(connectionId, {
+            send: sendQueue,
+            receive: receiveQueue,
         });
-    });
-
-    socket.on('end', () => {
-        receiveQueue.exit();
-    });
-
-    socket.on('error', (error) => {
-        if (error.message.includes('ECONNRESET')) {
-            log.debug(`[${id}] Connection reset by client`);
-            return;
+        
+        // TODO: Document this
+        if (port === 7003) {
+            // Sent ok to login packet
+            log.debug(`Sending ok to login packet`);
+            sendQueue.put({
+                sequenceNo: -1,
+                data: Buffer.from([0x02, 0x30, 0x00, 0x04]),
+            });
         }
-        log.error(`[${id}] Socket error: ${error}`);
-        receiveQueue.exit();
-    });
-}
+        
+        // Handle the socket connection here
+        socket.on('data', async (data) => {
+            receiveQueue.put({
+                sequenceNo: -1,
+                data,
+            });
+        });
+        
+        socket.on('end', () => {
+            receiveQueue.exit();
+        });
+        
+        socket.on('error', (error) => {
+            if (error.message.includes('ECONNRESET')) {
+                logger.debug(`[${connectionId}] Connection reset by client`);
+                return;
+            }
+            logger.error(`[${connectionId}] Socket error: ${error}`);
+            receiveQueue.exit();
+        });
+    }, {
+        connectionId, localPort,
+        namespace: 'npsPortRouter'
+    })
+    }
 
 /**
  * The function `isPacketValid` checks if a packet of data is valid based on specific conditions
@@ -132,6 +155,10 @@ function isPacketValid(data: Buffer): boolean {
         // we know this is junk, toss it
         return false;
     }
+    
+    let counter = messageStats.get(msgCode) ?? 0
+    messageStats.set(msgCode, counter)
+
     return true;
 }
 
@@ -155,7 +182,7 @@ function isPacketValid(data: Buffer): boolean {
  */
 async function processSocketData(
     data: Buffer<ArrayBufferLike>,
-    log: ServerLogger,
+    log: Logger,
     id: string,
     port: number,
     socket: TaggedSocket,
@@ -207,7 +234,7 @@ async function processSocketData(
 function splitDataIntoPackets(
     data: Buffer,
     separator: Buffer,
-    log: ServerLogger,
+    log: Logger,
     id: string,
 ): Buffer[] {
     const packetsArray = data.toString('hex').split(separator.toString('hex'));
@@ -280,7 +307,7 @@ async function handlePacketRouting(
 
 function handleSocketError(
     error: unknown,
-    log: ServerLogger,
+    log: Logger,
     id: string,
 ): void {
     if (error instanceof RangeError) {

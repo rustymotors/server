@@ -224,5 +224,11 @@ export class Gateway {
 		addPortRouter(43300, mcotsPortRouter);
 
 		process.on("SIGINT", this.exit.bind(this));
+
+        process.on("beforeExit", () => {
+            console.dir(messageStats)
+        })
 	}
 }
+
+export const messageStats: Map<number, number> = new Map();
