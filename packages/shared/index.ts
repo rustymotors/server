@@ -15,7 +15,6 @@ export {
 export { NPSMessage } from './src/NPSMessage.js';
 export { OldServerMessage } from './src/OldServerMessage.js';
 export { MessageBufferOld } from './src/MessageBufferOld.js';
-export { GameMessage } from './src/GameMessage.js';
 export { serializeString } from './src/serializeString.js';
 export { deserializeString } from './src/deserializeString.js';
 export { serializeStringRaw } from './src/serializeStringRaw.js';
