@@ -156,8 +156,8 @@ function isPacketValid(data: Buffer): boolean {
         return false;
     }
     
-    let counter = messageStats.get(msgCode) ?? 0
-    messageStats.set(msgCode, counter)
+    let counter = messageStats.get(msgCode) ?? 1
+    messageStats.set(msgCode, counter++)
 
     return true;
 }
@@ -384,7 +384,7 @@ async function routeInitialMessage(
 
     let wasHandled = false;
 
-    if (port > 9000 && port < 9021) {
+    if (port >= 9000 && port < 9021) {
         log.debug(
             `[${id}] Passing room packet to lobby handler: ${packet.getMessageId()}`,
         );

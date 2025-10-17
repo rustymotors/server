@@ -45,6 +45,7 @@ export {
     GameServerLaunchInfo,
     GameServerInfo,
     GameServerListMessage,
+    RunningServerInfo,
 } from './src/GameServer.js';
 export { MessageNode } from './src/MessageNode.js';
 export {

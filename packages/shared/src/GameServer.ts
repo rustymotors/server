@@ -41,7 +41,70 @@ export class GameServerLaunchInfo implements Serializable {
 }
 
 // export class Lobby implements Serializable { }
-// export class RunningServerInfo implements Serializable { }
+export class RunningServerInfo implements Serializable {
+    private _riff; // p
+    private _commId; // l
+    private _ipAddress; // p
+    private _port; // l
+    private _userId; // l
+    private _numberOfPlayers; // l
+
+    constructor() {
+        this._riff = new CString(32);
+        this._commId = Buffer.alloc(4);
+        this._ipAddress = new CString(16);
+        this._port = Buffer.alloc(4);
+        this._userId = Buffer.alloc(4);
+        this._numberOfPlayers = Buffer.alloc(4);
+    }
+
+    get sizeOf() {
+        return this._riff.sizeOf + 4 + this._ipAddress.sizeOf + 4 + 4 + 4;
+    }
+
+    serialize(): Buffer {
+        return Buffer.concat([
+            this._riff.serialize(),
+            this._commId,
+            this._ipAddress.serialize(),
+            this._port,
+            this._userId,
+            this._numberOfPlayers,
+        ]);
+    }
+
+    deserialize(buf: Buffer) {
+        throw new Error(`Not yet`);
+    }
+
+    set riff(val: string) {
+        this._riff.set(val);
+    }
+
+    set commId(val: number) {
+        checkSize4(val);
+        this._commId.writeInt32BE(val);
+    }
+
+    set ipAddress(val: string) {
+        this._ipAddress.set(val);
+    }
+
+    set port(val: number) {
+        checkSize4(val);
+        this._port.writeInt32BE(val);
+    }
+
+    set userId(val: number) {
+        checkSize4(val);
+        this._userId.writeInt32BE(val);
+    }
+
+    set numberOfPlayers(val: number) {
+        checkSize4(val);
+        this._numberOfPlayers.writeInt32BE(val);
+    }
+}
 /**
  * NPS_GameServersInfo is the message passed back in response to
  * GetGameServersList (NPS_GAME_SERVERS_LIST).

@@ -8,6 +8,7 @@ import {
 import { getServerLogger } from 'rusty-motors-shared';
 import { BytableMessage, createRawMessage } from '@rustymotors/binary';
 import { npsCommandHandlers } from './npsCommandHandlers.js';
+import { Roarr as log, Logger } from 'roarr';
 
 /**
  * Array of supported command handlers
@@ -55,7 +56,7 @@ export function encryptCmd({
 }: {
     connectionId: string;
     message: BytableMessage;
-    log?: ServerLogger;
+    logger?: ServerLogger;
 }): {
     connectionId: string;
     message: BytableMessage;
@@ -96,7 +97,6 @@ export function encryptCmd({
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ name: "Lobby" })]
  * @returns {Promise<{
  *  connectionId: string,
  * message: LegacyMessage,
@@ -150,7 +150,7 @@ export type NpsCommandHandler = {
 async function handleCommand({
     connectionId,
     message,
-    log = getServerLogger('lobby.handleCommand'),
+    log: logger = getServerLogger('lobby.handleCommand'),
 }: {
     connectionId: string;
     message: BytableMessage;
@@ -162,10 +162,10 @@ async function handleCommand({
     const command = message.header.messageId;
 
     // What is the command?
-    log.debug(`Received Command: ${command}`, {
+    logger.debug(`Received Command: ${command}`, {
         connectionId,
     });
-    log.debug(
+    logger.debug(
         `Received Command message: ${message.serialize().toString('hex')}`,
         { connectionId },
     );
@@ -179,12 +179,6 @@ async function handleCommand({
     const { messages: responses } = await handler.handler({
         connectionId,
         message,
-    });
-
-    responses.forEach((message) => {
-        log.debug(`Sending response: ${message.header.messageId}`, {
-            connectionId,
-        });
     });
 
     return {
@@ -209,7 +203,7 @@ async function handleCommand({
 export async function handleEncryptedNPSCommand({
     connectionId,
     message,
-    log = getServerLogger('lobby.handleEncryptedNPSCommand'),
+    log: logger = getServerLogger('lobby.handleEncryptedNPSCommand'),
 }: {
     connectionId: string;
     message: BytableMessage;
@@ -218,7 +212,7 @@ export async function handleEncryptedNPSCommand({
     connectionId: string;
     messages: SerializedBufferOld[];
 }> {
-    log.debug(`Received encrypted command: ${message.header.messageId}`, {
+    logger.debug(`Received encrypted command: ${message.header.messageId}`, {
         connectionId,
     });
 
@@ -228,7 +222,7 @@ export async function handleEncryptedNPSCommand({
         message,
     });
 
-    log.debug(
+    logger.debug(
         `Deciphered command: ${decipheredMessage.message.header.messageId}`,
         { connectionId },
     );
@@ -239,7 +233,7 @@ export async function handleEncryptedNPSCommand({
     });
 
     if (responses.messages === null) {
-        log.debug(`No response to send`, { connectionId });
+        logger.debug(`No response to send`, { connectionId });
         return {
             connectionId,
             messages: [],
@@ -248,9 +242,7 @@ export async function handleEncryptedNPSCommand({
 
     const encryptedMessages = responses.messages.map((message) => {
         try {
-            log.debug(`Sending response: ${message.header.messageId}`, {
-                connectionId,
-            });
+            const oldMsgId = message.header.messageId
 
             // Encipher
             const result = encryptCmd({
@@ -259,6 +251,13 @@ export async function handleEncryptedNPSCommand({
             });
 
             const encryptedResponse = result.message;
+            const newMsgId = encryptedResponse.header.messageId;
+
+            log.debug({
+                oldMsgId,
+                newMsgId,
+                connectionId
+            }, "Message encrypted")
 
             const outPacket = new SerializedBufferOld();
             outPacket.deserialize(encryptedResponse.serialize());

@@ -43,7 +43,7 @@ export async function handleSendGameServersList({
             riff: 'RACE',
             protocol: 33,
             channelType: 2,
-            maxReadyPlayers: 8,
+            maxReadyPlayers: 1,
         };
 
         // TODO: Actually have servers

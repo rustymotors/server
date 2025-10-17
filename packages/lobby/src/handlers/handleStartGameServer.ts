@@ -1,10 +1,11 @@
-import { BytableMessage } from "@rustymotors/binary";
+import { BytableMessage } from '@rustymotors/binary';
 import {
     GameServerLaunchInfo,
     getServerLogger,
     RawMessage,
+    RunningServerInfo,
     ServerLogger,
-} from "rusty-motors-shared";
+} from 'rusty-motors-shared';
 
 export async function handleStartGameServer({
     connectionId,
@@ -36,6 +37,17 @@ export async function handleStartGameServer({
         );
 
         // TODO: Actually have servers
+        // 0x20d NPS_SERVER_INFO - _NPS_RunningServerInfo
+        const newServerInfo = new RunningServerInfo();
+        newServerInfo.riff = 'RACE';
+        newServerInfo.commId = commId;
+        newServerInfo.ipAddress = '71.186.155.248';
+        newServerInfo.port = 9000;
+        newServerInfo.userId = 21;
+        newServerInfo.numberOfPlayers = 1;
+        const newServerInfoMessage = new RawMessage();
+        newServerInfoMessage.id = 0x20d;
+        newServerInfoMessage.data = newServerInfo.serialize();
 
         const startedServerComm = Buffer.alloc(4);
         startedServerComm.writeInt32BE(commId);
@@ -44,12 +56,15 @@ export async function handleStartGameServer({
         gameServerStartedMessage.id = 0x21c; // NPS_GAME_SERVER_STARTED
         gameServerStartedMessage.data = startedServerComm;
 
-        const outgoingMessage = new BytableMessage();
-        outgoingMessage.deserialize(gameServerStartedMessage.serialize());
+        const outgoingMessage1 = new BytableMessage();
+        outgoingMessage1.deserialize(newServerInfoMessage.serialize());
+
+        const outgoingMessage2 = new BytableMessage();
+        outgoingMessage2.deserialize(gameServerStartedMessage.serialize());
 
         return {
             connectionId,
-            messages: [outgoingMessage],
+            messages: [outgoingMessage1, outgoingMessage2],
         };
     } catch (error) {
         const err = Error(

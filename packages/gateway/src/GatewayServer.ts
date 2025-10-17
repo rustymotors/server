@@ -218,7 +218,7 @@ export class Gateway {
 		addPortRouter(8227, npsPortRouter);
 		addPortRouter(8228, npsPortRouter);
 		addPortRouter(7003, npsPortRouter);
-		for (let port = 9001; port < 9021; port++) {
+		for (let port = 9000; port < 9021; port++) {
 			addPortRouter(port, npsPortRouter);
 		}
 		addPortRouter(10001, npsPortRouter);
