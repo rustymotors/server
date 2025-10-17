@@ -1,4 +1,5 @@
-import type { Socket } from "node:net";
+import { Socket as UdpSocket } from "node:dgram";
+import type { Socket as TcpSocket } from "node:net";
 import { ServerLogger, TaggedSocket } from "rusty-motors-shared";
 
 
@@ -24,7 +25,7 @@ export function createConnectionContext() {}
  */
 
 export function tagSocket(
-	socket: Socket,
+	socket: TcpSocket | UdpSocket,
 	connectedAt: number,
 	connectionId: string,
 	localPort: number
@@ -34,7 +35,7 @@ export function tagSocket(
 		socket,
 		connectedAt,
 		localPort
-	};
+	} as TaggedSocket;
 }
 
 /**
@@ -46,15 +47,19 @@ export function tagSocket(
  * @returns A promise that resolves when the data is successfully written, or rejects with an error if the write fails.
  */
 export async function trySocketWrite(socket: TaggedSocket, data: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-        socket.socket.write(data, (error) => {
-            if (error) {
-                reject(error);
-            } else {
-                resolve();
-            }
-        });
-    });
+	return new Promise((resolve, reject) => {
+		// Ensure the socket has a 'write' method before attempting to write.
+		if (!('write' in socket.socket)) {
+			return reject(new Error('You attempted to call write on a non-TCP socket!'));
+		}
+		(socket.socket as TcpSocket).write(data, (error) => {
+			if (error) {
+				reject(error);
+			} else {
+				resolve();
+			}
+		});
+	});
 }
 
 

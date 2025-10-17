@@ -47,7 +47,7 @@ export async function npsPortRouter({
                 try {
                     log.adopt(
                         async () => {
-                            if (!isPacketValid(item.data)) {
+                            if (!isPacketValid(item.data) && 'end' in taggedSocket.socket) {
                                 taggedSocket.socket.end()
                                 return
                             }
@@ -80,7 +80,12 @@ export async function npsPortRouter({
                         logger.debug(`Sending packet in queue`, {
                             data: item.data,
                         });
-                        socket.write(item.data);
+                        if ('write' in socket) {
+
+                            socket.write(item.data);
+                        } else {
+                            socket.send(item.data)
+                        }
                     } catch (err) {
                         logger.error(`Error sending item: ${err}`);
                     }
@@ -180,7 +185,7 @@ function isPacketValid(data: Buffer): boolean {
  * - Routes the initial message and sends the response back to the client.
  * - Handles errors during parsing, routing, or response sending, logging them appropriately.
  */
-async function processSocketData(
+export async function processSocketData(
     data: Buffer<ArrayBufferLike>,
     log: Logger,
     id: string,
@@ -188,7 +193,7 @@ async function processSocketData(
     socket: TaggedSocket,
 ): Promise<void> {
     // Early tossing of known bad packets
-    if (!isPacketValid(data)) {
+    if (!isPacketValid(data) && 'end' in socket.socket ) {
         socket.socket.end();
         return;
     }

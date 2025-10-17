@@ -159,32 +159,43 @@ async function handleCommand({
     connectionId: string;
     messages: BytableMessage[];
 }> {
-    const command = message.header.messageId;
+    try {
+        const command = message.header.messageId;
 
-    // What is the command?
-    logger.debug(`Received Command: ${command}`, {
-        connectionId,
-    });
-    logger.debug(
-        `Received Command message: ${message.serialize().toString('hex')}`,
-        { connectionId },
-    );
+        // What is the command?
+        logger.debug(`Received Command: ${command}`, {
+            connectionId,
+        });
+        logger.debug(
+            `Received Command message: ${message.serialize().toString('hex')}`,
+            { connectionId },
+        );
 
-    const handler = npsCommandHandlers.find((h) => h.opCode === command);
+        const handler = npsCommandHandlers.find((h) => h.opCode === command);
 
-    if (typeof handler === 'undefined') {
-        throw Error(`Unknown command: ${command}`);
+        if (typeof handler === 'undefined') {
+            throw Error(`Unknown command: ${command}`);
+        }
+
+        const { messages: responses } = await handler.handler({
+            connectionId,
+            message,
+        });
+
+        return {
+            connectionId,
+            messages: responses,
+        };
+    } catch (error) {
+        log.error(
+            {
+                connectionId,
+                error: (error as Error).message,
+            },
+            'Unable to handle command',
+        );
+        return { connectionId, messages: [] };
     }
-
-    const { messages: responses } = await handler.handler({
-        connectionId,
-        message,
-    });
-
-    return {
-        connectionId,
-        messages: responses,
-    };
 }
 
 /**
@@ -242,7 +253,7 @@ export async function handleEncryptedNPSCommand({
 
     const encryptedMessages = responses.messages.map((message) => {
         try {
-            const oldMsgId = message.header.messageId
+            const oldMsgId = message.header.messageId;
 
             // Encipher
             const result = encryptCmd({
@@ -253,11 +264,14 @@ export async function handleEncryptedNPSCommand({
             const encryptedResponse = result.message;
             const newMsgId = encryptedResponse.header.messageId;
 
-            log.debug({
-                oldMsgId,
-                newMsgId,
-                connectionId
-            }, "Message encrypted")
+            log.debug(
+                {
+                    oldMsgId,
+                    newMsgId,
+                    connectionId,
+                },
+                'Message encrypted',
+            );
 
             const outPacket = new SerializedBufferOld();
             outPacket.deserialize(encryptedResponse.serialize());

@@ -4,7 +4,7 @@ import {
 } from "rusty-motors-shared-packets";
 import { receiveTransactionsData } from "rusty-motors-transactions";
 import * as Sentry from "@sentry/node";
-import { getServerLogger, MessageNode, ServerLogger, TaggedSocket, messageQueueItem, MessageQueue } from "rusty-motors-shared";
+import { getServerLogger, MessageNode, ServerLogger, messageQueueItem, MessageQueue, TaggedTcpSocket } from "rusty-motors-shared";
 
 /**
  * Handles the routing of messages for the MCOTS (Motor City Online Transaction Server) ports.
@@ -15,12 +15,18 @@ export async function mcotsPortRouter({
     taggedSocket,
     log = getServerLogger('gateway.mcotsPortRouter'),
 }: {
-    taggedSocket: TaggedSocket;
+    taggedSocket: TaggedTcpSocket;
     log?: ServerLogger;
 }): Promise<void> {
-    const { socket: socket, connectionId: id } = taggedSocket;
+    const { socket, connectionId: id } = taggedSocket;
 
-    const port = socket.localPort || 0;
+    if (!('localPort' in socket)) {        
+        return
+    }
+
+    const { localPort} = socket
+
+    const port = localPort || 0;
 
     if (port === 0) {
         log.error(`[${id}] Local port is undefined`);
@@ -81,7 +87,7 @@ async function processIncomingPackets(
     logger: ServerLogger,
     id: string,
     port: number,
-    socket: TaggedSocket,
+    socket: TaggedTcpSocket,
 ) {
     try {
         let inPackets: Buffer[] = [];

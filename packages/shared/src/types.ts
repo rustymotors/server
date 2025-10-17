@@ -3,7 +3,8 @@
  */
 
 import type { SerializedBufferOld } from "./SerializedBufferOld.js";
-import type { Socket } from "node:net";
+import type { Socket as TcpSocket } from "node:net";
+import { Socket as UdpSocket } from "node:dgram";
 import pino from "pino";
 
 export const name = "interfaces";
@@ -105,12 +106,27 @@ export type messageQueueItem = {
 	sequenceNo: number;
 	data: Buffer<ArrayBufferLike>;
 };
-export type TaggedSocket = {
-	connectionId: string;
-	socket: Pick<Socket, "write" | "localPort" | "end" | "on">;
-	connectedAt: number;
-	localPort: number;
-}; export interface Logger {
+
+export type TaggedTcpSocket = {
+    connectionId: string;
+    socket:
+        | Pick<TcpSocket, 'write' | 'localPort' | 'end' | 'on'>
+    connectedAt: number;
+    localPort: number;
+};
+
+export type TaggedUdpSocket = {
+    connectionId: string;
+    socket:
+
+        | Pick<UdpSocket, 'send' | 'on'>;
+    connectedAt: number;
+    localPort: number;
+};
+
+export type TaggedSocket = TaggedTcpSocket | TaggedUdpSocket; 
+
+export interface Logger {
 	info: (msg: string, obj?: unknown) => void;
 	warn: (msg: string, obj?: unknown) => void;
 	error: (msg: string, obj?: unknown) => void;

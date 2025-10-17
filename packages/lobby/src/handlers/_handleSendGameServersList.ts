@@ -38,14 +38,6 @@ export async function handleSendGameServersList({
         const requestedCommId =
             (incomingRequest.getFieldValueByName('commId') as number) ?? 0;
 
-        const newChannel = {
-            commId: requestedCommId,
-            riff: 'RACE',
-            protocol: 33,
-            channelType: 2,
-            maxReadyPlayers: 1,
-        };
-
         // TODO: Actually have servers
         const channelCreatedMessage = new RawMessage();
         const channelCreatedBody = new ChannelCreated();

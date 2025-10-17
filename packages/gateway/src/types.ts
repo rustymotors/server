@@ -1,20 +1,24 @@
-import type { Configuration, ServerLogger, TaggedSocket } from "rusty-motors-shared";
+import type { Configuration, ServerLogger, TaggedTcpSocket } from "rusty-motors-shared";
 import type { Socket } from "node:net";
 
 export type PortRouterArgs = {
-	taggedSocket: TaggedSocket;
+	taggedSocket: TaggedTcpSocket;
 	log?: ServerLogger;
 };
 
 export type PortRouter = (portRouterArgs: PortRouterArgs) => Promise<void>;
 
 export interface GatewayOptions {
-	config?: Configuration;
-	log?: ServerLogger;
-	backlogAllowedCount?: number;
-	listeningPortList?: number[];
-	socketConnectionHandler?: ({
-		incomingSocket,
-		log,
-	}: { incomingSocket: Socket; log?: ServerLogger }) => void;
+    config?: Configuration;
+    log?: ServerLogger;
+    backlogAllowedCount?: number;
+    tcpListeningPortList?: number[];
+    udpListeningPortList?: number[];
+    socketConnectionHandler?: ({
+        incomingSocket,
+        log,
+    }: {
+        incomingSocket: Socket;
+        log?: ServerLogger;
+    }) => void;
 }

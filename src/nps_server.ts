@@ -57,17 +57,26 @@ function main() {
                     level: config.logLevel,
                 });
 
-                const listeningPortList = [
+                const tcpListeningPortList = [
                     6660, 7003, 8228, 8226, 8227, 9000, 9001, 9002, 9003, 9004, 9005,
                     9006, 9007, 9008, 9009, 9010, 9011, 9012, 9013, 9014, 9015,
                     9016, 9017, 9018, 9019, 9020, 10001, 43200, 43300, 43400,
                     53303,
                 ];
 
+                                const udpListeningPortList = [
+                                    6660, 7003, 8228, 8226, 8227, 9000, 9001,
+                                    9002, 9003, 9004, 9005, 9006, 9007, 9008,
+                                    9009, 9010, 9011, 9012, 9013, 9014, 9015,
+                                    9016, 9017, 9018, 9019, 9020, 10001, 43200,
+                                    43300, 43400, 53303,
+                                ];
+
                 const gatewayServer = new Gateway({
                     config,
                     log: appLog,
-                    listeningPortList,
+                    tcpListeningPortList,
+                    udpListeningPortList,
                 });
 
                 Sentry.logger.info('Starting server')
