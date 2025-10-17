@@ -21,9 +21,6 @@ dist
 *.map
 out/*
 mcos.junit.xml
-package-lock.json
-
-
 
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
