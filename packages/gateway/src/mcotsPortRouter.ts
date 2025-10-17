@@ -78,7 +78,7 @@ function findPackageSignatureIndices(data: Buffer): number[] {
 
 async function processIncomingPackets(
     data: Buffer<ArrayBufferLike>,
-    log: ServerLogger,
+    logger: ServerLogger,
     id: string,
     port: number,
     socket: TaggedSocket,
@@ -86,7 +86,7 @@ async function processIncomingPackets(
     try {
         let inPackets: Buffer[] = [];
 
-        log.debug(
+        logger.debug(
             `[${id}] Received data in processIncomingPackets: ${data.toString('hex')}`,
         );
 
@@ -106,17 +106,10 @@ async function processIncomingPackets(
             inPackets.push(packet);
         }
 
-        if (inPackets.length > 0) {
-            console.log('S: ==================================================================')
-            console.dir(inPackets)
-            console.log('E: ==================================================================')
-        }
-
-
-        log.warn(`[${id}] Received ${inPackets.length} packets`);
+        logger.debug(`[${id}] Received ${inPackets.length} packets`);
 
         for (let packet of inPackets) {
-            log.debug(`[${id}] Received data: ${packet.toString('hex')}`);
+            logger.debug(`[${id}] Received data: ${packet.toString('hex')}`);
             const initialPacket: ServerPacket | MessageNode = parseInitialMessage(packet);
             await routeInitialMessage(id, port, initialPacket)
                 .then((response) => {
@@ -134,7 +127,7 @@ async function processIncomingPackets(
         }
     } catch (error) {
         Sentry.captureException(error);
-        log.error(`[${id}] Error handling data: ${error}`);
+        logger.error(`[${id}] Error handling data: ${error}`);
     }
 }
 
