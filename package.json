@@ -38,6 +38,8 @@
         "@mikro-orm/reflection": "^6.4.16",
         "@roarr/sentry": "^3.0.0",
         "@rustymotors/binary": "",
+        "@rustymotors/network": "file:libs/@rustymotors/network",
+        "@rustymotors/parser": "file:libs/@rustymotors/parser",
         "@rustymotors/protocol": "file:libs/@rustymotors/protocol",
         "@rustymotors/rooms": "file:libs/@rustymotors/rooms",
         "@sentry/node": "10.19.0",

@@ -159,7 +159,6 @@ async function handleCommand({
     connectionId: string;
     messages: BytableMessage[];
 }> {
-    try {
         const command = message.header.messageId;
 
         // What is the command?
@@ -186,16 +185,6 @@ async function handleCommand({
             connectionId,
             messages: responses,
         };
-    } catch (error) {
-        log.error(
-            {
-                connectionId,
-                error: (error as Error).message,
-            },
-            'Unable to handle command',
-        );
-        return { connectionId, messages: [] };
-    }
 }
 
 /**

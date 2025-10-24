@@ -1,2 +1,2 @@
-export { getMCOProtocolInstance } from "./lib/MCOProtocol.js";
-export * from "./lib/types.js";
+export { getMCOProtocolInstance } from "./MCOProtocol.js";
+export * from "./types.js";
