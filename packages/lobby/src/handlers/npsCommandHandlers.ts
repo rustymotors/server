@@ -3,6 +3,7 @@ import { _setMyUserData } from "./_setMyUserData.js";
 import { NpsCommandHandler } from "./encryptedCommand.js";
 import { handleCloseCommChannel } from "./handleCloseCommChannel.js";
 import { handleGetMiniUserList } from "./handleGetMiniUserList.js";
+import { handleGetReadyList } from "./handleGetReadyList.js";
 import { handleGetServerInfo } from "./handleGetServerInfo.js";
 import { handleGetUserList } from "./handleGetUserList.js";
 import { handleOpenCommChannel } from "./handleOpenCommChannel.js";
@@ -52,6 +53,11 @@ export const npsCommandHandlers: NpsCommandHandler[] = [
         opCode: 0x10d,
         name: "NPS_SET_COMM_FLAGS",
         handler: handleSetChannelFlags
+    },
+    {
+        opCode: 0x10e,
+        name: "NPS_GET_READY_LIST",
+        handler: handleGetReadyList
     },
 	{
 		opCode: 0x103, // 259

@@ -1,5 +1,68 @@
 import { Serializable } from "./types.js";
 
+export class Long implements Serializable {
+    private _value = 0;
+
+    get sizeOf() {
+        return 4;
+    }
+
+    serialize() {
+        const b = Buffer.alloc(4);
+        b.writeInt32BE(this._value);
+        return b;
+    }
+
+    deserialize(buf: Buffer) {
+        const v = buf.readInt32BE();
+        this._value = v
+    }
+
+    get value() {
+        return this._value;
+    }
+
+    set value(val: number) {
+        this._value = val;
+    }
+}
+
+
+export class NPS_LOGICAL implements Serializable {
+    private _value = false;
+
+    get sizeOf() {
+        return 2;
+    }
+
+    serialize() {
+        const b = Buffer.alloc(2);
+        if (this._value === true) {
+            b.writeInt16BE(1);
+        } else {
+            b.writeInt16BE(0);
+        }
+        return b;
+    }
+
+    deserialize(buf: Buffer) {
+        const v = buf.readInt16BE();
+        if (v === 1) {
+            this._value = true;
+        } else {
+            this._value = false;
+        }
+    }
+
+    get value() {
+        return this._value;
+    }
+
+    set value(val: boolean) {
+        this._value = val;
+    }
+}
+
 export class Bool implements Serializable {
 	private _value = false
 	

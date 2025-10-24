@@ -45,6 +45,8 @@ export {
     GameServerInfo,
     GameServerListMessage,
     RunningServerInfo,
+    ReadyForGame,
+    ReadyForGameList
 } from './src/GameServer.js';
 export { MessageNode } from './src/MessageNode.js';
 export {
@@ -53,6 +55,8 @@ export {
     CString,
     checkMinLength,
     sliceBuff,
+    NPS_LOGICAL,
+    Long
 } from './src/helpers.js';
 export { CreateRaceInfo, CreateRaceMessage } from './src/CreateRaceMessage.js';
 export {
@@ -62,6 +66,7 @@ export {
     JoinRaceMessage,
     RaceJoinedMessage,
 } from './src/RaceInfo.js';
+export { SerializedList } from "./src/SerializedList.js"
 export * from './src/types.js';
 
 // Function to convert ARGB to 32-bit integer
@@ -244,6 +249,7 @@ export function getServerLogger(name?: string): ServerLogger {
     }
     const loggerName = name || 'core';
 
+    // @ts-ignore
     serverLogger = new ServerLoggerImpl(name);
     return serverLogger;
 }

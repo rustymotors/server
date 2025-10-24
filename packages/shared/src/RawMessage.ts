@@ -14,7 +14,7 @@ export class RawMessage implements NPSMessage {
 	}
 
 	get sizeOf() {
-		return this._header.length ?? 4 + this._data.byteLength;
+		return this._header.length ?? this._header.sizeOf + this._data.byteLength;
 	}
 
 	serialize() {

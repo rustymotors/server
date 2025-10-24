@@ -1,11 +1,14 @@
 import {
     CString,
+    Long,
+    NPS_LOGICAL,
     checkMinLength,
     checkSize2,
     checkSize4,
     sliceBuff,
 } from './helpers.js';
 import { RawMessageHeader } from './RawMessage.js';
+import { SerializedList } from './SerializedList.js';
 import { NPSMessage, Serializable } from './types.js';
 
 export class GameServerLaunchInfo implements Serializable {
@@ -73,7 +76,7 @@ export class RunningServerInfo implements Serializable {
         ]);
     }
 
-    deserialize(buf: Buffer) {
+    deserialize(_buf: Buffer) {
         throw new Error(`Not yet`);
     }
 
@@ -263,3 +266,41 @@ export class GameServerListMessage implements NPSMessage {
         this._gameServers.add(gameServer);
     }
 }
+
+export class ReadyForGame implements Serializable {
+    private _commId = new Long(); // 4
+    private _userId = new Long(); // 4
+    private _isReady = new NPS_LOGICAL(); // 2 - NPS_LOGICAL1
+    private _isMaster = new NPS_LOGICAL(); // 2 - NPS_LOGICAL
+
+    constructor(
+        commId: number,
+        userId: number,
+        isReady = false,
+        isMaster = false,
+    ) {
+        this._commId.value = commId;
+        this._userId.value = userId;
+        this._isReady.value  = isReady;
+        this._isMaster.value = isMaster;
+    }
+
+    get sizeOf() {
+        return 12;
+    }
+
+    deserialize(_buf: Buffer) {
+        throw new Error('Not yet implemented');
+    }
+
+    serialize() {
+        return Buffer.concat([
+            this._commId.serialize(),
+            this._userId.serialize(),
+            this._isReady.serialize(),
+            this._isReady.serialize()
+        ])
+    }
+}
+
+export class ReadyForGameList extends SerializedList<ReadyForGame> {}

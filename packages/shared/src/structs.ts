@@ -140,8 +140,6 @@ export class GetPersonaMapListRequest
 	extends SerializedBase
 	implements Serialized {}
 
-export class SerializedList extends SerializedBase implements Serialized {}
-
 export class Persona extends SerializedBase implements Serialized {}
 
 export class SessionKey extends SerializedBase implements Serialized {}
