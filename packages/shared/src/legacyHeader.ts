@@ -1,4 +1,3 @@
-import { _ } from "vitest/dist/chunks/reporters.d.BFLkQcL6.js";
 import { SerializableMixin, AbstractSerializable } from "./messageFactory.js";
 
 /**

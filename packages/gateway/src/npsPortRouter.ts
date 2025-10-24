@@ -17,7 +17,6 @@ import {
     getSocketQueue,
     addSocketPair,
 } from 'rusty-motors-shared';
-import { Roarr as log, Logger } from 'roarr';
 import { messageStats } from './GatewayServer.js';
 
 /**
@@ -29,112 +28,97 @@ import { messageStats } from './GatewayServer.js';
  */
 export async function npsPortRouter({
     taggedSocket,
-    logger: logger = getServerLogger('gateway.npsPortRouter'),
+    log = getServerLogger('gateway.npsPortRouter'),
 }: {
     taggedSocket: TaggedSocket;
-    logger?: ServerLogger;
+    log?: ServerLogger;
 }): Promise<void> {
     const { socket: socket, connectionId, localPort } = taggedSocket;
-    log.adopt(async () => {
 
-        
-        const port = localPort;
-        
-        const receiveQueue = new MessageQueue(
-            'npsIn',
-            10,
-            async (item: messageQueueItem) => {
-                try {
-                    log.adopt(
-                        async () => {
-                            if (!isPacketValid(item.data) && 'end' in taggedSocket.socket) {
-                                taggedSocket.socket.end()
-                                return
-                            }
-                            
-                            log.debug(`Receiving packet in queue`)
-                            
-                            await processSocketData(
-                                item.data,
-                                log,
-                                taggedSocket.connectionId,
-                                taggedSocket.localPort,
-                                taggedSocket,
-                            );
-                        },
-                        { data: item.data.toString('hex') },
-                    );
-                } catch (err) {
-                    logger.error(`Error receiving item: ${err}`);
+    const port = localPort;
+
+    const receiveQueue = new MessageQueue(
+        'npsIn',
+        10,
+        async (item: messageQueueItem) => {
+            try {
+                if (!isPacketValid(item.data) && 'end' in taggedSocket.socket) {
+                    taggedSocket.socket.end();
+                    return;
                 }
-            },
-        );
-        
-        const sendQueue = new MessageQueue(
-            'npsOut',
-            10,
-            async (item: messageQueueItem) => {
-                log.adopt(async () => {
 
-                    try {
-                        logger.debug(`Sending packet in queue`, {
-                            data: item.data,
-                        });
-                        if ('write' in socket) {
+                log.debug(`Receiving packet in queue`);
 
-                            socket.write(item.data);
-                        } else {
-                            socket.send(item.data)
-                        }
-                    } catch (err) {
-                        logger.error(`Error sending item: ${err}`);
-                    }
-                },{
-                    connectionId, data: item.data.toString("hex")
-                })
-                },
-        );
-        
-        addSocketPair(connectionId, {
-            send: sendQueue,
-            receive: receiveQueue,
-        });
-        
-        // TODO: Document this
-        if (port === 7003) {
-            // Sent ok to login packet
-            log.debug(`Sending ok to login packet`);
-            sendQueue.put({
-                sequenceNo: -1,
-                data: Buffer.from([0x02, 0x30, 0x00, 0x04]),
-            });
-        }
-        
-        // Handle the socket connection here
-        socket.on('data', async (data) => {
-            receiveQueue.put({
-                sequenceNo: -1,
-                data,
-            });
-        });
-        
-        socket.on('end', () => {
-            receiveQueue.exit();
-        });
-        
-        socket.on('error', (error) => {
-            if (error.message.includes('ECONNRESET')) {
-                logger.debug(`[${connectionId}] Connection reset by client`);
-                return;
+                await processSocketData(
+                    item.data,
+                    log,
+                    taggedSocket.connectionId,
+                    taggedSocket.localPort,
+                    taggedSocket,
+                );
+            } catch (err) {
+                log.error(`Error receiving item: ${err}`);
+                throw err;
             }
-            logger.error(`[${connectionId}] Socket error: ${error}`);
-            receiveQueue.exit();
+        },
+    );
+
+    const sendQueue = new MessageQueue(
+        'npsOut',
+        10,
+        async (item: messageQueueItem) => {
+            try {
+                log.debug(`Sending packet in queue`, {
+                    data: item.data,
+                });
+                if ('write' in socket) {
+                    socket.write(item.data);
+                } else {
+                    socket.send(item.data);
+                }
+            } catch (err) {
+                log.error(`Error sending item: ${err}`);
+                throw err;
+            }
+        },
+    );
+
+    addSocketPair(connectionId, {
+        send: sendQueue,
+        receive: receiveQueue,
+    });
+
+    // TODO: Document this
+    if (port === 7003) {
+        // Sent ok to login packet
+        log.debug(`Sending ok to login packet`);
+        sendQueue.put({
+            sequenceNo: -1,
+            data: Buffer.from([0x02, 0x30, 0x00, 0x04]),
         });
-    }, {
-        connectionId, localPort,
-        namespace: 'npsPortRouter'
-    })
     }
+
+    // Handle the socket connection here
+    socket.on('data', async (data) => {
+        receiveQueue.put({
+            sequenceNo: -1,
+            data,
+        });
+    });
+
+    socket.on('end', () => {
+        receiveQueue.exit();
+    });
+
+    socket.on('error', (error) => {
+        if (error.message.includes('ECONNRESET')) {
+            log.debug(`[${connectionId}] Connection reset by client`);
+            return;
+        }
+        log.error(`[${connectionId}] Socket error: ${error}`);
+        receiveQueue.exit();
+    });
+}
 
 /**
  * The function `isPacketValid` checks if a packet of data is valid based on specific conditions
@@ -160,9 +144,9 @@ function isPacketValid(data: Buffer): boolean {
         // we know this is junk, toss it
         return false;
     }
-    
-    let counter = messageStats.get(msgCode) ?? 1
-    messageStats.set(msgCode, counter++)
+
+    let counter = messageStats.get(msgCode) ?? 1;
+    messageStats.set(msgCode, counter++);
 
     return true;
 }
@@ -187,13 +171,13 @@ function isPacketValid(data: Buffer): boolean {
  */
 export async function processSocketData(
     data: Buffer<ArrayBufferLike>,
-    log: Logger,
+    log: ServerLogger,
     id: string,
     port: number,
     socket: TaggedSocket,
 ): Promise<void> {
     // Early tossing of known bad packets
-    if (!isPacketValid(data) && 'end' in socket.socket ) {
+    if (!isPacketValid(data) && 'end' in socket.socket) {
         socket.socket.end();
         return;
     }
@@ -239,7 +223,7 @@ export async function processSocketData(
 function splitDataIntoPackets(
     data: Buffer,
     separator: Buffer,
-    log: Logger,
+    log: ServerLogger,
     id: string,
 ): Buffer[] {
     const packetsArray = data.toString('hex').split(separator.toString('hex'));
@@ -312,7 +296,7 @@ async function handlePacketRouting(
 
 function handleSocketError(
     error: unknown,
-    log: Logger,
+    log: ServerLogger,
     id: string,
 ): void {
     if (error instanceof RangeError) {
@@ -390,16 +374,25 @@ async function routeInitialMessage(
     let wasHandled = false;
 
     if (port >= 9000 && port < 9021) {
-        log.debug(
-            `[${id}] Passing room packet to lobby handler: ${packet.getMessageId()}`,
-        );
-        responses = (
-            await receiveLobbyData({ connectionId: id, message: initialPacket })
-        ).messages;
-        log.debug(
-            `[${id}] Received ${responses.length} room lobby response packets`,
-        );
-        wasHandled = true;
+        try {
+            log.debug(
+                `[${id}] Passing room packet to lobby handler: ${packet.getMessageId()}`,
+            );
+            responses = (
+                await receiveLobbyData({
+                    connectionId: id,
+                    message: initialPacket,
+                })
+            ).messages;
+            log.debug(
+                `[${id}] Received ${responses.length} room lobby response packets`,
+            );
+            wasHandled = true;
+        } catch (error) {
+            log.error('Error handling room lobby packet', {
+                error: JSON.stringify(error),
+            });
+        }
     }
 
     switch (port) {
@@ -458,19 +451,25 @@ async function routeInitialMessage(
             wasHandled = true;
             break;
         case 10001:
-            log.debug(
-                `[${id}] Passing race? packet to lobby handler: ${packet.getMessageId()}`,
-            );
-            responses = (
-                await receiveLobbyData({
-                    connectionId: id,
-                    message: initialPacket,
-                })
-            ).messages;
-            log.debug(
-                `[${id}] Received ${responses.length} race? lobby response packets`,
-            );
-            wasHandled = true;
+            try {
+                log.debug(
+                    `[${id}] Passing race? packet to lobby handler: ${packet.getMessageId()}`,
+                );
+                responses = (
+                    await receiveLobbyData({
+                        connectionId: id,
+                        message: initialPacket,
+                    })
+                ).messages;
+                log.debug(
+                    `[${id}] Received ${responses.length} race? lobby response packets`,
+                );
+                wasHandled = true;
+            } catch (error) {
+                log.error('Error handling race packet', {
+                    error: JSON.stringify(error),
+                });
+            }
             break;
 
         default:

@@ -8,7 +8,6 @@ import {
 import { getServerLogger } from 'rusty-motors-shared';
 import { BytableMessage, createRawMessage } from '@rustymotors/binary';
 import { npsCommandHandlers } from './npsCommandHandlers.js';
-import { Roarr as log, Logger } from 'roarr';
 
 /**
  * Array of supported command handlers
@@ -150,7 +149,7 @@ export type NpsCommandHandler = {
 async function handleCommand({
     connectionId,
     message,
-    log: logger = getServerLogger('lobby.handleCommand'),
+    log = getServerLogger('lobby.handleCommand'),
 }: {
     connectionId: string;
     message: BytableMessage;
@@ -159,32 +158,36 @@ async function handleCommand({
     connectionId: string;
     messages: BytableMessage[];
 }> {
-        const command = message.header.messageId;
+    const command = message.header.messageId;
 
-        // What is the command?
-        logger.debug(`Received Command: ${command}`, {
-            connectionId,
-        });
-        logger.debug(
-            `Received Command message: ${message.serialize().toString('hex')}`,
-            { connectionId },
-        );
+    // What is the command?
+    log.debug(`Received Command: ${command.toString(16)}`, {
+        connectionId,
+    });
+    log.debug(
+        `Received Command message: ${message.serialize().toString('hex')}`,
+        { connectionId },
+    );
 
-        const handler = npsCommandHandlers.find((h) => h.opCode === command);
+    const handler = npsCommandHandlers.find((h) => h.opCode === command);
 
-        if (typeof handler === 'undefined') {
-            throw Error(`Unknown command: ${command}`);
-        }
-
-        const { messages: responses } = await handler.handler({
-            connectionId,
-            message,
+    if (typeof handler === 'undefined') {
+        log.error(`Unknown command: ${command.toString(16)}`, {
+            data: message.serialize().toString('hex'),
         });
 
-        return {
-            connectionId,
-            messages: responses,
-        };
+        throw Error(`Unknown command: ${command.toString(16)}`);
+    }
+
+    const { messages: responses } = await handler.handler({
+        connectionId,
+        message,
+    });
+
+    return {
+        connectionId,
+        messages: responses,
+    };
 }
 
 /**
@@ -203,7 +206,7 @@ async function handleCommand({
 export async function handleEncryptedNPSCommand({
     connectionId,
     message,
-    log: logger = getServerLogger('lobby.handleEncryptedNPSCommand'),
+    log = getServerLogger('lobby.handleEncryptedNPSCommand'),
 }: {
     connectionId: string;
     message: BytableMessage;
@@ -212,7 +215,7 @@ export async function handleEncryptedNPSCommand({
     connectionId: string;
     messages: SerializedBufferOld[];
 }> {
-    logger.debug(`Received encrypted command: ${message.header.messageId}`, {
+    log.debug(`Received encrypted command: ${message.header.messageId}`, {
         connectionId,
     });
 
@@ -222,7 +225,7 @@ export async function handleEncryptedNPSCommand({
         message,
     });
 
-    logger.debug(
+    log.debug(
         `Deciphered command: ${decipheredMessage.message.header.messageId}`,
         { connectionId },
     );
@@ -233,7 +236,7 @@ export async function handleEncryptedNPSCommand({
     });
 
     if (responses.messages === null) {
-        logger.debug(`No response to send`, { connectionId });
+        log.debug(`No response to send`, { connectionId });
         return {
             connectionId,
             messages: [],
@@ -253,14 +256,11 @@ export async function handleEncryptedNPSCommand({
             const encryptedResponse = result.message;
             const newMsgId = encryptedResponse.header.messageId;
 
-            log.debug(
-                {
-                    oldMsgId,
-                    newMsgId,
-                    connectionId,
-                },
-                'Message encrypted',
-            );
+            log.debug('Message encrypted', {
+                oldMsgId,
+                newMsgId,
+                connectionId,
+            });
 
             const outPacket = new SerializedBufferOld();
             outPacket.deserialize(encryptedResponse.serialize());

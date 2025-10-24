@@ -29,7 +29,6 @@ import {
     TaggedTcpSocket,
 } from 'rusty-motors-shared';
 import { processSocketData } from './npsPortRouter.js';
-import { Roarr as log } from 'roarr';
 
 /**
  * Handle incoming TCP connections
@@ -92,24 +91,24 @@ export function onUdpMessage({
     incomingSocket,
     message,
     remoteInfo,
-    logger = getServerLogger('onUdpMessage'),
+    log = getServerLogger('onUdpMessage'),
 }: {
     incomingSocket: UdpSocket;
     message: Buffer<ArrayBufferLike>;
     remoteInfo: RemoteInfo;
-    logger?: ServerLogger;
+    log?: ServerLogger;
 }) {
     if (!['73.148.184.53'].includes(remoteInfo.address)) {
         return;
     }
 
     log.debug(
+        'New UDP Message',
         {
             namespace: 'onUdpMessage',
             message: message.toString('hex'),
             remoteInfo: JSON.stringify(remoteInfo),
         },
-        'New UDP Message',
     );
     // Get the local port and remote address
     const { address: remoteAddress, port: remotePort } = remoteInfo;

@@ -9,6 +9,8 @@ import { handleOpenCommChannel } from "./handleOpenCommChannel.js";
 import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";
 import { handleSendRiffList } from "./handleSendRiffList.js";
 import { handleStartGameServer } from "./handleStartGameServer.js";
+import { handleSetChannelFlags } from "./handlSetChannelFlags.js";
+import { handleUdpStatus } from "./handlUdpStatus.js";
 
 export const npsCommandHandlers: NpsCommandHandler[] = [
 	{
@@ -31,6 +33,11 @@ export const npsCommandHandlers: NpsCommandHandler[] = [
 		name: "NPS_GET_SERVER_INFO",
 		handler: handleGetServerInfo,
 	},
+    {
+        opCode: 0x125,
+        name: "NPS_UDP_STATUS",
+        handler: handleUdpStatus
+    },
 	{
 		opCode: 0x128, // 296
 		name: "NPS_GET_MINI_USER_LIST",
@@ -41,6 +48,11 @@ export const npsCommandHandlers: NpsCommandHandler[] = [
 		name: "NPS_SEND_MINI_RIFF_LIST",
 		handler: handleSendMiniRiffList,
 	},
+    {
+        opCode: 0x10d,
+        name: "NPS_SET_COMM_FLAGS",
+        handler: handleSetChannelFlags
+    },
 	{
 		opCode: 0x103, // 259
 		name: "NPS_SET_MY_USER_DATA",

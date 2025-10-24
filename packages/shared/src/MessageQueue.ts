@@ -1,5 +1,4 @@
 import { messageQueueItem } from 'rusty-motors-shared';
-import { Roarr as log } from 'roarr';
 
 export class MessageQueue {
     private _name: string;

@@ -134,6 +134,7 @@ async function processIncomingPackets(
     } catch (error) {
         Sentry.captureException(error);
         logger.error(`[${id}] Error handling data: ${error}`);
+        throw error
     }
 }
 

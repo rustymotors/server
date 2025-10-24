@@ -24,6 +24,7 @@ import { handleTrackingPing } from './handlers/handleTrackingPing.js';
 import { _npsRequestGameConnectServer } from './handlers/requestConnectGameServer.js';
 import { getServerLogger } from 'rusty-motors-shared';
 import { BytableMessage } from '@rustymotors/binary';
+import * as Sentry from '@sentry/node';
 
 /**
  * Array of supported message handlers
@@ -109,8 +110,8 @@ export async function receiveLobbyData({
         );
         return {
             connectionId,
-            messages: []
-        }
+            messages: [],
+        };
     }
 
     try {
@@ -135,8 +136,10 @@ export async function receiveLobbyData({
             messages: [],
         };
     } catch (error) {
+        log.error(`Error handling lobby data: ${(error as Error).message}`);
         const err = Error(`Error handling lobby data: ${String(error)}`);
         err.cause = error;
+        Sentry.captureException(err);
         throw err;
     }
 }
