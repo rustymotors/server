@@ -1,5 +1,33 @@
 import { Serializable } from "./types.js";
 
+export class Short implements Serializable {
+    private _value = 0;
+
+    get sizeOf() {
+        return 2;
+    }
+
+    serialize() {
+        const b = Buffer.alloc(4);
+        b.writeInt16BE(this._value);
+        return b;
+    }
+
+    deserialize(buf: Buffer) {
+        const v = buf.readInt16BE();
+        this._value = v;
+    }
+
+    get value() {
+        return this._value;
+    }
+
+    set value(val: number) {
+        this._value = val;
+    }
+}
+
+
 export class Long implements Serializable {
     private _value = 0;
 
@@ -174,6 +202,17 @@ export class CBlock implements Serializable {
 }
 
 /**
+ * Aligns a given number to the specified alignment.
+ *
+ * @param {number} n - The number to be aligned.
+ * @param {number} alignment - The alignment boundary.
+ * @returns {number} - The aligned number.
+ */
+export function align(n: number, alignment: number): number {
+    return (n + alignment - 1) & ~(alignment - 1);
+}
+
+/**
  * Aligns the given value to the nearest multiple of 4
  *
  * @param value - The number to be aligned.
@@ -181,7 +220,7 @@ export class CBlock implements Serializable {
  */
 
 export function align4(value: number) {
-	return value + (4 - (value % 4));
+	return align(value, 4);
 }
 /**
  * Pads the input buffer with zero bytes so that its length becomes a multiple of 4.
@@ -190,10 +229,11 @@ export function align4(value: number) {
  * @returns A new buffer with zero bytes appended to make its length a multiple of 4.
  */
 export function padBuffer(inBuf: Buffer): Buffer {
-	const length = inBuf.byteLength;
-
-	return Buffer.concat([inBuf, Buffer.alloc((4 - (length % 4)))]);
+    const length = inBuf.byteLength;
+    const pad = (4 - (length % 4)) % 4; // 0–3 bytes of padding
+    return Buffer.concat([inBuf, Buffer.alloc(pad)]);
 }
+
 /**
  * Returns a subarray of the input buffer starting at the specified offset and of the specified length.
  * Throws an error if the input buffer does not contain enough bytes.
