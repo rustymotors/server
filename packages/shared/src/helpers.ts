@@ -136,7 +136,7 @@ export class CString implements Serializable {
 	}
 
 	get sizeOf() {
-		return 4 + this._string.byteLength;
+		return 4 + this._string.byteLength + 1;
 	}
 
 	serialize() {
@@ -154,8 +154,8 @@ export class CString implements Serializable {
 		if (buf.byteLength < 4) {
 			throw new Error(`need at least 4 bytes for length. got ${buf.byteLength}`);
 		}
-		const strLength = buf.readInt32BE() + 4;
-		this._string = Buffer.from(buf.subarray(4, strLength));
+		const strEndOffset = buf.readInt32BE() + 4;
+		this._string = Buffer.from(buf.subarray(4, strEndOffset - 1));
 
 	}
 
@@ -164,12 +164,12 @@ export class CString implements Serializable {
 	}
 
 	get length() {
-		return this._string.byteLength;
+		return this._string.byteLength + 1;
 	}
 
 	set(val: string) {
 		if (val.length > this._maxLen - 1) {
-			throw new Error(`string can only be ${this._maxLen + 1} bytes long, got ${val.length}`);
+			throw new Error(`string can only be ${this._maxLen - 1} bytes long, got ${val.length}`);
 		}
 		this._string = Buffer.alloc(val.length)
 		this._string.write(val);

@@ -42,7 +42,7 @@ export async function handleStartGameServer({
         newServerInfo.riff = 'RACE';
         newServerInfo.commId = commId;
         newServerInfo.ipAddress = '71.186.155.248';
-        newServerInfo.port = 9000;
+        newServerInfo.port = 7003;
         newServerInfo.userId = 21;
         newServerInfo.numberOfPlayers = 1;
         const newServerInfoMessage = new RawMessage();

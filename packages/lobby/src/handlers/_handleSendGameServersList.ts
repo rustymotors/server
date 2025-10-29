@@ -40,8 +40,9 @@ export async function handleSendGameServersList({
 
         // TODO: Actually have servers
         const channelCreatedMessage = new RawMessage();
+        channelCreatedMessage.id = 0x20e
         const channelCreatedBody = new ChannelCreated();
-        channelCreatedBody.commId = requestedCommId;
+        channelCreatedBody.commId = 2;
         channelCreatedBody.riff = 'RACE';
         channelCreatedBody.protocol = 33;
         // channelCreatedBody.channelData = Buffer.alloc(256);

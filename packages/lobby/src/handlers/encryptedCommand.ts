@@ -247,6 +247,12 @@ export async function handleEncryptedNPSCommand({
         try {
             const oldMsgId = message.header.messageId;
 
+            log.debug("Message prior to encryption", {
+                connectionId,
+                oldMsgId,
+                data: message.serialize().toString("hex")
+            })
+
             // Encipher
             const result = encryptCmd({
                 connectionId,

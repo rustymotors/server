@@ -5,6 +5,8 @@ import { Sequelize } from 'sequelize';
 const _sessions: ConnectionRecord[] = [];
 // This is a fake database table that holds user data
 const _users: Map<number, UserInfo> = new Map();
+// This is a fake database table to host the username on each connection
+const _connections: Map<string, number> = new Map()
 
 /**
  * @module Database
@@ -13,7 +15,7 @@ const _users: Map<number, UserInfo> = new Map();
 /**
  * Update a user record in the database
 
-* @throws {Error} If the user record is not found
+* @throws {Error} If unable to set or update
  */
 async function updateUser(user: {
     userId: number;
@@ -101,6 +103,26 @@ async function fetchSessionKeyByConnectionId(
     return Promise.resolve(record);
 }
 
+/**
+ * Update a user id by connection id
+
+* @throws {Error} If unable to set or update
+ */
+async function updateConnection(connectionId: string, userId: number): Promise<void> {
+    try {
+        _connections.set(connectionId, userId);
+        return Promise.resolve();
+    } catch (error) {
+        throw Error(`Error updating connection: ${String(error)}`);
+    }
+}
+
+async function findUserByConnectionId(connectionId: string): Promise<number | undefined> {
+    return Promise.resolve(_connections.get(connectionId));
+}
+
+
+
 let database: Sequelize;
 
 export function getDatabase(): Sequelize {
@@ -120,6 +142,8 @@ export function getDatabase(): Sequelize {
 export interface DatabaseManager {
     updateUser: typeof updateUser;
     getUser: typeof getUser;
+    updateConnection: typeof updateConnection;
+    findUserByConnectionId: typeof findUserByConnectionId;
     fetchSessionKeyByCustomerId: typeof fetchSessionKeyByCustomerId;
     updateSessionKey: typeof updateSessionKey;
     fetchSessionKeyByConnectionId: typeof fetchSessionKeyByConnectionId;
@@ -128,6 +152,8 @@ export interface DatabaseManager {
 export const databaseManager: DatabaseManager = {
     updateUser,
     getUser,
+    updateConnection,
+    findUserByConnectionId,
     fetchSessionKeyByCustomerId,
     updateSessionKey,
     fetchSessionKeyByConnectionId,

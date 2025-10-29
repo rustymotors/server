@@ -138,6 +138,8 @@ export async function _npsRequestGameConnectServer({
 	}
 
 	// We have a session, we are good to go!
+    await databaseManager.updateConnection(connectionId, inboundMessage._userId)
+
 	// Send the response packet
 
 	const responsePackets = []

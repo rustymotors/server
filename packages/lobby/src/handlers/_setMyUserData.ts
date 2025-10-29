@@ -48,6 +48,11 @@ export async function _setMyUserData({
 
 		message.header.setMessageId(516)
 
+        log.debug('Sending UserInfo', {
+            connectionId,
+            data: message.serialize().toString("hex")
+        })
+
 		return {
 			connectionId,
 			messages: [message],

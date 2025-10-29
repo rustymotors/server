@@ -25,6 +25,8 @@ import { _npsRequestGameConnectServer } from './handlers/requestConnectGameServe
 import { getServerLogger } from 'rusty-motors-shared';
 import { BytableMessage } from '@rustymotors/binary';
 import * as Sentry from '@sentry/node';
+import { handleOpenCommChannel } from './handlers/handleOpenCommChannel.js';
+import { handleUdpStatus } from './handlers/handlUdpStatus.js';
 
 /**
  * Array of supported message handlers
@@ -57,6 +59,16 @@ export const messageHandlers: {
         opCode: 256, // 0x100
         name: 'User login',
         handler: _npsRequestGameConnectServer,
+    },
+    {
+        opCode: 0x106,
+        name: "PT_OPEN_COMM_CHANNEL",
+        handler: handleOpenCommChannel
+    },
+    {
+        opCode: 0x125,
+        name: "PT_UDP_STATUS",
+        handler: handleUdpStatus
     },
     {
         opCode: 4353, // 0x1101

@@ -37,7 +37,12 @@ export type { State } from './src/State.js';
 export type { OnDataHandler, ServiceResponse } from './src/State.js';
 export { LegacyMessage } from './src/LegacyMessage.js';
 export { NPSHeader } from './src/NPSHeader.js';
-export { UserData, UserInfo, SetMyUserDataMessage } from './src/UserData.js';
+export {
+    UserData,
+    UserInfo,
+    SetMyUserDataMessage,
+    UserJoinedChannelMessage,
+} from './src/UserData.js';
 export { RiffInfoListMessage, RiffInfo, ChannelCreated } from './src/Lobby.js';
 export { MessageQueue } from './src/MessageQueue.js';
 export {
@@ -46,7 +51,7 @@ export {
     GameServerListMessage,
     RunningServerInfo,
     ReadyForGame,
-    ReadyForGameList
+    ReadyForGameList,
 } from './src/GameServer.js';
 export { MessageNode } from './src/MessageNode.js';
 export {
@@ -56,7 +61,8 @@ export {
     checkMinLength,
     sliceBuff,
     NPS_LOGICAL,
-    Long
+    Short,
+    Long,
 } from './src/helpers.js';
 export { CreateRaceInfo, CreateRaceMessage } from './src/CreateRaceMessage.js';
 export {
@@ -66,7 +72,8 @@ export {
     JoinRaceMessage,
     RaceJoinedMessage,
 } from './src/RaceInfo.js';
-export { SerializedList } from "./src/SerializedList.js"
+export { SerializedList } from './src/SerializedList.js';
+export { OpenCommChannelRequest } from './src/OpenCommChannelRequest.js';
 export * from './src/types.js';
 
 // Function to convert ARGB to 32-bit integer
