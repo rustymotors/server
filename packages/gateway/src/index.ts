@@ -29,6 +29,7 @@ import {
     TaggedTcpSocket,
 } from 'rusty-motors-shared';
 import { processSocketData } from './npsPortRouter.js';
+import { socketErrorHandler } from './socketErrorHandler.js';
 
 /**
  * Handle incoming TCP connections
@@ -57,9 +58,12 @@ export function onSocketConnection({
         return;
     }
 
-    if (!['73.148.184.53'].includes(remoteAddress)) {
+    if (!['73.148.184.53', '10.10.5.1'].includes(remoteAddress)) {
         return;
     }
+
+
+    incomingSocket.on("error", socketErrorHandler)
 
     let id = `${randomUUID()}`;
     id = id.substring(0, id.indexOf('-'));

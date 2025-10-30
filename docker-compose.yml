@@ -1,4 +1,4 @@
-name: rustyserver
+name: server
 services:
     nginx:
         build:
@@ -8,14 +8,18 @@ services:
             - "80:80"
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        restart: unless-stopped
     db:
         image: postgres:14.6
         ports:
             - "5432:5432"
+        volumes:
+            - db-data:/var/lib/postgresql/data
         # TODO: #1182 remove before prod https://github.com/drazisil/mco-server/issues/1008
         environment:
             POSTGRES_PASSWORD: "password"
             POSTGRES_DB: "mcos"
+        restart: unless-stopped
     pgadmin:
         image: dpage/pgadmin4:6.18
         # TODO: #1182 remove these before prod https://github.com/drazisil/mco-server/issues/1008
@@ -30,6 +34,9 @@ services:
             - pgadmin:/var/lib/pgadmin
         depends_on:
             - db
+        restart: unless-stopped
 
 volumes:
     pgadmin:
+    db-data:
+        driver: local    

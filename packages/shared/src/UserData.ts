@@ -418,8 +418,8 @@ export class UserJoinedChannelMessage implements Serializable {
 
     serialize() {
         return Buffer.concat([
-            this._userName.serialize(),
             this._userId.serialize(),
+            this._userName.serialize(),
             this._commId.serialize(),
             this._userData.serialize(),
         ]);
@@ -428,10 +428,10 @@ export class UserJoinedChannelMessage implements Serializable {
     deserialize(buf: Buffer) {
         checkMinLength(buf, this.sizeOf);
         let offset = 0;
-        this._userName.deserialize(buf.subarray(offset));
-        offset += this._userName.sizeOf;
         this._userId.deserialize(sliceBuff(buf, offset, this._userId.sizeOf));
         offset += this._userId.sizeOf;
+        this._userName.deserialize(buf.subarray(offset));
+        offset += this._userName.sizeOf;
         this._commId.deserialize(sliceBuff(buf, offset, this._commId.sizeOf));
         offset += this._commId.sizeOf;
         this._userData.deserialize(

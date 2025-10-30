@@ -36,55 +36,69 @@ export async function handleOpenCommChannel({
         ]);
         incomingRequest.deserialize(message.serialize());
 
-        const requestedCommId =
+        const requestedCommIdBuffer =
             incomingRequest.getFieldValueByName('commId') ?? -1;
         const requestedRiffName =
             incomingRequest.getFieldValueByName('riffName') ?? '';
+        const requestedCommId = (requestedCommIdBuffer as Buffer).readInt32BE();
 
         log.debug(
-            `[${connectionId}] Requested we open a channel on ${requestedRiffName}(${(requestedCommId as Buffer).readInt32BE()})`,
+            `[${connectionId}] Requested we open a channel on ${requestedRiffName}(${requestedCommId})`,
         );
 
         // TODO: Actually have servers
-        const port = Number.parseInt(connectionId.split(":")[1] ?? '7003')
+        const port = Number.parseInt(connectionId.split(':')[1] ?? '7003');
+
+        const responsePackets = [];
 
         const packetResult = createNPSChannelGrantedPacket(
-            (requestedCommId as Buffer).readInt32BE(),
+            (requestedCommIdBuffer as Buffer).readInt32BE(),
             port,
         );
         log.debug(
             `[${connectionId}]  Sending comm GRANTED: ${JSON.stringify(packetResult)}`,
         );
 
-        // Create user jopined channel message
-        const userId = await databaseManager.findUserByConnectionId(connectionId)
-        if (typeof userId === "undefined") {
-            throw new Error(`Unable to locate user for connection ${connectionId}`)
+        responsePackets.push(packetResult);
+
+        if (requestedCommId > 100) {
+            // Create user joined channel message
+            const userId =
+                await databaseManager.findUserByConnectionId(connectionId);
+            if (typeof userId === 'undefined') {
+                throw new Error(
+                    `Unable to locate user for connection ${connectionId}`,
+                );
+            }
+            const user = await databaseManager.getUser(userId);
+            if (typeof user === 'undefined') {
+                throw new Error(
+                    `Unable to locate user data for user ${userId}`,
+                );
+            }
+            const userJoined = new UserJoinedChannelMessage(
+                user.userName,
+                user.userId,
+                (requestedCommIdBuffer as Buffer).readInt32BE(),
+                user.userData,
+            );
+
+            const userJoinedMessage = BytableMessage.FromRawMessage(
+                createRawMessage(0x20c, userJoined),
+            );
+
+            log.debug('Outbound user join message', {
+                connectionId,
+                userId,
+                json: JSON.stringify(userJoinedMessage),
+                data: userJoinedMessage.serialize().toString('hex'),
+            });
+
+            responsePackets.push(userJoinedMessage);
         }
-        const user = await databaseManager.getUser(userId)
-        if (typeof user === "undefined") {
-            throw new Error(`Unabel to locate user data gor user ${userId}`)
-        }
-        const userJoined = new UserJoinedChannelMessage(
-            user.userName,
-            user.userId,
-            (requestedCommId as Buffer).readInt32BE(),
-            user.userData
-        );
-
-        const userJoinedMessage = BytableMessage.FromRawMessage(
-            createRawMessage(0x20c, userJoined)
-        )
-
-        log.debug("Outbound user join message", {
-            connectionId, userId,
-            json: JSON.stringify(userJoinedMessage),
-            data: userJoinedMessage.serialize().toString("hex")
-        })
-
         return {
             connectionId,
-            messages: [packetResult],
+            messages: responsePackets,
         };
     } catch (error) {
         const err = Error(
@@ -96,10 +110,10 @@ export async function handleOpenCommChannel({
 }
 
 export function createRawMessage(msgCode: number, body: Serializable) {
-    const message = new RawMessage()
-    message.id = msgCode
-    message.data = body.serialize()
-    return message
+    const message = new RawMessage();
+    message.id = msgCode;
+    message.data = body.serialize();
+    return message;
 }
 
 export function createNPSChannelGrantedPacket(

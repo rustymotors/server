@@ -39,6 +39,8 @@ export async function handleSendGameServersList({
             (incomingRequest.getFieldValueByName('commId') as number) ?? 0;
 
         // TODO: Actually have servers
+        const responsePackets = []
+
         const channelCreatedMessage = new RawMessage();
         channelCreatedMessage.id = 0x20e
         const channelCreatedBody = new ChannelCreated();
@@ -71,19 +73,21 @@ export async function handleSendGameServersList({
         );
 
         // Build the packet
-        const packetResult = new BytableMessage();
-        packetResult.setSerializeOrder([{ name: 'data', field: 'Buffer' }]);
-        packetResult.setVersion(0);
-        packetResult.deserialize(outgoingGameMessage.serialize());
+        const gameServerListMessage = new BytableMessage();
+        gameServerListMessage.setSerializeOrder([{ name: 'data', field: 'Buffer' }]);
+        gameServerListMessage.setVersion(0);
+        gameServerListMessage.deserialize(outgoingGameMessage.serialize());
 
         log.debug(
-            `Sending gameserver response[serialize2]: ${packetResult.serialize().toString('hex')}`,
+            `Sending gameserver response[serialize2]: ${gameServerListMessage.serialize().toString('hex')}`,
             { connectionId },
         );
 
+        responsePackets.push(gameServerListMessage)
+
         return {
             connectionId,
-            messages: [channelCreatedBytable, packetResult],
+            messages: responsePackets,
         };
     } catch (error) {
         const err = Error(
