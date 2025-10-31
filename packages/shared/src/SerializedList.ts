@@ -1,4 +1,3 @@
-import { buffer } from "stream/consumers";
 import { Serializable } from "./types.js";
 
 export class SerializedList<T extends Serializable> implements Serializable {

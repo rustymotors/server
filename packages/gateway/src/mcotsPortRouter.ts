@@ -1,7 +1,3 @@
-import {
-    ServerPacket,
-    type SerializableInterface,
-} from "rusty-motors-shared-packets";
 import { receiveTransactionsData } from "rusty-motors-transactions";
 import * as Sentry from "@sentry/node";
 import { getServerLogger, MessageNode, ServerLogger, messageQueueItem, MessageQueue, TaggedTcpSocket } from "rusty-motors-shared";
@@ -18,7 +14,7 @@ export async function mcotsPortRouter({
     taggedSocket: TaggedTcpSocket;
     log?: ServerLogger;
 }): Promise<void> {
-    const { socket, connectionId: id } = taggedSocket;
+    const { socket, connectionId } = taggedSocket;
 
     if (!('localPort' in socket)) {        
         return
@@ -29,17 +25,29 @@ export async function mcotsPortRouter({
     const port = localPort || 0;
 
     if (port === 0) {
-        log.error(`[${id}] Local port is undefined`);
+        log.error(`Local port is undefined`, {
+            connectionId
+        });
         socket.end();
         return;
     }
 
-    log.debug(`[${id}] MCOTS port router started for port ${port}`);
+    log.debug(`MCOTS port router started`,{
+        connectionId,
+        port
+    });
     const receiveQueue = new MessageQueue("mcoIn", 10, async (item: messageQueueItem) => {
         try {
             await processIncomingPackets(item.data, log, taggedSocket.connectionId, taggedSocket.localPort, taggedSocket)
         } catch (err) {
-            console.error(`Error processing item: ${err}`)
+            log.error(`Error processing item: ${err}`,
+                {
+                    connectionId,
+                    item: JSON.stringify(item),
+                    error: err
+                }
+            )
+            Sentry.captureException(err)
         }
     })
 
@@ -58,10 +66,18 @@ export async function mcotsPortRouter({
 
     socket.on('error', (error) => {
         if (error.message.includes('ECONNRESET')) {
-            log.debug(`[${id}] Connection reset by client`);
+            log.debug(`Connection reset by client`, {
+                connectionId,
+                port: socket.localPort
+            });
             return;
         }
-        log.error(`[${id}] Socket error: ${error}`);
+        log.error(`Socket error: ${error}`, {
+            connectionId,
+            port: socket.localPort,
+            error
+        });
+        Sentry.captureException(error)
     });
 }
 
@@ -84,16 +100,21 @@ function findPackageSignatureIndices(data: Buffer): number[] {
 
 async function processIncomingPackets(
     data: Buffer<ArrayBufferLike>,
-    logger: ServerLogger,
-    id: string,
+    log: ServerLogger,
+    connectionId: string,
     port: number,
     socket: TaggedTcpSocket,
 ) {
     try {
         let inPackets: Buffer[] = [];
 
-        logger.debug(
-            `[${id}] Received data in processIncomingPackets: ${data.toString('hex')}`,
+        log.debug(
+            `Received data`, {
+                namespace: "processIncommingPacket",
+                connectionId,
+                port: socket.localPort,
+                data: data.toString("hex")
+            },
         );
 
         /* Search for the package signature in the hex string
@@ -112,34 +133,52 @@ async function processIncomingPackets(
             inPackets.push(packet);
         }
 
-        logger.debug(`[${id}] Received ${inPackets.length} packets`);
+        log.debug(`Received ${inPackets.length} packets`, {
+            connectionId
+        });
 
-        for (let packet of inPackets) {
-            logger.debug(`[${id}] Received data: ${packet.toString('hex')}`);
-            const initialPacket: ServerPacket | MessageNode = parseInitialMessage(packet);
-            await routeInitialMessage(id, port, initialPacket)
-                .then((response) => {
-                    // Send the response back to the client
-                    socket.socket.write(response);
-                })
-                .catch(error => {
-                    throw new Error(
-                        `[${id}] Error routing initial mcots message: ${error}`,
-                        {
-                            cause: error,
-                        },
-                    );
-                });
-        }
+        inPackets.forEach(async (packet, idx) => {
+
+            log.debug(`Processing packet #${idx}`,{
+                connectionId,
+                data: packet.toString("hex")
+            });
+            const initialPacket: MessageNode = parseInitialMessage(packet);
+            await routeInitialMessage(connectionId, port, initialPacket)
+            .then((response) => {
+                // Send the response back to the client
+                socket.socket.write(response);
+            })
+            .catch(error => {
+                log.error(
+                    `Error routing initial mcots message: ${error}`,
+                    {
+                        connectionId,
+                        port,
+                        cause: error,
+                    },
+
+                )
+                Sentry.captureException(error)
+                
+            
+            });
+        })
     } catch (error) {
+        log.error(`Error handling data: ${error}`, {
+            connectionId,
+            port,
+            cause: error
+        });
         Sentry.captureException(error);
-        logger.error(`[${id}] Error handling data: ${error}`);
-        throw error
+        
     }
 }
+    
 
-function parseInitialMessage(data: Buffer): ServerPacket | MessageNode {
-    const initialPacket: ServerPacket | MessageNode = new ServerPacket();
+
+function parseInitialMessage(data: Buffer): MessageNode {
+    const initialPacket: MessageNode = new MessageNode();
     initialPacket.deserialize(data);
     return initialPacket;
 }
@@ -147,14 +186,14 @@ function parseInitialMessage(data: Buffer): ServerPacket | MessageNode {
 async function routeInitialMessage(
     id: string,
     port: number,
-    initialPacket: ServerPacket,
+    initialPacket: MessageNode,
     log = getServerLogger("gateway.mcotsPortRouter/routeInitialMessage"),
 ): Promise<Buffer> {
     // Route the initial message to the appropriate handler
     // Messages may be encrypted, this will be handled by the handler
 
-    log.debug(`Routing message for port ${port}: ${initialPacket.getMessageId()}`);
-    let responses: SerializableInterface[] = [];
+    log.debug(`Routing message for port ${port}: ${initialPacket.msgNo}`);
+    let responses: MessageNode[] = [];
 
     switch (port) {
         case 43300:

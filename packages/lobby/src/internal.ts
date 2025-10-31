@@ -14,15 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import {
-    getSocketQueue,
-    SerializedBufferOld,
-    ServerLogger,
-} from 'rusty-motors-shared';
 import { handleEncryptedNPSCommand } from './handlers/encryptedCommand.js';
 import { handleTrackingPing } from './handlers/handleTrackingPing.js';
 import { _npsRequestGameConnectServer } from './handlers/requestConnectGameServer.js';
-import { getServerLogger } from 'rusty-motors-shared';
+import { getServerLogger, getSocketQueue, SerializedBufferOld, ServerLogger } from 'rusty-motors-shared';
 import { BytableMessage } from '@rustymotors/binary';
 import * as Sentry from '@sentry/node';
 import { handleOpenCommChannel } from './handlers/handleOpenCommChannel.js';
@@ -130,9 +125,6 @@ export async function receiveLobbyData({
         const result = await supportedHandler.handler({
             connectionId,
             message,
-        });
-        log.debug(`Returning with ${result.messages.length} messages`, {
-            connectionId,
         });
         log.debug('Leaving receiveLobbyData');
         const sendQueue = getSocketQueue(connectionId, 'send');

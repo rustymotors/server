@@ -37,6 +37,7 @@ import { _getCompleteVehicleInfo } from "./_getFullCarInfo.js";
 import { _buyNewPart } from "./_buyNewPart.js";
 import { _createStandardRace } from "./_createStandardRace.js";
 import { _joinRace } from "./_joinRace.js";
+import { _raceKeepAlive } from "./_raceKeepAlive.js";
 
 
 export interface MessageHandlerArgs {
@@ -57,111 +58,116 @@ export interface MessageHandler {
 }
 
 export const messageHandlers: MessageHandler[] = [
-	{
-		id: 176,
-		name: "MC_BUY_NEW_PART",
-		handler: _buyNewPart
-	},
-	{
-		id: 440,
-		name: "MC_TRACKING_MSG",
-		handler: trackingPing,
-	},
-	{
-		id: 438,
-		name: "MC_CLIENT_CONNECT_MSG",
-		handler: clientConnect,
-	},
-	{
-		id: 105,
-		name: "MC_LOGIN",
-		handler: login,
-	},
-	{
-		id: 106,
-		name: "MC_LOGOUT",
-		handler: _logout,
-	},
-	{
-		id: 145,
-		name: "MC_GET_COMPLETE_VEHICLE_INFO",
-		handler: _getCompleteVehicleInfo,
-	},
-	{
-		id: 325,
-		name: "MC_GET_LOBBIES",
-		handler: getLobbies,
-	},
-	{
-		id: 141,
-		name: "MC_STOCK_CAR_INFO",
-		handler: _getStockCarInfo,
-	},
-	{
-		id: 322,
-		name: "MC_GET_ARCADE_CARS",
-		handler: _getArcadeCarInfo,
-	},
-	{
-		id: 363,
-		name: "MC_GET_GAME_URLS",
-		handler: _getGameUrls,
-	},
-	{
-		id: 389,
-		name: "MC_GET_MCO_TUNABLES",
-		handler: _getTunables,
-	},
-	{
-		id: 172,
-		name: "MC_GET_OWNED_VEHICLES",
-		handler: _getOwnedVehicles,
-	},
-	{
-		id: 108,
-		name: "MC_GET_PLAYER_INFO",
-		handler: _getPlayerInfo,
-	},
-	{
-		id: 264,
-		name: "MC_GET_PLAYER_PHYSICAL",
-		handler: _getPlayerPhysical,
-	},
-	{
-		id: 174,
-		name: "MC_GET_OWNED_PARTS",
-		handler: _getOwnedParts,
-	},
-	{
-		id: 361,
-		name: "MC_GET_PLAYER_RACING_HISTORY",
-		handler: _getPlayerRaceHistory,
-	},
-	{
-		id: 142,
-		name: "MC_PURCHASE_STOCK_CAR",
-		handler: _buyCarFromDealer,
-	},
-	{
-		id: 455,
-		name: "MC_CRC_PRE_RACE_DATA",
-		handler: _crcPreRaceData
-	},
-	{
-		id: 163,
-		name: "MC_UPDATE_CACHED_VEHICLE",
-		handler: _updateCachedVehicle
-	},
-	{
-		id: 218,
-		name: "MC_RACE_JOIN",
-		handler: _joinRace
-	},
-	{
-		id: 230,
-		name: "MC_CREATE_STANDARD_RACE",
-		handler: _createStandardRace
-	}
+    {
+        id: 176,
+        name: 'MC_BUY_NEW_PART',
+        handler: _buyNewPart,
+    },
+    {
+        id: 440,
+        name: 'MC_TRACKING_MSG',
+        handler: trackingPing,
+    },
+    {
+        id: 438,
+        name: 'MC_CLIENT_CONNECT_MSG',
+        handler: clientConnect,
+    },
+    {
+        id: 448,
+        name: 'MC_KEEP_RACE_ALIVE',
+        handler: _raceKeepAlive,
+    },
+    {
+        id: 105,
+        name: 'MC_LOGIN',
+        handler: login,
+    },
+    {
+        id: 106,
+        name: 'MC_LOGOUT',
+        handler: _logout,
+    },
+    {
+        id: 145,
+        name: 'MC_GET_COMPLETE_VEHICLE_INFO',
+        handler: _getCompleteVehicleInfo,
+    },
+    {
+        id: 325,
+        name: 'MC_GET_LOBBIES',
+        handler: getLobbies,
+    },
+    {
+        id: 141,
+        name: 'MC_STOCK_CAR_INFO',
+        handler: _getStockCarInfo,
+    },
+    {
+        id: 322,
+        name: 'MC_GET_ARCADE_CARS',
+        handler: _getArcadeCarInfo,
+    },
+    {
+        id: 363,
+        name: 'MC_GET_GAME_URLS',
+        handler: _getGameUrls,
+    },
+    {
+        id: 389,
+        name: 'MC_GET_MCO_TUNABLES',
+        handler: _getTunables,
+    },
+    {
+        id: 172,
+        name: 'MC_GET_OWNED_VEHICLES',
+        handler: _getOwnedVehicles,
+    },
+    {
+        id: 108,
+        name: 'MC_GET_PLAYER_INFO',
+        handler: _getPlayerInfo,
+    },
+    {
+        id: 264,
+        name: 'MC_GET_PLAYER_PHYSICAL',
+        handler: _getPlayerPhysical,
+    },
+    {
+        id: 174,
+        name: 'MC_GET_OWNED_PARTS',
+        handler: _getOwnedParts,
+    },
+    {
+        id: 361,
+        name: 'MC_GET_PLAYER_RACING_HISTORY',
+        handler: _getPlayerRaceHistory,
+    },
+    {
+        id: 142,
+        name: 'MC_PURCHASE_STOCK_CAR',
+        handler: _buyCarFromDealer,
+    },
+    {
+        id: 455,
+        name: 'MC_CRC_PRE_RACE_DATA',
+        handler: _crcPreRaceData,
+    },
+    {
+        id: 163,
+        name: 'MC_UPDATE_CACHED_VEHICLE',
+        handler: _updateCachedVehicle,
+    },
+    {
+        id: 218,
+        name: 'MC_RACE_JOIN',
+        handler: _joinRace,
+    },
+    {
+        id: 230,
+        name: 'MC_CREATE_STANDARD_RACE',
+        handler: _createStandardRace,
+    },
 ];
 /**
  * Return the string representation of the numeric opcode

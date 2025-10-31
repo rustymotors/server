@@ -298,7 +298,7 @@ export class ReadyForGame implements Serializable {
             this._commId.serialize(),
             this._userId.serialize(),
             this._isReady.serialize(),
-            this._isReady.serialize()
+            this._isMaster.serialize()
         ])
     }
 }

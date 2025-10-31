@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getServerLogger, ServerLogger } from "rusty-motors-shared";
-
+import { getServerLogger, MessageNode, ServerLogger } from "rusty-motors-shared";
+import * as Sentry from "@sentry/node"
 
 import {
 	McosEncryption,
@@ -102,20 +102,23 @@ export async function receiveTransactionsData({
 	log = getServerLogger("transactionServer.receiveTransactionsData"),
 }: {
 	connectionId: string;
-	message: BufferSerializer;
+	message: MessageNode;
 	log?: ServerLogger;
 }): Promise<{
 	connectionId: string;
-	messages: SerializedBufferOld[];
+	messages: MessageNode[];
 }> {
 
 	// Normalize the message
 
-	const inboundMessage = new ServerPacket();
-	inboundMessage.deserialize(message.serialize());
+	const inboundMessage = message;
 
 	log.debug(
-		`[${connectionId}] Received message: ${inboundMessage.toHexString()}`,
+		`Received message`, {
+            namespace: "receiveTransactionsData",
+            connectionId,
+            data: message
+        },
 	);
 
 	let decryptedMessage: ServerPacket;
@@ -133,7 +136,7 @@ export async function receiveTransactionsData({
 
 		// log the old buffer
 		log.debug(
-			`[${connectionId}] Inbound buffer: ${inboundMessage.data.toHexString()}`,
+			`[${connectionId}] Inbound buffer: ${inboundMessage.data.toString("hex")}`,
 		);
 
 		decryptedMessage = decryptMessage(
@@ -228,30 +231,36 @@ export async function receiveTransactionsData({
  */
 function decryptMessage(
 	encryptionSettings: McosEncryption,
-	inboundMessage: ServerPacket,
+	inboundMessage: MessageNode,
 	state: State,
 	connectionId: string,
 	log: ServerLogger = getServerLogger("transactionServer.decryptMessage"),
-): ServerPacket {
+): MessageNode {
 	try {
 		const decryptedMessage = encryptionSettings.dataEncryption.decrypt(
-			inboundMessage.data.serialize(),
+			inboundMessage.getBody().serialize(),
 		);
 		updateEncryption(state, encryptionSettings).save();
 
 		// Verify the length of the message
-		verifyLength(inboundMessage.data.serialize(), decryptedMessage);
+		verifyLength(inboundMessage.getBody().serialize(), decryptedMessage);
 
 		// Assuming the message was decrypted successfully, update the buffer
 		log.debug(
 			`[${connectionId}] Decrypted buffer: ${decryptedMessage.toString("hex")}`,
 		);
 
-		const outboundMessage = ServerPacket.copy(inboundMessage, decryptedMessage);
+		const outboundMessage = inboundMessage
+        outboundMessage.getBody().deserialize(decryptedMessage);
 		outboundMessage.setPayloadEncryption(false);
 
 		return outboundMessage;
 	} catch (error) {
+        log.error(`Unable to decrypt message: ${error}`, {
+            connectionId,
+            error
+        });
+        Sentry.captureException(error)
 		const err = Error(`[${connectionId}] Unable to decrypt message`, {
 			cause: error,
 		});

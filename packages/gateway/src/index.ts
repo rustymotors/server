@@ -15,20 +15,16 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Socket as TcpSocket } from 'node:net';
-import { createSocket, RemoteInfo, Socket, Socket as UdpSocket } from 'node:dgram';
+import { RemoteInfo, Socket as UdpSocket } from 'node:dgram';
 import { randomUUID } from 'node:crypto';
 import { tagSocket } from './socketUtility.js';
 import { getPortRouter } from './portRouters.js';
 import * as Sentry from '@sentry/node';
 import {
-    addSocketPair,
     getServerLogger,
-    MessageQueue,
-    messageQueueItem,
     ServerLogger,
     TaggedTcpSocket,
 } from 'rusty-motors-shared';
-import { processSocketData } from './npsPortRouter.js';
 import { socketErrorHandler } from './socketErrorHandler.js';
 
 /**
@@ -127,64 +123,4 @@ export function onUdpMessage({
 
     incomingSocket.send(Buffer.from([0x02, 0x07, 0x00, 0x04]), remotePort, remoteAddress)
     return
-
-    // Creating connected socket
-    // const connectedSocket = createSocket("udp4")
-    // connectedSocket.bind({
-    //     address: incomingSocket.address().address,
-    // });
-    // connectedSocket.on("message", (msg, rinfo) => {
-    //     log.warn({
-    //         msg: msg.toString("hex"),
-    //         remoteAddress: rinfo.address,
-    //         localPort
-    //     },
-    // "Received UDP Message on Connected Socket")
-    // })
-    // connectedSocket.on("connect", () => {
-    //     log.warn('Connected to client using UDP!');
-    // })
-    // connectedSocket.on("error", (err) => {
-    //     log.fatal({
-    //         error: JSON.stringify(err)
-    //     },
-    // "Error connecting UDP outbound!")
-    // })
-    // connectedSocket.connect(remotePort, remoteAddress)
-
-    let id = `${randomUUID()}`;
-    id = id.substring(0, id.indexOf('-'));
-    id = `${remoteAddress}:${remotePort}`;
-
-    const socketWithId = tagSocket(incomingSocket, Date.now(), id, localPort);
-
-    const udpReceiveQueue = new MessageQueue(
-        `${id}_in`,
-        10,
-        async (item: messageQueueItem) => {},
-    );
-    const udpSendQueue = new MessageQueue(
-        `${id}_out`,
-        10,
-        async (item: messageQueueItem) => {
-            log.debug({
-                data: item.data.toString("hex")
-            }, "Sending  UDP message")
-            incomingSocket.send(item.data, remotePort, remoteAddress, (err) => {
-                if (err) {
-                    log.fatal({error: JSON.stringify(err)}, "Error sending UDP message!")
-                }
-            });
-        },
-    );
-
-    addSocketPair(id, {
-        receive: udpReceiveQueue,
-        send: udpSendQueue,
-    });
-
-    /*
-     * At this point, we have a tagged socket with an ID.
-     */
-    processSocketData(message, log, id, localPort, socketWithId);
 }

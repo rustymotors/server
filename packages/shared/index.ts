@@ -250,15 +250,9 @@ class ServerLoggerImpl {
 
 let serverLogger: ServerLogger;
 
-export function getServerLogger(name?: string): ServerLogger {
-    if (typeof serverLogger !== 'undefined') {
-        return serverLogger;
-    }
-    const loggerName = name || 'core';
-
+export function getServerLogger(name: string): ServerLogger {
     // @ts-ignore
-    serverLogger = new ServerLoggerImpl(name);
-    return serverLogger;
+    return new ServerLoggerImpl(name);
 }
 
 export type ServerLogger = Logger;
