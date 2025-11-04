@@ -12,7 +12,8 @@ export function getServerLogger(name?: string): Logger {
         return wrapLogger(loggerInstance.child({name}));
     }
     const loggerName = name || 'core';
-    const logLevel: LogLevel = 'verbose';
+    const envLevel = (process.env.MCO_LOG_LEVEL || process.env.LOG_LEVEL) as LogLevel | undefined;
+    const logLevel: LogLevel = envLevel ?? 'verbose';
 
     const logger = winston.createLogger({
         defaultMeta: {
@@ -42,14 +43,14 @@ export function getServerLogger(name?: string): Logger {
 
     return wrapLogger(loggerInstance);
 }
-
 function wrapLogger(logger: winston.Logger): Logger {
     return {
         error: logger.error.bind(logger),
         info: logger.info.bind(logger),
-        warn: logger.info.bind(logger),
+        warn: logger.warn.bind(logger),
         verbose: logger.verbose.bind(logger),
-        debug: logger.verbose.bind(logger),
-        trace: logger.verbose.bind(logger),
+        debug: (logger as any).debug ? (logger as any).debug.bind(logger) : logger.verbose.bind(logger),
+        trace: (logger as any).silly ? (logger as any).silly.bind(logger) : logger.verbose.bind(logger),
     };
+}
 }
