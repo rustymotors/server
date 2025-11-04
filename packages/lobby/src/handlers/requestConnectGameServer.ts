@@ -94,7 +94,7 @@ export async function _npsRequestGameConnectServer({
 			// TODO: parse error and return approprate code
 			const responsePacket = new BytableMessage();
 			responsePacket.header.setMessageVersion(0);
-			responsePacket.header.setMessageId(0x22a); // invalid key
+			responsePacket.header.setId(0x22a); // invalid key
 
 			// log the packet
 			log.debug(
@@ -146,7 +146,7 @@ export async function _npsRequestGameConnectServer({
 
 	const responsePacket = new BytableMessage();
 	responsePacket.header.setMessageVersion(0);
-	responsePacket.header.setMessageId(0x120);
+	responsePacket.header.setId(0x120);
 
 	responsePacket.setSerializeOrder([
 		{ name: "userId", field: "Dword" },

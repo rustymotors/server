@@ -23,7 +23,7 @@ export async function handleOpenCommChannel({
     try {
         log.debug(`[${connectionId}] Handling NPS_OPEN_COMM_CHANNEL`);
         log.debug(
-            `[${connectionId}] Received command: ${message.header.messageId}`,
+            `[${connectionId}] Received command: ${message.header.id}`,
         );
 
         // l
@@ -127,7 +127,7 @@ export function createNPSChannelGrantedPacket(
         { name: 'port', field: 'Dword' },
     ]);
 
-    outgoingGameMessage.header.setMessageId(0x214);
+    outgoingGameMessage.header.setId(0x214);
     outgoingGameMessage.setVersion(0);
     outgoingGameMessage.setFieldValueByName('commId', commId);
     outgoingGameMessage.setFieldValueByName('port', commPort);

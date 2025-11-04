@@ -21,7 +21,7 @@ export async function handleGetReadyList({
 }> {
     log.debug('[${connectionId}] Handling NPS_GET_READY_LIST');
     log.debug(
-        `[${connectionId}] Received command: ${message.header.messageId}`,
+        `[${connectionId}] Received command: ${message.header.id}`,
     );
 
     // l

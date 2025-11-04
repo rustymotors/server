@@ -9,6 +9,7 @@ import {
     ChannelCreated,
 } from 'rusty-motors-shared';
 import {} from '@rustymotors/rooms';
+import { databaseManager } from 'rusty-motors-database';
 
 export async function handleSendGameServersList({
     connectionId,
@@ -26,20 +27,23 @@ export async function handleSendGameServersList({
         log.debug(`Handling NPS_SEND_GAME_SERVERS_LIST`, {
             connectionId,
         });
-        log.debug(`Received command: ${message.header.messageId}`, {
+        log.debug(`Received command: ${message.header.id}`, {
             connectionId,
         });
 
         // l
-        const incomingRequest = new BytableMessage();
-        incomingRequest.setSerializeOrder([{ name: 'commId', field: 'Dword' }]);
-        incomingRequest.deserialize(message.serialize());
-
-        const requestedCommId =
-            (incomingRequest.getFieldValueByName('commId') as number) ?? 0;
+        log.debug(`User requested sendGameServerList`,{
+            connectionId,
+        })
 
         // TODO: Actually have servers
         const responsePackets = []
+
+        const gameServers = databaseManager.getGameServers()
+
+        for (const server in gameServers) {
+
+        }
 
         const channelCreatedMessage = new RawMessage();
         channelCreatedMessage.id = 0x20e
@@ -50,6 +54,8 @@ export async function handleSendGameServersList({
         // channelCreatedBody.channelData = Buffer.alloc(256);
         channelCreatedBody.channelType = 3;
         channelCreatedBody.maxReadyPlayers = 8;
+
+
         channelCreatedMessage.data = channelCreatedBody.serialize();
         const channelCreatedBytable = new BytableMessage();
         channelCreatedBytable.setSerializeOrder([

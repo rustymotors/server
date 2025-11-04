@@ -69,7 +69,7 @@ export async function npsPortRouter({
         async (item: messageQueueItem) => {
             try {
                 log.debug(`Sending packet in queue`, {
-                    data: item.data,
+                    data: item.data.toString("hex"),
                 });
                 if ('write' in socket) {
                     socket.write(item.data);
@@ -363,7 +363,7 @@ async function routeInitialMessage(
     // Messages may be encrypted, this will be handled by the handler
 
     log.debug(
-        `Routing message for port ${port}: ${initialPacket.header.messageId}`,
+        `Routing message for port ${port}: ${initialPacket.header.id}`,
     );
 
     const packet = new GamePacket();

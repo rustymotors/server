@@ -18,7 +18,7 @@ export async function handleSendMiniRiffList({
 }> {
     log.debug('[${connectionId}] Handling NPS_SEND_MINI_RIFF_LIST');
     log.debug(
-        `[${connectionId}] Received command: ${message.header.messageId}`,
+        `[${connectionId}] Received command: ${message.header.id}`,
     );
 
     const outgoingGameMessage = new LegacyMessage();

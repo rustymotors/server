@@ -107,13 +107,13 @@ export async function receiveLobbyData({
     });
 
     const supportedHandler = messageHandlers.find((h) => {
-        return h.opCode === message.header.messageId;
+        return h.opCode === message.header.id;
     });
 
     if (typeof supportedHandler === 'undefined') {
         // We do not yet support this message code
         log.error(
-            `UNSUPPORTED_MESSAGECODE: ${message.header.messageId.toString(16)}`,
+            `UNSUPPORTED_MESSAGECODE: ${message.header.id.toString(16)}`,
         );
         return {
             connectionId,

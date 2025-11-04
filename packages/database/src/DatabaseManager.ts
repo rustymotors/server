@@ -1,4 +1,8 @@
-import type { ConnectionRecord, UserInfo } from 'rusty-motors-shared';
+import type {
+    ConnectionRecord,
+    UserInfo,
+    RunningServerInfo,
+} from 'rusty-motors-shared';
 import { Sequelize } from 'sequelize';
 
 // This is a fake database table that holds sessions of currently logged in users
@@ -6,7 +10,10 @@ const _sessions: ConnectionRecord[] = [];
 // This is a fake database table that holds user data
 const _users: Map<number, UserInfo> = new Map();
 // This is a fake database table to host the username on each connection
-const _connections: Map<string, number> = new Map()
+const _connections: Map<string, number> = new Map();
+
+// This is a fake database table to host the game servers
+const _gameServers: Map<number, RunningServerInfo> = new Map();
 
 /**
  * @module Database
@@ -17,6 +24,26 @@ const _connections: Map<string, number> = new Map()
 
 * @throws {Error} If unable to set or update
  */
+async function updateGameServer(
+    commId: number,
+    gameServer: RunningServerInfo,
+): Promise<void> {
+    try {
+        _gameServers.set(commId, gameServer);
+        return Promise.resolve();
+    } catch (error) {
+        throw Error(`Error updating user: ${String(error)}`);
+    }
+}
+
+async function getGameServers(): Promise<RunningServerInfo[]> {
+    const gameServersArr = [];
+    for (const server of _gameServers.values()) {
+        gameServersArr.push(server);
+    }
+    return Promise.resolve(gameServersArr);
+}
+
 async function updateUser(user: {
     userId: number;
     userInfo: UserInfo;
@@ -108,7 +135,10 @@ async function fetchSessionKeyByConnectionId(
 
 * @throws {Error} If unable to set or update
  */
-async function updateConnection(connectionId: string, userId: number): Promise<void> {
+async function updateConnection(
+    connectionId: string,
+    userId: number,
+): Promise<void> {
     try {
         _connections.set(connectionId, userId);
         return Promise.resolve();
@@ -117,11 +147,11 @@ async function updateConnection(connectionId: string, userId: number): Promise<v
     }
 }
 
-async function findUserByConnectionId(connectionId: string): Promise<number | undefined> {
+async function findUserByConnectionId(
+    connectionId: string,
+): Promise<number | undefined> {
     return Promise.resolve(_connections.get(connectionId));
 }
-
-
 
 let database: Sequelize;
 
@@ -140,6 +170,8 @@ export function getDatabase(): Sequelize {
 }
 
 export interface DatabaseManager {
+    updateGameServer: typeof updateGameServer;
+    getGameServers: typeof getGameServers;
     updateUser: typeof updateUser;
     getUser: typeof getUser;
     updateConnection: typeof updateConnection;
@@ -150,6 +182,8 @@ export interface DatabaseManager {
 }
 
 export const databaseManager: DatabaseManager = {
+    updateGameServer,
+    getGameServers,
     updateUser,
     getUser,
     updateConnection,

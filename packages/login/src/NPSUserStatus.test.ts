@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
-import { NPSUserStatus } from "./NPSUserStatus";
+import { NPSUserStatus } from "./NPSUserStatus.js";
 import { Configuration, ServerLogger } from "rusty-motors-shared";
 import { privateDecrypt } from "node:crypto";
 import { readFileSync } from "node:fs";

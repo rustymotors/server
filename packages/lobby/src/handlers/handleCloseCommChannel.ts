@@ -19,7 +19,7 @@ export async function handleCloseCommChannel({
     try {
         log.debug(`[${connectionId}] Handling NPS_CLOSE_COMM_CHANNEL`);
         log.debug(
-            `[${connectionId}] Received command: ${message.header.messageId}`,
+            `[${connectionId}] Received command: ${message.header.id}`,
         );
 
         // l
@@ -43,7 +43,7 @@ export async function handleCloseCommChannel({
             { name: 'port', field: 'Dword' },
         ]);
 
-        outgoingGameMessage.header.setMessageId(0x209);
+        outgoingGameMessage.header.setId(0x209);
         outgoingGameMessage.setVersion(0);
         outgoingGameMessage.setFieldValueByName('commId', requestedCommId);
         outgoingGameMessage.setFieldValueByName('port', 7003);

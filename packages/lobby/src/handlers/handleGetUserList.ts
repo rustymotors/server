@@ -21,7 +21,7 @@ export async function handleGetUserList({
     try {
         log.debug(`[${connectionId}] Handling NPS_GET_USER_LIST`);
         log.debug(
-            `[${connectionId}] Received command: ${message.header.messageId}`,
+            `[${connectionId}] Received command: ${message.header.id}`,
         );
 
         // l
@@ -46,7 +46,7 @@ export async function handleGetUserList({
             { name: 'usersList', field: 'Buffer' },
         ]);
 
-        outgoingGameMessage.header.setMessageId(0x211);
+        outgoingGameMessage.header.setId(0x211);
         outgoingGameMessage.setVersion(0);
         outgoingGameMessage.setFieldValueByName('commId', requestedCommId);
 

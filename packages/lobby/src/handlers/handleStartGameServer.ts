@@ -6,6 +6,7 @@ import {
     RunningServerInfo,
     ServerLogger,
 } from 'rusty-motors-shared';
+import { databaseManager } from 'rusty-motors-database';
 
 export async function handleStartGameServer({
     connectionId,
@@ -23,7 +24,7 @@ export async function handleStartGameServer({
     try {
         log.debug(`[${connectionId}] Handling ${SUPPORTED_MESSAGE}`);
         log.debug(
-            `[${connectionId}] Received command: ${message.header.messageId}`,
+            `[${connectionId}] Received command: ${message.header.id}`,
         );
 
         const startServerLaunchInfo = new GameServerLaunchInfo();
@@ -45,6 +46,9 @@ export async function handleStartGameServer({
         newServerInfo.port = 9000;
         newServerInfo.userId = 21;
         newServerInfo.numberOfPlayers = 1;
+
+        databaseManager.updateGameServer(commId, newServerInfo)
+
         const newServerInfoMessage = new RawMessage();
         newServerInfoMessage.id = 0x20d;
         newServerInfoMessage.data = newServerInfo.serialize();
