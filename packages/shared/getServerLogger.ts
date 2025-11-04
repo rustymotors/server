@@ -9,7 +9,10 @@ let loggerInstance: winston.Logger | undefined = undefined;
 
 export function getServerLogger(name?: string): Logger {
     if (typeof loggerInstance !== 'undefined') {
-        return wrapLogger(loggerInstance.child({name}));
+        if (name) {
+            return wrapLogger(loggerInstance.child({ defaultMeta: { name } }));
+        }
+        return wrapLogger(loggerInstance);
     }
     const loggerName = name || 'core';
     const envLevel = (process.env['MCO_LOG_LEVEL'] || process.env['LOG_LEVEL']) as LogLevel | undefined;
