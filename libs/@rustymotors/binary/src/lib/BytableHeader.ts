@@ -42,9 +42,14 @@ export class BytableHeader extends Bytable {
 		this.checksum_ = checksum;
 	}
 
-	get id() {
-		return this.messageId_;
-	}
+    get id() {
+        return this.messageId_;
+    }
+
+    /** @deprecated Use `id` instead. */
+    get messageId() {
+        return this.id;
+    }
 
 	get messageLength() {
 		return this.messageLength_;
