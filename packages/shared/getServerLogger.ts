@@ -12,7 +12,7 @@ export function getServerLogger(name?: string): Logger {
         return wrapLogger(loggerInstance.child({name}));
     }
     const loggerName = name || 'core';
-    const envLevel = (process.env.MCO_LOG_LEVEL || process.env.LOG_LEVEL) as LogLevel | undefined;
+    const envLevel = (process.env['MCO_LOG_LEVEL'] || process.env['LOG_LEVEL']) as LogLevel | undefined;
     const logLevel: LogLevel = envLevel ?? 'verbose';
 
     const logger = winston.createLogger({
@@ -52,5 +52,4 @@ function wrapLogger(logger: winston.Logger): Logger {
         debug: (logger as any).debug ? (logger as any).debug.bind(logger) : logger.verbose.bind(logger),
         trace: (logger as any).silly ? (logger as any).silly.bind(logger) : logger.verbose.bind(logger),
     };
-}
 }
