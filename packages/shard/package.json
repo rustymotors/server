@@ -26,5 +26,6 @@
 		"vitest": "^3.2.4"
 	},
 	"dependencies": {
+		"winston-daily-rotate-file": "^5.0.0"
 	}
 }

@@ -113,11 +113,11 @@ export async function receiveTransactionsData({
 
 	const inboundMessage = message;
 
-	log.debug(
+	log.verbose(
 		`Received message`, {
             namespace: "receiveTransactionsData",
             connectionId,
-            data: message
+            data: message.serialize().toString("hex")
         },
 	);
 
@@ -136,7 +136,7 @@ export async function receiveTransactionsData({
 
 		// log the old buffer
 		log.debug(
-			`[${connectionId}] Inbound buffer: ${inboundMessage.data.toString("hex")}`,
+			`[${connectionId}] Inbound buffer: ${inboundMessage.getBody().toString("hex")}`,
 		);
 
 		decryptedMessage = decryptMessage(

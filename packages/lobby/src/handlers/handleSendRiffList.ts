@@ -16,7 +16,7 @@ export async function handleSendRiffList({
 }> {
     log.debug('[${connectionId}] Handling NPS_SEND_RIFF_LIST');
     log.debug(
-        `[${connectionId}] Received command: ${message.header.messageId}`,
+        `[${connectionId}] Received command: ${message.header.id}`,
     );
 
     const outgoingGameMessage = new RiffInfoListMessage();

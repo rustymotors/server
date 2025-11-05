@@ -5,7 +5,7 @@
 import type { SerializedBufferOld } from "./SerializedBufferOld.js";
 import type { Socket as TcpSocket } from "node:net";
 import { Socket as UdpSocket } from "node:dgram";
-import pino from "pino";
+import {LeveledLogMethod} from "winston";
 
 export const name = "interfaces";
 
@@ -126,16 +126,27 @@ export type TaggedUdpSocket = {
 
 export type TaggedSocket = TaggedTcpSocket | TaggedUdpSocket; 
 
+// {
+//   error: 0,
+//   warn: 1,
+//   info: 2,
+//   http: 3,
+//   verbose: 4,
+//   debug: 5,
+//   silly: 6
+// }
+
 export interface Logger {
-	info: (msg: string, obj?: unknown) => void;
-	warn: (msg: string, obj?: unknown) => void;
-	error: (msg: string, obj?: unknown) => void;
-	fatal: (msg: string, obj?: unknown) => void;
-	debug: (msg: string, obj?: unknown) => void;
-	trace: (msg: string, obj?: unknown) => void;
-	child: (obj: pino.Bindings) => Logger;
+    error: LeveledLogMethod;
+    warn: LeveledLogMethod;
+    info: LeveledLogMethod;
+    verbose: LeveledLogMethod;
+    /** @deprecated Use verbose instead */
+    debug: LeveledLogMethod
+    /** @deprecated Use verbose instead */
+    trace: LeveledLogMethod
 }
-export type LogLevel = "fatal" | "error" | "warn" | "info" | "debug" | "trace";
+export type LogLevel = "error" | "warn" | "info" | "verbose";
 export interface KeypressEvent {
 	sequence: string;
 	name: string;

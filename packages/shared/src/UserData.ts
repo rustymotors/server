@@ -1,8 +1,8 @@
 import { Serializable, NPSMessage } from './types.js';
 import { RawMessageHeader } from './RawMessage.js';
 import {
-    align4,
     checkMinLength,
+    checkSize2,
     checkSize4,
     CString,
     Long,
@@ -338,7 +338,7 @@ export class UserInfo implements Serializable {
     }
 }
 
-export class SetMyUserDataMessage implements NPSMessage {
+export class UserInfoMessage implements NPSMessage {
     private _header: RawMessageHeader;
     private _userInfo: UserInfo;
 
@@ -352,6 +352,7 @@ export class SetMyUserDataMessage implements NPSMessage {
     }
 
     serialize() {
+        this._header.length = this.sizeOf
         return Buffer.from(
             Buffer.concat([
                 this._header.serialize(),
@@ -378,12 +379,25 @@ export class SetMyUserDataMessage implements NPSMessage {
         return this._header.id;
     }
 
+    setOpCode(val: number) {
+        checkSize2(val)
+        this._header.id = val
+    }
+
     get length() {
         return this._header.length;
     }
 
     get userInfo(): UserInfo {
         return this._userInfo;
+    }
+
+    setUserInfo(val: UserInfo) {
+        this._userInfo = val
+    }
+
+    get header() {
+        return this._header
     }
 }
 

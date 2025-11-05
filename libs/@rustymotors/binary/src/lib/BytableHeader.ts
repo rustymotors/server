@@ -11,7 +11,7 @@ export class BytableHeader extends Bytable {
 	override get json() {
 		return {
 			name: this.name,
-			id: this.messageId,
+			id: this.id,
 			len: this.messageLength,
 			version: this.messageVersion,
 			serializeSize: this.serializeSize,
@@ -19,10 +19,10 @@ export class BytableHeader extends Bytable {
 	}
 
 	override toString(): string {
-		return `Message ID: ${this.messageId}, Message Length: ${this.messageLength}, Message Version: ${this.messageVersion}`;
+		return `Message ID: ${this.id}, Message Length: ${this.messageLength}, Message Version: ${this.messageVersion}`;
 	}
 
-	setMessageId(messageId: number) {
+	setId(messageId: number) {
 		this.messageId_ = messageId;
 	}
 
@@ -42,9 +42,14 @@ export class BytableHeader extends Bytable {
 		this.checksum_ = checksum;
 	}
 
-	get messageId() {
-		return this.messageId_;
-	}
+    get id() {
+        return this.messageId_;
+    }
+
+    /** @deprecated Use `id` instead. */
+    get messageId() {
+        return this.id;
+    }
 
 	get messageLength() {
 		return this.messageLength_;
@@ -68,7 +73,7 @@ export class BytableHeader extends Bytable {
 
 	override serialize() {
 		const buffer = Buffer.alloc(this.serializeSize);
-		buffer.writeUInt16BE(this.messageId, 0);
+		buffer.writeUInt16BE(this.id, 0);
 		buffer.writeUInt16BE(this.messageLength, 2);
 		if (this.messageVersion !== 0) {
 			buffer.writeUInt16BE(257, 4);
@@ -82,7 +87,7 @@ export class BytableHeader extends Bytable {
 		if (buffer.byteLength === 0) {
 			throw new Error('Cannot deserialize empty buffer')
 		}
-		this.setMessageId(buffer.readUInt16BE(0));
+		this.setId(buffer.readUInt16BE(0));
 		this.setMessageLength(buffer.readUInt16BE(2));
 
 		// If the length is less than 12, there is no room for the message, so we assume version 0

@@ -1,5 +1,4 @@
 import pino from 'pino';
-import * as Sentry from '@sentry/node';
 import { MessageQueue } from './src/MessageQueue.js';
 export { SubThread } from './src/SubThread.js';
 export { NetworkMessage } from './src/NetworkMessage.js';
@@ -40,7 +39,7 @@ export { NPSHeader } from './src/NPSHeader.js';
 export {
     UserData,
     UserInfo,
-    SetMyUserDataMessage,
+    UserInfoMessage,
     UserJoinedChannelMessage,
 } from './src/UserData.js';
 export { RiffInfoListMessage, RiffInfo, ChannelCreated } from './src/Lobby.js';
@@ -74,6 +73,7 @@ export {
 } from './src/RaceInfo.js';
 export { SerializedList } from './src/SerializedList.js';
 export { OpenCommChannelRequest } from './src/OpenCommChannelRequest.js';
+export {getServerLogger, type ServerLogger} from "./getServerLogger.js"
 export * from './src/types.js';
 
 // Function to convert ARGB to 32-bit integer
@@ -128,134 +128,6 @@ export const cloth_brown = argbToInt(255, 117, 104, 68); //brown
 export const cloth_black = argbToInt(255, 68, 68, 68); //black
 export const cloth_grey = argbToInt(255, 146, 143, 137); //grey
 export const cloth_white = argbToInt(255, 255, 255, 255); //white
-
-export interface Logger {
-    info: (msg: string, obj?: object) => void;
-    warn: (msg: string, obj?: object) => void;
-    error: (msg: string, obj?: object) => void;
-    fatal: (msg: string, obj?: object) => void;
-    debug: (msg: string, obj?: object) => void;
-    trace: (msg: string, obj?: object) => void;
-    child: (obj: pino.Bindings) => Logger;
-}
-
-type LogLevel = 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace';
-
-let logger: pino.Logger;
-
-type extraInfo = {
-    data?: Buffer | string;
-};
-
-class ServerLoggerImpl {
-    constructor(name?: string) {
-        if (typeof logger !== 'undefined') {
-            return logger.child({ name });
-        }
-        const loggerName = name || 'core';
-        const validLogLevels = [
-            'fatal',
-            'error',
-            'warn',
-            'info',
-            'debug',
-            'trace',
-        ] as const;
-        const logLevel = process.env['MCO_LOG_LEVEL'] || 'debug';
-
-        if (!validLogLevels.includes(logLevel as LogLevel)) {
-            console.warn(
-                `Invalid log level: ${logLevel}. Defaulting to "debug"`,
-            );
-        }
-
-        logger = pino({
-            name: loggerName,
-            transport: {
-                targets: [
-                    {
-                        target: 'pino-pretty',
-                        options: {
-                            colorize: true,
-                            translateTime: 'SYS:standard',
-                        },
-                        level: logLevel,
-                    },
-                    {
-                        target: 'pino/file',
-                        options: {
-                            destination: `./logs/server.log`,
-                            mkdir: true,
-                            append: false,
-                        },
-                        level: logLevel,
-                    },
-                ],
-            },
-            level: logLevel,
-        });
-
-        const cleanData = (data: Buffer): string => {
-            return data.toString('hex');
-        };
-
-        const self = {
-            info: (msg: string, obj?: extraInfo) => {
-                if (
-                    typeof obj !== 'undefined' &&
-                    obj['data'] instanceof Buffer
-                ) {
-                    obj['data'] = cleanData(obj['data'] as Buffer);
-                }
-
-                logger.info({ msg, ...obj });
-            },
-            warn: (msg: string, obj?: object) => {
-                logger.warn({ msg, obj });
-            },
-            error: (msg: string, obj?: object) => {
-                if (obj instanceof Error) {
-                    Sentry.captureException(obj);
-                } else if (obj) {
-                    Sentry.captureException(new Error(msg), {
-                        extra: { context: obj },
-                    });
-                } else {
-                    Sentry.captureException(new Error(msg));
-                }
-                logger.error({ msg, obj });
-            },
-            fatal: (msg: string, obj?: object) => {
-                logger.fatal({ msg, obj });
-            },
-            debug: (msg: string, obj?: extraInfo) => {
-                if (
-                    typeof obj !== 'undefined' &&
-                    obj['data'] instanceof Buffer
-                ) {
-                    obj['data'] = cleanData(obj['data'] as Buffer);
-                }
-
-                logger.debug({ msg, ...obj });
-            },
-            trace: (msg: string, obj?: object) => {
-                logger.trace({ msg, obj });
-            },
-            child: (obj: pino.Bindings) => logger.child(obj),
-        };
-        serverLogger = self;
-        return self;
-    }
-}
-
-let serverLogger: ServerLogger;
-
-export function getServerLogger(name: string): ServerLogger {
-    // @ts-ignore
-    return new ServerLoggerImpl(name);
-}
-
-export type ServerLogger = Logger;
 
 export type SocketQueuePair = {
     send: MessageQueue;

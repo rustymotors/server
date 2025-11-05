@@ -168,7 +168,7 @@ export class MessageNode implements MCOTSMessage {
     }
 
     toString() {
-        return `${JSON.stringify(this)}`;
+        return `MessageNode: ${JSON.stringify(this)}`;
     }
 
     // TODO: change usage of these
@@ -180,6 +180,7 @@ export class MessageNode implements MCOTSMessage {
      */
     get header() {
         return {
+            mcoSig: this.signature,
             length: this.length,
         };
     }

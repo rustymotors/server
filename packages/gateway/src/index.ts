@@ -49,7 +49,7 @@ export function onSocketConnection({
     if (localPort === undefined || remoteAddress === undefined) {
         log.error('localPort or remoteAddress is undefined. Closing socket.');
         if (!incomingSocket.destroyed) {
-            incomingSocket.destroy();
+            incomingSocket.end();
         }
         return;
     }

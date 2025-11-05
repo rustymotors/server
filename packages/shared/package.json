@@ -17,16 +17,19 @@
 		"lint": "npx @biomejs/biome lint --write .",
 		"format": "npx @biomejs/biome format --write .",
 		"test": "vitest run --coverage",
-        "build": "tsc"
+		"build": "tsc"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "AGPL-3.0",
 	"dependencies": {
+		"bunyan": "^1.8.15",
 		"fastify": "^5.4.0",
 		"pino": "^9.7.0",
 		"pino-pretty": "^13.0.0",
-		"rusty-motors-shared-packets": ""
+		"rusty-motors-shared-packets": "",
+		"winston": "^3.18.3",
+		"winston-daily-rotate-file": "^5.0.0"
 	},
 	"directories": {
 		"test": "test"

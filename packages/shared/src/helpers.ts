@@ -366,4 +366,50 @@ export function checkMinLength(buf: Buffer, minSize: number) {
         throw new Error(`Not enough bytes. Need ${minSize}, got ${buf.byteLength}`)
     }
 }
+export function diffObj(before: any, after: any) {
+    if (before === after) return { isDataDiff: false, diffs: [] };
+    if (!before || !after) {
+        const diffs = !before
+            ? Object.keys(after).map((key) => ({
+                name: key,
+                before: undefined,
+                after: after[key],
+            }))
+            : Object.keys(before).map((key) => ({
+                name: key,
+                before: before[key],
+                after: undefined,
+            }));
+        return { isDataDiff: true, diffs };
+    }
+
+    const diffs = [];
+    const allKeys = new Set([
+        ...Object.keys(before),
+        ...Object.keys(after),
+    ]);
+
+    for (const key of allKeys) {
+        const beforeVal = before[key];
+        const afterVal = after[key];
+
+        if (typeof beforeVal === 'object' &&
+            typeof afterVal === 'object' &&
+            beforeVal &&
+            afterVal) {
+            // Deep compare objects
+            if (JSON.stringify(beforeVal) !== JSON.stringify(afterVal)) {
+                diffs.push({
+                    name: key,
+                    before: beforeVal,
+                    after: afterVal,
+                });
+            }
+        } else if (beforeVal !== afterVal) {
+            diffs.push({ name: key, before: beforeVal, after: afterVal });
+        }
+    }
+
+    return { isDataDiff: diffs.length > 0, diffs };
+}
 

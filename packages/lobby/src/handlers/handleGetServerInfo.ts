@@ -17,7 +17,7 @@ export async function handleGetServerInfo({
     try {
         log.debug(`[${connectionId}] Handling NPS_GET_SERVER_INFO`);
         log.debug(
-            `[${connectionId}] Received command: ${message.header.messageId}`,
+            `[${connectionId}] Received command: ${message.header.id}`,
         );
 
         // l
@@ -66,7 +66,7 @@ export async function handleGetServerInfo({
             { name: 'playerCount', field: 'Dword' },
         ]);
 
-        outgoingGameMessage.header.setMessageId(525);
+        outgoingGameMessage.header.setId(525);
         outgoingGameMessage.setVersion(0);
         outgoingGameMessage.setFieldValueByName('riffName', commName);
         outgoingGameMessage.setFieldValueByName('commId', requestedCommId);

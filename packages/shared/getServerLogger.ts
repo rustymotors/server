@@ -1,65 +1,58 @@
-import * as Sentry from "@sentry/node";
-import pino from "pino";
-import { LogLevel } from "./src/types.js";
-import { Logger } from "./src/types.js";
+import { LogLevel } from './src/types.js';
+import { Logger } from './src/types.js';
+import * as winston from 'winston';
+import DailyRotateFile from "winston-daily-rotate-file"
 
-export let logger: pino.Logger;
+export type ServerLogger = Logger;
 
+let loggerInstance: winston.Logger | undefined = undefined;
 
 export function getServerLogger(name?: string): Logger {
-	if (logger) {
-		return logger.child({ name });
-	}
-	const loggerName = name || "core";
-	const validLogLevels = ['fatal', 'error', 'warn', 'info', 'debug', 'trace'] as const;
-	const logLevel = process.env["MCO_LOG_LEVEL"] || "debug";
+    if (typeof loggerInstance !== 'undefined') {
+        if (name) {
+            return wrapLogger(loggerInstance.child({ defaultMeta: { name } }));
+        }
+        return wrapLogger(loggerInstance);
+    }
+    const loggerName = name || 'core';
+    const envLevel = (process.env['MCO_LOG_LEVEL'] || process.env['LOG_LEVEL']) as LogLevel | undefined;
+    const logLevel: LogLevel = envLevel ?? 'verbose';
 
-	if (!validLogLevels.includes(logLevel as LogLevel)) {
-		console.warn(`Invalid log level: ${logLevel}. Defaulting to "debug"`);
-	}
+    const logger = winston.createLogger({
+        defaultMeta: {
+            name: loggerName,
+        },
+        level: logLevel,
+        transports: [
+            new winston.transports.Console({
+                level: logLevel,
+                format: winston.format.combine(
+                    winston.format.colorize(),
+                    winston.format.simple(),
+                ),
+            }),
+            new DailyRotateFile({
+                level: logLevel,
+                filename: 'data/application-%DATE%.log',
+                datePattern: 'YYYY-MM-DD-HH',
+                zippedArchive: true,
+                maxSize: '20m',
+                maxFiles: '14d',
+            }),
+        ],
+    });
 
-	logger = pino({
-		name: loggerName,
-		transport: {
-			targets: [
-				{
-					target: "pino-pretty",
-					options: {
-						colorize: true,
-						translateTime: "SYS:standard",
-					},
-					level: logLevel,
-				},
-				{
-					target: "pino/file",
-					options: {
-						destination: `./logs/server.log`,
-						mkdir: true,
-						append: false
-					},
-					level: logLevel,
-				}
-			],
-		},
-		level: logLevel,
-	});
+    loggerInstance = logger;
 
-	return {
-		info: logger.info.bind(logger),
-		warn: logger.warn.bind(logger),
-		error: (msg: string, obj?: unknown) => {
-			if (obj instanceof Error) {
-				Sentry.captureException(obj);
-			} else if (obj) {
-				Sentry.captureException(new Error(msg), { extra: { context: obj } });
-			} else {
-				Sentry.captureException(new Error(msg));
-			}
-			logger.error({ msg, obj });
-		},
-		fatal: logger.fatal.bind(logger),
-		debug: logger.debug.bind(logger),
-		trace: logger.trace.bind(logger),
-		child: (obj: pino.Bindings) => logger.child(obj),
-	};
+    return wrapLogger(loggerInstance);
+}
+function wrapLogger(logger: winston.Logger): Logger {
+    return {
+        error: logger.error.bind(logger),
+        info: logger.info.bind(logger),
+        warn: logger.warn.bind(logger),
+        verbose: logger.verbose.bind(logger),
+        debug: (logger as any).debug ? (logger as any).debug.bind(logger) : logger.verbose.bind(logger),
+        trace: (logger as any).silly ? (logger as any).silly.bind(logger) : logger.verbose.bind(logger),
+    };
 }

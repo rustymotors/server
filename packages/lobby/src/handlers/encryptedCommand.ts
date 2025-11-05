@@ -81,7 +81,7 @@ export function encryptCmd({
     updateEncryption(state, encryption).save();
 
     const encryptedMessage = createRawMessage();
-    encryptedMessage.header.setMessageId(0x1101);
+    encryptedMessage.header.setId(0x1101);
     encryptedMessage.setBody(result);
 
     return {
@@ -158,7 +158,7 @@ async function handleCommand({
     connectionId: string;
     messages: BytableMessage[];
 }> {
-    const command = message.header.messageId;
+    const command = message.header.id;
 
     // What is the command?
     log.debug(`Received Command: ${command.toString(16)}`, {
@@ -215,7 +215,7 @@ export async function handleEncryptedNPSCommand({
     connectionId: string;
     messages: SerializedBufferOld[];
 }> {
-    log.debug(`Received encrypted command: ${message.header.messageId}`, {
+    log.debug(`Received encrypted command: ${message.header.id}`, {
         connectionId,
     });
 
@@ -226,7 +226,7 @@ export async function handleEncryptedNPSCommand({
     });
 
     log.debug(
-        `Deciphered command: ${decipheredMessage.message.header.messageId}`,
+        `Deciphered command: ${decipheredMessage.message.header.id}`,
         { connectionId },
     );
 
@@ -245,13 +245,13 @@ export async function handleEncryptedNPSCommand({
 
     const encryptedMessages = responses.messages.map((message) => {
         try {
-            const oldMsgId = message.header.messageId;
+            const oldMsgId = message.header.id;
 
-            log.debug("Message prior to encryption", {
+            log.debug('Message prior to encryption', {
                 connectionId,
                 oldMsgId,
-                data: message.serialize().toString("hex")
-            })
+                data: message.serialize().toString('hex'),
+            });
 
             // Encipher
             const result = encryptCmd({
@@ -260,7 +260,7 @@ export async function handleEncryptedNPSCommand({
             });
 
             const encryptedResponse = result.message;
-            const newMsgId = encryptedResponse.header.messageId;
+            const newMsgId = encryptedResponse.header.id;
 
             log.debug('Message encrypted', {
                 oldMsgId,
@@ -272,6 +272,10 @@ export async function handleEncryptedNPSCommand({
             outPacket.deserialize(encryptedResponse.serialize());
             return outPacket;
         } catch (error) {
+            log.error('Error encrypting response', {
+                connectionId,
+                error: JSON.stringify(error),
+            });
             const err = new Error(`Error encrypting response`);
             err.cause = error;
             throw err;

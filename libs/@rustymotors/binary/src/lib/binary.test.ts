@@ -14,7 +14,7 @@ describe("Binary Message Parsing", () => {
 			const header = new BytableHeader()
 			header.deserialize(testBuffer);
 
-			expect(header.messageId).toBe(0x0501);
+			expect(header.id).toBe(0x0501);
 			expect(header.messageLength).toBe(0x013e);
 			expect(header.messageVersion).toBe(1);
 			expect(header.serializeSize).toBe(12); // Version 1 header size
@@ -37,7 +37,7 @@ describe("Binary Message Parsing", () => {
 		});
 
 		it("should correctly parse the full message", () => {
-			expect(message.header.messageId).toBe(0x0501);
+			expect(message.header.id).toBe(0x0501);
 			expect(message.header.messageVersion).toBe(1);
 		});
 

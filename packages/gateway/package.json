@@ -23,7 +23,8 @@
 		"@rustymotors/binary": "",
 		"fastify": "^5.4.0",
 		"rusty-motors-chat": "^1.0.0-next.0",
-		"rusty-motors-shared": ""
+		"rusty-motors-shared": "",
+		"winston-daily-rotate-file": "^5.0.0"
 	},
 	"directories": {
 		"test": "test"

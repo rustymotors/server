@@ -19,7 +19,8 @@
 	"author": "",
 	"license": "AGPL-3.0",
 	"dependencies": {
-		"@rustymotors/binary": ""
+		"@rustymotors/binary": "",
+		"winston-daily-rotate-file": "^5.0.0"
 	},
 	"directories": {
 		"test": "test"

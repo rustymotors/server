@@ -28,11 +28,11 @@ function main() {
     try {
         verifyLegacyCipherSupport();
         if (!databaseService.isDatabaseConnected) {
-            coreLogger.fatal('Database connection failed. Exiting.');
+            coreLogger.error('Database connection failed. Exiting.');
             process.exit(1);
         }
     } catch (err) {
-        coreLogger.fatal(`Error in core server: ${String(err)}`);
+        coreLogger.error(`Error in core server: ${String(err)}`);
         process.exitCode = 1;
         return;
     }
@@ -49,11 +49,6 @@ function main() {
             `Pre-flight checks passed. Starting server with config: ${JSON.stringify(sanitizedConfig)}`,
         );
 
-        const appLog = coreLogger.child({
-            name: 'app',
-            level: config.logLevel,
-        });
-
         const tcpListeningPortList = [
             6660, 7003, 8228, 8226, 8227, 9000, 9001, 9002, 9003, 9004, 9005,
             9006, 9007, 9008, 9009, 9010, 9011, 9012, 9013, 9014, 9015, 9016,
@@ -68,7 +63,6 @@ function main() {
 
         const gatewayServer = new Gateway({
             config,
-            log: appLog,
             tcpListeningPortList,
             udpListeningPortList,
         });
@@ -77,7 +71,7 @@ function main() {
         gatewayServer.start();
     } catch (err) {
         Sentry.captureException(err);
-        coreLogger.fatal(`Error in core server: ${String(err)}`);
+        coreLogger.error(`Error in core server: ${String(err)}`);
         process.exitCode = 1;
         return;
     }

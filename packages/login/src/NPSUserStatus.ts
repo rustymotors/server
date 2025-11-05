@@ -104,8 +104,8 @@ export class NPSUserStatus extends LegacyMessage {
 			this.sessionKey = parsedSessionKey.sessionKey; // length of session key should be 12 bytes
 		} catch (error: unknown) {
 			this.log.trace(`Session key: ${sessionkeyString.toString("utf8")}`); // 128 bytes
-			this.log.trace(`decrypted: ${this.sessionKey}`); // 12 bytes
-			this.log.fatal(`Error decrypting session key: ${(error as Error).message}`);
+			this.log.verbose(`decrypted: ${this.sessionKey}`); // 12 bytes
+			this.log.error(`Error decrypting session key: ${(error as Error).message}`);
 			const err = new Error(`Error decrypting session key: ${(error as Error).message}`);
 			err.cause = error;
 			throw err;
