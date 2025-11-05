@@ -67,7 +67,7 @@ function main() {
             udpListeningPortList,
         });
 
-        Sentry.logger.info('Starting server');
+        coreLogger.info('Starting server');
         gatewayServer.start();
     } catch (err) {
         Sentry.captureException(err);

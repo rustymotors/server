@@ -1,4 +1,3 @@
-import pino from 'pino';
 import { MessageQueue } from './src/MessageQueue.js';
 export { SubThread } from './src/SubThread.js';
 export { NetworkMessage } from './src/NetworkMessage.js';
@@ -62,6 +61,7 @@ export {
     NPS_LOGICAL,
     Short,
     Long,
+    diffObj,
 } from './src/helpers.js';
 export { CreateRaceInfo, CreateRaceMessage } from './src/CreateRaceMessage.js';
 export {

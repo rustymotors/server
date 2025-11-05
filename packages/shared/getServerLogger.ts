@@ -10,15 +10,15 @@ let loggerInstance: winston.Logger | undefined = undefined;
 export function getServerLogger(name?: string): Logger {
     if (typeof loggerInstance !== 'undefined') {
         if (name) {
-            return wrapLogger(loggerInstance.child({ defaultMeta: { name } }));
+            return wrapLogger(loggerInstance.child({ defaultMeta: { name }}));
         }
-        return wrapLogger(loggerInstance);
+        return wrapLogger(loggerInstance.child({ defaultMeta: { name } }));
     }
     const loggerName = name || 'core';
-    const envLevel = (process.env['MCO_LOG_LEVEL'] || process.env['LOG_LEVEL']) as LogLevel | undefined;
+    const envLevel = (process.env['MCO_LOG_LEVEL'] || process.env['LOG_LEVEL']) as LogLevel;
     const logLevel: LogLevel = envLevel ?? 'verbose';
 
-    const logger = winston.createLogger({
+    let logger = winston.createLogger({
         defaultMeta: {
             name: loggerName,
         },
@@ -52,7 +52,7 @@ function wrapLogger(logger: winston.Logger): Logger {
         info: logger.info.bind(logger),
         warn: logger.warn.bind(logger),
         verbose: logger.verbose.bind(logger),
-        debug: (logger as any).debug ? (logger as any).debug.bind(logger) : logger.verbose.bind(logger),
-        trace: (logger as any).silly ? (logger as any).silly.bind(logger) : logger.verbose.bind(logger),
+        debug: (logger as any).debug ? (logger as any).verbose.bind(logger) : logger.verbose.bind(logger),
+        trace: (logger as any).silly ? (logger as any).verbose.bind(logger) : logger.verbose.bind(logger),
     };
 }

@@ -191,5 +191,8 @@ export function findCustomerByContext(
 	return user;
 }
 
+// Hack to create initial logger
+getServerLogger()
+
 // Exported Database Service Instance
 export const databaseService: DatabaseService = initializeDatabaseService();

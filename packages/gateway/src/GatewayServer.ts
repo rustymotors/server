@@ -17,7 +17,7 @@ import { HotkeyManager } from "./HotkeyManager.js";
  */
 export class Gateway {
     config: Configuration;
-    log: ServerLogger;
+    log = getServerLogger("Gateway")
     timer: NodeJS.Timeout | null;
     loopInterval: number;
     status: string;

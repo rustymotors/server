@@ -1,68 +1,90 @@
-import { databaseManager } from "rusty-motors-database";
-import { ServerLogger, getServerLogger, UserInfoMessage} from "rusty-motors-shared";
-import { BytableMessage } from "@rustymotors/binary";
-
+import { databaseManager } from 'rusty-motors-database';
+import {
+    ServerLogger,
+    getServerLogger,
+    UserInfoMessage,
+    diffObj,
+} from 'rusty-motors-shared';
+import { BytableMessage } from '@rustymotors/binary';
 
 export async function _setMyUserData({
-	connectionId,
-	message,
-	log = getServerLogger("lobby._setMyUserData"),
+    connectionId,
+    message,
+    log = getServerLogger('lobby._setMyUserData'),
 }: {
-	connectionId: string;
-	message: BytableMessage;
-	log?: ServerLogger;
+    connectionId: string;
+    message: BytableMessage;
+    log?: ServerLogger;
 }) {
-	try {
-		log.debug(`Handling NPS_SET_MY_USER_DATA`, {
-            connectionId
-        });
-		log.debug(`Received command: ${message.header.id}`, {
-            connectionId
-        });
-
-		const incomingMessage = new UserInfoMessage();
-		incomingMessage.deserialize(message.serialize());
-
-        const userId = incomingMessage.userInfo.userId
-
-		log.debug(`User ID: ${userId}`, {
+    try {
+        log.debug(`Handling NPS_SET_MY_USER_DATA`, {
             connectionId,
-            userId
         });
-		log.debug(`UserData: ${JSON.stringify(incomingMessage.userInfo.userData)}`, {
-            connectionId
-        })
+        log.debug(`Received command: ${message.header.id}`, {
+            connectionId,
+        });
 
-		// Update the user's data
-		await databaseManager.updateUser({
-			userId: incomingMessage.userInfo.userId,
-			userInfo: incomingMessage.userInfo,
-		});
+        const incomingMessage = new UserInfoMessage();
+        incomingMessage.deserialize(message.serialize());
 
-        const userInfo = await databaseManager.getUser(userId)
+        const userId = incomingMessage.userInfo.userId;
 
-        if (typeof userInfo === "undefined") {
-            throw new Error(`Unable to locate user info for user ${userId}`)
+        log.debug(`User ID: ${userId}`, {
+            connectionId,
+            userId,
+        });
+        log.debug(
+            `UserData: ${JSON.stringify(incomingMessage.userInfo.userData)}`,
+            {
+                connectionId,
+            },
+        );
+
+        const { isDataDiff, diffs } = diffObj(
+            incomingMessage.userInfo,
+            (await databaseManager.getUser(userId)),
+        );
+
+        if (isDataDiff) {
+            log.warn('Changes in UserInfo', {
+                connectionId,
+                userId,
+                diffs,
+            });
         }
 
-		// Build the packet
-		const outboundMessage = new UserInfoMessage()
-        outboundMessage.setUserInfo(userInfo)
-        
-        outboundMessage.setOpCode(0x204)
+        // Update the user's data
+        await databaseManager.updateUser({
+            userId: incomingMessage.userInfo.userId,
+            userInfo: incomingMessage.userInfo,
+        });
+
+        const userInfo = await databaseManager.getUser(userId);
+
+        if (typeof userInfo === 'undefined') {
+            throw new Error(`Unable to locate user info for user ${userId}`);
+        }
+
+        // Build the packet
+        const outboundMessage = new UserInfoMessage();
+        outboundMessage.setUserInfo(userInfo);
+
+        outboundMessage.setOpCode(0x204);
 
         log.debug('Sending UserInfo', {
             connectionId,
-            data: message.serialize().toString("hex")
-        })
+            data: message.serialize().toString('hex'),
+        });
 
-		return {
-			connectionId,
-			messages: [outboundMessage],
-		};
-	} catch (error) {
-		const err = Error(`[${connectionId}] Error handling NPS_SET_MY_USER_DATA: ${String(error)}`);
-		err.cause = error;
-		throw err;
-	}
+        return {
+            connectionId,
+            messages: [outboundMessage],
+        };
+    } catch (error) {
+        const err = Error(
+            `[${connectionId}] Error handling NPS_SET_MY_USER_DATA: ${String(error)}`,
+        );
+        err.cause = error;
+        throw err;
+    }
 }
