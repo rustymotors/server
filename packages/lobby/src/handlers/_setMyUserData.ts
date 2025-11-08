@@ -41,8 +41,8 @@ export async function _setMyUserData({
         );
 
         const { isDataDiff, diffs } = diffObj(
-            incomingMessage.userInfo,
             (await databaseManager.getUser(userId)),
+            incomingMessage.userInfo,
         );
 
         if (isDataDiff) {

@@ -398,12 +398,11 @@ export function diffObj(before: any, after: any) {
             beforeVal &&
             afterVal) {
             // Deep compare objects
-            if (JSON.stringify(beforeVal) !== JSON.stringify(afterVal)) {
-                diffs.push({
-                    name: key,
-                    before: beforeVal,
-                    after: afterVal,
-                });
+            const { diffs: deepDiffs } = diffObj(beforeVal, afterVal)
+            if (deepDiffs.length > 0) {
+                deepDiffs.forEach(diff => {
+                    diffs.push({ name: diff.name, before: diff.before, after: diff.after})
+                })
             }
         } else if (beforeVal !== afterVal) {
             diffs.push({ name: key, before: beforeVal, after: afterVal });

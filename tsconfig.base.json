@@ -39,52 +39,55 @@
     "files": [],
     "references": [
         {
-            "path": "packages/cli/tsconfig.json"
+            "path": "packages/cli"
         },
         {
-            "path": "packages/core/tsconfig.json"
+            "path": "packages/database"
         },
         {
-            "path": "packages/database/tsconfig.json"
+            "path": "packages/gateway"
         },
         {
-            "path": "packages/gateway/tsconfig.json"
+            "path": "packages/lobby"
         },
         {
-            "path": "packages/interfaces/tsconfig.json"
+            "path": "packages/login"
         },
         {
-            "path": "packages/lobby/tsconfig.json"
+            "path": "packages/nps"
         },
         {
-            "path": "packages/login/tsconfig.json"
+            "path": "packages/persona"
         },
         {
-            "path": "packages/mcots/tsconfig.json"
+            "path": "packages/shard"
         },
         {
-            "path": "packages/nps/tsconfig.json"
+            "path": "packages/shared"
         },
         {
-            "path": "packages/patch/tsconfig.json"
+            "path": "packages/shared-packets"
         },
         {
-            "path": "packages/persona/tsconfig.json"
+            "path": "packages/transactions"
         },
         {
-            "path": "packages/shard/tsconfig.json"
+            "path": "libs/@rustymotors/binary"
         },
         {
-            "path": "packages/shared/tsconfig.json"
+            "path": "libs/@rustymotors/network"
         },
         {
-            "path": "packages/shared-packets/tsconfig.json"
+            "path": "libs/@rustymotors/parser"
         },
         {
-            "path": "packages/transactions/tsconfig.json"
+            "path": "libs/@rustymotors/protocol"
         },
         {
-            "path": "libs/@rustymotors/binary/tsconfig.json"
+            "path": "libs/@rustymotors/rooms"
+        },
+        {
+            "path": "src/chat"
         }
     ]
 }
