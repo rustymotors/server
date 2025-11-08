@@ -15,7 +15,6 @@ setBit,
 clearBit,
 getBit,
 setByte,
-checkSize1,
 checkSize2,
 checkSize4,
 doesBufferFit,
@@ -244,9 +243,9 @@ describe("diffObj", () => {
         const r = diffObj(before, after);
         expect(r.isDataDiff).toBe(true);
         expect(r.diffs.length).toBe(1);
-        expect(r.diffs[0].name).toBe("x");
-        expect(r.diffs[0].before).toBe(1);
-        expect(r.diffs[0].after).toBe(2);
+        expect(r.diffs[0]!.name).toBe("x");
+        expect(r.diffs[0]!.before).toBe(1);
+        expect(r.diffs[0]!.after).toBe(2);
     });
 });
 });

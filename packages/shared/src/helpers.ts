@@ -1,4 +1,4 @@
-import { Serializable } from "./types.js";
+import { Serializable } from './types.js';
 
 export class Short implements Serializable {
     private _value = 0;
@@ -27,7 +27,6 @@ export class Short implements Serializable {
     }
 }
 
-
 export class Long implements Serializable {
     private _value = 0;
 
@@ -43,7 +42,7 @@ export class Long implements Serializable {
 
     deserialize(buf: Buffer) {
         const v = buf.readInt32BE();
-        this._value = v
+        this._value = v;
     }
 
     get value() {
@@ -54,7 +53,6 @@ export class Long implements Serializable {
         this._value = val;
     }
 }
-
 
 export class NPS_LOGICAL implements Serializable {
     private _value = false;
@@ -92,112 +90,113 @@ export class NPS_LOGICAL implements Serializable {
 }
 
 export class Bool implements Serializable {
-	private _value = false
-	
-	get sizeOf() {
-		return 1
-	}
-
-	serialize() {
-		const b = Buffer.alloc(1)
-		if (this._value === true) {
-			b.writeInt8(1)
-		} else {
-			b.writeInt8(0)
-		}
-		return b
-	};
-
-	deserialize(buf: Buffer) {
-		const v = buf.readInt8()
-		if (v === 1) {
-			this._value = true
-		} else {
-			this._value = false
-		}
-	};
-
-	get value() {
-		return this._value
-	}
-
-	set value(val: boolean) {
-		this._value = val
-	}
-}
-
-export class CString implements Serializable {
-	private _string: Buffer;
-	private _maxLen: number;
-
-	constructor(maxLen: number) {
-		this._maxLen = maxLen;
-		this._string = Buffer.alloc(0);
-	}
-
-	get sizeOf() {
-		return 4 + this._string.byteLength + 1;
-	}
-
-	serialize() {
-		const len = this._string.byteLength + 1;
-		const lenBuf = Buffer.alloc(4);
-		lenBuf.writeInt32BE(len);
-		return Buffer.from(Buffer.concat([
-			lenBuf,
-			this._string,
-			Buffer.from("\0")
-		]));
-	}
-
-	deserialize(buf: Buffer) {
-		if (buf.byteLength < 4) {
-			throw new Error(`need at least 4 bytes for length. got ${buf.byteLength}`);
-		}
-		const strEndOffset = buf.readInt32BE() + 4;
-		this._string = Buffer.from(buf.subarray(4, strEndOffset - 1));
-
-	}
-
-	toString() {
-		return this._string.toString("utf8");
-	}
-
-	get length() {
-		return this._string.byteLength + 1;
-	}
-
-	set(val: string) {
-		if (val.length > this._maxLen - 1) {
-			throw new Error(`string can only be ${this._maxLen - 1} bytes long, got ${val.length}`);
-		}
-		this._string = Buffer.alloc(val.length)
-		this._string.write(val);
-	}
-}
-
-export class CBlock implements Serializable {
-    private _data: Buffer
-    private _size: number
-
-    constructor(size: number) {
-        this._data = Buffer.alloc(size)
-        this._size = size
-    }
+    private _value = false;
 
     get sizeOf() {
-        return this._size
+        return 1;
+    }
+
+    serialize() {
+        const b = Buffer.alloc(1);
+        if (this._value === true) {
+            b.writeInt8(1);
+        } else {
+            b.writeInt8(0);
+        }
+        return b;
     }
 
     deserialize(buf: Buffer) {
-        doesBufferFit(buf, this._size)
-        buf.copy(this._data, 0, 0, this._size)
+        const v = buf.readInt8();
+        if (v === 1) {
+            this._value = true;
+        } else {
+            this._value = false;
+        }
+    }
+
+    get value() {
+        return this._value;
+    }
+
+    set value(val: boolean) {
+        this._value = val;
+    }
+}
+
+export class CString implements Serializable {
+    private _string: Buffer;
+    private _maxLen: number;
+
+    constructor(maxLen: number) {
+        this._maxLen = maxLen;
+        this._string = Buffer.alloc(0);
+    }
+
+    get sizeOf() {
+        return 4 + this._string.byteLength + 1;
+    }
+
+    serialize() {
+        const len = this._string.byteLength + 1;
+        const lenBuf = Buffer.alloc(4);
+        lenBuf.writeInt32BE(len);
+        return Buffer.from(
+            Buffer.concat([lenBuf, this._string, Buffer.from('\0')]),
+        );
+    }
+
+    deserialize(buf: Buffer) {
+        if (buf.byteLength < 4) {
+            throw new Error(
+                `need at least 4 bytes for length. got ${buf.byteLength}`,
+            );
+        }
+        const strEndOffset = buf.readInt32BE() + 4;
+        this._string = Buffer.from(buf.subarray(4, strEndOffset - 1));
+    }
+
+    toString() {
+        return this._string.toString('utf8');
+    }
+
+    get length() {
+        return this._string.byteLength + 1;
+    }
+
+    set(val: string) {
+        if (val.length > this._maxLen - 1) {
+            throw new Error(
+                `string can only be ${this._maxLen - 1} bytes long, got ${val.length}`,
+            );
+        }
+        this._string = Buffer.alloc(val.length);
+        this._string.write(val);
+    }
+}
+
+export class CBlock implements Serializable {
+    private _data: Buffer;
+    private _size: number;
+
+    constructor(size: number) {
+        this._data = Buffer.alloc(size);
+        this._size = size;
+    }
+
+    get sizeOf() {
+        return this._size;
+    }
+
+    deserialize(buf: Buffer) {
+        doesBufferFit(buf, this._size);
+        buf.copy(this._data, 0, 0, this._size);
     }
 
     serialize(): Buffer {
-        const tar = Buffer.alloc(this._size)
-        this._data.copy(tar, 0, 0, this._size)
-        return tar
+        const tar = Buffer.alloc(this._size);
+        this._data.copy(tar, 0, 0, this._size);
+        return tar;
     }
 }
 
@@ -220,7 +219,7 @@ export function align(n: number, alignment: number): number {
  */
 
 export function align4(value: number) {
-	return align(value, 4);
+    return align(value, 4);
 }
 /**
  * Pads the input buffer with zero bytes so that its length becomes a multiple of 4.
@@ -245,12 +244,16 @@ export function padBuffer(inBuf: Buffer): Buffer {
  * @throws {Error} If the input buffer is not long enough to fulfill the request.
  */
 
-export function sliceBuff(inbuff: Buffer, offset: number, len: number): Buffer<ArrayBuffer> {
-	const endIdx = offset + len;
-	if (inbuff.byteLength < endIdx) {
-		throw new Error(`input buffer not log enough, need ${len} bytes`);
-	}
-	return Buffer.from(inbuff.subarray(offset, endIdx));
+export function sliceBuff(
+    inbuff: Buffer,
+    offset: number,
+    len: number,
+): Buffer<ArrayBuffer> {
+    const endIdx = offset + len;
+    if (inbuff.byteLength < endIdx) {
+        throw new Error(`input buffer not log enough, need ${len} bytes`);
+    }
+    return Buffer.from(inbuff.subarray(offset, endIdx));
 }
 /**
  * Sets or clears a single bit in a byte.
@@ -263,13 +266,11 @@ export function sliceBuff(inbuff: Buffer, offset: number, len: number): Buffer<A
  */
 
 export function setBit(byte: number, bitIndex: number, value: boolean): number {
-	checkSize1(byte);
-	if (bitIndex < 0 || bitIndex > 7) {
-		throw new Error('bitIndex must be in range 0-7');
-	}
-	return value
-		? (byte | (1 << bitIndex))
-		: (byte & ~(1 << bitIndex));
+    checkSize1(byte);
+    if (bitIndex < 0 || bitIndex > 7) {
+        throw new Error('bitIndex must be in range 0-7');
+    }
+    return value ? byte | (1 << bitIndex) : byte & ~(1 << bitIndex);
 }
 /**
  * Clears a single bit in a byte.
@@ -281,11 +282,11 @@ export function setBit(byte: number, bitIndex: number, value: boolean): number {
  */
 
 export function clearBit(byte: number, bitIndex: number): number {
-	checkSize1(byte);
-	if (bitIndex < 0 || bitIndex > 7) {
-		throw new Error('bitIndex must be in range 0-7');
-	}
-	return byte & ~(1 << bitIndex);
+    checkSize1(byte);
+    if (bitIndex < 0 || bitIndex > 7) {
+        throw new Error('bitIndex must be in range 0-7');
+    }
+    return byte & ~(1 << bitIndex);
 }
 /**
  * Gets the value of a single bit in a byte.
@@ -297,11 +298,11 @@ export function clearBit(byte: number, bitIndex: number): number {
  */
 
 export function getBit(byte: number, bitIndex: number): boolean {
-	checkSize1(byte);
-	if (bitIndex < 0 || bitIndex > 7) {
-		throw new Error('bitIndex must be in range 0-7');
-	}
-	return ((byte >> bitIndex) & 1) === 1;
+    checkSize1(byte);
+    if (bitIndex < 0 || bitIndex > 7) {
+        throw new Error('bitIndex must be in range 0-7');
+    }
+    return ((byte >> bitIndex) & 1) === 1;
 }
 /**
  * Creates a Buffer containing a single byte representing the given value.
@@ -311,11 +312,11 @@ export function getBit(byte: number, bitIndex: number): boolean {
  * @throws {Error} If `val` is outside the range of a single byte.
  */
 export function setByte(val: number): Buffer<ArrayBuffer> {
-	const b = Buffer.alloc(1);
+    const b = Buffer.alloc(1);
 
-	checkSize1(val);
-	b.writeUint8(val);
-	return b;
+    checkSize1(val);
+    b.writeUint8(val);
+    return b;
 }
 /**
  * Checks if a given number fits within 1 byte (0x00 to 0xFF).
@@ -326,9 +327,9 @@ export function setByte(val: number): Buffer<ArrayBuffer> {
  */
 
 export function checkSize1(val: number) {
-	if (val < 0x00 || val > 0xFF) {
-		throw new Error(`value must fit in 1 bytes. got: ${val.toString(16)}`);
-	}
+    if (val < 0x00 || val > 0xff) {
+        throw new Error(`value must fit in 1 bytes. got: ${val.toString(16)}`);
+    }
 }
 /**
  * Checks whether a given number fits within 2 bytes (unsigned 16-bit integer).
@@ -339,9 +340,9 @@ export function checkSize1(val: number) {
  */
 
 export function checkSize2(val: number) {
-	if (val < 0x00 || val > 0xFFFF) {
-		throw new Error(`value must fit in 2 bytes. got: ${val.toString(16)}`);
-	}
+    if (val < 0x00 || val > 0xffff) {
+        throw new Error(`value must fit in 2 bytes. got: ${val.toString(16)}`);
+    }
 }
 /**
  * Checks whether the given number fits within 4 bytes (unsigned 32-bit integer).
@@ -352,57 +353,99 @@ export function checkSize2(val: number) {
  */
 
 export function checkSize4(val: number) {
-	if (val < 0x00 || val > 0xFFFFFFFF) {
-		throw new Error(`value must fit in 4 bytes. got: ${val.toString(16)}`);
-	}
+    if (val < 0x00 || val > 0xffffffff) {
+        throw new Error(`value must fit in 4 bytes. got: ${val.toString(16)}`);
+    }
 }
 export function doesBufferFit(buf: Buffer, maxSize: number) {
     if (buf.byteLength > maxSize) {
-        throw new Error(`Input buffer too large. ${buf.byteLength} > ${maxSize}`)
+        throw new Error(
+            `Input buffer too large. ${buf.byteLength} > ${maxSize}`,
+        );
     }
 }
 export function checkMinLength(buf: Buffer, minSize: number) {
     if (buf.byteLength < minSize) {
-        throw new Error(`Not enough bytes. Need ${minSize}, got ${buf.byteLength}`)
+        throw new Error(
+            `Not enough bytes. Need ${minSize}, got ${buf.byteLength}`,
+        );
     }
 }
+
+function shouldDeepDiff(obj: any) {
+    if (
+        obj instanceof CString ||
+        obj instanceof Bool ||
+        obj instanceof Long ||
+        obj instanceof Short ||
+        obj instanceof CBlock
+    ) {
+        return false;
+    }
+    return true;
+}
+
 export function diffObj(before: any, after: any) {
     if (before === after) return { isDataDiff: false, diffs: [] };
-    if (!before || !after) {
-        const diffs = !before
+    if (typeof  before === 'undefined' || typeof after === 'undefined') {
+        const diffs = typeof before === 'undefined'
             ? Object.keys(after).map((key) => ({
-                name: key,
-                before: undefined,
-                after: after[key],
-            }))
-            : Object.keys(before).map((key) => ({
-                name: key,
-                before: before[key],
-                after: undefined,
-            }));
+                  name: key,
+                  before: undefined,
+                  after: after[key],
+              }))
+            : typeof after === 'undefined' ? Object.keys(before).map((key) => ({
+                  name: key,
+                  before: before[key],
+                  after: undefined,
+              })) : [];
         return { isDataDiff: true, diffs };
     }
 
     const diffs = [];
-    const allKeys = new Set([
-        ...Object.keys(before),
-        ...Object.keys(after),
-    ]);
+    const allKeys = new Set([...Object.keys(before), ...Object.keys(after)]);
 
     for (const key of allKeys) {
         const beforeVal = before[key];
         const afterVal = after[key];
 
-        if (typeof beforeVal === 'object' &&
+        if (
+            shouldDeepDiff(beforeVal) &&
+            shouldDeepDiff(afterVal) &&
+            !Array.isArray(beforeVal) &&
+            !Array.isArray(afterVal) &&
+            typeof beforeVal === 'object' &&
             typeof afterVal === 'object' &&
             beforeVal &&
-            afterVal) {
+            afterVal
+        ) {
+            // Compare Buffers
+            if (Buffer.isBuffer(beforeVal) && Buffer.isBuffer(afterVal)) {
+                if (Buffer.compare(beforeVal, afterVal)) {
+                    diffs.push({
+                        name: key,
+                        before: beforeVal,
+                        after: afterVal,
+                    });
+                }
+                continue
+            }
             // Deep compare objects
-            const { diffs: deepDiffs } = diffObj(beforeVal, afterVal)
+            const { diffs: deepDiffs } = diffObj(beforeVal, afterVal);
             if (deepDiffs.length > 0) {
-                deepDiffs.forEach(diff => {
-                    diffs.push({ name: diff.name, before: diff.before, after: diff.after})
-                })
+                // Add parent key entry when nested object has changes
+                diffs.push({
+                    name: key,
+                    before: beforeVal,
+                    after: afterVal,
+                });
+                deepDiffs.forEach((diff) => {
+                    diffs.push({
+                        name: diff.name,
+                        before: diff.before,
+                        after: diff.after,
+                    });
+                });
             }
         } else if (beforeVal !== afterVal) {
             diffs.push({ name: key, before: beforeVal, after: afterVal });
@@ -411,4 +454,3 @@ export function diffObj(before: any, after: any) {
 
     return { isDataDiff: diffs.length > 0, diffs };
 }
-

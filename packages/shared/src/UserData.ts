@@ -336,6 +336,10 @@ export class UserInfo implements Serializable {
     get userData(): UserData {
         return this._userData;
     }
+
+    set userData(val: UserData) {
+        this._userData = val;
+    }
 }
 
 export class UserInfoMessage implements NPSMessage {
