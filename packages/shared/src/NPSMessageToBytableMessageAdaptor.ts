@@ -97,10 +97,11 @@ export class NPSMessageToBytableMessageAdaptor implements IBytableMessage {
         throw new Error('Method not implemented.');
     }
     getBody(): Buffer<ArrayBuffer> {
-        return this.getBody()
+        return this.npsMessage_.data as Buffer<ArrayBuffer>
     }
     setBody(buffer: Buffer): void {
         this.npsMessage_.data = buffer
+        this.npsMessage_._header.length = this.npsMessage_._header._size + buffer.length
     }
     /**
      * @deprecated // TODO: Remove depreciated method
