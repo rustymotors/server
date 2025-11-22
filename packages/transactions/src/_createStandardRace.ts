@@ -17,7 +17,7 @@ export async function _createStandardRace({
     const createRaceMessage = new CreateRaceMessage()
     createRaceMessage.deserialize(packet.serialize())
 
-    log.debug(`createRaceMsg: ${createRaceMessage.toString()}`)
+    log.verbose(`createRaceMsg: ${createRaceMessage.toString()}`)
     
     // TODO Do stuff. Lots of stuff
 
@@ -30,7 +30,7 @@ export async function _createStandardRace({
     raceCreatedMessage.perRacePurseBonus = 3
 
 
-    log.debug(`RaceCreatedmsg: ${raceCreatedMessage.toString()}`)
+    log.verbose(`RaceCreatedmsg: ${raceCreatedMessage.toLogString()}`)
     
     
     // Create new response packet
@@ -40,7 +40,7 @@ export async function _createStandardRace({
 
     rPacket.setBody(raceCreatedMessage)
 
-    log.debug(`_createStandardRace: ${rPacket.toString()}`);
+    log.verbose(`_createStandardRace: ${rPacket.toLogString()}`);
 
     return { connectionId, messages: [rPacket] };
 }

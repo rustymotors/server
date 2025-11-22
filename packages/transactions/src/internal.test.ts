@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { receiveTransactionsData } from "./internal.js";
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import { receiveTransactionsData } from './internal.js';
 
 // Mocks for external modules used by internal.ts
-vi.mock("rusty-motors-shared", () => {
+vi.mock('rusty-motors-shared', () => {
     const logger = {
         debug: vi.fn(),
         verbose: vi.fn(),
@@ -11,13 +11,19 @@ vi.mock("rusty-motors-shared", () => {
     return {
         getServerLogger: vi.fn(() => logger),
         // types/classes that may be imported but are unused in tests
-        MessageNode: class {},
+        MessageNode: class {
+            deserialize(_: Buffer) {
+                /* noop */
+            }
+        },
         ServerLogger: class {},
         McosEncryption: class {},
         SerializedBufferOld: class {},
         State: class {},
         OldServerMessage: class {
-            _doDeserialize(_: Buffer) { /* noop */ }
+            deserialize(_: Buffer) {
+                /* noop */
+            }
         },
         // state/encryption related functions that internal.ts calls
         fetchStateFromDatabase: vi.fn(() => ({})),
@@ -26,6 +32,7 @@ vi.mock("rusty-motors-shared", () => {
                 decrypt: (buf: Buffer) => {
                     // simple transformation for tests: flip bytes
                     const out = Buffer.from(buf);
+                    // @ts-ignore
                     for (let i = 0; i < out.length; i++) out[i] = out[i] ^ 0xff;
                     return out;
                 },
@@ -36,44 +43,45 @@ vi.mock("rusty-motors-shared", () => {
 });
 
 // Mock handlers module used by internal.ts so processInput finds a handler
-vi.mock("./handlers.js", () => {
+vi.mock('./handlers.js', () => {
     return {
         messageHandlers: [
             {
-                name: "TESTMSG",
+                name: 'TESTMSG',
                 handler: vi.fn(async () => {
                     // return no outbound messages to keep tests focused on decryption behavior
                     return { messages: [] };
                 }),
             },
         ],
-        _MSG_STRING: (_: number) => "TESTMSG",
+        _MSG_STRING: (_: number) => 'TESTMSG',
     };
 });
-
 
 // Reset mocks between tests for clearer assertions
 beforeEach(() => {
     vi.clearAllMocks();
 });
 
-describe("decryptedMessage (via receiveTransactionsData)", () => {
-    it("should decrypt inbound message body and clear payload encryption flag", async () => {
+describe('decryptedMessage (via receiveTransactionsData)', () => {
+    it('should decrypt inbound message body and clear payload encryption flag', async () => {
         // Prepare a body with a known serialized value
         const body = {
             serialize: () => Buffer.from([0xaa, 0x55]),
-            deserialize: vi.fn(function (buf: Buffer) {
-                // store deserialized data for assertions
-                (this as any).last = Buffer.from(buf);
+            deserialize: vi.fn((_: Buffer) => {
+                /* noop */
             }),
         };
 
         // Create a MessageNode-like object (plain object)
         const inboundMessage: any = {
-            serialize: () => Buffer.from("00", "hex"),
+            deserialize: vi.fn((_: Buffer) => {
+                /* noop */
+            }),
+            serialize: () => Buffer.from('00', 'hex'),
             isPayloadEncrypted: () => true,
             isPayloadCompressed: () => false,
-            getBody: () => body,
+            getBody: vi.fn(() => body),
             data: Buffer.from([0xde, 0xad]),
             getMessageId: () => 1,
             getSequence: () => 0,
@@ -83,24 +91,26 @@ describe("decryptedMessage (via receiveTransactionsData)", () => {
         };
 
         const result = await receiveTransactionsData({
-            connectionId: "conn-1",
+            connectionId: 'conn-1',
             message: inboundMessage,
         });
 
         // handler returns no outbound messages, so messages array should be empty
-        expect(result.connectionId).toEqual("conn-1");
+        expect(result.connectionId).toEqual('conn-1');
         expect(result.messages).toHaveLength(0);
 
         // body.deserialize should have been called with decrypted data (xor 0xff transformation)
         expect(body.deserialize).toHaveBeenCalled();
-        const calledWith = (body.deserialize as unknown as vi.Mock).mock.calls[0][0] as Buffer;
+        // @ts-ignore
+        const calledWith = (body.deserialize as unknown as Mock).mock
+            .calls[0][0] as Buffer;
         expect(calledWith).toBeInstanceOf(Buffer);
         expect(calledWith.length).toEqual(2);
         // ensure payload encryption flag was cleared on the object
         expect(inboundMessage._payloadEncrypted).toBe(false);
     });
 
-    it("accepts ServerPacket-like objects interchangeably with MessageNode-like objects", async () => {
+    it('accepts ServerPacket-like objects interchangeably with MessageNode-like objects', async () => {
         // Create a ServerPacket-like class instance (different prototype)
         class ServerPacketLike {
             body: any;
@@ -108,8 +118,12 @@ describe("decryptedMessage (via receiveTransactionsData)", () => {
             constructor(body: any) {
                 this.body = body;
             }
+            deserialize = (_buf: Buffer) =>
+                vi.fn((buf: Buffer) => {
+                    (this as any).last = Buffer.from(buf);
+                });
             serialize() {
-                return Buffer.from("01", "hex");
+                return Buffer.from('01', 'hex');
             }
             isPayloadEncrypted() {
                 return true;
@@ -133,7 +147,7 @@ describe("decryptedMessage (via receiveTransactionsData)", () => {
 
         const body = {
             serialize: () => Buffer.from([0x10, 0x20, 0x30]),
-            deserialize: vi.fn(function (buf: Buffer) {
+            deserialize: vi.fn((buf: Buffer) => {
                 (this as any).last = Buffer.from(buf);
             }),
         };
@@ -141,11 +155,11 @@ describe("decryptedMessage (via receiveTransactionsData)", () => {
         const packet = new ServerPacketLike(body);
 
         const result = await receiveTransactionsData({
-            connectionId: "conn-2",
+            connectionId: 'conn-2',
             message: packet as unknown as any,
         });
 
-        expect(result.connectionId).toEqual("conn-2");
+        expect(result.connectionId).toEqual('conn-2');
         expect(result.messages).toHaveLength(0);
 
         // Ensure deserialize was called on the body and payload encryption flag cleared

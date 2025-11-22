@@ -39,6 +39,10 @@ export class UserStatus extends BaseSerializable {
 		return this.getSize();
 	}
 
+    override get sizeOf() {
+        return this.getSize()
+    }
+
 	getSessionId(): string {
 		return this._sessionId;
 	}

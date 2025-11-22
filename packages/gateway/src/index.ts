@@ -102,7 +102,7 @@ export function onUdpMessage({
         return;
     }
 
-    log.debug(
+    log.verbose(
         'New UDP Message',
         {
             namespace: 'onUdpMessage',

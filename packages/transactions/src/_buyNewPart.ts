@@ -19,7 +19,7 @@ export async function _buyNewPart({
     const buyNewPartMessage = new GenericRequestMessage();
     buyNewPartMessage.deserialize(packet.data);
 
-    log.debug(`Received Message: ${buyNewPartMessage.toString()}`);
+    log.verbose(`Received Message: ${buyNewPartMessage.toString()}`);
 
     const requestedPart = buyNewPartMessage.data.readInt32LE()
     const fromDealerId = buyNewPartMessage.data2.readInt32LE()
@@ -46,7 +46,7 @@ export async function _buyNewPart({
     responsePacket._header.sequence = packet.sequenceNumber;
     responsePacket._header.flags = 8;
 
-    log.debug(newPartMessage.toString())
+    log.verbose(newPartMessage.toString())
 
     responsePacket.setBuffer(newPartMessage.serialize());
 

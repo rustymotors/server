@@ -28,7 +28,7 @@ export async function _getOwnedVehicles({
     const getOwnedVehiclesMessage = new GenericRequestMessage();
     getOwnedVehiclesMessage.deserialize(packet.data);
 
-    log.debug(`Received Message: ${getOwnedVehiclesMessage.toString()}`);
+    log.verbose(`Received Message: ${getOwnedVehiclesMessage.toString()}`);
 
     const personId = getOwnedVehiclesMessage.data.readUInt32LE(0);
 

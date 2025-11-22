@@ -46,7 +46,7 @@ function main() {
             privateKeyFile: "[REDACTED]",
             publicKeyFile: "[REDACTED]",
         };
-        coreLogger.debug(
+        coreLogger.verbose(
             `Pre-flight checks passed. Starting server with config: ${JSON.stringify(sanitizedConfig)}`,
         );
 

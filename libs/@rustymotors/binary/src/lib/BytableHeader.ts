@@ -46,7 +46,9 @@ export class BytableHeader extends Bytable {
         return this.messageId_;
     }
 
-    /** @deprecated Use `id` instead. */
+    /** 
+     * @deprecated Use `id` instead. // TODO: Remove depreciated method
+     * */
     get messageId() {
         return this.id;
     }

@@ -19,8 +19,8 @@ export async function handleGetUserList({
     messages: BytableMessage[];
 }> {
     try {
-        log.debug(`[${connectionId}] Handling NPS_GET_USER_LIST`);
-        log.debug(
+        log.verbose(`[${connectionId}] Handling NPS_GET_USER_LIST`);
+        log.verbose(
             `[${connectionId}] Received command: ${message.header.id}`,
         );
 
@@ -32,7 +32,7 @@ export async function handleGetUserList({
         const requestedCommId =
             incomingRequest.getFieldValueByName('commId') ?? -1;
 
-        log.debug(
+        log.verbose(
             `[${connectionId}] Requested we send the user list for channel ${(requestedCommId as Buffer).readInt32BE()}`,
         );
 
@@ -55,7 +55,7 @@ export async function handleGetUserList({
         const user1 = await databaseManager.getUser(21);
 
         if (typeof user1 !== 'undefined') {
-            log.debug(`Fetched userData: ${JSON.stringify(user1.userData)}`);
+            log.verbose(`Fetched userData: ${JSON.stringify(user1.userData)}`);
             userList.push(user1);
         }
 
@@ -69,7 +69,7 @@ export async function handleGetUserList({
 
         outgoingGameMessage.setFieldValueByName('usersList', users);
 
-        log.debug(
+        log.verbose(
             `[${connectionId}] Sending response[string]: ${outgoingGameMessage.toString()}`,
         );
         // Build the packet

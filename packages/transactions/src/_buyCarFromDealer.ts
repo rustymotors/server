@@ -21,7 +21,7 @@ export async function _buyCarFromDealer({
     const purchaseStockCarMessage = new PurchaseStockCarMessage();
     purchaseStockCarMessage.deserialize(packet.serialize());
 
-    log.debug(
+    log.verbose(
         `[${connectionId}] Received PurchaseStockCarMessage: ${purchaseStockCarMessage.toString()}`,
     );
 
@@ -41,7 +41,7 @@ export async function _buyCarFromDealer({
     // TODO: Get the new car ID from the database
     const newCarId = await purchaseCar(session.gameId, purchaseStockCarMessage.dealerId, purchaseStockCarMessage.brandedPardId, purchaseStockCarMessage.skinId, purchaseStockCarMessage.tradeInCarId)
     .then((newCarId) => {
-        log.debug(
+        log.verbose(
             'Purchased car',
             { connectionId }, 
         );
@@ -55,7 +55,7 @@ export async function _buyCarFromDealer({
         throw new Error('Failed to purchase car');
     })
 
-    log.debug(
+    log.verbose(
         `[${connectionId}] Purchased car with ID: ${newCarId}`,
     );
 
@@ -73,7 +73,7 @@ export async function _buyCarFromDealer({
     replyPacket.result.writeUInt32LE(101, 0); // MC_SUCCESS
     replyPacket.data.writeUInt32LE(newCarId, 0);
 
-    log.debug(
+    log.verbose(
         `[${connectionId}] Sending GenericReplyMessage: ${replyPacket.toString()}`,
     );
 
@@ -83,7 +83,7 @@ export async function _buyCarFromDealer({
 
     responsePacket.setBuffer(replyPacket.serialize());
 
-    log.debug(
+    log.verbose(
         `[${connectionId}] Sending response packet: ${responsePacket.toHexString()}`,
     );
 

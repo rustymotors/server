@@ -8,70 +8,79 @@ import { legacyHeader } from "./legacyHeader.js";
  */
 
 export class LegacyMessage extends SerializableMixin(AbstractSerializable) {
-	_header: legacyHeader;
-	constructor() {
-		super();
-		this._header = new legacyHeader();
-	}
+    _header: legacyHeader;
+    constructor() {
+        super();
+        this._header = new legacyHeader();
+    }
 
-	getMessageId() {
-		return this._header.id;
-	}
+    getMessageId() {
+        return this._header.id;
+    }
 
-	setMessageId(id: number) {
-		this._header.id = id;
-	}
+    setMessageId(id: number) {
+        this._header.id = id;
+    }
 
-	/**
-	 * Deserializes the given buffer and updates the current instance with the deserialized data.
-	 *
-	 * @param buffer - The buffer containing the serialized data.
-	 * @returns The current instance with the deserialized data.
-	 */
-	deserialize(buffer: Buffer) {
-		this._header.deserialize(buffer);
-		this.setBuffer(buffer.subarray(this._header._size));
-		return this;
-	}
+    /**
+     * Deserializes the given buffer and updates the current instance with the deserialized data.
+     *
+     * @param buffer - The buffer containing the serialized data.
+     * @returns The current instance with the deserialized data.
+     */
+    deserialize(buffer: Buffer) {
+        this._header.deserialize(buffer);
+        this.setBuffer(buffer.subarray(this._header._size));
+        return this;
+    }
 
-	serialize() {
-		const buffer = Buffer.alloc(this._header.length);
-		this._header.serialize().copy(buffer);
-		super.data.copy(buffer, this._header._size);
-		return buffer;
-	}
+    serialize() {
+        const buffer = Buffer.alloc(this._header.length);
+        this._header.serialize().copy(buffer);
+        super.data.copy(buffer, this._header._size);
+        return buffer;
+    }
 
-	/**
-	 * @param {Buffer} buffer
-	 */
-	override setBuffer(buffer: Buffer) {
-		super.setBuffer(buffer);
-		this._header.length = buffer.length + 4;
-	}
+    /**
+     * @param {Buffer} buffer
+     */
+    override setBuffer(buffer: Buffer) {
+        super.setBuffer(buffer);
+        this._header.length = buffer.length + 4;
+    }
 
-	asJSON() {
-		return {
-			header: this._header,
-			data: super.data.toString("hex"),
-		};
-	}
+    asJSON() {
+        return {
+            header: this._header,
+            data: super.data.toString('hex'),
+        };
+    }
 
-	override toString() {
-		return `LegacyMessage: ${JSON.stringify({
-			header: this._header.toString(),
-			data: super.data.toString("hex"),
-		})}`;
-	}
+    override toString() {
+        return `LegacyMessage: ${JSON.stringify({
+            header: this._header.toString(),
+            data: super.data.toString('hex'),
+        })}`;
+    }
 
-	toHexString() {
-		return this.serialize().toString("hex");
-	}
+    toHexString() {
+        return this.serialize().toString('hex');
+    }
 
-	override _doDeserialize(_buffer: Buffer): AbstractSerializable {
-		return this.deserialize(_buffer)
-	}
+    /**
+     * @deprecated use deserialize() // TODO: Remove depreciated method
+     * @param _buffer
+     * @returns
+     */
+    _doDeserialize(_buffer: Buffer): AbstractSerializable {
+        return this.deserialize(_buffer);
+    }
 
-	override _doSerialize() {
-		return this.serialize()
-	}
+    /**
+     *
+     * @returns @deprecated use serialize() // TODO: Remove depreciated method
+     */
+    _doSerialize() {
+        return this.serialize();
+    }
 }

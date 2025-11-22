@@ -52,18 +52,6 @@ export class MessageHeader extends SerializedBufferOld {
 		return buffer;
 	}
 
-	/**
-	 * @param {Buffer} buffer
-	 * @returns {MessageHeader}
-	 */
-	override _doDeserialize(buffer: Buffer): MessageHeader {
-		return this.deserialize(buffer);
-	}
-
-	override _doSerialize() {
-		return this.serialize();
-	}
-
 	override toString() {
 		return `MessageHeader: ${JSON.stringify({
 			messageId: this._messageId,

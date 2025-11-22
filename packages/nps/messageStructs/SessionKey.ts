@@ -16,7 +16,7 @@ export class SessionKey extends BaseSerializable {
 		}
 
 		if (typeof key !== "undefined" && typeof timestamp !== "undefined") {
-			defaultLogger.debug(`SessionKey: key=${getAsHex(key)}, timestamp=${timestamp}`);
+			defaultLogger.verbose(`SessionKey: key=${getAsHex(key)}, timestamp=${timestamp}`);
 			this.key = key;
 			this.timestamp = timestamp;
 			this._isSet = true;
@@ -33,7 +33,7 @@ export class SessionKey extends BaseSerializable {
 	}
 
 	static fromBytes(bytes: Buffer): SessionKey {
-		defaultLogger.debug("SessionKey.fromBytes");
+		defaultLogger.verbose("SessionKey.fromBytes");
 		const keyLength = bytes.readUInt16BE(0);
 
 		// Set the data offset
@@ -41,7 +41,7 @@ export class SessionKey extends BaseSerializable {
 
 		const key = bytes.subarray(2, dataOffset);
 
-		defaultLogger.debug(`SessionKey.fromBytes: key=${getAsHex(key)}`);
+		defaultLogger.verbose(`SessionKey.fromBytes: key=${getAsHex(key)}`);
 
 		// Get the timestamp
 		const timestamp = bytes.readUInt32BE(dataOffset);

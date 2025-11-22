@@ -8,9 +8,6 @@ describe("ConsoleThread", () => {
 			info: () => vi.fn(),
 			error: () => vi.fn(),
 			warn: () => vi.fn(),
-			debug: () => vi.fn(),
-			trace: () => vi.fn(),
-			fatal: () => vi.fn(),
 		} as any;
 		const instance = new ConsoleThread({ parentThread, log });
 		expect(instance).toBeInstanceOf(ConsoleThread);

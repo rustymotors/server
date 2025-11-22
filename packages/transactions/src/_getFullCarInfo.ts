@@ -1,7 +1,11 @@
-import { buildVehiclePartTreeFromDB, type TPart, getVehiclePartTree, vehiclePartTreeToJSON } from "rusty-motors-database";
-import { getServerLogger, OldServerMessage } from "rusty-motors-shared";
-import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
-import { GenericRequestMessage } from "./GenericRequestMessage.js";
+import {
+    buildVehiclePartTreeFromDB,
+    type TPart,
+    getVehiclePartTree,
+} from 'rusty-motors-database';
+import { getServerLogger, OldServerMessage } from 'rusty-motors-shared';
+import { MessageHandlerArgs, MessageHandlerResult } from './handlers.js';
+import { GenericRequestMessage } from './GenericRequestMessage.js';
 
 const DAMAGE_SIZE = 2000;
 
@@ -22,14 +26,15 @@ export class VehicleStruct {
             buffer.writeInt32LE(this.Flags, 8); // offset 8
             buffer.writeInt32LE(this.Delta, 12); // offset 12
             buffer.writeInt8(this.CarClass, 16); // offset 16
-            const damageLengthOverride = this.damageLengthOverride ?? this.Damage.length;
+            const damageLengthOverride =
+                this.damageLengthOverride ?? this.Damage.length;
             buffer.writeInt16LE(damageLengthOverride, 17); // offset 17
             if (this.Damage.length > 0) {
                 this.Damage.copy(buffer, 19); // offset 19
             }
             return buffer;
         } catch (error) {
-            getServerLogger("transactions/VehicleStruct").error(
+            getServerLogger('transactions/VehicleStruct').error(
                 `Error in VehicleStruct.serialize: ${error}`,
             );
             throw error;
@@ -47,7 +52,7 @@ export class VehicleStruct {
         Flags: ${this.Flags} 
         Delta: ${this.Delta} 
         CarClass: ${this.CarClass}
-        Damage: ${this.Damage.toString("hex")}
+        Damage: ${this.Damage.toString('hex')}
         `;
     }
 }
@@ -63,7 +68,7 @@ export class PartStruct {
     damage: number = 0; // 1 byte
 
     serialize() {
-        const log = getServerLogger("transactions/PartStruct");
+        const log = getServerLogger('transactions/PartStruct');
         try {
             const buffer = Buffer.alloc(this.size());
             buffer.writeUInt32LE(this.partId, 0);
@@ -98,20 +103,20 @@ class CarInfoStruct {
     parts: PartStruct[] = [];
 
     serialize() {
-        const log = getServerLogger("transactions/CarInfoStruct");
+        const log = getServerLogger('transactions/CarInfoStruct');
         try {
             const neededSize = 10 + this.vehicle.size() + this.noOfParts * 26;
 
-            log.debug(`Needed size: ${neededSize}`);
+            log.verbose(`Needed size: ${neededSize}`);
 
             const buffer = Buffer.alloc(neededSize);
-            log.debug(`Writing msgNo: ${this.msgNo}`);
+            log.verbose(`Writing msgNo: ${this.msgNo}`);
             buffer.writeUInt16LE(this.msgNo, 0);
-            log.debug(`Writing playerId: ${this.playerId}`);
+            log.verbose(`Writing playerId: ${this.playerId}`);
             buffer.writeUInt32LE(this.playerId, 2);
-            log.debug(`Serializing vehicle`);
+            log.verbose(`Serializing vehicle`);
             this.vehicle.serialize().copy(buffer, 6);
-            log.debug(`Writing noOfParts: ${this.noOfParts}`);
+            log.verbose(`Writing noOfParts: ${this.noOfParts}`);
             buffer.writeUInt16LE(this.noOfParts, 6 + this.vehicle.size());
             let offset = 8 + this.vehicle.size();
             for (const part of this.parts) {
@@ -154,39 +159,37 @@ export type DBPart = {
 export async function _getCompleteVehicleInfo({
     connectionId,
     packet,
-    log = getServerLogger("transactions/getCompleteVehicleInfo"),
+    log = getServerLogger('transactions/getCompleteVehicleInfo'),
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
     const getCompleteVehicleInfoMessage = new GenericRequestMessage();
     getCompleteVehicleInfoMessage.deserialize(packet.data);
 
-    log.debug(`Received Message: ${getCompleteVehicleInfoMessage.toString()}`);
+    log.verbose(`Received Message: ${getCompleteVehicleInfoMessage.toString()}`);
 
     const vehicleId = getCompleteVehicleInfoMessage.data.readUInt32LE();
     const delta = getCompleteVehicleInfoMessage.data2.readUInt32LE();
 
-    log.debug(`Requesting vehicleId: ${vehicleId} delta: ${delta}`);
+    log.verbose(`Requesting vehicleId: ${vehicleId} delta: ${delta}`);
 
     try {
         const carInfo = new CarInfoStruct();
 
         let vehicleFromCache = await getVehiclePartTree(vehicleId);
 
-        if (typeof vehicleFromCache === "undefined") {
-            log.debug(
+        if (typeof vehicleFromCache === 'undefined') {
+            log.verbose(
                 `Vehicle with id ${vehicleId} not found in cache, fetching from DB`,
             );
             vehicleFromCache = await buildVehiclePartTreeFromDB(vehicleId);
         }
 
-        if (typeof vehicleFromCache === "undefined") {
+        if (typeof vehicleFromCache === 'undefined') {
             throw new Error(
                 `Vehicle with id ${vehicleId} not found and not in DB`,
             );
         }
 
-        log.debug(
-            `Vehicle part tree successfully fetched`,
-        );
+        log.verbose(`Vehicle part tree successfully fetched`);
 
         carInfo.msgNo = 123;
         carInfo.playerId = 1;
