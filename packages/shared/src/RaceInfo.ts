@@ -653,20 +653,7 @@ export class RaceCreatedMessage extends MessageNodeBody {
         return 22 + this._password.sizeOf;
     }
 
-    /**
-     * Returns a log-safe string representation, masking password.
-     */
-    toLogString() {
-        return JSON.stringify({
-            msgNo: this._msgNo,
-            raceId: this._raceId && this._raceId.toString('hex'),
-            entryFee: this._entryFee && this._entryFee.readInt32LE(0),
-            perPlayerPurseBonus: this._perPlayerPurseBonus && this._perPlayerPurseBonus.readInt32LE(0),
-            password: this._password ? '[REDACTED]' : undefined,
-            raceHistoryId: this._raceHistoryId && this._raceHistoryId.toString('hex'),
-            perRacePurseBonus: this._perRacePurseBonus && this._perRacePurseBonus.readInt32LE(0),
-        });
-    }
+
     private _doSerialize(): Buffer<ArrayBufferLike> {
         const msgNo = Buffer.alloc(2);
         msgNo.writeInt16LE(this._msgNo);
@@ -742,14 +729,13 @@ export class RaceCreatedMessage extends MessageNodeBody {
 
     toLogString() {
         return JSON.stringify({
-            _msgNo: this._msgNo,
-            _raceId: this._raceId,
-            _entryFee: this._entryFee,
-            _perPlayerPurseBonus: this._perPlayerPurseBonus,
-            _raceHistoryId: this._raceHistoryId,
-            _perRacePurseBonus: this._perRacePurseBonus,
-            // Mask or exclude password from logs
-            _password: "***",
+            msgNo: this._msgNo,
+            raceId: this._raceId && this._raceId.toString('hex'),
+            entryFee: this._entryFee && this._entryFee.readInt32LE(0),
+            perPlayerPurseBonus: this._perPlayerPurseBonus && this._perPlayerPurseBonus.readInt32LE(0),
+            password: this._password.toString() ? '[REDACTED]' : undefined,
+            raceHistoryId: this._raceHistoryId && this._raceHistoryId.toString('hex'),
+            perRacePurseBonus: this._perRacePurseBonus && this._perRacePurseBonus.readInt32LE(0),
         });
     }
 }
