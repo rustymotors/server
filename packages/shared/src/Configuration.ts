@@ -1,4 +1,4 @@
-import type { Logger } from "pino";
+import type { Logger } from "winston";
 import { getServerLogger } from "../getServerLogger.js";
 
 /**
@@ -52,7 +52,8 @@ export class Configuration {
 			this.logLevel = logLevel.toLowerCase();
 			Configuration.instance = this;
 		} catch (error) {
-			logger.fatal(`Error in core server: ${String(error)}`);
+			logger.error(`Error in core server: ${String(error)}`);
+            process.exit(-1)
 		}
 	}
 
@@ -117,7 +118,7 @@ function getEnvVariable(
 	const value = process.env[name];
 	if (required && !value) {
 		const coreLogger = getServerLogger("core");
-		coreLogger.fatal(`Missing required environment variable: ${name}`);
+		coreLogger.error(`Missing required environment variable: ${name}`);
 		process.exit(1);
 	}
 	return value || defaultValue || "";

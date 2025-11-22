@@ -24,15 +24,15 @@ export async function handleSendGameServersList({
     messages: BytableMessage[];
 }> {
     try {
-        log.debug(`Handling NPS_SEND_GAME_SERVERS_LIST`, {
+        log.verbose(`Handling NPS_SEND_GAME_SERVERS_LIST`, {
             connectionId,
         });
-        log.debug(`Received command: ${message.header.id}`, {
+        log.verbose(`Received command: ${message.header.id}`, {
             connectionId,
         });
 
         // l
-        log.debug(`User requested sendGameServerList`,{
+        log.verbose(`User requested sendGameServerList`,{
             connectionId,
         })
 
@@ -73,7 +73,7 @@ export async function handleSendGameServersList({
 
         outgoingGameMessage.add(gameServer1);
 
-        log.debug(
+        log.verbose(
             `Sending gameserver response[serialize]: ${JSON.stringify(gameServer1)}`,
             { connectionId },
         );
@@ -84,7 +84,7 @@ export async function handleSendGameServersList({
         gameServerListMessage.setVersion(0);
         gameServerListMessage.deserialize(outgoingGameMessage.serialize());
 
-        log.debug(
+        log.verbose(
             `Sending gameserver response[serialize2]: ${gameServerListMessage.serialize().toString('hex')}`,
             { connectionId },
         );

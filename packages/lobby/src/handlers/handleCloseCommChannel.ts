@@ -17,8 +17,8 @@ export async function handleCloseCommChannel({
     messages: BytableMessage[];
 }> {
     try {
-        log.debug(`[${connectionId}] Handling NPS_CLOSE_COMM_CHANNEL`);
-        log.debug(
+        log.verbose(`[${connectionId}] Handling NPS_CLOSE_COMM_CHANNEL`);
+        log.verbose(
             `[${connectionId}] Received command: ${message.header.id}`,
         );
 
@@ -30,7 +30,7 @@ export async function handleCloseCommChannel({
         const requestedCommId =
             incomingRequest.getFieldValueByName('commId') ?? -1;
 
-        log.debug(
+        log.verbose(
             `[${connectionId}] Requested we close channel ${(requestedCommId as Buffer).readInt32BE()}`,
         );
 
@@ -48,7 +48,7 @@ export async function handleCloseCommChannel({
         outgoingGameMessage.setFieldValueByName('commId', requestedCommId);
         outgoingGameMessage.setFieldValueByName('port', 7003);
 
-        log.debug(
+        log.verbose(
             `[${connectionId}] Sending response[string]: ${outgoingGameMessage.toString()}`,
         );
         // Build the packet

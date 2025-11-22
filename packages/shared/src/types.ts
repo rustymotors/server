@@ -141,10 +141,10 @@ export interface Logger {
     warn: LeveledLogMethod;
     info: LeveledLogMethod;
     verbose: LeveledLogMethod;
-    /** @deprecated Use verbose instead */
-    debug: LeveledLogMethod
-    /** @deprecated Use verbose instead */
-    trace: LeveledLogMethod
+    /** @deprecated Use verbose instead */ // TODO: Remove depreciated method
+    debug: LeveledLogMethod;
+    /** @deprecated Use verbose instead */ // TODO: Remove depreciated method
+    trace: LeveledLogMethod;
 }
 export type LogLevel = "error" | "warn" | "info" | "verbose";
 export interface KeypressEvent {

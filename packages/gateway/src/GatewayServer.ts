@@ -46,7 +46,7 @@ export class Gateway {
         udpListeningPortList = [],
         socketConnectionHandler = onSocketConnection,
     }: GatewayOptions) {
-        log.debug('Creating GatewayServer instance');
+        log.verbose('Creating GatewayServer instance');
 
         this.config = config;
         this.log = log;
@@ -102,7 +102,7 @@ export class Gateway {
 
         await Promise.all([tcpListeningServers, udpListeningSockets]);
 
-        this.log.debug(`All sockets listening`);
+        this.log.verbose(`All sockets listening`);
 
         if (this.webServer === undefined) {
             throw Error('webServer is undefined');
@@ -204,7 +204,7 @@ export class Gateway {
      */
     async stop(): Promise<void> {
         // Mark the GatewayServer as stopping
-        this.log.debug('Marking GatewayServer as stopping');
+        this.log.verbose('Marking GatewayServer as stopping');
         this.status = 'stopping';
 
         // Stop the servers
@@ -216,11 +216,11 @@ export class Gateway {
         }
 
         // Mark the GatewayServer as stopped
-        this.log.debug('Marking GatewayServer as stopped');
+        this.log.verbose('Marking GatewayServer as stopped');
         this.status = 'stopped';
 
         // Reset the global state
-        this.log.debug('Resetting the global state');
+        this.log.verbose('Resetting the global state');
         createInitialState({}).save();
     }
 

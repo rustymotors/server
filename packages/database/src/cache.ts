@@ -155,7 +155,7 @@ export async function saveVehicle(
             scrap_value: 0,
         };
 
-        log.debug(`Saving vehicle part: ${JSON.stringify(vehiclePart)}`,
+        log.verbose(`Saving vehicle part: ${JSON.stringify(vehiclePart)}`,
             { vehicleId: vehiclePartTree.vehicleId });
         await savePart(vehiclePart).catch((error) => {
             log.error(`Error saving vehicle part: ${error}`);
@@ -173,7 +173,7 @@ export async function saveVehicle(
             damage_info: vehiclePartTree.damageInfo,
         };
 
-        log.debug(`Saving vehicle: ${JSON.stringify(newVehicle)}`, {
+        log.verbose(`Saving vehicle: ${JSON.stringify(newVehicle)}`, {
             vehicleId: vehiclePartTree.vehicleId
         });
 
@@ -345,10 +345,10 @@ export async function buildVehiclePartTreeFromDB(
         throw new Error(`Vehicle with id ${vehicleId} has no parts`);
     }
 
-    log.debug(`We got parts!`, {
+    log.verbose(`We got parts!`, {
         BrandedPart: vehiclePartTree.brandedPartId
     });
-    log.debug(
+    log.verbose(
         `There are ${level1Parts.length} level 1 parts in the vehicle assembly`,
         { BrandedPart: vehiclePartTree.brandedPartId }
     );
@@ -385,10 +385,10 @@ export async function buildVehiclePartTreeFromDB(
         throw new Error(`Vehicle with id ${vehicleId} has no level 2 parts`);
     }
 
-    log.debug(`We got parts!`,
+    log.verbose(`We got parts!`,
         { BrandedPart: vehiclePartTree.brandedPartId }
     );
-    log.debug(
+    log.verbose(
         `There are ${level2Parts.length} level 2 parts in the vehicle assembly`,
         { BrandedPart: vehiclePartTree.brandedPartId }
     );
@@ -410,10 +410,10 @@ export async function buildVehiclePartTreeFromDB(
         vehiclePartTree.partTree.level2.parts.push(newPart);
     }
 
-    log.debug(`Vehicle part tree populated`,
+    log.verbose(`Vehicle part tree populated`,
         { BrandedPart: vehiclePartTree.brandedPartId }
     );
-    log.debug(`Vehicle part tree: ${vehiclePartTreeToJSON(vehiclePartTree)}`, {
+    log.verbose(`Vehicle part tree: ${vehiclePartTreeToJSON(vehiclePartTree)}`, {
         BrandedPart: vehiclePartTree.brandedPartId
     });
 
@@ -555,10 +555,10 @@ export async function buildVehiclePartTree({
     }
 
     // But we did get parts, right?
-    log.debug(`We got parts!`,
+    log.verbose(`We got parts!`,
         { BrandedPart: brandedPartId }
     );
-    log.debug(
+    log.verbose(
         `There are ${vehicleAssembly.length} parts in the vehicle assembly`,
         { brandedPart: brandedPartId }
     );
@@ -592,7 +592,7 @@ export async function buildVehiclePartTree({
         },
     };
 
-    log.debug(`Vehicle part tree created`);
+    log.verbose(`Vehicle part tree created`);
 
     // Populate the vehicle part tree
     for (const part of vehicleAssembly) {
@@ -640,7 +640,7 @@ export async function buildVehiclePartTree({
         }
     }
 
-    log.debug(`Vehicle part tree populated`);
+    log.verbose(`Vehicle part tree populated`);
 
     return vehiclePartTree;
 }

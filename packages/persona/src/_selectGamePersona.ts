@@ -28,9 +28,9 @@ export async function _selectGamePersona({
 	connectionId: string;
 	messages: SerializedBufferOld[];
 }> {
-	log.debug("_npsSelectGamePersona...");
+	log.verbose("_npsSelectGamePersona...");
 	const requestPacket = message;
-	log.debug(
+	log.verbose(
 		`LegacyMsg request object from _npsSelectGamePersona ${requestPacket
 			._doSerialize()
 			.toString("hex")}`,
@@ -45,7 +45,7 @@ export async function _selectGamePersona({
 	const responsePacket = new LegacyMessage();
 	responsePacket._header.id = 519;
 	responsePacket.setBuffer(packetContent);
-	log.debug(
+	log.verbose(
 		`LegacyMsg response object from _npsSelectGamePersona ${responsePacket
 			._doSerialize()
 			.toString("hex")} `,

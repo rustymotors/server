@@ -25,19 +25,6 @@ export class AbstractSerializable {
 		this.internalBuffer = Buffer.alloc(0);
 	}
 
-	_doSerialize() {
-		throw Error("Method '_doSerialize()' must be implemented.");
-	}
-
-	/**
-	 * @param {Buffer} _buffer
-	 * @returns {AbstractSerializable}
-	 */
-	// eslint-disable-next-line no-unused-vars
-	_doDeserialize(_buffer: Buffer): AbstractSerializable {
-		throw Error("Method '_doDeserialize()' must be implemented.");
-	}
-
 	get data() {
 		return this.internalBuffer;
 	}

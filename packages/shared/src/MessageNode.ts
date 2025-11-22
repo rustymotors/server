@@ -62,7 +62,7 @@ export class MessageNode implements MCOTSMessage {
         this.msgLength_ = 9 + this.body_.sizeOf;
         const buf = Buffer.alloc(this.sizeOf);
         let offset = 0;
-        buf.writeInt16LE(this.msgLength_, offset);
+        buf.writeUInt16LE(this.msgLength_, offset);
         offset = offset + 2;
         buf.write(this.signature_, offset, 'utf8');
         offset = offset + 4;
@@ -77,7 +77,7 @@ export class MessageNode implements MCOTSMessage {
     deserialize(buf: Buffer) {
         checkMinLength(buf, 11);
         let offset = 0;
-        this.msgLength_ = buf.readInt16LE(offset);
+        this.msgLength_ = buf.readUInt16LE(offset);
         offset = offset + 2;
         this.signature_ = sliceBuff(buf, offset, 4).toString('utf8');
         offset = offset + 4;
@@ -174,7 +174,7 @@ export class MessageNode implements MCOTSMessage {
     // TODO: change usage of these
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      *
      * see {@link signature} and {@link length}
      */
@@ -186,7 +186,7 @@ export class MessageNode implements MCOTSMessage {
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      *
      * see {@link sequence}
      */
@@ -195,7 +195,7 @@ export class MessageNode implements MCOTSMessage {
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      *
      * see {@link getBody} and {@link setBody}
      */
@@ -204,91 +204,91 @@ export class MessageNode implements MCOTSMessage {
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     getDataBuffer() {
         return this.body_;
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     setDataBuffer(val: Buffer) {
         this.body_.deserialize(val);
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     getByteSize() {
         return 11 + this.body_.sizeOf;
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     setSequence(val: number) {
         this.sequence_ = val;
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     setLength(val: number) {
         this.msgLength_ = val;
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     setSignature(val: string) {
         this.signature_ = val;
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     getMessageId() {
         return this.msgNo;
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     setMessageId(val: number) {
         this.setMessageId(val);
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     getLength() {
         return this.msgLength_;
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     getSignature() {
         return this.signature_;
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     getSequence() {
         return this.sequence_;
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     isValidSignature() {
         return this.isSignatureValid();
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     ensureValidSignature() {
         if (!this.isSignatureValid()) {
@@ -297,7 +297,7 @@ export class MessageNode implements MCOTSMessage {
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     ensureNonZeroSequence() {
         if (this.sequence_ === 0) {
@@ -306,56 +306,56 @@ export class MessageNode implements MCOTSMessage {
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     get messageId() {
         return this.msgNo;
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     get messageSource() {
         return null;
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     get _data() {
         return this.body_;
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     _assertEnoughData() {
         return false;
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     _doDeserialize() {}
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
 
     _doSerialize() {}
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     toHexString() {
         return this.serialize().toString('hex');
     }
 
     /**
-     * @deprecated
+     * @deprecated // TODO: Remove depreciated method
      */
     get sequenceNumber() {
-        return this.sequence_
-        }
+        return this.sequence_;
     }
+}
 

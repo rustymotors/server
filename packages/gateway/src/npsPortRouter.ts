@@ -47,7 +47,7 @@ export async function npsPortRouter({
                     return;
                 }
 
-                log.debug(`Receiving packet in queue`);
+                log.verbose(`Receiving packet in queue`);
 
                 await processSocketData(
                     item.data,
@@ -68,7 +68,7 @@ export async function npsPortRouter({
         10,
         async (item: messageQueueItem) => {
             try {
-                log.debug(`Sending packet in queue`, {
+                log.verbose(`Sending packet in queue`, {
                     data: item.data.toString("hex"),
                 });
                 if ('write' in socket) {
@@ -91,7 +91,7 @@ export async function npsPortRouter({
     // TODO: Document this
     if (port === 7003) {
         // Sent ok to login packet
-        log.debug(`Sending ok to login packet`);
+        log.verbose(`Sending ok to login packet`);
         sendQueue.put({
             sequenceNo: -1,
             data: Buffer.from([0x02, 0x30, 0x00, 0x04]),
@@ -112,7 +112,7 @@ export async function npsPortRouter({
 
     socket.on('error', (error) => {
         if (error.message.includes('ECONNRESET')) {
-            log.debug(`[${connectionId}] Connection reset by client`);
+            log.verbose(`[${connectionId}] Connection reset by client`);
             return;
         }
         log.error(`[${connectionId}] Socket error: ${error}`);
@@ -183,14 +183,14 @@ export async function processSocketData(
     }
 
     try {
-        log.debug(`[${id}] Received data: ${data.toString('hex')}`);
-        log.debug(`[${id}] Data length: ${data.length}`);
+        log.verbose(`[${id}] Received data: ${data.toString('hex')}`);
+        log.verbose(`[${id}] Data length: ${data.length}`);
 
         const separator = Buffer.from([0x11, 0x01]);
         const packets = splitDataIntoPackets(data, separator, log, id);
 
         for (const packet of packets) {
-            log.debug(`raw packet: ${packet.toString('hex')}`);
+            log.verbose(`raw packet: ${packet.toString('hex')}`);
             if (packet.byteLength === 0) {
                 log.warn(`BUG: We recieved an empty packet from the splitter`);
                 continue;
@@ -229,7 +229,7 @@ function splitDataIntoPackets(
     const packetsArray = data.toString('hex').split(separator.toString('hex'));
     const packetCount = packetsArray.length;
     let packets: Buffer[];
-    log.debug(`[${id}] ${packetCount} packets detected`);
+    log.verbose(`[${id}] ${packetCount} packets detected`);
 
     if (packetCount > 1) {
         packets = packetsArray.map((packet: string) => {
@@ -242,7 +242,7 @@ function splitDataIntoPackets(
             return Buffer.alloc(0);
         });
         packets = removeEmptyEntries(packets);
-        log.debug(
+        log.verbose(
             `[${id}] Split packets: ${packets.map((p) => p.toString('hex'))}`,
         );
     } else {
@@ -362,7 +362,7 @@ async function routeInitialMessage(
     // Route the initial message to the appropriate handler
     // Messages may be encrypted, this will be handled by the handler
 
-    log.debug(
+    log.verbose(
         `Routing message for port ${port}: ${initialPacket.header.id}`,
     );
 
@@ -375,7 +375,7 @@ async function routeInitialMessage(
 
     if (port >= 9000 && port < 9021) {
         try {
-            log.debug(
+            log.verbose(
                 `[${id}] Passing room packet to lobby handler: ${packet.getMessageId()}`,
             );
             responses = (
@@ -384,7 +384,7 @@ async function routeInitialMessage(
                     message: initialPacket,
                 })
             ).messages;
-            log.debug(
+            log.verbose(
                 `[${id}] Received ${responses.length} room lobby response packets`,
             );
             wasHandled = true;
@@ -398,7 +398,7 @@ async function routeInitialMessage(
     switch (port) {
         case 7003:
             // Handle lobby packet
-            log.debug(
+            log.verbose(
                 `[${id}] Passing packet to lobby handler: ${packet.getMessageId()}`,
             );
             responses = (
@@ -407,7 +407,7 @@ async function routeInitialMessage(
                     message: initialPacket,
                 })
             ).messages;
-            log.debug(
+            log.verbose(
                 `[${id}] Received ${responses.length} lobby response packets`,
             );
             wasHandled = true;
@@ -420,39 +420,39 @@ async function routeInitialMessage(
                     message: initialPacket,
                 })
             ).messages;
-            log.debug(
+            log.verbose(
                 `[${id}] Received ${responses.length} login response packets`,
             );
             wasHandled = true;
             break;
         case 8227:
             // Handle chat packet
-            log.debug(
+            log.verbose(
                 `[${id}] Passing packet to chat handler: ${packet.serialize().toString('hex')}`,
             );
             responses = (
                 await receiveChatData({ connectionId: id, message: packet })
             ).messages;
-            log.debug(
+            log.verbose(
                 `[${id}] Chat Responses: ${responses.map((r) => r.serialize().toString('hex'))}`,
             );
             break;
         case 8228:
-            log.debug(
+            log.verbose(
                 `[${id}] Passing packet to persona handler: ${packet.serialize().toString('hex')}`,
             );
             // responses =Handle persona packet
             responses = (
                 await receivePersonaData({ connectionId: id, message: packet })
             ).messages;
-            log.debug(
+            log.verbose(
                 `[${id}] Received ${responses.length} persona response packets`,
             );
             wasHandled = true;
             break;
         case 10001:
             try {
-                log.debug(
+                log.verbose(
                     `[${id}] Passing race? packet to lobby handler: ${packet.getMessageId()}`,
                 );
                 responses = (
@@ -461,7 +461,7 @@ async function routeInitialMessage(
                         message: initialPacket,
                     })
                 ).messages;
-                log.debug(
+                log.verbose(
                     `[${id}] Received ${responses.length} race? lobby response packets`,
                 );
                 wasHandled = true;
@@ -483,7 +483,7 @@ async function routeInitialMessage(
     }
 
     // Send responses back to the client
-    log.debug(`[${id}] Sending ${responses.length} responses`);
+    log.verbose(`[${id}] Sending ${responses.length} responses`);
 
     const sendQueue = getSocketQueue(id, 'send');
 

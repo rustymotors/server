@@ -54,7 +54,7 @@ export async function receivePersonaData({
 			message: inboundMessage,
 			log,
 		});
-		log.debug(
+		log.verbose(
 			`[${connectionId}] Returning with ${result.messages.length} messages`,
 		);
 		return result;

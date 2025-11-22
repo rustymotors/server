@@ -20,9 +20,9 @@ export async function _getFirstBuddy({
 }> {
 	// This message is a versioned nps message
 	const incomingMessage = new NPSMessage();
-	incomingMessage._doDeserialize(message._doSerialize());
+	incomingMessage.deserialize(message.serialize());
 
-	log.debug(
+	log.verbose(
 		`in _getFirstBuddy, incomingMessage: ${incomingMessage
 			.serialize()
 			.toString("hex")}`,
@@ -31,7 +31,7 @@ export async function _getFirstBuddy({
 	// extract the personaId
 	const personaId = incomingMessage.data.readUInt32BE(0);
 
-	log.debug(`in _getFirstBuddy, personaId: ${personaId}`);
+	log.verbose(`in _getFirstBuddy, personaId: ${personaId}`);
 
 	// TODO: Here we need to look up the buddies for the personaId
 
@@ -40,7 +40,7 @@ export async function _getFirstBuddy({
 	buddyCountMessage.buddyCount = 0;
 
 	const outboundMessage1 = new SerializedBufferOld();
-	outboundMessage1._doDeserialize(buddyCountMessage.serialize());
+	outboundMessage1.deserialize(buddyCountMessage.serialize());
 
 	const buddyInfoMessage = new BuddyInfoMessage();
 
@@ -60,9 +60,9 @@ export async function _getFirstBuddy({
 	}
 
 	const outboundMessage = new SerializedBufferOld();
-	outboundMessage._doDeserialize(buddyInfoMessage.serialize());
+	outboundMessage.deserialize(buddyInfoMessage.serialize());
 
-	log.debug(
+	log.verbose(
 		`in _getFirstBuddy, outboundMessage: ${outboundMessage1.toString()}`,
 	);
 

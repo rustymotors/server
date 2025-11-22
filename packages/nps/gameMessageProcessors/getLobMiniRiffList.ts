@@ -13,7 +13,7 @@ export async function getLobMiniRiffList(
 	_commandId: number,
 	data: Buffer,
 ): Promise<Buffer> {
-	defaultLogger.debug("getLobMiniRiffList called");
+	defaultLogger.verbose("getLobMiniRiffList called");
 	defaultLogger.info(`Processing getLobMiniRiffList command: ${getAsHex(data)}`);
 
 	const riffList = new MiniRiffList();

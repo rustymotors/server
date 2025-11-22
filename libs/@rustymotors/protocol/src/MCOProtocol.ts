@@ -58,7 +58,7 @@ class MCOProtocol {
 		socket: Socket;
 		log?: ServerLogger;
 	}) {
-		log.debug(
+		log.verbose(
             "Accepting incoming socket",
             { connectionId, port }, 
         );
@@ -71,7 +71,7 @@ class MCOProtocol {
 		});
 		socket.on("error", (error) => {
 			if (error.message === "read ECONNRESET") {
-				log.debug(
+				log.verbose(
                     "Connection reset by client",
                     { connectionId }, 
                 );
@@ -94,7 +94,7 @@ class MCOProtocol {
 		log?: ServerLogger;
 	}) {
 		const incomingPacket = createRawMessage(data);
-		log.debug(
+		log.verbose(
 			`Received packet: ${incomingPacket.serialize().toString("hex")}`,
 			{ connectionId },
 		);
@@ -118,7 +118,7 @@ class MCOProtocol {
             );
 		}
 
-		log.debug(
+		log.verbose(
             "Packet processed",
             { connectionId }, 
         );

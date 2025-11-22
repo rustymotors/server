@@ -8,8 +8,11 @@ import { BytableData } from './BytableData.js';
 import { BytableDword } from './BytableDword.js';
 import { BytableHeader } from './BytableHeader.js';
 import { BytableWord } from './BytableWord.js';
-import { BytableObject } from './types.js';
-import { getServerLogger, RawMessage } from 'rusty-motors-shared';
+import { BytableObject, IBytableMessage } from './types.js';
+import {
+    getServerLogger,
+    RawMessage,
+} from 'rusty-motors-shared';
 
 export class BytableStructure extends BytableBase implements BytableObject {
     protected fields_: Array<BytableObject> = [];
@@ -152,7 +155,8 @@ export const BytableFieldTypes = {
     Buffer: BytableBuffer,
     CString: BytableCString,
 };
-export class BytableMessage extends Bytable {
+
+export class BytableMessage extends Bytable implements IBytableMessage {
     protected header_: BytableHeader = new BytableHeader();
     protected fields_: Array<BytableObject> = [];
     protected serializeOrder_: Array<{
@@ -428,3 +432,5 @@ export function createGameMessage(buffer?: Buffer) {
 
     return message;
 }
+
+

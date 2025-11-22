@@ -18,11 +18,11 @@ export async function handleGetMiniUserList({
 	messages: BytableMessage[];
 }> {
 	try {
-		log.debug(`[${connectionId}] Handling NPS_GET_MINI_USER_LIST`);
+		log.verbose(`[${connectionId}] Handling NPS_GET_MINI_USER_LIST`);
 
 		const requestedCommId = message.getBody().readUInt32BE(0);
 
-		log.debug(`[${connectionId}] Requested commId: ${requestedCommId}`);
+		log.verbose(`[${connectionId}] Requested commId: ${requestedCommId}`);
 
 		const commId = 1;
 		const userCount = 2;
@@ -35,13 +35,13 @@ export async function handleGetMiniUserList({
 		user1.setFieldValueByName("userId", 21);
 		user1.setFieldValueByName("userName", "Dr Brown");
 
-		log.debug(`[${connectionId}] User1: ${user1.toString()}`);
+		log.verbose(`[${connectionId}] User1: ${user1.toString()}`);
 
 		const user2 = new MiniUserInfo();
 		user2.setFieldValueByName("userId", 88);
 		user2.setFieldValueByName("userName", "Marty");		
 
-		log.debug(`[${connectionId}] User2: ${user2.toString()}`);
+		log.verbose(`[${connectionId}] User2: ${user2.toString()}`);
 
 		const realData = Buffer.concat([
 			channelCountRecord,
@@ -66,8 +66,8 @@ export async function handleGetMiniUserList({
 		]);
 		packetResult.deserialize(outgoingMessage.serialize());
 
-		log.debug(`[${connectionId}] Sending NPS_MINI_USER_LIST`);
-		log.debug(`[${connectionId}] Sending response: ${packetResult.serialize().toString("hex")}`);
+		log.verbose(`[${connectionId}] Sending NPS_MINI_USER_LIST`);
+		log.verbose(`[${connectionId}] Sending response: ${packetResult.serialize().toString("hex")}`);
 
 		return {
 			connectionId,

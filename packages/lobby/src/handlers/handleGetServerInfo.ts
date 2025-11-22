@@ -15,8 +15,8 @@ export async function handleGetServerInfo({
     messages: BytableMessage[];
 }> {
     try {
-        log.debug(`[${connectionId}] Handling NPS_GET_SERVER_INFO`);
-        log.debug(
+        log.verbose(`[${connectionId}] Handling NPS_GET_SERVER_INFO`);
+        log.verbose(
             `[${connectionId}] Received command: ${message.header.id}`,
         );
 
@@ -30,7 +30,7 @@ export async function handleGetServerInfo({
 
         const cID = (requestedCommId as Buffer).readInt32BE();
 
-        log.debug(`Received commId: ${cID}`, {
+        log.verbose(`Received commId: ${cID}`, {
             connectionId,
         });
 
@@ -84,7 +84,7 @@ export async function handleGetServerInfo({
         packetResult.setVersion(0);
         packetResult.deserialize(outgoingGameMessage.serialize());
 
-        log.debug(
+        log.verbose(
             `Sending response[serialize2]: ${packetResult.serialize().toString('hex')}`,
             { connectionId },
         );

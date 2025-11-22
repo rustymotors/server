@@ -54,28 +54,28 @@ export class ReceiveEmailMessage extends ChatMessage {
 }
 
 export function handleListInGameEmailsMessage(message: ChatMessage): Buffer[] {
-	defaultLogger.debug(`Handling ListInGameEmailsMessage: ${message.toString()}`);
+	defaultLogger.verbose(`Handling ListInGameEmailsMessage: ${message.toString()}`);
 
 	const parsedMessage = ListInGameEmailsMessage.fromBuffer(message.toBuffer());
 
-	defaultLogger.debug(`Parsed message: ${parsedMessage.toString()}`);
+	defaultLogger.verbose(`Parsed message: ${parsedMessage.toString()}`);
 
 	const totalEmails = unseenMail.size;
 	const mailId = totalEmails > 0 ? unseenMail.keys().next().value || 0 : 0;
 
 	const response = new ListInGameEmailsResponseMessage(totalEmails, mailId);
 
-	defaultLogger.debug(`Response: ${response.toString()}`);
+	defaultLogger.verbose(`Response: ${response.toString()}`);
 
 	return [response.toBuffer()];
 }
 
 export function handleReceiveEmailMessage(message: ChatMessage): Buffer[] {
-	defaultLogger.debug(`Handling ReceiveEmailMessage: ${message.toString()}`);
+	defaultLogger.verbose(`Handling ReceiveEmailMessage: ${message.toString()}`);
 
 	const parsedMessage = ReceiveEmailMessage.fromBuffer(message.toBuffer());
 
-	defaultLogger.debug(`Parsed message: ${parsedMessage.toString()}`);
+	defaultLogger.verbose(`Parsed message: ${parsedMessage.toString()}`);
 
 	const requestedEmail = unseenMail.get(parsedMessage.mailId);
 
@@ -87,7 +87,7 @@ export function handleReceiveEmailMessage(message: ChatMessage): Buffer[] {
 	const email = requestedEmail;
 
 	if (!parsedMessage.headerOnly) {
-		defaultLogger.debug(`Email body requested`);
+		defaultLogger.verbose(`Email body requested`);
 	}
 
 	const buffers: Buffer[] = [];

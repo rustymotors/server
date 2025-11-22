@@ -32,7 +32,7 @@ export async function mcotsPortRouter({
         return;
     }
 
-    log.debug(`MCOTS port router started`,{
+    log.verbose(`MCOTS port router started`,{
         connectionId,
         port
     });
@@ -66,7 +66,7 @@ export async function mcotsPortRouter({
 
     socket.on('error', (error) => {
         if (error.message.includes('ECONNRESET')) {
-            log.debug(`Connection reset by client`, {
+            log.verbose(`Connection reset by client`, {
                 connectionId,
                 port: socket.localPort
             });
@@ -108,7 +108,7 @@ async function processIncomingPackets(
     try {
         let inPackets: Buffer[] = [];
 
-        log.debug(
+        log.verbose(
             `Received data`, {
                 namespace: "processIncommingPacket",
                 connectionId,
@@ -133,13 +133,13 @@ async function processIncomingPackets(
             inPackets.push(packet);
         }
 
-        log.debug(`Received ${inPackets.length} packets`, {
+        log.verbose(`Received ${inPackets.length} packets`, {
             connectionId
         });
 
         inPackets.forEach(async (packet, idx) => {
 
-            log.debug(`Processing packet #${idx}`,{
+            log.verbose(`Processing packet #${idx}`,{
                 connectionId,
                 data: packet.toString("hex")
             });
@@ -192,7 +192,7 @@ async function routeInitialMessage(
     // Route the initial message to the appropriate handler
     // Messages may be encrypted, this will be handled by the handler
 
-    log.debug(`Routing message for port ${port}: ${initialPacket.msgNo}`);
+    log.verbose(`Routing message for port ${port}: ${initialPacket.msgNo}`);
     let responses: MessageNode[] = [];
 
     switch (port) {
@@ -211,7 +211,7 @@ async function routeInitialMessage(
     }
 
     // Send responses back to the client
-    log.debug(`[${id}] Sending ${responses.length} responses`);
+    log.verbose(`[${id}] Sending ${responses.length} responses`);
 
     // Serialize the responses
     const serializedResponses = responses.map((response) => response.serialize());

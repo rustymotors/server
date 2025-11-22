@@ -21,8 +21,8 @@ export async function handleOpenCommChannel({
     messages: BytableMessage[];
 }> {
     try {
-        log.debug(`[${connectionId}] Handling NPS_OPEN_COMM_CHANNEL`);
-        log.debug(
+        log.verbose(`[${connectionId}] Handling NPS_OPEN_COMM_CHANNEL`);
+        log.verbose(
             `[${connectionId}] Received command: ${message.header.id}`,
         );
 
@@ -42,7 +42,7 @@ export async function handleOpenCommChannel({
             incomingRequest.getFieldValueByName('riffName') ?? '';
         const requestedCommId = (requestedCommIdBuffer as Buffer).readInt32BE();
 
-        log.debug(
+        log.verbose(
             `[${connectionId}] Requested we open a channel on ${requestedRiffName}(${requestedCommId})`,
         );
 
@@ -55,7 +55,7 @@ export async function handleOpenCommChannel({
             (requestedCommIdBuffer as Buffer).readInt32BE(),
             port,
         );
-        log.debug(
+        log.verbose(
             `[${connectionId}]  Sending comm GRANTED: ${JSON.stringify(packetResult)}`,
         );
 
@@ -87,7 +87,7 @@ export async function handleOpenCommChannel({
                 createRawMessage(0x20c, userJoined),
             );
 
-            log.debug('Outbound user join message', {
+            log.verbose('Outbound user join message', {
                 connectionId,
                 userId,
                 json: JSON.stringify(userJoinedMessage),

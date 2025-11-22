@@ -37,7 +37,7 @@ export async function serverLoginMessageHandler({
 		]);
 		inboundMessage.deserialize(message.serialize());
 		const messageId = inboundMessage.header.messageId;
-		log.debug(
+		log.verbose(
 			"Processing server login message",
 			{ connectionId, messageId: messageId.toString(16) },
 		);
@@ -94,7 +94,7 @@ export async function serverLoginMessageHandler({
 					decrypted: sessionKey,
 				},
 			); // 12 bytes
-			log.fatal(
+			log.error(
 				`Error decrypting session key: ${(error as Error).message}`,
 				{
 					connectionId,
@@ -111,14 +111,14 @@ export async function serverLoginMessageHandler({
 			throw Error("No session key found");
 		}
 
-		log.debug(
+		log.verbose(
 			"Session key decrypted",
 			{
 				connectionId,
 			},
 		);
 
-		log.debug(
+		log.verbose(
 			"Creating outbound message",
 			{
 				connectionId,
@@ -128,7 +128,7 @@ export async function serverLoginMessageHandler({
 		const responseCode = 0x601;
 
 		const loginResponseMessage = createRawMessage();
-		loginResponseMessage.header.setMessageId(responseCode);
+		loginResponseMessage.header.setId(responseCode);
 		loginResponseMessage.setSerializeOrder([
 			{ name: "ban", field: "Dword" },
 			{ name: "gag", field: "Dword" },
@@ -156,10 +156,10 @@ export async function serverLoginMessageHandler({
 		const body = serialize(fields);
 
 		const responseMessage = createRawMessage();
-		responseMessage.header.setMessageId(responseCode);
+		responseMessage.header.setId(responseCode);
 		responseMessage.setBody(body);
 
-		log.debug(
+		log.verbose(
 			"Outbound message created",
 			{
 				connectionId,

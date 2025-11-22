@@ -18,7 +18,7 @@ export async function _getArcadeCarInfo({
 	const getArcadeCarInfoMessage = new GenericRequestMessage();
 	getArcadeCarInfoMessage.deserialize(packet.data);
 
-	log.debug(`Received Message: ${getArcadeCarInfoMessage.toString()}`);
+	log.verbose(`Received Message: ${getArcadeCarInfoMessage.toString()}`);
 
 	const arcadeCarInfoMessage = new ArcadeCarMessage();
 	arcadeCarInfoMessage._msgNo = 323;

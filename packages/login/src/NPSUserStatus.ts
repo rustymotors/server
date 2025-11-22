@@ -51,8 +51,8 @@ export class NPSUserStatus extends LegacyMessage {
 		super();
 		this._config = config;
 		this.log = getServerLogger("NPSUserStatus");
-		log.debug("Constructing NPSUserStatus");
-		this._header._doDeserialize(packet);
+		log.verbose("Constructing NPSUserStatus");
+		this._header.deserialize(packet);
 		this.sessionKey = "";
 
 		// Save the NPS opCode
@@ -79,7 +79,7 @@ export class NPSUserStatus extends LegacyMessage {
 	 * @throws {Error} Throws an error if there is an issue decrypting the session key.
 	 */
 	extractSessionKeyFromPacket(rawPacket: Buffer): void {
-		this.log.debug("Extracting key");
+		this.log.verbose("Extracting key");
 
 		const keyLength = rawPacket.readUInt16LE(SESSION_KEY_START);
 
@@ -121,7 +121,7 @@ export class NPSUserStatus extends LegacyMessage {
 	}
 
 	toJSON() {
-		this.log.debug("Returning as JSON");
+		this.log.verbose("Returning as JSON");
 		return {
 			msgNo: this._header.id,
 			msgLength: this._header.length,
@@ -136,7 +136,7 @@ export class NPSUserStatus extends LegacyMessage {
 	 * @return {string}
 	 */
 	dumpPacket(): string {
-		this.log.debug("Returning as string");
+		this.log.verbose("Returning as string");
 		let message = this._header.toString();
 		message = message.concat(
 			`NPSUserStatus,

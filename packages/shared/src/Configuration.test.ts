@@ -4,7 +4,7 @@ import { getServerLogger } from "../getServerLogger.js";
 
 vi.mock("../getServerLogger.js", () => ({
 	getServerLogger: vi.fn().mockReturnValue({
-		fatal: vi.fn(),
+		error: vi.fn(),
 	}),
 }));
 
@@ -54,7 +54,7 @@ describe("getServerConfiguration", () => {
 		const mockLogger = getServerLogger("core");
 
 		expect(() => getServerConfiguration()).toThrow("process.exit called");
-		expect(mockLogger.fatal).toHaveBeenCalledWith(
+		expect(mockLogger.error).toHaveBeenCalledWith(
 			"Missing required environment variable: CERTIFICATE_FILE",
 		);
 		expect(mockExit).toHaveBeenCalledWith(1);

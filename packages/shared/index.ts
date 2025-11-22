@@ -62,7 +62,9 @@ export {
     Short,
     Long,
     diffObj,
+    align
 } from './src/helpers.js';
+export {NPSMessageToBytableMessageAdaptor} from "./src/NPSMessageToBytableMessageAdaptor.js"
 export { CreateRaceInfo, CreateRaceMessage } from './src/CreateRaceMessage.js';
 export {
     RaceInfo,
@@ -73,7 +75,7 @@ export {
 } from './src/RaceInfo.js';
 export { SerializedList } from './src/SerializedList.js';
 export { OpenCommChannelRequest } from './src/OpenCommChannelRequest.js';
-export {getServerLogger, type ServerLogger} from "./getServerLogger.js"
+export { getServerLogger, type ServerLogger } from './getServerLogger.js';
 export * from './src/types.js';
 
 // Function to convert ARGB to 32-bit integer

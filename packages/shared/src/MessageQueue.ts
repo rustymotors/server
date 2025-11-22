@@ -42,6 +42,10 @@ export class MessageQueue {
         this._queue.push(item);
     }
 
+    get name() {
+        return this._name
+    }
+
     exit() {
         this._isRunning = false;
     }

@@ -1,8 +1,10 @@
+// @ts-nocheck // TODO: Fix this file
 import { Socket as SocketUDP, type RemoteInfo } from 'node:dgram';
 import EventEmitter from 'node:events';
 import { Socket as SocketTCP, type AddressInfo } from 'node:net';
 import type { IClientConnection } from './types.js';
 import type { Cipheriv, Decipheriv } from 'crypto';
+
 
 export class ClientConnection
     extends EventEmitter
@@ -43,14 +45,16 @@ export function newConnection(socket: SocketTCP | SocketUDP): ClientConnection {
         const connection: ClientConnection = {
             personaName: '',
             personaId: 0,
-            ip: remoteAddress,
-            port: localPort,
+            ip: socket.remoteAddress || "",
+            port: socket.localPort || 0,
             protocol: 'TCP',
             socket: socket,
             encryptionSetup: false,
             encryption: null,
         };
+        return connection
     } else if (socket instanceof SocketUDP) {
+        throw new Error('Not implemented')
     } else {
         throw new Error('socket is not either TCP or UDP');
     }

@@ -192,10 +192,10 @@ async function getPersonaMaps({
 	connectionId: string;
 	messages: SerializedBufferOld[];
 }> {
-	log.debug("_npsGetPersonaMaps...");
+	log.verbose("_npsGetPersonaMaps...");
 
 	const requestPacket = message;
-	log.debug(
+	log.verbose(
 		`NPSMsg request object from _npsGetPersonaMaps ${requestPacket
 			._doSerialize()
 			.toString("hex")} `,
@@ -204,7 +204,7 @@ async function getPersonaMaps({
 	const customerId = requestPacket.data.readUInt32BE(8);
 
 	const personas = await getPersonaMapsByCustomerId(customerId);
-	log.debug(`${personas.length} personas found for ${customerId}`);
+	log.verbose(`${personas.length} personas found for ${customerId}`);
 
 	const personaMapsMessage = new PersonaMapsMessage();
 
@@ -229,7 +229,7 @@ async function getPersonaMaps({
 
 			personaList.addPersonaRecord(personaRecord);
 
-			log.debug(
+			log.verbose(
 				`Persona record: ${JSON.stringify({
 					personaRecord: personaRecord.toJSON(),
 				})}`,
@@ -239,7 +239,7 @@ async function getPersonaMaps({
 		personaMapsMessage._header.id = 0x607;
 		personaMapsMessage._personaRecords = personaList;
 		personaMapsMessage.setBuffer(personaList.serialize());
-		log.debug(
+		log.verbose(
 			`PersonaMapsMessage object from _npsGetPersonaMaps',
             ${JSON.stringify({
 							personaMapsMessage: personaMapsMessage
@@ -249,7 +249,7 @@ async function getPersonaMaps({
 		);
 
 		const outboundMessage = new SerializedBufferOld();
-		outboundMessage._doDeserialize(personaMapsMessage.serialize());
+		outboundMessage.deserialize(personaMapsMessage.serialize());
 
 		return {
 			connectionId,
