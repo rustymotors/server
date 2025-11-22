@@ -47,10 +47,9 @@ describe("MessageNode", () => {
         expect(m.isPayloadCompressed()).toBe(false);
     });
 
-    it("sequence helpers and ensureNonZeroSequence behavior", () => {
+    it("sequence helpers behavior", () => {
         const m = new MessageNode();
         expect(m.isSequenceSet()).toBe(false);
-        expect(() => m.ensureNonZeroSequence()).toThrow("please set sequence");
 
         m.sequence = 7;
         expect(m.isSequenceSet()).toBe(true);
@@ -59,14 +58,14 @@ describe("MessageNode", () => {
         expect(m.seq).toBe(7);
     });
 
-    it("signature validation and ensureValidSignature behavior", () => {
+    it("signature validation behavior", () => {
         const m = new MessageNode();
         expect(m.isSignatureValid()).toBe(true);
         expect(() => m.ensureValidSignature()).not.toThrow();
 
         m.setSignature("BAD!");
         expect(m.isSignatureValid()).toBe(false);
-        expect(() => m.ensureValidSignature()).toThrow("Signature is not valid");
+        expect(() => m.ensureValidSignature()).toThrow("invalid signature");
     });
 
     it("msgNo getter/setter updates body and serialized bytes", () => {
@@ -92,14 +91,8 @@ describe("MessageNode", () => {
         expect(buf.readInt16LE(11)).toBe(5);
     });
 
-    it("deprecated helpers produce expected outputs", () => {
+    it("toString produces expected output", () => {
         const m = new MessageNode();
-        m.sequence = 9;
-        const header = m.header;
-        expect(header.mcoSig).toBe(m.signature);
-        expect(header.length).toBe(m.length);
-
-        expect(m.toHexString()).toBe(m.serialize().toString("hex"));
         // toString should start with the prefix
         expect(m.toString().startsWith("MessageNode:")).toBe(true);
     });

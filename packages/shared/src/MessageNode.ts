@@ -116,6 +116,10 @@ export class MessageNode implements MCOTSMessage {
         this.sequence_ = val;
     }
 
+    get seq() {
+        return this.sequence_;
+    }
+
     isSequenceSet() {
         return this.sequence_ !== 0;
     }
@@ -228,6 +232,11 @@ export class MessageNode implements MCOTSMessage {
         if (!this.isSignatureValid()) {
             throw new Error("invalid signature");
         }
+    }
+
+    setSignature(val: string) {
+        checkSize4(val.length);
+        this.signature_ = val;
     }
 
     get header() {
