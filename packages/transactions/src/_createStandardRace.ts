@@ -30,7 +30,7 @@ export async function _createStandardRace({
     raceCreatedMessage.perRacePurseBonus = 3
 
 
-    log.verbose(`RaceCreatedmsg: ${raceCreatedMessage.toString()}`)
+    log.verbose(`RaceCreatedmsg: ${raceCreatedMessage.toLogString()}`)
     
     
     // Create new response packet

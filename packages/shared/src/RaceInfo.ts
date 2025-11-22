@@ -725,6 +725,19 @@ export class RaceCreatedMessage extends MessageNodeBody {
     override toString() {
         return JSON.stringify(this);
     }
+
+    toLogString() {
+        return JSON.stringify({
+            _msgNo: this._msgNo,
+            _raceId: this._raceId,
+            _entryFee: this._entryFee,
+            _perPlayerPurseBonus: this._perPlayerPurseBonus,
+            _raceHistoryId: this._raceHistoryId,
+            _perRacePurseBonus: this._perRacePurseBonus,
+            // Mask or exclude password from logs
+            _password: "***",
+        });
+    }
 }
 
 export class JoinRaceMessage extends MessageNodeBody {
