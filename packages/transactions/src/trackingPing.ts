@@ -24,7 +24,7 @@ export async function trackingPing({
 
 	rPacket.setBuffer(pReply.serialize());
 
-	log.debug(`TrackingPing: ${rPacket.toString()}`);
+	log.verbose(`TrackingPing: ${rPacket.toString()}`);
 
 	return { connectionId, messages: [] };
 }

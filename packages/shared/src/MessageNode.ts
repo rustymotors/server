@@ -62,7 +62,7 @@ export class MessageNode implements MCOTSMessage {
         this.msgLength_ = 9 + this.body_.sizeOf;
         const buf = Buffer.alloc(this.sizeOf);
         let offset = 0;
-        buf.writeInt16LE(this.msgLength_, offset);
+        buf.writeUInt16LE(this.msgLength_, offset);
         offset = offset + 2;
         buf.write(this.signature_, offset, 'utf8');
         offset = offset + 4;
@@ -77,7 +77,7 @@ export class MessageNode implements MCOTSMessage {
     deserialize(buf: Buffer) {
         checkMinLength(buf, 11);
         let offset = 0;
-        this.msgLength_ = buf.readInt16LE(offset);
+        this.msgLength_ = buf.readUInt16LE(offset);
         offset = offset + 2;
         this.signature_ = sliceBuff(buf, offset, 4).toString('utf8');
         offset = offset + 4;
@@ -114,6 +114,10 @@ export class MessageNode implements MCOTSMessage {
 
     set sequence(val: number) {
         this.sequence_ = val;
+    }
+
+    get seq() {
+        return this.sequence_;
     }
 
     isSequenceSet() {
@@ -171,191 +175,79 @@ export class MessageNode implements MCOTSMessage {
         return `MessageNode: ${JSON.stringify(this)}`;
     }
 
-    // TODO: change usage of these
+    toLogString() {
+        // Only log essential message node info, mask body if possible
+        let bodyLog;
+        if (
+            this.body_ &&
+            typeof (this.body_ as any).toLogString === "function"
+        ) {
+            bodyLog = (this.body_ as any).toLogString();
+        } else {
+            // fallback: attempt to mask sensitive content
+            bodyLog = "<body>";
+        }
+        return JSON.stringify({
+            sequence: this.sequence,
+            flags_: this.flags_,
+            msgLength_: this.msgLength_,
+            body: bodyLog,
+        });
+    }
 
-    /**
-     * @deprecated
-     *
-     * see {@link signature} and {@link length}
-     */
+    // IServerMessage implementation
+    get data(): Buffer {
+        return this.body_.serialize();
+    }
+
+    get sequenceNumber(): number {
+        return this.sequence_;
+    }
+
+    toHexString(): string {
+        return this.serialize().toString('hex');
+    }
+
+    // Deprecated methods required by legacy code
+    getMessageId(): number {
+        return this.msgNo;
+    }
+
+    getSequence(): number {
+        return this.sequence_;
+    }
+
+    getByteSize(): number {
+        return this.sizeOf;
+    }
+
+    // Deprecated methods restored for compatibility
+    ensureNonZeroSequence() {
+        if (this.sequence === 0) {
+            throw new Error("please set sequence");
+        }
+    }
+
+    ensureValidSignature() {
+        if (!this.isSignatureValid()) {
+            throw new Error("invalid signature");
+        }
+    }
+
+    setSignature(val: string) {
+        checkSize4(val.length);
+        this.signature_ = val;
+    }
+
     get header() {
         return {
             mcoSig: this.signature,
             length: this.length,
+            sequence: this.sequence,
+            flags: this.flags,
         };
     }
 
-    /**
-     * @deprecated
-     *
-     * see {@link sequence}
-     */
-    get seq() {
-        return this.sequence;
-    }
 
-    /**
-     * @deprecated
-     *
-     * see {@link getBody} and {@link setBody}
-     */
-    get data() {
-        return this.body_.serialize();
-    }
-
-    /**
-     * @deprecated
-     */
-    getDataBuffer() {
-        return this.body_;
-    }
-
-    /**
-     * @deprecated
-     */
-    setDataBuffer(val: Buffer) {
-        this.body_.deserialize(val);
-    }
-
-    /**
-     * @deprecated
-     */
-    getByteSize() {
-        return 11 + this.body_.sizeOf;
-    }
-
-    /**
-     * @deprecated
-     */
-    setSequence(val: number) {
-        this.sequence_ = val;
-    }
-
-    /**
-     * @deprecated
-     */
-    setLength(val: number) {
-        this.msgLength_ = val;
-    }
-
-    /**
-     * @deprecated
-     */
-    setSignature(val: string) {
-        this.signature_ = val;
-    }
-
-    /**
-     * @deprecated
-     */
-    getMessageId() {
-        return this.msgNo;
-    }
-
-    /**
-     * @deprecated
-     */
-    setMessageId(val: number) {
-        this.setMessageId(val);
-    }
-
-    /**
-     * @deprecated
-     */
-    getLength() {
-        return this.msgLength_;
-    }
-
-    /**
-     * @deprecated
-     */
-    getSignature() {
-        return this.signature_;
-    }
-
-    /**
-     * @deprecated
-     */
-    getSequence() {
-        return this.sequence_;
-    }
-
-    /**
-     * @deprecated
-     */
-    isValidSignature() {
-        return this.isSignatureValid();
-    }
-
-    /**
-     * @deprecated
-     */
-    ensureValidSignature() {
-        if (!this.isSignatureValid()) {
-            throw new Error('Signature is not valid');
-        }
-    }
-
-    /**
-     * @deprecated
-     */
-    ensureNonZeroSequence() {
-        if (this.sequence_ === 0) {
-            throw new Error('please set sequence');
-        }
-    }
-
-    /**
-     * @deprecated
-     */
-    get messageId() {
-        return this.msgNo;
-    }
-
-    /**
-     * @deprecated
-     */
-    get messageSource() {
-        return null;
-    }
-
-    /**
-     * @deprecated
-     */
-    get _data() {
-        return this.body_;
-    }
-
-    /**
-     * @deprecated
-     */
-    _assertEnoughData() {
-        return false;
-    }
-
-    /**
-     * @deprecated
-     */
-    _doDeserialize() {}
-
-    /**
-     * @deprecated
-     */
-
-    _doSerialize() {}
-
-    /**
-     * @deprecated
-     */
-    toHexString() {
-        return this.serialize().toString('hex');
-    }
-
-    /**
-     * @deprecated
-     */
-    get sequenceNumber() {
-        return this.sequence_
-        }
-    }
+}
 

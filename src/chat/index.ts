@@ -34,7 +34,7 @@ async function receiveChatData({
 	message: BufferSerializer;
 }): Promise<ServiceResponse> {
 	defaultLogger.info(`Received chat data from connection ${connectionId}`);
-	defaultLogger.debug(`Message: ${message.toHexString()}`);
+	defaultLogger.verbose(`Message: ${message.toHexString()}`);
 
 	let inboundMessage: ChatMessage;
 	
@@ -51,23 +51,23 @@ async function receiveChatData({
 			messages: [],
 		};
 	}
-	defaultLogger.debug(`Deserialized message: ${inboundMessage.toString()}`);
+	defaultLogger.verbose(`Deserialized message: ${inboundMessage.toString()}`);
 
 	const id = inboundMessage.messageId;
 
-	defaultLogger.debug(`Message ID: ${id}`);
+	defaultLogger.verbose(`Message ID: ${id}`);
 
 	const handler = handlers.get(id);
 
 	if (handler) {
-		defaultLogger.debug(`Handling message with ID ${id}`);
+		defaultLogger.verbose(`Handling message with ID ${id}`);
 		const responses = handler(inboundMessage);
-		defaultLogger.debug(
+		defaultLogger.verbose(
 			`Responses: ${responses.map((response) => bufferToHexString(response))}`,
 		);
 		const messages = responses.map((response) => {
 			const responseBuffer = new SerializedBufferOld();
-			responseBuffer._doDeserialize(response);
+			responseBuffer.deserialize(response);
 			return responseBuffer;
 		});
 

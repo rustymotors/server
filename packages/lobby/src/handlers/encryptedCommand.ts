@@ -161,10 +161,10 @@ async function handleCommand({
     const command = message.header.id;
 
     // What is the command?
-    log.debug(`Received Command: ${command.toString(16)}`, {
+    log.verbose(`Received Command: ${command.toString(16)}`, {
         connectionId,
     });
-    log.debug(
+    log.verbose(
         `Received Command message: ${message.serialize().toString('hex')}`,
         { connectionId },
     );
@@ -215,7 +215,7 @@ export async function handleEncryptedNPSCommand({
     connectionId: string;
     messages: SerializedBufferOld[];
 }> {
-    log.debug(`Received encrypted command: ${message.header.id}`, {
+    log.verbose(`Received encrypted command: ${message.header.id}`, {
         connectionId,
     });
 
@@ -225,7 +225,7 @@ export async function handleEncryptedNPSCommand({
         message,
     });
 
-    log.debug(
+    log.verbose(
         `Deciphered command: ${decipheredMessage.message.header.id}`,
         { connectionId },
     );
@@ -236,7 +236,7 @@ export async function handleEncryptedNPSCommand({
     });
 
     if (responses.messages === null) {
-        log.debug(`No response to send`, { connectionId });
+        log.verbose(`No response to send`, { connectionId });
         return {
             connectionId,
             messages: [],
@@ -247,7 +247,7 @@ export async function handleEncryptedNPSCommand({
         try {
             const oldMsgId = message.header.id;
 
-            log.debug('Message prior to encryption', {
+            log.verbose('Message prior to encryption', {
                 connectionId,
                 oldMsgId,
                 data: message.serialize().toString('hex'),
@@ -262,7 +262,7 @@ export async function handleEncryptedNPSCommand({
             const encryptedResponse = result.message;
             const newMsgId = encryptedResponse.header.id;
 
-            log.debug('Message encrypted', {
+            log.verbose('Message encrypted', {
                 oldMsgId,
                 newMsgId,
                 connectionId,

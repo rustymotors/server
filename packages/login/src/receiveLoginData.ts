@@ -48,7 +48,7 @@ export async function receiveLoginData({
 			message,
 			log,
 		});
-		log.debug(
+		log.verbose(
 			`[${connectionId}] Exiting login module ${response.messages.length} messages`,
 		);
 

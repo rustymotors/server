@@ -37,7 +37,7 @@ export function unpackUserLoginMessage(message: ISerializable): {
 	gameId: string;
 	contextToken: string;
 } {
-	defaultLogger.debug("unpackUserLoginMessage called");
+	defaultLogger.verbose("unpackUserLoginMessage called");
 	defaultLogger.info(`Unpacking user login message: ${getAsHex(message.serialize())}`);
 
 	// Get the context token
@@ -114,7 +114,7 @@ export async function processGameLogin(
 			op: "processLogin",
 		},
 		() => {
-			defaultLogger.debug("processGameLogin called");
+			defaultLogger.verbose("processGameLogin called");
 
 			defaultLogger.info(`Login: ${message.toString()}`);
 

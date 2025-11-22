@@ -11,14 +11,25 @@ export class MessageHeader implements IMessageHeader {
 		}
 		this.version = version;
 		this.id = id;
-		this.length = length !== 0 ? length : this.getByteSize();
+		this.length = length !== 0 ? length : this.sizeOf;
 	}
+    toString(): string {
+        throw new Error("Method not implemented.");
+    }
 	getDataOffset(): number {
 		return this.getVersion() === 0 ? 4 : 12;
 	}
-	getByteSize(): number {
+	/**
+     * @deprecated use sizeOf instead
+     * @returns 
+     */
+    getByteSize(): number {
 		return this.getVersion() === 0 ? 4 : 12;
 	}
+
+    get sizeOf() {
+        return this.getVersion() === 0 ? 4 : 12;
+    }
 
 	getVersion(): number {
 		return this.version;
@@ -43,7 +54,7 @@ export class MessageHeader implements IMessageHeader {
 	}
 
 	private serializeV0(): Buffer {
-		const buffer = Buffer.alloc(this.getByteSize());
+		const buffer = Buffer.alloc(this.sizeOf);
 		buffer.writeUInt16BE(this.id, 0);
 		buffer.writeUInt16BE(this.length, 2);
 
@@ -51,7 +62,7 @@ export class MessageHeader implements IMessageHeader {
 	}
 
 	private serializeV1(): Buffer {
-		const buffer = Buffer.alloc(this.getByteSize());
+		const buffer = Buffer.alloc(this.sizeOf);
 		buffer.writeUInt16BE(this.id, 0);
 		buffer.writeUInt16BE(this.length, 2);
 		buffer.writeUInt16BE(this.version, 4);
@@ -116,6 +127,10 @@ export class SerializableData implements ISerializable {
 		return this.data.length;
 	}
 
+    get sizeOf() {
+        return this.data.length;
+    }
+
 	toString(): string {
 		return `EmptyData(length=${this.data.length}, data=${this.data.toString(
 			"hex",
@@ -140,19 +155,25 @@ export class GameMessage implements IMessage {
 		return this.data.serialize();
 	}
 
-	/** The message length is the length of the message data, not including the id */
+	/** 
+     * @deprecated use sizeOf
+     * The message length is the length of the message data, not including the id */
 	getByteSize(): number {
 		return this.header.getLength();
 	}
+
+    get sizeOf() {
+        return this.header.getLength();
+    }
 	getData(): ISerializable {
 		return this.data;
 	}
 	setData(data: ISerializable): void {
 		this.data = data;
-		this.header.setLength(data.getByteSize() + this.header.getByteSize());
+		this.header.setLength(data.sizeOf + this.header.sizeOf);
 	}
 	serialize(): Buffer {
-		const buffer = Buffer.alloc(this.getByteSize());
+		const buffer = Buffer.alloc(this.sizeOf);
 		const headerData = this.header.serialize();
 		headerData.copy(buffer, 0);
 		const messageData = this.data.serialize();

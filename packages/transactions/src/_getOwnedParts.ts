@@ -18,7 +18,7 @@ export async function _getOwnedParts({
 	const getOwnedPartsMessage = new GenericRequestMessage();
 	getOwnedPartsMessage.deserialize(packet.data);
 
-	log.debug(`Received Message: ${getOwnedPartsMessage.toString()}`);
+	log.verbose(`Received Message: ${getOwnedPartsMessage.toString()}`);
 
 	const state = fetchStateFromDatabase();
 

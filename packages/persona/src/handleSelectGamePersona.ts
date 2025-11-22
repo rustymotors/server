@@ -26,9 +26,9 @@ export async function handleSelectGamePersona(
 	requestPacket: NPSMessage,
 	log: ServerLogger,
 ): Promise<NPSMessage> {
-	log.debug("_npsSelectGamePersona...");
+	log.verbose("_npsSelectGamePersona...");
 
-	log.debug(
+	log.verbose(
 		`[npsSelectGamePersona] requestPacket's data prior to sending: ${requestPacket.toString()}`,
 	);
 
@@ -42,7 +42,7 @@ export async function handleSelectGamePersona(
 	responsePacket._header.id = 0x207;
 	responsePacket.setBuffer(packetContent);
 
-	log.debug(
+	log.verbose(
 		`[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.toString()}`,
 	);
 	return responsePacket;

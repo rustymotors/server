@@ -1,7 +1,9 @@
 export interface ISerializable {
 	serialize(): Buffer;
 	deserialize(data: Buffer): void;
-	getByteSize(): number;
+	/** @deprecated use sizeOf */
+    getByteSize(): number;
+    sizeOf: number
 	toString(): string;
 }
 

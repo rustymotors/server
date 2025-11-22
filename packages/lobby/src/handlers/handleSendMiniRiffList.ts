@@ -16,8 +16,8 @@ export async function handleSendMiniRiffList({
     connectionId: string;
     messages: BytableMessage[];
 }> {
-    log.debug('[${connectionId}] Handling NPS_SEND_MINI_RIFF_LIST');
-    log.debug(
+    log.verbose('[${connectionId}] Handling NPS_SEND_MINI_RIFF_LIST');
+    log.verbose(
         `[${connectionId}] Received command: ${message.header.id}`,
     );
 

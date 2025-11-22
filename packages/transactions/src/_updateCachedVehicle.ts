@@ -24,7 +24,7 @@ export async function _updateCachedVehicle({
 
     rPacket.setBuffer(pReply.serialize());
 
-    log.debug(`updateCachedVehicle: ${rPacket.toString()}`);
+    log.verbose(`updateCachedVehicle: ${rPacket.toString()}`);
 
     return { connectionId, messages: [] };
 }

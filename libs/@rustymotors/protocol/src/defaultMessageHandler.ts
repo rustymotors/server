@@ -13,7 +13,7 @@ export async function defaultMessageHandler({
 	message: BytableMessage | null;
 }> {
 	const messageId = message.header.messageId;
-	log.debug(
+	log.verbose(
 		"Not yet implemented",
 		{ connectionId, messageId: messageId.toString(16) },
 	);

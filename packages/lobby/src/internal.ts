@@ -101,7 +101,7 @@ export async function receiveLobbyData({
     messages: SerializedBufferOld[];
 }> {
     const data = message.serialize();
-    log.debug('Received Lobby packet', {
+    log.verbose('Received Lobby packet', {
         connectionId,
         data: data.toString('hex'),
     });
@@ -126,7 +126,7 @@ export async function receiveLobbyData({
             connectionId,
             message,
         });
-        log.debug('Leaving receiveLobbyData');
+        log.verbose('Leaving receiveLobbyData');
         const sendQueue = getSocketQueue(connectionId, 'send');
 
         result.messages.forEach((response) =>

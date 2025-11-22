@@ -16,8 +16,8 @@ describe("NPSUserStatus", () => {
 		config = { privateKeyFile: "path/to/private/key" } as Configuration;
 		log = {
 			debug: vi.fn(),
+            verbose: vi.fn(),
 			trace: vi.fn(),
-			fatal: vi.fn(),
 		} as unknown as ServerLogger;
 		packet = Buffer.alloc(100);
 	});

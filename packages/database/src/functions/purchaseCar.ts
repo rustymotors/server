@@ -11,7 +11,7 @@ export async function purchaseCar(
     tradeInCarId: number,
 ): Promise<number> {
 try {
-    getServerLogger('purchaseCar').debug(
+    getServerLogger('purchaseCar').verbose(
         `Player ${playerId} is purchasing car from dealer ${dealerId} with branded part ${brandedPardId} and skin ${skinId} and trading in car ${tradeInCarId}`,
     );
 
@@ -32,7 +32,7 @@ try {
             throw error;
         });
 
-        getServerLogger('purchaseCar').debug(
+        getServerLogger('purchaseCar').verbose(
             `Player ${playerId} purchased car with ID ${newCarId}`,
         );
 
@@ -47,7 +47,7 @@ try {
         ownerID: playerId,
     });
 
-    getServerLogger('purchaseCar').debug(
+    getServerLogger('purchaseCar').verbose(
         `Built vehicle part tree for player ${playerId}`,
         { parts },
     );

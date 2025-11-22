@@ -21,7 +21,7 @@ export async function _getPlayerPhysical({
 	const getPlayerPhysicalMessage = new GenericRequestMessage();
 	getPlayerPhysicalMessage.deserialize(packet.data);
 
-	log.debug(
+	log.verbose(
 		`[${connectionId}] Received GenericRequestMessage: ${getPlayerPhysicalMessage.toString()}`,
 	);
 
@@ -36,7 +36,7 @@ export async function _getPlayerPhysical({
 	playerPhysicalMessage._shirtColor = cloth_white;
 	playerPhysicalMessage._pantsColor = cloth_yellow;
 
-	log.debug(
+	log.verbose(
 		`[${connectionId}] Sending PlayerPhysicalMessage: ${playerPhysicalMessage.toString()}`,
 	);
 
@@ -46,7 +46,7 @@ export async function _getPlayerPhysical({
 
 	responsePacket.setBuffer(playerPhysicalMessage.serialize());
 
-	log.debug(`[${connectionId}] Sending response: ${responsePacket.toString()}`);
+	log.verbose(`[${connectionId}] Sending response: ${responsePacket.toString()}`);
 
 	return { connectionId, messages: [responsePacket] };
 }

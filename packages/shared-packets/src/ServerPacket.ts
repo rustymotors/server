@@ -4,7 +4,7 @@ import { ServerMessagePayload } from "./ServerMessagePayload.js";
 import type { SerializableServerMessage } from "./types.js";
 
 /**
- * @deprecated
+ * @deprecated // TODO: Remove depreciated method
  * 
  * use {@link MessageNode} instead
  */

@@ -16,16 +16,16 @@ export async function _getPlayerRaceHistory({
 	packet,
 	log = defaultLogger,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
-	log.debug(`[${connectionId}] Handling _getPlayerRaceHistory...`);
+	log.verbose(`[${connectionId}] Handling _getPlayerRaceHistory...`);
 
 	const getPlayerRaceHistoryMessage = new GenericRequestMessage();
 	getPlayerRaceHistoryMessage.deserialize(packet.data);
 
-	log.debug(`Received Message: ${getPlayerRaceHistoryMessage.toString()}`);
+	log.verbose(`Received Message: ${getPlayerRaceHistoryMessage.toString()}`);
 
 	const playerId = getPlayerRaceHistoryMessage.data.readUInt32LE(0);
 
-	log.debug(`Player ID: ${playerId}`);
+	log.verbose(`Player ID: ${playerId}`);
 
 	const racingHistoryRecords = getRacingHistoryRecords(playerId);
 
@@ -60,7 +60,7 @@ export async function _getPlayerRaceHistory({
 		playerRacingHistoryMessage.serialize(),
 	);
 
-	log.debug(`Sending Message: ${playerRacingHistoryMessage.toString()}`);
+	log.verbose(`Sending Message: ${playerRacingHistoryMessage.toString()}`);
 
 	return { connectionId, messages: [responsePacket] };
 }

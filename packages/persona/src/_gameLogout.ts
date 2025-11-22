@@ -28,15 +28,15 @@ export async function _gameLogout({
 	messages: SerializedBufferOld[];
 }> {
 	const requestPacket = message;
-	log.debug(`[${connectionId}] _npsLogoutGameUser request: ${requestPacket.toHexString()}`);
+	log.verbose(`[${connectionId}] _npsLogoutGameUser request: ${requestPacket.toHexString()}`);
 
 	// Build the packet
 	const responsePacket = new LegacyMessage();
 	responsePacket._header.id = 519;
-	log.debug(`[${connectionId}] _npsLogoutGameUser response: ${responsePacket.toHexString()}`);
+	log.verbose(`[${connectionId}] _npsLogoutGameUser response: ${responsePacket.toHexString()}`);
 
 	const outboundMessage = new SerializedBufferOld();
-	outboundMessage._doDeserialize(responsePacket._doSerialize());
+	outboundMessage.deserialize(responsePacket._doSerialize());
 
 	return {
 		connectionId,

@@ -17,7 +17,7 @@ export async function _joinRace({
     const joinRaceMessage = new JoinRaceMessage()
     joinRaceMessage.deserialize(packet.data)
 
-    log.debug(`JoinRaceMsg: ${joinRaceMessage.toString()}`)
+    log.verbose(`JoinRaceMsg: ${joinRaceMessage.toString()}`)
     
     // TODO Do stuff. Lots of stuff
 
@@ -26,7 +26,7 @@ export async function _joinRace({
     raceJoinedMessage.setPassword("Marty")
 
 
-    log.debug(`RaceJoinedMsg: ${raceJoinedMessage.toString()}`)
+    log.verbose(`RaceJoinedMsg: ${raceJoinedMessage.toString()}`)
     
     
     // Create new response packet
@@ -36,7 +36,8 @@ export async function _joinRace({
 
     rPacket.setBody(raceJoinedMessage)
 
-    log.debug(`_joinRace: ${rPacket.toString()}`);
+    // Avoid logging sensitive data such as passwords
+    log.verbose(`_joinRace: sequence=${rPacket.sequence}, msgNo=${rPacket.msgNo}`);
 
     return { connectionId, messages: [rPacket] };
 }

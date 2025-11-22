@@ -92,7 +92,7 @@ export async function processDeleteProfile(
 	message: GameMessage,
 	socketCallback: GameSocketCallback,
 ): Promise<void> {
-	defaultLogger.debug("processDeleteProfile called");
+	defaultLogger.verbose("processDeleteProfile called");
 	// Log the message
 	defaultLogger.info(`Delete profile request: ${message.toString()}`);
 

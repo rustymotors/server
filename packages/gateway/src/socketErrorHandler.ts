@@ -21,7 +21,7 @@ export function socketErrorHandler({
 }) {
 	// Handle socket errors
 	if (error.code == "ECONNRESET") {
-		log.debug(`Connection ${connectionId} reset`);
+		log.verbose(`Connection ${connectionId} reset`);
 		return;
 	}
 	throw Error(`Socket error: ${error.message} on connection ${connectionId}`);

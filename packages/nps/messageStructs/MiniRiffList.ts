@@ -71,7 +71,7 @@ export class MiniRiffList extends BaseSerializable {
 			offset += riff.getByteSize();
 		}
 
-		defaultLogger.debug(`MiniRiffList: ${this.toString()} - ${buffer.toString("hex")}`);
+		defaultLogger.verbose(`MiniRiffList: ${this.toString()} - ${buffer.toString("hex")}`);
 		return buffer;
 	}
 	override toString(): string {

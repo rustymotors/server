@@ -12,7 +12,7 @@ export async function handleTrackingPing({
 	connectionId: string;
 	messages: SerializedBufferOld[];
 }> {
-    log.debug("npsTrackingPing", {
+    log.verbose("npsTrackingPing", {
         connectionId
     })
     const response = new RawMessage()
