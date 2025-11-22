@@ -191,6 +191,54 @@ export class MessageNode implements MCOTSMessage {
         });
     }
 
+    // IServerMessage implementation
+    get data(): Buffer {
+        return this.body_.serialize();
+    }
+
+    get sequenceNumber(): number {
+        return this.sequence_;
+    }
+
+    toHexString(): string {
+        return this.serialize().toString('hex');
+    }
+
+    // Deprecated methods required by legacy code
+    getMessageId(): number {
+        return this.msgNo;
+    }
+
+    getSequence(): number {
+        return this.sequence_;
+    }
+
+    getByteSize(): number {
+        return this.sizeOf;
+    }
+
+    // Deprecated methods restored for compatibility
+    ensureNonZeroSequence() {
+        if (this.sequence === 0) {
+            throw new Error("please set sequence");
+        }
+    }
+
+    ensureValidSignature() {
+        if (!this.isSignatureValid()) {
+            throw new Error("invalid signature");
+        }
+    }
+
+    get header() {
+        return {
+            mcoSig: this.signature,
+            length: this.length,
+            sequence: this.sequence,
+            flags: this.flags,
+        };
+    }
+
 
 }
 

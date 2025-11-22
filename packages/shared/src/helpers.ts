@@ -7,6 +7,10 @@ export class Short implements Serializable {
         return 2;
     }
 
+    getByteSize() {
+        return this.sizeOf;
+    }
+
     serialize() {
         const b = Buffer.alloc(4);
         b.writeInt16BE(this._value);
@@ -34,6 +38,10 @@ export class Long implements Serializable {
         return 4;
     }
 
+    getByteSize() {
+        return this.sizeOf;
+    }
+
     serialize() {
         const b = Buffer.alloc(4);
         b.writeInt32BE(this._value);
@@ -59,6 +67,10 @@ export class NPS_LOGICAL implements Serializable {
 
     get sizeOf() {
         return 2;
+    }
+
+    getByteSize() {
+        return this.sizeOf;
     }
 
     serialize() {
@@ -94,6 +106,10 @@ export class Bool implements Serializable {
 
     get sizeOf() {
         return 1;
+    }
+
+    getByteSize() {
+        return this.sizeOf;
     }
 
     serialize() {
@@ -135,6 +151,10 @@ export class CString implements Serializable {
 
     get sizeOf() {
         return 4 + this._string.byteLength + 1;
+    }
+
+    getByteSize() {
+        return this.sizeOf;
     }
 
     serialize() {
@@ -186,6 +206,10 @@ export class CBlock implements Serializable {
 
     get sizeOf() {
         return this._size;
+    }
+
+    getByteSize() {
+        return this.sizeOf;
     }
 
     deserialize(buf: Buffer) {
