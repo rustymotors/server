@@ -853,6 +853,11 @@ export class RaceJoinedMessage extends MessageNodeBody {
     }
 
     override toString() {
-        return JSON.stringify(this);
+        // Do not log password. Only return raceId and msgNo.
+        return JSON.stringify({
+            msgNo: this._msgNo,
+            raceId: this._raceId?.readInt32LE?.() ?? undefined,
+            // Do not log password or other sensitive fields
+        });
     }
 }
