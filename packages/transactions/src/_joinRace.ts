@@ -36,7 +36,8 @@ export async function _joinRace({
 
     rPacket.setBody(raceJoinedMessage)
 
-    log.verbose(`_joinRace: ${rPacket.toString()}`);
+    // Avoid logging sensitive data such as passwords
+    log.verbose(`_joinRace: sequence=${rPacket.sequence}, msgNo=${rPacket.msgNo}`);
 
     return { connectionId, messages: [rPacket] };
 }
