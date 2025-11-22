@@ -40,7 +40,7 @@ export async function _createStandardRace({
 
     rPacket.setBody(raceCreatedMessage)
 
-    log.verbose(`_createStandardRace: ${rPacket.toString()}`);
+    log.verbose(`_createStandardRace: ${rPacket.toLogString()}`);
 
     return { connectionId, messages: [rPacket] };
 }

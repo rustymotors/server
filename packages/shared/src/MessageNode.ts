@@ -171,6 +171,26 @@ export class MessageNode implements MCOTSMessage {
         return `MessageNode: ${JSON.stringify(this)}`;
     }
 
+    toLogString() {
+        // Only log essential message node info, mask body if possible
+        let bodyLog;
+        if (
+            this.body_ &&
+            typeof this.body_.toLogString === "function"
+        ) {
+            bodyLog = this.body_.toLogString();
+        } else {
+            // fallback: attempt to mask sensitive content
+            bodyLog = "<body>";
+        }
+        return JSON.stringify({
+            sequence: this.sequence,
+            flags_: this.flags_,
+            msgLength_: this.msgLength_,
+            body: bodyLog,
+        });
+    }
+
     // TODO: change usage of these
 
     /**
