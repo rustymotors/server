@@ -15,9 +15,9 @@ async function _getLobbies({
 	connectionId,
 	packet,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
-	defaultLogger.debug(`[${connectionId}] Received getLobbies packet ${packet.toString()}`);
+	defaultLogger.verbose(`[${connectionId}] Received getLobbies packet ${packet.toString()}`);
 
-	defaultLogger.debug(`[${connectionId}] Sending lobbies response...`);
+	defaultLogger.verbose(`[${connectionId}] Sending lobbies response...`);
 
 	// Create new response packet
 	const lobbiesResponsePacket = new MessageNode();
@@ -38,7 +38,7 @@ async function _getLobbies({
 	lobby._maxNumberPlayers = 8;
 	lobby._defaultNight = 1
 
-	defaultLogger.debug(`[${connectionId}] Sending lobby: ${lobby.toString()}`);
+	defaultLogger.verbose(`[${connectionId}] Sending lobby: ${lobby.toString()}`);
 
 	lobbyResponse.addLobby(lobby);
 
@@ -52,12 +52,12 @@ async function _getLobbies({
 	lobby1._maxNumberPlayers = 8;
 	lobby1._defaultNight = 1
 
-	defaultLogger.debug(`[${connectionId}] Sending lobby: ${lobby1.toString()}`);
+	defaultLogger.verbose(`[${connectionId}] Sending lobby: ${lobby1.toString()}`);
 
 	lobbyResponse.addLobby(lobby1);
 
 
-	defaultLogger.debug(`[${connectionId}] Sending lobbyResponse: ${lobbyResponse.toString()}`
+	defaultLogger.verbose(`[${connectionId}] Sending lobbyResponse: ${lobbyResponse.toString()}`
 	);
 
 	lobbiesResponsePacket.getBody().deserialize(lobbyResponse.serialize());
@@ -72,7 +72,7 @@ async function _getLobbies({
 	perseEntryResponse._shouldExpectMoreMessages = false;
 	perseEntryResponse.addEntry(purseEntry);
 
-	defaultLogger.debug(`[${connectionId}] Sending purseEntryResponse: ${perseEntryResponse.toString()}`);
+	defaultLogger.verbose(`[${connectionId}] Sending purseEntryResponse: ${perseEntryResponse.toString()}`);
 
 	const perseEntriesResponsePacket = new OldServerMessage();
 	perseEntriesResponsePacket._header.sequence = packet.sequenceNumber;
@@ -95,11 +95,11 @@ export async function getLobbies({
 	log = defaultLogger,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
 	const result = await _getLobbies({ connectionId, packet, log });
-	log.debug("Dumping Lobbies response packet...");
+	log.verbose("Dumping Lobbies response packet...");
 	result.messages.forEach((msg) => {
-		log.debug(msg.toString());
+		log.verbose(msg.toString());
 	});
-	log.debug(result.messages.join().toString());
+	log.verbose(result.messages.join().toString());
 	return {
 		connectionId,
 		messages: result.messages,

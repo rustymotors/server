@@ -18,7 +18,7 @@ export async function _getTunables({
 	const getTunablesMessage = new GenericRequestMessage();
 	getTunablesMessage.deserialize(packet.data);
 
-	log.debug(`Received Message: ${getTunablesMessage.toString()}`);
+	log.verbose(`Received Message: ${getTunablesMessage.toString()}`);
 
 	const tunablesMessage = new TunablesMessage();
 	tunablesMessage._msgNo = 390;

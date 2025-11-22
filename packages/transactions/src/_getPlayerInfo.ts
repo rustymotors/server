@@ -16,13 +16,13 @@ export async function _getPlayerInfo({
 	const getPlayerInfoMessage = new GenericRequestMessage();
 	getPlayerInfoMessage.deserialize(packet.data);
 
-	log.debug(
+	log.verbose(
 		`[${connectionId}] Received GenericRequestMessage: ${getPlayerInfoMessage.toString()}`,
 	);
 
 	const playerId = getPlayerInfoMessage.data.readUInt32LE(0);
 
-	log.debug(`[${connectionId}] Player ID: ${playerId}`);
+	log.verbose(`[${connectionId}] Player ID: ${playerId}`);
 
 	try {
 		const playerInfoMessage = new PlayerInfoMessage();
@@ -36,7 +36,7 @@ export async function _getPlayerInfo({
 		playerInfoMessage._bankBalance = 50;
 		playerInfoMessage._numberOfPointsToNextLevel = 3;
 
-		log.debug(
+		log.verbose(
 			`[${connectionId}] Sending PlayerInfoMessage: ${playerInfoMessage.toString()}`,
 		);
 

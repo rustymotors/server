@@ -38,7 +38,7 @@ export async function login({
 
 	const { contextId, sessionKey } = userStatus;
 
-	log.debug(`[${connectionId}] Context ID: ${contextId}`);
+	log.verbose(`[${connectionId}] Context ID: ${contextId}`);
 	userStatus.dumpPacket();
 
 	// Load the customer record by contextId
@@ -95,7 +95,7 @@ export async function login({
 		connectionId,
 		messages: [outboundMessage2, outboundMessage2],
 	};
-	log.debug(
+	log.verbose(
 		`[${connectionId}] Leaving login with ${response.messages.length} messages`,
 	);
 	return response;

@@ -23,14 +23,14 @@ export async function login({
 	const incomingPacket = new ServerPacket();
 	incomingPacket.deserialize(packet.serialize());
 
-	log.debug(
+	log.verbose(
 		`[${connectionId}] Received LoginMessage: ${incomingPacket.toString()}`,
 	);
 
 	// Read the inbound packet
 	const loginMessage = new LoginPayload();
 	loginMessage.deserialize(packet.data);
-	log.debug(
+	log.verbose(
 		`[${connectionId}] Received LoginMessage: ${loginMessage.toString()}`,
 	);
 
@@ -45,7 +45,7 @@ export async function login({
 	response.shardAveragePlayerLevel = 5;
 	response.shardGNP = 830;
 
-	log.debug(
+	log.verbose(
 		`[${connectionId}] Sending LoginCompleteMessage: ${response.toString()}`,
 	);
 
@@ -58,15 +58,15 @@ export async function login({
 	outgoingPacket.setPayloadEncryption(true);
 	outgoingPacket.setSignature("TOMC");
 
-	log.debug(`[${connectionId}] Sending response: ${outgoingPacket.toString()}`);
+	log.verbose(`[${connectionId}] Sending response: ${outgoingPacket.toString()}`);
 
-	log.debug(
+	log.verbose(
 		`[${connectionId}] Sending response(hex): ${outgoingPacket.serialize().toString("hex")}`,
 	);
 
 	const responsePacket = new OldServerMessage();
 	responsePacket._header.sequence = incomingPacket.getSequence();
-	responsePacket._doDeserialize(outgoingPacket.serialize());
+	responsePacket.deserialize(outgoingPacket.serialize());
 
 	return { connectionId, messages: [responsePacket] };
 }

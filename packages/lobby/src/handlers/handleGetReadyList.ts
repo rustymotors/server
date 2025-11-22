@@ -19,15 +19,15 @@ export async function handleGetReadyList({
     connectionId: string;
     messages: BytableMessage[];
 }> {
-    log.debug('[${connectionId}] Handling NPS_GET_READY_LIST');
-    log.debug(
+    log.verbose('[${connectionId}] Handling NPS_GET_READY_LIST');
+    log.verbose(
         `[${connectionId}] Received command: ${message.header.id}`,
     );
 
     // l
     const requestedCommId = message.data.readInt32BE()
 
-    log.debug(`Requested player ready list for commId: ${requestedCommId.toString(16)}`, {
+    log.verbose(`Requested player ready list for commId: ${requestedCommId.toString(16)}`, {
         connectionId,
         requestedCommId,
     });

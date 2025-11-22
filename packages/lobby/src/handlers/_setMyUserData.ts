@@ -17,10 +17,10 @@ export async function _setMyUserData({
     log?: ServerLogger;
 }) {
     try {
-        log.debug(`Handling NPS_SET_MY_USER_DATA`, {
+        log.verbose(`Handling NPS_SET_MY_USER_DATA`, {
             connectionId,
         });
-        log.debug(`Received command: ${message.header.id}`, {
+        log.verbose(`Received command: ${message.header.id}`, {
             connectionId,
         });
 
@@ -29,11 +29,11 @@ export async function _setMyUserData({
 
         const userId = incomingMessage.userInfo.userId;
 
-        log.debug(`User ID: ${userId}`, {
+        log.verbose(`User ID: ${userId}`, {
             connectionId,
             userId,
         });
-        log.debug(
+        log.verbose(
             `UserData: ${JSON.stringify(incomingMessage.userInfo.userData)}`,
             {
                 connectionId,
@@ -73,7 +73,7 @@ export async function _setMyUserData({
 
         outboundMessage.setOpCode(0x204);
 
-        log.debug('Sending UserInfo', {
+        log.verbose('Sending UserInfo', {
             connectionId,
             data: message.serialize().toString('hex'),
         });

@@ -1,6 +1,5 @@
 import {
 	GameMessage,
-	SerializableData,
 } from "../messageStructs/GameMessage.js";
 import {
 	type EncryptionSession,
@@ -13,7 +12,7 @@ import type { GameSocketCallback } from "./index.js";
 import { lobbyCommandMap } from "./lobbyCommands.js";
 
 import type { UserStatus } from "../messageStructs/UserStatus.js";
-import { getServerLogger } from "rusty-motors-shared";
+import { CBlock, getServerLogger } from "rusty-motors-shared";
 
 const defaultLogger = getServerLogger("nps.processEncryptedGameCommand");
 
@@ -23,7 +22,7 @@ export async function processEncryptedGameCommand(
 	message: GameMessage,
 	socketCallback: GameSocketCallback,
 ): Promise<void> {
-	defaultLogger.debug("processEncryptedGameCommand called");
+	defaultLogger.verbose("processEncryptedGameCommand called");
 	defaultLogger.info(`Attempting to decrypt message: ${message.toString()}`);
 
 	// Get the encryption session
@@ -70,7 +69,7 @@ export async function processEncryptedGameCommand(
 
 	if (typeof processor === "undefined") {
 		const err = `No processor found for message ID: ${decryptedMessage.header.getId()}`;
-		defaultLogger.fatal(err);
+		defaultLogger.error(err);
 		throw Error(err);
 	}
 
@@ -90,7 +89,7 @@ export async function processEncryptedGameCommand(
 	const responsePacket = new GameMessage(0);
 	responsePacket.header.setId(0x1101);
 
-	const responseData = new SerializableData(encryptedResponse.length);
+	const responseData = new CBlock(encryptedResponse.length);
 	responseData.deserialize(encryptedResponse);
 
 	responsePacket.setData(responseData);

@@ -130,7 +130,7 @@ export async function createNewCar(
     });
     
 
-    log.debug(
+    log.verbose(
         'vehicle',
         { vehicle }, 
     );
@@ -155,7 +155,7 @@ export async function createNewCar(
 //         AttachmentPointId: 0,
 //     });
 
-//     log.debug({ tmpParts }, 'tmpParts after pushing the first part');
+//     log.verbose({ tmpParts }, 'tmpParts after pushing the first part');
 
 //     // Get the rest of the parts for the vehicle
 //     const part = tmpParts[0];
@@ -179,9 +179,9 @@ export async function createNewCar(
 //         throw new Error('No parts found for the vehicle');
 //     }
 
-//     log.debug(`Found ${restOfTheParts.length} parts for the vehicle`);
+//     log.verbose(`Found ${restOfTheParts.length} parts for the vehicle`);
 
-//     log.debug({ restOfTheParts }, 'restOfTheParts');
+//     log.verbose({ restOfTheParts }, 'restOfTheParts');
 
 //     for (const part of restOfTheParts) {
 //         tmpParts.push({
@@ -192,7 +192,7 @@ export async function createNewCar(
 //         });
 //     }
 
-//     log.debug({ tmpParts }, 'tmpParts after getting the rest of the parts');
+//     log.verbose({ tmpParts }, 'tmpParts after getting the rest of the parts');
 
 //     let vehicleId: number | null = null;
 
@@ -204,7 +204,7 @@ export async function createNewCar(
 //             throw new Error('No parts found for the vehicle');
 //         }
 
-//         log.debug({ tmpParts }, 'tmpParts');
+//         log.verbose({ tmpParts }, 'tmpParts');
 
 //         let parentPartId = null;
 //         let currentPartId = await getNextSq(connection, 'part_partid_seq');
@@ -308,7 +308,7 @@ export type DBPart = {
 
 //     vehicleId = currentPartId;
 
-//     log.debug({ vehicleId }, 'vehicleId');
+//     log.verbose({ vehicleId }, 'vehicleId');
 
 //     // Update the partid of the part in the tmpParts
 //     if (typeof tmpParts[0] === 'undefined') {
@@ -319,7 +319,7 @@ export type DBPart = {
 //     tmpParts[0].partId = currentPartId;
 //     tmpParts[0].parentPartId = parentPartId;
 
-//     log.debug({ tmpParts }, 'tmpParts after inserting the first part');
+//     log.verbose({ tmpParts }, 'tmpParts after inserting the first part');
 
 //     // Now insert the rest of the parts
 //     for (let i = 1; i < tmpParts.length; i++) {
@@ -346,7 +346,7 @@ export type DBPart = {
 //         part.parentPartId = parentPartId;
 //     }
 
-//     log.debug({ tmpParts }, 'tmpParts after inserting the rest of the parts');
+//     log.verbose({ tmpParts }, 'tmpParts after inserting the rest of the parts');
 //     return { currentPartId, parentPartId, vehicleId };
 // }
 
@@ -512,7 +512,7 @@ where v.vehicle_id = ${vehicleId}
         WHERE p1.part_id = ${vehicleId} OR p1.parent_part_id = ${vehicleId}
     `);
 
-    log.debug({ rawParts }, 'rawParts');
+    log.verbose({ rawParts }, 'rawParts');
 
             for (const rawPart of rawParts) {
                 parts.push({
@@ -537,7 +537,7 @@ where v.vehicle_id = ${vehicleId}
         throw new Error(`No parts found for vehicle with id ${vehicleId}`);
     }
 
-    log.debug({ parts }, 'parts');
+    log.verbose({ parts }, 'parts');
 
     vehicle.parts = parts;
 

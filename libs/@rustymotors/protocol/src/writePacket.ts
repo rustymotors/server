@@ -8,7 +8,7 @@ export function writePacket({
 	data: Buffer;
 	log?: ServerLogger;
 }) {
-	log.debug(
+	log.verbose(
         `Writing packet: ${data.toString("hex")}`,
         { connectionId }, 
     );

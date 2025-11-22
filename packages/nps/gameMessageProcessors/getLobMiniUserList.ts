@@ -13,7 +13,7 @@ export async function getLobMiniUserList(
 	_commandId: number,
 	data: Buffer,
 ): Promise<Buffer> {
-	defaultLogger.debug("getLobMiniUserList called");
+	defaultLogger.verbose("getLobMiniUserList called");
 	defaultLogger.info(`Processing getLobMiniUserList command: ${getAsHex(data)}`);
 
 	const miniUserList = new MiniUserList(0);

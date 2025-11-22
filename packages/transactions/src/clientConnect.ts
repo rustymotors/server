@@ -33,7 +33,7 @@ export async function clientConnect({
 
 	newMessage.deserialize(packet.serialize());
 
-	log.debug(`ClientConnectMsg: ${newMessage.toString()}`);
+	log.verbose(`ClientConnectMsg: ${newMessage.toString()}`);
 
 	const customerId = newMessage._customerId;
 	if (typeof customerId !== "number") {
@@ -47,13 +47,13 @@ export async function clientConnect({
 	const existingEncryption = getEncryption(state, connectionId);
 
 	if (existingEncryption) {
-		log.debug("Encryption already exists for this connection");
+		log.verbose("Encryption already exists for this connection");
 		return { connectionId, messages: [] };
 	}
 
 	let result;
 
-	log.debug(`Looking up the session key for ${customerId}...`);
+	log.verbose(`Looking up the session key for ${customerId}...`);
 
 	result = await databaseManager.fetchSessionKeyByCustomerId(customerId);
 
@@ -63,7 +63,7 @@ export async function clientConnect({
 		for customer ${customerId}`);
 	}
 
-	log.debug(`Session key found for ${customerId}`);
+	log.verbose(`Session key found for ${customerId}`);
 
 	const newCommandEncryptionPair = createCommandEncryptionPair(
 		result.sessionKey,
@@ -90,7 +90,7 @@ export async function clientConnect({
 
 	const personaName = newMessage._personaName;
 
-	log.debug(`cust: ${customerId} ID: ${personaId} Name: ${personaName}`);
+	log.verbose(`cust: ${customerId} ID: ${personaId} Name: ${personaName}`);
 
 	// Create new response packet
 	const pReply = new GenericReplyMessage();
@@ -101,7 +101,7 @@ export async function clientConnect({
 	responsePacket.setBuffer(pReply.serialize());
 	responsePacket._header.sequence = packet.sequenceNumber;
 
-	log.debug(`Response: ${responsePacket.serialize().toString("hex")}`);
+	log.verbose(`Response: ${responsePacket.serialize().toString("hex")}`);
 
 	return { connectionId, messages: [responsePacket] };
 }

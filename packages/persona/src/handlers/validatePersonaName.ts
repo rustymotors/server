@@ -21,9 +21,9 @@ export async function validatePersonaName({
 	connectionId: string;
 	messages: SerializedBufferOld[];
 }> {
-	log.debug("validatePersonaName called");
+	log.verbose("validatePersonaName called");
 	const requestPacket = message;
-	log.debug(
+	log.verbose(
 		`NPSMsg request object from validatePersonaName ${requestPacket.toString()}`,
 	);
 
@@ -35,7 +35,7 @@ export async function validatePersonaName({
 	// Build the packet
 	const responsePacket = new RawMessage();
 	responsePacket.id = responseCodes.NPS_DUP_USER
-	log.debug(
+	log.verbose(
 		`NPSMsg response object from validatePersonaName
       ${JSON.stringify({
 				NPSMsg: responsePacket.toString(),
@@ -43,7 +43,7 @@ export async function validatePersonaName({
 	);
 
 	const outboundMessage = new SerializedBufferOld();
-	outboundMessage._doDeserialize(responsePacket.serialize());
+	outboundMessage.deserialize(responsePacket.serialize());
 
 	return {
 		connectionId,

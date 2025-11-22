@@ -224,7 +224,7 @@ async function handleWebUrl(
 		}
 	}
 
-	getServerLogger("gateway.web/getWebURL").debug(`Request for url # ${id}`)
+	getServerLogger("gateway.web/getWebURL").verbose(`Request for url # ${id}`)
 
 	if (id === '58') {
 		urlResponse = `101

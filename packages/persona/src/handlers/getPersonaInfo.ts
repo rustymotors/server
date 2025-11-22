@@ -19,17 +19,17 @@ export async function getPersonaInfo({
 	connectionId: string;
 	messages: SerializedBufferOld[];
 }> {
-	log.debug("getPersonaInfo...");
+	log.verbose("getPersonaInfo...");
 	const requestPacket = new NPSMessage();
-    requestPacket._doDeserialize(message.serialize());
+    requestPacket.deserialize(message.serialize());
 
-	log.debug(
+	log.verbose(
 		`LegacyMsg request object from getPersonaInfo ${requestPacket.toString()}`,
 	);
 
     const personaId = requestPacket.data.readUInt32BE(0);
 
-    log.debug(`personaId: ${personaId}`);
+    log.verbose(`personaId: ${personaId}`);
 
     const persona = await getPersonaByPersonaId({
         personaId,
@@ -46,7 +46,7 @@ export async function getPersonaInfo({
 		}
     }
 
-	log.debug(`Persona found: ${personaToString(persona)}`);
+	log.verbose(`Persona found: ${personaToString(persona)}`);
 
     const profile = createGameProfile();
 
@@ -60,7 +60,7 @@ export async function getPersonaInfo({
 	const responsePacket = new LegacyMessage();
 	responsePacket._header.id = 0x607;
 	responsePacket.setBuffer(profile.serialize());
-	log.debug(
+	log.verbose(
 		`LegacyMsg response object from getPersonaInfo ${responsePacket
 			._doSerialize()
 			.toString("hex")} `,

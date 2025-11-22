@@ -8,43 +8,45 @@ import { SerializableMixin, AbstractSerializable } from "./messageFactory.js";
  * @mixin {SerializableMixin}
  */
 
-export class SerializedBufferOld extends SerializableMixin(
-	AbstractSerializable, 
-) implements SerializableInterface {
-	constructor() {
-		super();
-	}
+export class SerializedBufferOld
+    extends SerializableMixin(AbstractSerializable)
+    implements SerializableInterface
+{
+    constructor() {
+        super();
+    }
 
-	deserialize(data: Buffer): this {
-		this.setBuffer(data);		
-		return this;
-	}
+    deserialize(data: Buffer): this {
+        this.setBuffer(data);
+        return this;
+    }
 
-	serialize() {
-		return this.data;
-	}
+    serialize() {
+        return this.data;
+    }
 
-	override _doDeserialize(_buffer: Buffer): AbstractSerializable {
-		return this.deserialize(_buffer)
-	}
+    /**
+     * @deprecated use deserialize() // TODO: Remove depreciated method
+     * @param _buffer
+     * @returns
+     */
+    _doDeserialize(_buffer: Buffer): AbstractSerializable {
+        return this.deserialize(_buffer);
+    }
 
-	override _doSerialize(): void {
-		this.serialize()
-	}
+    override toString() {
+        return `SerializedBuffer: ${this.serialize().toString('hex')}`;
+    }
 
-	override toString() {
-		return `SerializedBuffer: ${this.serialize().toString("hex")}`;
-	}
+    size() {
+        return this.data.length;
+    }
 
-	size() {
-		return this.data.length;
-	}
+    getByteSize() {
+        return this.size();
+    }
 
-	getByteSize() {
-		return this.size();
-	}
-
-	toHexString() {
-		return this.data.toString("hex");
-	}
+    toHexString() {
+        return this.data.toString('hex');
+    }
 }

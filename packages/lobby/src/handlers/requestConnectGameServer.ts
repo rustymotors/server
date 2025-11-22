@@ -63,7 +63,7 @@ export async function _npsRequestGameConnectServer({
 	const inboundMessage = new LoginInfoMessage();
 	inboundMessage.deserialize(message.serialize());
 
-	log.debug(`LoginInfoMessage: ${inboundMessage.toString()}`);
+	log.verbose(`LoginInfoMessage: ${inboundMessage.toString()}`);
 
 	const personas = await getPersonaByPersonaId({
 		personaId: inboundMessage._userId,
@@ -97,7 +97,7 @@ export async function _npsRequestGameConnectServer({
 			responsePacket.header.setId(0x22a); // invalid key
 
 			// log the packet
-			log.debug(
+			log.verbose(
 				`!!! outbound lobby login response packet: ${responsePacket.toString()}`,
 			);
 
@@ -159,7 +159,7 @@ export async function _npsRequestGameConnectServer({
 	responsePacket.setFieldValueByName("userData", inboundMessage._userData);
 
 	// log the packet
-	log.debug(
+	log.verbose(
 		`!!! outbound lobby login response packet: ${responsePacket.toString()}`,
 	);
 
@@ -168,7 +168,7 @@ export async function _npsRequestGameConnectServer({
 
 	responsePackets.push(outboundMessage)
 
-	log.debug(`[${connectionId}] Returning with ${outboundMessage.toHexString()}`);
+	log.verbose(`[${connectionId}] Returning with ${outboundMessage.toHexString()}`);
 
 	return {
 		connectionId,

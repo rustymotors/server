@@ -18,7 +18,7 @@ export async function _getGameUrls({
 	const getGameUrlsMessage = new GenericRequestMessage();
 	getGameUrlsMessage.deserialize(packet.data);
 
-	log.debug(`Received Message: ${getGameUrlsMessage.toString()}`);
+	log.verbose(`Received Message: ${getGameUrlsMessage.toString()}`);
 
 	const gameUrlsMessage = new GameUrlsMessage();
 	gameUrlsMessage._msgNo = 364;
@@ -31,7 +31,7 @@ export async function _getGameUrls({
 		gameUrlsMessage.addURL(url);
 	}
 
-	log.debug(gameUrlsMessage.toString())
+	log.verbose(gameUrlsMessage.toString())
 	
 
 	const responsePacket = new OldServerMessage();

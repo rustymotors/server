@@ -22,8 +22,8 @@ export async function handleStartGameServer({
 }> {
     const SUPPORTED_MESSAGE = 'NPS_START_GAME_SERVER';
     try {
-        log.debug(`[${connectionId}] Handling ${SUPPORTED_MESSAGE}`);
-        log.debug(
+        log.verbose(`[${connectionId}] Handling ${SUPPORTED_MESSAGE}`);
+        log.verbose(
             `[${connectionId}] Received command: ${message.header.id}`,
         );
 
@@ -32,7 +32,7 @@ export async function handleStartGameServer({
 
         const { commId, bestHost } = startServerLaunchInfo;
 
-        log.debug(
+        log.verbose(
             `client requested game server launch with comm id ${commId} on IP ${bestHost}`,
             { connectionId },
         );

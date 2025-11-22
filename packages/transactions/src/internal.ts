@@ -19,7 +19,6 @@ import * as Sentry from "@sentry/node"
 
 import {
 	McosEncryption,
-	SerializedBufferOld,
 	type State,
 } from "rusty-motors-shared";
 import {
@@ -27,12 +26,7 @@ import {
 	getEncryption,
 	updateEncryption,
 } from "rusty-motors-shared";
-import { OldServerMessage } from "rusty-motors-shared";
 import { messageHandlers, type MessageHandlerResult, _MSG_STRING } from "./handlers.js";
-import {
-	ServerPacket,
-	type BufferSerializer,
-} from "rusty-motors-shared-packets";
 import { explode } from "pklib-ts"
 
 
@@ -48,13 +42,13 @@ async function processInput({
 	log = getServerLogger("transactionServer.processInput"),
 }: {
 	connectionId: string;
-	inboundMessage: ServerPacket;
+	inboundMessage: MessageNode;
 	log?: ServerLogger;
 }): Promise<MessageHandlerResult> {
 	const currentMessageNo = inboundMessage.getMessageId();
 	const currentMessageString = _MSG_STRING(currentMessageNo);
 
-	log.debug(
+	log.verbose(
 		`[${connectionId}] Processing message: ${currentMessageNo} (${currentMessageString}), sequence: ${inboundMessage.getSequence()}`,
 	);
 
@@ -64,8 +58,8 @@ async function processInput({
 
 	if (typeof result !== "undefined") {
 		// Turn this into an OldServerMessage for compatibility
-		const packet = new OldServerMessage();
-		packet._doDeserialize(inboundMessage.serialize());
+		const packet = new MessageNode();
+		packet.deserialize(inboundMessage.serialize());
 
 		try {
 			const responsePackets = await result.handler({
@@ -121,7 +115,7 @@ export async function receiveTransactionsData({
         },
 	);
 
-	let decryptedMessage: ServerPacket;
+	let decryptedMessage: MessageNode;
 
 	// Is the message encrypted?
 	if (inboundMessage.isPayloadEncrypted()) {
@@ -135,8 +129,8 @@ export async function receiveTransactionsData({
 		}
 
 		// log the old buffer
-		log.debug(
-			`[${connectionId}] Inbound buffer: ${inboundMessage.getBody().toString("hex")}`,
+		log.verbose(
+			`[${connectionId}] Inbound buffer: ${inboundMessage.getBody().serialize().toString("hex")}`,
 		);
 
 		decryptedMessage = decryptMessage(
@@ -149,7 +143,7 @@ export async function receiveTransactionsData({
 		decryptedMessage = inboundMessage;
 	}
 
-	let decompressedMessage: ServerPacket;
+	let decompressedMessage: MessageNode;
 
 	if (decryptedMessage.isPayloadCompressed()) {
 
@@ -158,7 +152,7 @@ export async function receiveTransactionsData({
 			connectionId,
 		);
 	} else {
-		log.debug(`[${connectionId}] Message is not encrypted`);
+		log.verbose(`[${connectionId}] Message is not encrypted`);
 		decompressedMessage = decryptedMessage;
 	}
 
@@ -171,10 +165,10 @@ export async function receiveTransactionsData({
 	});
 
 	// Loop through the outbound messages and encrypt them
-	const outboundMessages: ServerPacket[] = [];
+	const outboundMessages: MessageNode[] = [];
 
 	response.messages.forEach((message) => {
-		const outboundMessage = new ServerPacket();
+		const outboundMessage = new MessageNode();
 		outboundMessage.deserialize(message.serialize());
 
 		if (outboundMessage.isPayloadEncrypted()) {
@@ -194,21 +188,21 @@ export async function receiveTransactionsData({
 			);
 			outboundMessages.push(encryptedMessage);
 		} else {
-			log.debug(
+			log.verbose(
 				`[${connectionId}] Sending message: ${outboundMessage.getMessageId()}`,
 			);
 			outboundMessages.push(outboundMessage);
 		}
 	});
 
-	log.debug(
+	log.verbose(
 		`[${connectionId}] Exiting transaction module with ${outboundMessages.length} messages`,
 	);
 
 	// Convert the outbound messages to SerializedBufferOld
 	const outboundMessagesSerialized = outboundMessages.map((message) => {
-		const serialized = new SerializedBufferOld();
-		serialized._doDeserialize(message.serialize());
+		const serialized = new MessageNode();
+		serialized.deserialize(message.serialize());
 		return serialized;
 	});
 
@@ -246,7 +240,7 @@ function decryptMessage(
 		verifyLength(inboundMessage.getBody().serialize(), decryptedMessage);
 
 		// Assuming the message was decrypted successfully, update the buffer
-		log.debug(
+		log.verbose(
 			`[${connectionId}] Decrypted buffer: ${decryptedMessage.toString("hex")}`,
 		);
 
@@ -270,31 +264,30 @@ function decryptMessage(
 
 function encryptOutboundMessage(
 	encryptionSettings: McosEncryption,
-	unencryptedMessage: ServerPacket,
+	unencryptedMessage: MessageNode,
 	state: State,
 	connectionId: string,
 	log = getServerLogger("transactionServer.encryptOutboundMessage"),
-): ServerPacket {
+): MessageNode {
 	try {
 		const encryptedMessage = encryptionSettings.dataEncryption.encrypt(
-			unencryptedMessage.data.serialize(),
+			unencryptedMessage.getBody().serialize(),
 		);
 		updateEncryption(state, encryptionSettings).save();
 
 		// Verify the length of the message
-		verifyLength(unencryptedMessage.data.serialize(), encryptedMessage);
+		verifyLength(unencryptedMessage.getBody().serialize(), encryptedMessage);
 
 		// Assuming the message was decrypted successfully, update the buffer
-		log.debug(
+		log.verbose(
 			`[${connectionId}] Encrypted buffer: ${encryptedMessage.toString("hex")}`,
 		);
 
 		const outboundMessage =  unencryptedMessage
-		outboundMessage.setDataBuffer(encryptedMessage)
-		outboundMessage.setSignature("TOMC")
+		outboundMessage.getBody().deserialize(encryptedMessage)
 		outboundMessage.setPayloadEncryption(true);
 
-		log.debug(
+		log.verbose(
 			`[${connectionId}] Encrypted message: ${outboundMessage.toHexString()}`,
 		);
 
@@ -308,16 +301,16 @@ function encryptOutboundMessage(
 }
 
 function decompressMessage(
-	compressedMessage: ServerPacket,
+	compressedMessage: MessageNode,
 	_connectionId: string,
 	log = getServerLogger("transactionServer.decompressInboundMessage"),
-): ServerPacket {
-	log.debug(`Decompressing message with initial messageId of ${compressedMessage.getMessageId()}`)
+): MessageNode {
+	log.verbose(`Decompressing message with initial messageId of ${compressedMessage.getMessageId()}`)
 
 	const outputBuffer = new Uint8Array(64 * 1024); // 64KB buffer
 	let outputPos = 0;
 
-	const compressedPayload = compressedMessage.getDataBuffer().subarray(2)
+	const compressedPayload = compressedMessage.getBody().serialize().subarray(2)
 
 	const writeCallback = (data: Uint8Array, bytesToWrite: number): number => {
 		if (outputPos + bytesToWrite > outputBuffer.length) {
@@ -343,10 +336,12 @@ function decompressMessage(
 	if (result.success) {
 		const outputData = Buffer.from(outputBuffer.slice(0, outputPos));
 
-		log.debug(`DecompressedPayload: ${outputData.toString("hex")}`)
+		log.verbose(`DecompressedPayload: ${outputData.toString("hex")}`)
 
 		// Output raw binary data to stdout
-		const uncompressedMessage = ServerPacket.copy(compressedMessage, outputData);
+		const uncompressedMessage = new MessageNode()
+        uncompressedMessage.deserialize(compressedMessage.serialize())
+        uncompressedMessage.getBody().deserialize(outputData)
 		uncompressedMessage.setPayloadCompression(false)
 		return uncompressedMessage
 	} else {

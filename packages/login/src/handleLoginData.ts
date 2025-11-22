@@ -36,7 +36,7 @@ export async function handleLoginData({
 }> {
 	// The packet needs to be an NPSMessage
 	const inboundMessage = new NPSMessage();
-	inboundMessage._doDeserialize(message.serialize());
+	inboundMessage.deserialize(message.serialize());
 
 	const supportedHandler = messageHandlers.find((h) => {
 		return h.opCode === inboundMessage._header.id;
@@ -54,7 +54,7 @@ export async function handleLoginData({
 			connectionId,
 			message,
 		});
-		log.debug(
+		log.verbose(
 			`[${connectionId}] Leaving handleLoginData with ${result.messages.length} messages`,
 		);
 		return result;

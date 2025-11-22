@@ -17,7 +17,7 @@ export async function _raceKeepAlive({
     const raceKeepAliveRequest = new GenericRequestMessage();
     raceKeepAliveRequest.deserialize(packet.serialize())
 
-    log.debug(`RaceKeepAlive`, {
+    log.verbose(`RaceKeepAlive`, {
         connectionId,
         data: JSON.stringify(raceKeepAliveRequest)
     });

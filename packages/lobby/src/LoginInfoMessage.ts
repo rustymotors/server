@@ -31,7 +31,7 @@ export class LoginInfoMessage extends LegacyMessage {
 	 */
 	override deserialize(buffer: Buffer): this {
 		try {
-			this._header._doDeserialize(buffer);
+			this._header.deserialize(buffer);
 			let offset = this._header._size;
 			this._userId = buffer.readUInt32BE(offset);
 			offset += 4;

@@ -20,7 +20,7 @@ describe("ServerMessage", () => {
 		// Act
 		const buffer = testMessage.serialize();
 		const result = new OldServerMessage();
-		result._doDeserialize(buffer);
+		result.deserialize(buffer);
 		result._msgNo = testMessage._msgNo;
 		// Assert
 		expect(result._header.mcoSig).toEqual(testMessage._header.mcoSig);

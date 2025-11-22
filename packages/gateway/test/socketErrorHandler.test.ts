@@ -7,12 +7,12 @@ describe("socketErrorHandler", () => {
 		const connectionId = "12345";
 		const error = { code: "ECONNRESET" } as NodeJS.ErrnoException;
 		const mockLogger = {
-			debug: vi.fn(),
+			verbose: vi.fn(),
 		} as unknown as ServerLogger;
 
 		socketErrorHandler({ connectionId, error, log: mockLogger });
 
-		expect(mockLogger.debug).toHaveBeenCalledWith(
+		expect(mockLogger.verbose).toHaveBeenCalledWith(
 			`Connection ${connectionId} reset`,
 		);
 	});
