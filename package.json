@@ -47,7 +47,7 @@
         "@rustymotors/parser": "file:libs/@rustymotors/parser",
         "@rustymotors/protocol": "file:libs/@rustymotors/protocol",
         "@rustymotors/rooms": "file:libs/@rustymotors/rooms",
-        "@sentry/node": "10.19.0",
+        "@sentry/node": "10.27.0",
         "@sentry/profiling-node": "10.19.0",
         "bcrypt": "^6.0.0",
         "concurrently": "^9.2.1",
