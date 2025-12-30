@@ -10,6 +10,8 @@
         "url": "git@github.com:drazisil/mcos.git"
     },
     "scripts": {
+        "cleancoverage": "rm -rf coverage",
+        "preclean": "npn run cleancoverage",
         "clean": "rm -rf **/node_modules node_modules",
         "start": "npx tsx --import ./instrument.mjs --openssl-legacy-provider --env-file=.env src/nps_server.ts",
         "check": "tsc --build --noEmit",
@@ -17,7 +19,9 @@
         "lint:all": "pnpm run -r --stream lint",
         "format:all": "pnpm run -r --stream format",
         "test:packages": "pnpm run -r --stream test",
-        "test": "vitest --run --coverage",
+        "test": "vitest run --coverage=false",
+        "precoverage": "npm run cleancoverage && npm run test",
+        "coverage": "vitest run",
         "types:db": "pnpm --filter=rusty-motors-database run types:db",
         "types": "dotenvx run -- pnpm run types:db",
         "migrate": "dotenvx run pg-migrations apply -- --directory migrations",
