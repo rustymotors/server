@@ -23,14 +23,14 @@ export default defineConfig({
                 "**/coverage/**",
                 ...coverageConfigDefaults.exclude,
             ],
-            reporter: ["lcov", "cobertura", "html", "text"],
+            reporter: ["lcov", "text-summary"],
         },
         exclude: [
             "packages/pklib-ts",
             ...configDefaults.exclude
 
         ],
-        reporters: ["junit", "default", "hanging-process"],
+        reporters: ["junit", "dot", "hanging-process"],
 		outputFile: "mcos.junit.xml",
 		pool: "forks",
     },
