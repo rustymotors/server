@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { getPersonaByPersonaId } from "../src/getPersonasByPersonaId.js";
 import { loggerMock } from "rusty-motors-shared";
 
@@ -50,18 +50,17 @@ describe("getPersonasByPersonaId", () => {
 			expect(result.personaId).toBe(id);
 		});
 
-		it("returns undefined when no matching ID is found", async () => {
+		it("throws when no matching ID is found", async () => {
 			// arrange
 			const id = 3;
 
 			// act & assert
-			await expect(
-				getPersonaByPersonaId({
+			await expect(getPersonaByPersonaId({
 					personaId: id,
 					logger: loggerMock
 
-				}),
-			).resolves.toBe(undefined)
+				})
+			).rejects.toThrow("Unable to locate a persona for id: 3")
 		});
 	});
 });

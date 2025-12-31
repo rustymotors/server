@@ -73,9 +73,10 @@ export {
 } from './src/RaceInfo.js';
 export { SerializedList } from './src/SerializedList.js';
 export { OpenCommChannelRequest } from './src/OpenCommChannelRequest.js';
-export {getServerLogger, type ServerLogger} from "./getServerLogger.js"
+export { getServerLogger } from './getServerLogger.js';
+export { NoResultsError } from './src/errors/NoResultError.js';
 export * from './src/types.js';
-export * from "./src/mocks.js"
+export * from './src/mocks.js';
 
 // Function to convert ARGB to 32-bit integer
 export function argbToInt(

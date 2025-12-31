@@ -7,6 +7,7 @@ import {
 } from "rusty-motors-gateway";
 import {
 	McosEncryption,
+	NoResultsError,
 	addEncryption,
 	fetchStateFromDatabase,
 	getEncryption,
@@ -67,11 +68,7 @@ export async function _npsRequestGameConnectServer({
 
 	const personas = await getPersonaByPersonaId({
 		personaId: inboundMessage._userId,
-	});
-	if (typeof personas === "undefined") {
-		const err = Error("No personas found.");
-		throw err;
-	}
+	})
 
 	const { customerId } = personas;
 
