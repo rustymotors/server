@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { LegacyMessage } from "rusty-motors-shared";
 import { handleSendMiniRiffList } from "../../src/handlers/handleSendMiniRiffList.js";
 import { BytableMessage } from "@rustymotors/binary";
+import { loggerMock } from "rusty-motors-shared";
 
 describe("handleSendMiniRiffList", () => {
 	it("should return a buffer", async () => {
@@ -11,6 +11,7 @@ describe("handleSendMiniRiffList", () => {
 		const result = await handleSendMiniRiffList({
 			connectionId: "test",
 			message: incomingMessage,
+			log: loggerMock
 		});
 
         expect(result.messages.length).toEqual(1);

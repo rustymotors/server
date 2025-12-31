@@ -1,7 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { getPersonaByPersonaId } from "../src/getPersonasByPersonaId.js";
+import { loggerMock } from "rusty-motors-shared";
 
 describe("getPersonasByPersonaId", () => {
+
 	it("returns a persona", async () => {
 		// arrange
 		const id = 22;
@@ -9,6 +11,7 @@ describe("getPersonasByPersonaId", () => {
 		// act
 		const result = await getPersonaByPersonaId({
 			personaId: id,
+			logger: loggerMock
 		});
 
 		// assert
@@ -40,7 +43,7 @@ describe("getPersonasByPersonaId", () => {
 
 
 			// act
-			const result = await getPersonaByPersonaId({ personaId: id });
+			const result = await getPersonaByPersonaId({ personaId: id, logger: loggerMock });
 
 			// assert
 			expect(result).toBeDefined
@@ -55,6 +58,8 @@ describe("getPersonasByPersonaId", () => {
 			await expect(
 				getPersonaByPersonaId({
 					personaId: id,
+					logger: loggerMock
+
 				}),
 			).resolves.toBe(undefined)
 		});

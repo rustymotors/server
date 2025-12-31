@@ -1,13 +1,13 @@
-import { getServerLogger } from "rusty-motors-shared";
+import { getServerLogger, ServerLogger } from "rusty-motors-shared";
 import { personaRecords } from "./internal.js";
 import type { PersonaRecord } from "./PersonaMapsMessage.js";
 
-const log = getServerLogger('getPersonaByPersonaId')
-
 export async function getPersonaByPersonaId({
-	personaId
+	personaId,
+	logger = getServerLogger('getPersonaByPersonaId')
 }: {
 	personaId: number;
+	logger?: ServerLogger
 }): Promise<Pick<
 	PersonaRecord,
 	"customerId" | "personaId" | "personaName" | "shardId"
@@ -17,7 +17,7 @@ export async function getPersonaByPersonaId({
 		return match;
 	});
 	if (typeof result === "undefined") {
-		log.warn(`Unable to locate a persona for id: ${personaId}`);
+		logger.warn(`Unable to locate a persona for id: ${personaId}`);
 		return result
 	}
 

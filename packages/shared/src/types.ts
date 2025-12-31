@@ -14,7 +14,7 @@ export const name = "interfaces";
  * @interface
  */
 
-export type ServerLogger = Logger;
+// export type ServerLogger = Logger;
 
 export interface DatabaseManager {
 	updateSessionKey: (
@@ -136,7 +136,7 @@ export type TaggedSocket = TaggedTcpSocket | TaggedUdpSocket;
 //   silly: 6
 // }
 
-export interface Logger {
+export interface ServerLogger {
     error: LeveledLogMethod;
     warn: LeveledLogMethod;
     info: LeveledLogMethod;

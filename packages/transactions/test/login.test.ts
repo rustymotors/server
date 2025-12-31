@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { OldServerMessage } from "rusty-motors-shared";
+import { loggerMock, OldServerMessage } from "rusty-motors-shared";
 import { login } from "../src/login.js";
 
 describe("login", () => {
@@ -15,6 +15,7 @@ describe("login", () => {
 		const result = await login({
 			connectionId,
 			packet: incomingMessage,
+			log: loggerMock
 		});
 
 		// assert

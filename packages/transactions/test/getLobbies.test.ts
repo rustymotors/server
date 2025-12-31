@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { OldServerMessage } from "rusty-motors-shared";
+import { loggerMock, OldServerMessage } from "rusty-motors-shared";
 import { getLobbies } from "../src/getLobbies.js";
 
 describe("getLobbies", () => {
@@ -12,6 +12,7 @@ describe("getLobbies", () => {
 		const result = await getLobbies({
 			connectionId,
 			packet,
+			log: loggerMock
 		});
 
 		const resultMessage = result.messages[0].serialize().toString("hex");
