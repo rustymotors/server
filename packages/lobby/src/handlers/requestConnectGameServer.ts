@@ -7,7 +7,6 @@ import {
 } from "rusty-motors-gateway";
 import {
 	McosEncryption,
-	NoResultsError,
 	addEncryption,
 	fetchStateFromDatabase,
 	getEncryption,
