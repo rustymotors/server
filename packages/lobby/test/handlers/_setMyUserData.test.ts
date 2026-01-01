@@ -1,6 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { _setMyUserData } from "../../src/handlers/_setMyUserData.js";
 import { UserInfoMessage, UserInfo, UserData } from "rusty-motors-shared";
+import {loggerMock} from "rusty-motors-shared/test"
 import { BytableMessage } from "@rustymotors/binary";
 
 // Mock the databaseManager
@@ -13,30 +14,12 @@ vi.mock("rusty-motors-database", () => {
 	};
 });
 
-// Mock the logger
-vi.mock("rusty-motors-shared", async () => {
-	const actual = await vi.importActual("rusty-motors-shared");
-	return {
-		...actual,
-		getServerLogger: vi.fn(() => ({
-			debug: vi.fn(),
-			warn: vi.fn(),
-			error: vi.fn(),
-			info: vi.fn(),
-			verbose: vi.fn(),
-		})),
-	};
-});
-
 import { databaseManager } from "rusty-motors-database";
-import { getServerLogger } from "rusty-motors-shared";
 
 describe("_setMyUserData", () => {
-	let mockLogger: ReturnType<typeof getServerLogger>;
 
 	beforeEach(() => {
 		vi.clearAllMocks();
-		mockLogger = getServerLogger("test") as any;
 	});
 
 	it("should handle user data update when no differences are found", async () => {
@@ -76,6 +59,7 @@ describe("_setMyUserData", () => {
 		const result = await _setMyUserData({
 			connectionId,
 			message,
+			log: loggerMock
 		});
 
 		// Assert
@@ -85,13 +69,13 @@ describe("_setMyUserData", () => {
 			userId,
 			userInfo: incomingMessage.userInfo,
 		});
-		expect(vi.mocked(mockLogger.warn)).not.toHaveBeenCalled();
+		expect(vi.mocked(loggerMock.warn)).not.toHaveBeenCalled();
 		expect(result.connectionId).toBe(connectionId);
 		expect(result.messages).toHaveLength(1);
 		expect(result.messages[0]).toBeInstanceOf(UserInfoMessage);
 	});
 
-	it.skip("should log warning when diffObj detects differences in user data", async () => {
+	it("should log warning when diffObj detects differences in user data", async () => {
 		// Arrange
 		const userId = 12345;
 		const connectionId = "test-connection-2";
@@ -128,21 +112,22 @@ describe("_setMyUserData", () => {
 		const result = await _setMyUserData({
 			connectionId,
 			message,
+			log: loggerMock
 		});
 
 		// Assert - verify diffObj path was executed
 		expect(databaseManager.getUser).toHaveBeenCalledTimes(2);
 		expect(databaseManager.getUser).toHaveBeenNthCalledWith(1, userId);
-		expect(vi.mocked(mockLogger.warn)).toHaveBeenCalledWith(
+		expect(loggerMock.warn).toHaveBeenCalledWith(
 			"Changes in UserInfo",
 			expect.objectContaining({
 				connectionId,
 				userId,
-				diffs: expect.arrayContaining([
+				diffs: [
 					expect.objectContaining({
-						name: "userName",
+						name: "_username",
 					}),
-				]),
+				],
 			}),
 		);
 		expect(databaseManager.updateUser).toHaveBeenCalledWith({
@@ -194,6 +179,7 @@ describe("_setMyUserData", () => {
 		const result = await _setMyUserData({
 			connectionId,
 			message,
+			log: loggerMock
 		});
 
 		// Assert - verify diffObj was called and may have detected differences
@@ -206,7 +192,7 @@ describe("_setMyUserData", () => {
 		expect(result.messages).toHaveLength(1);
 	});
 
-	it.skip("should handle case when user does not exist in database", async () => {
+	it("should handle case when user does not exist in database", async () => {
 		// Arrange
 		const userId = 99999;
 		const connectionId = "test-connection-4";
@@ -236,12 +222,13 @@ describe("_setMyUserData", () => {
 		const result = await _setMyUserData({
 			connectionId,
 			message,
+			log: loggerMock
 		});
 
 		// Assert - diffObj should detect differences when before is undefined
 		expect(databaseManager.getUser).toHaveBeenCalledTimes(2);
 		expect(databaseManager.getUser).toHaveBeenNthCalledWith(1, userId);
-		expect(vi.mocked(mockLogger.warn)).toHaveBeenCalledWith(
+		expect(loggerMock.warn).toHaveBeenCalledWith(
 			"Changes in UserInfo",
 			expect.objectContaining({
 				connectionId,
@@ -292,6 +279,7 @@ describe("_setMyUserData", () => {
 			_setMyUserData({
 				connectionId,
 				message,
+				log: loggerMock
 			}),
 		).rejects.toThrow(`Unable to locate user info for user ${userId}`);
 	});

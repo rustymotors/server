@@ -1,24 +1,19 @@
 import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
 import { NPSUserStatus } from "./NPSUserStatus.js";
-import { Configuration, ServerLogger } from "rusty-motors-shared";
+import { Configuration } from "rusty-motors-shared";
 import { privateDecrypt } from "node:crypto";
 import { readFileSync } from "node:fs";
+import {loggerMock} from "rusty-motors-shared/test"
 
 vi.mock("node:crypto");
 vi.mock("node:fs");
 
 describe("NPSUserStatus", () => {
 	let config: Configuration;
-	let log: ServerLogger;
 	let packet: Buffer;
 
 	beforeEach(() => {
 		config = { privateKeyFile: "path/to/private/key" } as Configuration;
-		log = {
-			debug: vi.fn(),
-			trace: vi.fn(),
-			fatal: vi.fn(),
-		} as unknown as ServerLogger;
 		packet = Buffer.alloc(100);
 	});
 
@@ -35,7 +30,7 @@ describe("NPSUserStatus", () => {
 		(privateDecrypt as Mock).mockReturnValue(decryptedKey);
 	
 
-		const npsUserStatus = new NPSUserStatus(packet, config, log);
+		const npsUserStatus = new NPSUserStatus(packet, config, loggerMock);
 		npsUserStatus.extractSessionKeyFromPacket(rawPacket);
 
 		expect(readFileSync).toHaveBeenCalledWith("path/to/private/key");
@@ -56,7 +51,7 @@ describe("NPSUserStatus", () => {
 			throw new Error("Decryption error");
 		});
 
-		const npsUserStatus = new NPSUserStatus(packet, config, log);
+		const npsUserStatus = new NPSUserStatus(packet, config, loggerMock);
 
 		expect(() => npsUserStatus.extractSessionKeyFromPacket(rawPacket)).toThrow(
 			"Error decrypting session key",

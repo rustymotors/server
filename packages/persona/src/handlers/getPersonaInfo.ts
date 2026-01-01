@@ -1,76 +1,82 @@
-import { LegacyMessage, NPSMessage, SerializedBufferOld, ServerLogger  } from "rusty-motors-shared";
-import { createGameProfile } from "rusty-motors-nps";
-import { getPersonaByPersonaId } from "../getPersonasByPersonaId.js";
-import { personaToString } from "../internal.js";
+import {
+    LegacyMessage,
+    NPSMessage,
+    SerializedBufferOld,
+    ServerLogger,
+} from 'rusty-motors-shared';
+import { createGameProfile } from 'rusty-motors-nps';
+import { getPersonaByPersonaId } from '../getPersonasByPersonaId.js';
+import { personaToString } from '../internal.js';
+import * as Sentry from '@sentry/node';
 
-import { getServerLogger } from "rusty-motors-shared";
+import { getServerLogger } from 'rusty-motors-shared';
 
-const defaultLogger = getServerLogger("PersonaServer");
+const defaultLogger = getServerLogger('PersonaServer');
 
 export async function getPersonaInfo({
-	connectionId,
-	message,
-	log = defaultLogger,
+    connectionId,
+    message,
+    log = defaultLogger,
 }: {
-	connectionId: string;
-	message: LegacyMessage;
-	log?: ServerLogger;
+    connectionId: string;
+    message: LegacyMessage;
+    log?: ServerLogger;
 }): Promise<{
-	connectionId: string;
-	messages: SerializedBufferOld[];
+    connectionId: string;
+    messages: SerializedBufferOld[];
 }> {
-	log.debug("getPersonaInfo...");
-	const requestPacket = new NPSMessage();
+    log.debug('getPersonaInfo...');
+    const requestPacket = new NPSMessage();
     requestPacket._doDeserialize(message.serialize());
 
-	log.debug(
-		`LegacyMsg request object from getPersonaInfo ${requestPacket.toString()}`,
-	);
+    log.debug(
+        `LegacyMsg request object from getPersonaInfo ${requestPacket.toString()}`,
+    );
 
+    const outboundMessage = new SerializedBufferOld();
+
+    const responsePacket = new LegacyMessage();
     const personaId = requestPacket.data.readUInt32BE(0);
 
     log.debug(`personaId: ${personaId}`);
 
-    const persona = await getPersonaByPersonaId({
-        personaId,
-    });
+    try {
+        await getPersonaByPersonaId({
+            personaId,
+        }).then((persona) => {
+            log.debug(`Persona found: ${personaToString(persona)}`);
 
-    if (typeof persona === "undefined") {
-		const responsePacket = new LegacyMessage();
-		responsePacket._header.id = 0x612; // no persona
-		const outboundMessage = new SerializedBufferOld();
-		outboundMessage.setBuffer(responsePacket._doSerialize());
-		return {
-			connectionId,
-			messages: [outboundMessage]
-		}
+            const profile = createGameProfile();
+
+            profile.customerId = persona.customerId;
+            profile.profileId = persona.personaId;
+            profile.profileName = persona.personaName;
+
+            // Build the packet
+            // Response Code
+            // 0x607 = Game Persona Info
+            const responsePacket = new LegacyMessage();
+            responsePacket._header.id = 0x607;
+            responsePacket.setBuffer(profile.serialize());
+            log.debug(
+                `LegacyMsg response object from getPersonaInfo ${responsePacket
+                    ._doSerialize()
+                    .toString('hex')} `,
+            );
+
+            const outboundMessage = new SerializedBufferOld();
+            outboundMessage.setBuffer(responsePacket._doSerialize());
+            return outboundMessage;
+        });
+    } catch (error) {
+        log.error(`Error fetching persions for ${personaId}`);
+        Sentry.captureException(error);
+        responsePacket._header.id = 0x612; // no persona
+        outboundMessage.setBuffer(responsePacket._doSerialize());
     }
 
-	log.debug(`Persona found: ${personaToString(persona)}`);
-
-    const profile = createGameProfile();
-
-    profile.customerId = persona.customerId;
-    profile.profileId = persona.personaId;
-    profile.profileName = persona.personaName;
-
-	// Build the packet
-	// Response Code
-	// 0x607 = Game Persona Info
-	const responsePacket = new LegacyMessage();
-	responsePacket._header.id = 0x607;
-	responsePacket.setBuffer(profile.serialize());
-	log.debug(
-		`LegacyMsg response object from getPersonaInfo ${responsePacket
-			._doSerialize()
-			.toString("hex")} `,
-	);
-
-	const outboundMessage = new SerializedBufferOld();
-	outboundMessage.setBuffer(responsePacket._doSerialize());
-
-	return {
-		connectionId,
-		messages: [outboundMessage],
-	};
+    return {
+        connectionId,
+        messages: [outboundMessage],
+    };
 }

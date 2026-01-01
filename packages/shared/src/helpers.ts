@@ -173,6 +173,10 @@ export class CString implements Serializable {
         this._string = Buffer.alloc(val.length);
         this._string.write(val);
     }
+
+    static compare(firstCString: CString, SecondCString: CString) {
+        return firstCString.toString() === SecondCString.toString();
+    }
 }
 
 export class CBlock implements Serializable {
@@ -372,7 +376,18 @@ export function checkMinLength(buf: Buffer, minSize: number) {
     }
 }
 
-function shouldDeepDiff(obj: any) {
+export function areBothObjectsAnInstanceOf(
+    desiredType: any,
+    firstObject: any,
+    secondObject: any,
+): boolean {
+    return (
+        firstObject instanceof desiredType &&
+        secondObject instanceof desiredType
+    );
+}
+
+export function shouldDeepDiff(obj: any) {
     if (
         obj instanceof CString ||
         obj instanceof Bool ||
@@ -387,18 +402,21 @@ function shouldDeepDiff(obj: any) {
 
 export function diffObj(before: any, after: any) {
     if (before === after) return { isDataDiff: false, diffs: [] };
-    if (typeof  before === 'undefined' || typeof after === 'undefined') {
-        const diffs = typeof before === 'undefined'
-            ? Object.keys(after).map((key) => ({
-                  name: key,
-                  before: undefined,
-                  after: after[key],
-              }))
-            : typeof after === 'undefined' ? Object.keys(before).map((key) => ({
-                  name: key,
-                  before: before[key],
-                  after: undefined,
-              })) : [];
+    if (typeof before === 'undefined' || typeof after === 'undefined') {
+        const diffs =
+            typeof before === 'undefined'
+                ? Object.keys(after).map((key) => ({
+                      name: key,
+                      before: undefined,
+                      after: after[key],
+                  }))
+                : typeof after === 'undefined'
+                  ? Object.keys(before).map((key) => ({
+                        name: key,
+                        before: before[key],
+                        after: undefined,
+                    }))
+                  : [];
         return { isDataDiff: true, diffs };
     }
 
@@ -428,7 +446,7 @@ export function diffObj(before: any, after: any) {
                         after: afterVal,
                     });
                 }
-                continue
+                continue;
             }
             // Deep compare objects
             const { diffs: deepDiffs } = diffObj(beforeVal, afterVal);
@@ -445,6 +463,14 @@ export function diffObj(before: any, after: any) {
                         before: diff.before,
                         after: diff.after,
                     });
+                });
+            }
+        } else if (areBothObjectsAnInstanceOf(CString, beforeVal, afterVal)) {
+            if (!CString.compare(beforeVal, afterVal)) {
+                diffs.push({
+                    name: key,
+                    before: beforeVal,
+                    after: afterVal,
                 });
             }
         } else if (beforeVal !== afterVal) {

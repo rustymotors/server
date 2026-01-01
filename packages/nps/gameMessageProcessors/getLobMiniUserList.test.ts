@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, Mock } from "vitest";
-import { getLobMiniUserList } from "./getLobMiniUserList";
+import { getLobMiniUserList } from "./getLobMiniUserList.js";
 import {
 	GameMessage,
 	MiniUserInfo,
 	MiniUserList,
 } from "rusty-motors-nps";
+import {loggerMock} from "rusty-motors-shared/test"
 
 vi.mock("rusty-motors-nps", () => ({
 	GameMessage: vi.fn(),
@@ -35,7 +36,7 @@ describe("getLobMiniUserList", () => {
 			() => mockResponseMessage,
 		);
 
-		const result = await getLobMiniUserList(commandId, data);
+		const result = await getLobMiniUserList(commandId, data, loggerMock);
 
 		expect(mockMiniUserList.addChannelUser).toHaveBeenCalledWith(
 			new MiniUserInfo(1000, "Molly"),

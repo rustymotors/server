@@ -47,10 +47,10 @@ export class NPSUserStatus extends LegacyMessage {
 	 * @param {Configuration} config
 	 * @param {Serverogger} log
 	 */
-	constructor(packet: Buffer, config: Configuration, log: ServerLogger) {
+	constructor(packet: Buffer, config: Configuration, log: ServerLogger = getServerLogger("NPSUserStatus")) {
 		super();
 		this._config = config;
-		this.log = getServerLogger("NPSUserStatus");
+		this.log = log;
 		log.debug("Constructing NPSUserStatus");
 		this._header._doDeserialize(packet);
 		this.sessionKey = "";

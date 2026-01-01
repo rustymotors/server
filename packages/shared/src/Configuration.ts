@@ -117,7 +117,7 @@ function getEnvVariable(
 	const value = process.env[name];
 	if (required && !value) {
 		const coreLogger = getServerLogger("core");
-		coreLogger.fatal(`Missing required environment variable: ${name}`);
+		coreLogger.error(`Missing required environment variable: ${name}`);
 		process.exit(1);
 	}
 	return value || defaultValue || "";

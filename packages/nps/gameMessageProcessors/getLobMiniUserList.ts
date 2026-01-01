@@ -4,17 +4,16 @@ import {
 	MiniUserList,
 	getAsHex,
 } from "rusty-motors-nps";
-import { getServerLogger } from "rusty-motors-shared";
-
-const defaultLogger = getServerLogger("nps.getLobMiniUserList");
+import { getServerLogger, ServerLogger } from "rusty-motors-shared";
 
 // Command id: 0x128
 export async function getLobMiniUserList(
 	_commandId: number,
 	data: Buffer,
+	logger: ServerLogger = getServerLogger("nps.getLobMiniUserList")
 ): Promise<Buffer> {
-	defaultLogger.debug("getLobMiniUserList called");
-	defaultLogger.info(`Processing getLobMiniUserList command: ${getAsHex(data)}`);
+	logger.debug("getLobMiniUserList called");
+	logger.info(`Processing getLobMiniUserList command: ${getAsHex(data)}`);
 
 	const miniUserList = new MiniUserList(0);
 
