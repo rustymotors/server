@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { handleSendMiniRiffList } from "../../src/handlers/handleSendMiniRiffList.js";
 import { BytableMessage } from "@rustymotors/binary";
-import { loggerMock } from "rusty-motors-shared";
+import {loggerMock} from "rusty-motors-shared/test"
 
 describe("handleSendMiniRiffList", () => {
 	it("should return a buffer", async () => {

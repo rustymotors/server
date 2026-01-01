@@ -1,6 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { _setMyUserData } from "../../src/handlers/_setMyUserData.js";
-import { UserInfoMessage, UserInfo, UserData, loggerMock } from "rusty-motors-shared";
+import { UserInfoMessage, UserInfo, UserData } from "rusty-motors-shared";
+import {loggerMock} from "rusty-motors-shared/test"
 import { BytableMessage } from "@rustymotors/binary";
 
 // Mock the databaseManager

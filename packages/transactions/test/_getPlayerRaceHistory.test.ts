@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { loggerMock, OldServerMessage } from "rusty-motors-shared";
+import { OldServerMessage } from "rusty-motors-shared";
 import { _getPlayerRaceHistory } from "../src/_getPlayerRaceHistory.js";
+import {loggerMock} from "rusty-motors-shared/test"
 
 describe("_getPlayerRaceHistory", () => {
 	it("should return a PlayerRacingHistoryMessage", async () => {

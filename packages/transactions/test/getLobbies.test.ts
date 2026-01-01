@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { loggerMock, OldServerMessage } from "rusty-motors-shared";
+import { OldServerMessage } from "rusty-motors-shared";
 import { getLobbies } from "../src/getLobbies.js";
+import {loggerMock} from "rusty-motors-shared/test"
 
 describe("getLobbies", () => {
 	it("should return a promise", async () => {

@@ -7,7 +7,7 @@ import {
 import { createGameProfile } from 'rusty-motors-nps';
 import { getPersonaByPersonaId } from '../getPersonasByPersonaId.js';
 import { personaToString } from '../internal.js';
-import Sentry from '@sentry/node';
+import * as Sentry from '@sentry/node';
 
 import { getServerLogger } from 'rusty-motors-shared';
 

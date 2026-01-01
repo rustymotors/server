@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
 import { NPSUserStatus } from "./NPSUserStatus.js";
-import { Configuration, loggerMock } from "rusty-motors-shared";
+import { Configuration } from "rusty-motors-shared";
 import { privateDecrypt } from "node:crypto";
 import { readFileSync } from "node:fs";
+import {loggerMock} from "rusty-motors-shared/test"
 
 vi.mock("node:crypto");
 vi.mock("node:fs");

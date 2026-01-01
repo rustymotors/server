@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { getPersonaByPersonaId } from "../src/getPersonasByPersonaId.js";
-import { loggerMock } from "rusty-motors-shared";
+import {loggerMock} from "rusty-motors-shared/test"
 
 describe("getPersonasByPersonaId", () => {
 

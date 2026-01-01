@@ -5,7 +5,7 @@ import {
 	MiniUserInfo,
 	MiniUserList,
 } from "rusty-motors-nps";
-import { loggerMock } from "rusty-motors-shared";
+import {loggerMock} from "rusty-motors-shared/test"
 
 vi.mock("rusty-motors-nps", () => ({
 	GameMessage: vi.fn(),

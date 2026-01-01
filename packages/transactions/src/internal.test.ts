@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
 import { receiveTransactionsData } from "./internal.js";
 
 // Mocks for external modules used by internal.ts
@@ -93,7 +93,7 @@ describe("decryptedMessage (via receiveTransactionsData)", () => {
 
         // body.deserialize should have been called with decrypted data (xor 0xff transformation)
         expect(body.deserialize).toHaveBeenCalled();
-        const calledWith = (body.deserialize as unknown as vi.Mock).mock.calls[0][0] as Buffer;
+        const calledWith = (body.deserialize as unknown as Mock).mock.calls[0][0] as Buffer;
         expect(calledWith).toBeInstanceOf(Buffer);
         expect(calledWith.length).toEqual(2);
         // ensure payload encryption flag was cleared on the object
