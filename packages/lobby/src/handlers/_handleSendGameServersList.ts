@@ -8,9 +8,6 @@ import {
     RawMessage,
     ChannelCreated,
 } from 'rusty-motors-shared';
-import {} from '@rustymotors/rooms';
-import { databaseManager } from 'rusty-motors-database';
-
 export async function handleSendGameServersList({
     connectionId,
     message,
@@ -38,12 +35,6 @@ export async function handleSendGameServersList({
 
         // TODO: Actually have servers
         const responsePackets = []
-
-        const gameServers = databaseManager.getGameServers()
-
-        for (const server in gameServers) {
-
-        }
 
         const channelCreatedMessage = new RawMessage();
         channelCreatedMessage.id = 0x20e

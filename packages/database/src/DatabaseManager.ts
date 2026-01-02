@@ -1,7 +1,8 @@
 import type {
     ConnectionRecord,
     UserInfo,
-    RunningServerInfo,
+    IRunningServerInfo,
+    DatabaseManager,
 } from 'rusty-motors-shared';
 import { Sequelize } from 'sequelize';
 
@@ -13,7 +14,7 @@ const _users: Map<number, UserInfo> = new Map();
 const _connections: Map<string, number> = new Map();
 
 // This is a fake database table to host the game servers
-const _gameServers: Map<number, RunningServerInfo> = new Map();
+const _gameServers: Map<number, IRunningServerInfo> = new Map();
 
 /**
  * @module Database
@@ -26,7 +27,7 @@ const _gameServers: Map<number, RunningServerInfo> = new Map();
  */
 async function updateGameServer(
     commId: number,
-    gameServer: RunningServerInfo,
+    gameServer: IRunningServerInfo,
 ): Promise<void> {
     try {
         _gameServers.set(commId, gameServer);
@@ -36,7 +37,7 @@ async function updateGameServer(
     }
 }
 
-async function getGameServers(): Promise<RunningServerInfo[]> {
+async function getGameServers(): Promise<IRunningServerInfo[]> {
     const gameServersArr = [];
     for (const server of _gameServers.values()) {
         gameServersArr.push(server);
@@ -169,18 +170,6 @@ export function getDatabase(): Sequelize {
     return database;
 }
 
-export interface DatabaseManager {
-    updateGameServer: typeof updateGameServer;
-    getGameServers: typeof getGameServers;
-    updateUser: typeof updateUser;
-    getUser: typeof getUser;
-    updateConnection: typeof updateConnection;
-    findUserByConnectionId: typeof findUserByConnectionId;
-    fetchSessionKeyByCustomerId: typeof fetchSessionKeyByCustomerId;
-    updateSessionKey: typeof updateSessionKey;
-    fetchSessionKeyByConnectionId: typeof fetchSessionKeyByConnectionId;
-}
-
 export const databaseManager: DatabaseManager = {
     updateGameServer,
     getGameServers,
@@ -192,3 +181,7 @@ export const databaseManager: DatabaseManager = {
     updateSessionKey,
     fetchSessionKeyByConnectionId,
 };
+
+export function getDatabaseManager() {
+    return databaseManager
+}

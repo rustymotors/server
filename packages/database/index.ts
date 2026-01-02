@@ -1,6 +1,6 @@
 export {
-	type DatabaseManager,
 	databaseManager,
+	getDatabaseManager,
 	getDatabase,
 } from "./src/DatabaseManager.js";
 export { databaseService, findCustomerByContext, findUser } from "./src/databaseService.js";

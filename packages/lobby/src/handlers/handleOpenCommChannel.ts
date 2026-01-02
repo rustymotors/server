@@ -6,7 +6,7 @@ import {
     ServerLogger,
     UserJoinedChannelMessage,
 } from 'rusty-motors-shared';
-import { databaseManager } from 'rusty-motors-database';
+import { getDatabaseManager } from 'rusty-motors-database';
 
 export async function handleOpenCommChannel({
     connectionId,
@@ -64,13 +64,13 @@ export async function handleOpenCommChannel({
         if (requestedCommId > 100) {
             // Create user joined channel message
             const userId =
-                await databaseManager.findUserByConnectionId(connectionId);
+                await getDatabaseManager().findUserByConnectionId(connectionId);
             if (typeof userId === 'undefined') {
                 throw new Error(
                     `Unable to locate user for connection ${connectionId}`,
                 );
             }
-            const user = await databaseManager.getUser(userId);
+            const user = await getDatabaseManager().getUser(userId);
             if (typeof user === 'undefined') {
                 throw new Error(
                     `Unable to locate user data for user ${userId}`,

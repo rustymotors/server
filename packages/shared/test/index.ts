@@ -1,1 +1,1 @@
-export {loggerMock} from "./mocks"
+export {databaseManagerMock, loggerMock} from "./mocks.js"

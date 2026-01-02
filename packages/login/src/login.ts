@@ -1,4 +1,4 @@
-import { databaseManager, findCustomerByContext } from "rusty-motors-database";
+import { getDatabaseManager, findCustomerByContext } from "rusty-motors-database";
 import { getServerConfiguration, NetworkMessage } from "rusty-motors-shared";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { ServerLogger, getServerLogger } from "rusty-motors-shared";
@@ -52,7 +52,7 @@ export async function login({
 	}
 
 	// Save sessionkey in database under customerId
-	await databaseManager.updateSessionKey(
+	await getDatabaseManager().updateSessionKey(
 		userRecord.customerId,
 		sessionKey ?? "",
 		contextId,

@@ -6,7 +6,8 @@ import {
     createDataEncryptionPair,
 } from 'rusty-motors-gateway';
 import {
-	ConnectionRecord,
+    ConnectionRecord,
+    DatabaseManager,
     McosEncryption,
     ServerLogger,
     ServiceArgs,
@@ -17,11 +18,11 @@ import {
     getEncryption,
 } from 'rusty-motors-shared';
 import { SerializedBufferOld } from 'rusty-motors-shared';
-import { databaseManager } from 'rusty-motors-database';
+import { getDatabaseManager } from 'rusty-motors-database';
 import { getServerLogger } from 'rusty-motors-shared';
 import { BytableMessage } from '@rustymotors/binary';
 
-const NPS_INVALID_KEY = 0x22a
+const NPS_INVALID_KEY = 0x22a;
 
 /**
  * Convert to zero padded hex
@@ -39,6 +40,134 @@ export function toHex(data: Buffer): string {
     return bytes.join('');
 }
 
+class PacketProcessor {
+    private connectionId: string;
+    private message: SerializedBufferOld;
+    private log: ServerLogger;
+    private database: DatabaseManager
+
+    constructor({
+        connectionId,
+        message,
+        log = getServerLogger('PacketProcessor'),
+        database = getDatabaseManager(),
+    }: ServiceArgs & { database?: DatabaseManager }) {
+        this.connectionId = connectionId;
+        this.message = message;
+        this.log = log;
+        this.database = database
+    }
+
+    async invoke() {
+        // This is a NPS_LoginInfo packet
+        // As a legacy packet, it used the old NPSMessage format
+        // of a 4 byte header, followed by a 4 byte length, followed
+        // by the data payload.
+
+	const inboundMessage = new LoginInfoMessage();
+	inboundMessage.deserialize(this.message.serialize());
+
+        this.log.debug(
+            `LoginInfoMessage: ${new LoginInfoMessage().toString()}`,
+        );
+
+        let userPersona;
+
+    try {
+        userPersona = await getPersonaByPersonaId({
+            personaId: inboundMessage._userId,
+        });
+    } catch (error) {
+        // TODO: parse error and return approprate code
+		const outboundMessage = createLegacyErrorPacket(NPS_INVALID_KEY);
+
+            return {
+                connectionId: this.connectionId,
+                messages: [outboundMessage],
+            };
+        }
+        const { customerId } = userPersona;
+
+        const existingEncryption = getEncryption(
+            fetchStateFromDatabase(),
+            this.connectionId,
+        );
+
+        if (!existingEncryption) {
+            // Set the encryption keys on the lobby connection
+            let keys;
+
+            try {
+                keys =
+                    await this.database.fetchSessionKeyByCustomerId(
+                        customerId,
+                    );
+            } catch (err) {
+                this.log.warn(`Unable to fetch sessionkey`, {
+                    connectionId: this.connectionId,
+                    customerId,
+                    err,
+                });
+                // TODO: parse error and return approprate code
+
+            const outboundMessage = createLegacyErrorPacket(NPS_INVALID_KEY);
+                return {
+                connectionId: this.connectionId,
+                messages: [outboundMessage],
+                };
+            }
+
+            if (keys === undefined) {
+                throw Error('Error fetching session keys!');
+            }
+
+            // We have the session keys, set them on the connection
+            try {
+                saveSessionKeyToConnection(
+                    keys,
+                    this.connectionId,
+                    fetchStateFromDatabase(),
+                );
+            } catch (error) {
+                const err = Error(`Error creating encryption`);
+                err.cause = error;
+                // 20a
+                throw err;
+            }
+        }
+
+        // We have a session, we are good to go!
+        await this.database.updateConnection(
+            this.connectionId,
+            new LoginInfoMessage()._userId,
+        );
+
+        // Send the response packet
+
+        const responsePackets = [];
+
+    const responsePacket = createGameServerResponsePacket(inboundMessage);
+
+        // log the packet
+        this.log.verbose(
+            `!!! outbound lobby login response packet: ${responsePacket.toString()}`,
+        );
+
+        const outboundMessage = portPacketToLegacyFormat(responsePacket);
+
+        responsePackets.push(outboundMessage);
+
+        this.log.debug(
+            `[${this.connectionId}] Returning with ${outboundMessage.toHexString()}`,
+        );
+
+        return {
+            connectionId: this.connectionId,
+            messages: responsePackets,
+        };
+    }
+}
+
 /**
  * Handle a request to connect to a game server packet
  *
@@ -53,86 +182,17 @@ export async function _npsRequestGameConnectServer({
     connectionId,
     message,
     log = getServerLogger('handlers/_npsRequestGameConnectServer'),
-}: ServiceArgs): Promise<ServiceResponse> {
-    // This is a NPS_LoginInfo packet
-    // As a legacy packet, it used the old NPSMessage format
-    // of a 4 byte header, followed by a 4 byte length, followed
-    // by the data payload.
+    database = getDatabaseManager()
+}: ServiceArgs & { database?: DatabaseManager}): Promise<ServiceResponse> {
+    const packetProcessor = new PacketProcessor({ connectionId, message, log, database });
+    return await packetProcessor.invoke();
+}
 
-	const inboundMessage = new LoginInfoMessage();
-	inboundMessage.deserialize(message.serialize());
-
-    log.debug(`LoginInfoMessage: ${inboundMessage.toString()}`);
-
-    let userPersona;
-
-    try {
-        userPersona = await getPersonaByPersonaId({
-            personaId: inboundMessage._userId,
-        });
-    } catch (error) {
-        // TODO: parse error and return approprate code
-		const outboundMessage = createLegacyErrorPacket(NPS_INVALID_KEY);
-
-        return {
-            connectionId,
-            messages: [outboundMessage],
-        };
-    }
-    const { customerId } = userPersona;
-
-    const state = fetchStateFromDatabase();
-
-    const existingEncryption = getEncryption(state, connectionId);
-
-    if (!existingEncryption) {
-        // Set the encryption keys on the lobby connection
-        let keys;
-
-        try {
-            keys =
-                await databaseManager.fetchSessionKeyByCustomerId(customerId);
-        } catch (err) {
-            log.warn(`Unable to fetch sessionkey`, {
-                connectionId,
-                customerId,
-                err,
-            });
-            // TODO: parse error and return approprate code
-			
-            const outboundMessage = createLegacyErrorPacket(NPS_INVALID_KEY);
-            return {
-                connectionId,
-                messages: [outboundMessage],
-            };
-        }
-
-        if (keys === undefined) {
-            throw Error('Error fetching session keys!');
-        }
-
-        // We have the session keys, set them on the connection
-        try {
-            saveSessionKeyToConnection(keys, connectionId, state);
-        } catch (error) {
-            const err = Error(`Error creating encryption`);
-            err.cause = error;
-            // 20a
-            throw err;
-        }
-    }
-
-    // We have a session, we are good to go!
-    await databaseManager.updateConnection(
-        connectionId,
-        inboundMessage._userId,
-    );
-
-    // Send the response packet
-
-    const responsePackets = [];
-
-    const responsePacket = createGameServerResponsePacket(inboundMessage);
+function createLegacyErrorPacket(
+    err: number,
+    log: ServerLogger = getServerLogger(`createLegacyErrorPacket: ${err}`),
+) {
+    const responsePacket = createErrorResponsePacket(err);
 
     // log the packet
     log.verbose(
@@ -140,76 +200,55 @@ export async function _npsRequestGameConnectServer({
     );
 
     const outboundMessage = portPacketToLegacyFormat(responsePacket);
-
-    responsePackets.push(outboundMessage);
-
-    log.debug(
-        `[${connectionId}] Returning with ${outboundMessage.toHexString()}`,
-    );
-
-    return {
-        connectionId,
-        messages: responsePackets,
-    };
-}
-
-function createLegacyErrorPacket(err: number, log: ServerLogger = getServerLogger(`createLegacyErrorPacket: ${err}`)) {
-	const responsePacket = createErrorResponsePacket(err);
-
-	// log the packet
-	log.verbose(
-		`!!! outbound lobby login response packet: ${responsePacket.toString()}`
-	);
-
-	const outboundMessage = portPacketToLegacyFormat(responsePacket);
-	return outboundMessage;
+    return outboundMessage;
 }
 
 function createErrorResponsePacket(responseCode: number) {
-	const responsePacket = new BytableMessage();
-	responsePacket.header.setMessageVersion(0);
-	responsePacket.header.setId(responseCode); // invalid key
-	return responsePacket;
+    const responsePacket = new BytableMessage();
+    responsePacket.header.setMessageVersion(0);
+    responsePacket.header.setId(responseCode); // invalid key
+    return responsePacket;
 }
 
 function createGameServerResponsePacket(inboundMessage: LoginInfoMessage) {
-	const responsePacket = new BytableMessage();
-	responsePacket.header.setMessageVersion(0);
-	responsePacket.header.setId(0x120);
+    const responsePacket = new BytableMessage();
+    responsePacket.header.setMessageVersion(0);
+    responsePacket.header.setId(0x120);
 
-	responsePacket.setSerializeOrder([
-		{ name: 'userId', field: 'Dword' },
-		{ name: 'userName', field: 'Container' },
-		{ name: 'userData', field: 'Buffer' },
-	]);
+    responsePacket.setSerializeOrder([
+        { name: 'userId', field: 'Dword' },
+        { name: 'userName', field: 'Container' },
+        { name: 'userData', field: 'Buffer' },
+    ]);
 
-	responsePacket.setFieldValueByName('userId', inboundMessage._userId);
-	responsePacket.setFieldValueByName('userName', inboundMessage._userName);
-	responsePacket.setFieldValueByName('userData', inboundMessage._userData);
-	return responsePacket;
+    responsePacket.setFieldValueByName('userId', inboundMessage._userId);
+    responsePacket.setFieldValueByName('userName', inboundMessage._userName);
+    responsePacket.setFieldValueByName('userData', inboundMessage._userData);
+    return responsePacket;
 }
 
 function portPacketToLegacyFormat(responsePacket: BytableMessage) {
-	const outboundMessage = new SerializedBufferOld();
-	outboundMessage.deserialize(responsePacket.serialize());
-	return outboundMessage;
+    const outboundMessage = new SerializedBufferOld();
+    outboundMessage.deserialize(responsePacket.serialize());
+    return outboundMessage;
 }
 
-function saveSessionKeyToConnection(keys: ConnectionRecord, connectionId: string, state: State) {
-	const newCommandEncryptionPair = createCommandEncryptionPair(
-		keys.sessionKey
-	);
+function saveSessionKeyToConnection(
+    keys: ConnectionRecord,
+    connectionId: string,
+    state: State,
+) {
+    const newCommandEncryptionPair = createCommandEncryptionPair(
+        keys.sessionKey,
+    );
 
-	const newDataEncryptionPair = createDataEncryptionPair(
-		keys.sessionKey
-	);
+    const newDataEncryptionPair = createDataEncryptionPair(keys.sessionKey);
 
-	const newEncryption = new McosEncryption({
-		connectionId,
-		commandEncryptionPair: newCommandEncryptionPair,
-		dataEncryptionPair: newDataEncryptionPair,
-	});
+    const newEncryption = new McosEncryption({
+        connectionId,
+        commandEncryptionPair: newCommandEncryptionPair,
+        dataEncryptionPair: newDataEncryptionPair,
+    });
 
-	addEncryption(state, newEncryption).save();
+    addEncryption(state, newEncryption).save();
 }
-

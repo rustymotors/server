@@ -9,7 +9,7 @@ import {
 } from './helpers.js';
 import { RawMessageHeader } from './RawMessage.js';
 import { SerializedList } from './SerializedList.js';
-import { NPSMessage, Serializable } from './types.js';
+import { IRunningServerInfo, NPSMessage, Serializable } from './types.js';
 
 export class GameServerLaunchInfo implements Serializable {
     private _commId; // 4
@@ -44,7 +44,7 @@ export class GameServerLaunchInfo implements Serializable {
 }
 
 // export class Lobby implements Serializable { }
-export class RunningServerInfo implements Serializable {
+export class RunningServerInfo implements IRunningServerInfo, Serializable {
     private _riff; // p
     private _commId; // l
     private _ipAddress; // p
