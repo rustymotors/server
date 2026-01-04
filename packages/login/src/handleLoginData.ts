@@ -7,8 +7,6 @@ import { getServerLogger } from "rusty-motors-shared";
 import { GamePacket } from "rusty-motors-shared-packets";
 import { BytableMessage } from "@rustymotors/binary";
 
-const defaultLogger = getServerLogger("LoginServer");
-
 /**
  * Handles the reception of login data, deserializes the incoming message, and processes it.
  *
@@ -25,7 +23,7 @@ const defaultLogger = getServerLogger("LoginServer");
 export async function handleLoginData({
 	connectionId,
 	message,
-	log = defaultLogger,
+	log = getServerLogger("LoginServer"),
 }: {
 	connectionId: string;
 	message: BytableMessage;

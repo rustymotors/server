@@ -20,6 +20,9 @@
 	"author": "",
 	"license": "AGPL-3.0",
 	"dependencies": {
+		"@sentry/cli": "3.0.1",
+		"@sentry/node": "10.32.1",
+		"@sentry/profiling-node": "10.32.1",
 		"@types/pg": "^8.15.4",
 		"pg": "^8.16.2",
 		"pg-hstore": "^2.3.4",

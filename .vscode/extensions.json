@@ -2,7 +2,5 @@
     "recommendations": [
         "ms-vscode.makefile-tools",
         "usernamehw.errorlens",
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode"
     ]
 }

@@ -20,14 +20,15 @@ import {
     getServerLogger,
     verifyLegacyCipherSupport,
     getServerConfiguration,
+    ServerLogger,
 } from 'rusty-motors-shared';
-import { databaseService } from 'rusty-motors-database';
+import { getDatabaseService } from 'rusty-motors-database';
 
 function main() {
     const coreLogger = getServerLogger('npx/core');
     try {
         verifyLegacyCipherSupport();
-        if (!databaseService.isDatabaseConnected) {
+        if (!getDatabaseService().isDatabaseConnected) {
             coreLogger.error('Database connection failed. Exiting.');
             process.exit(1);
         }
@@ -70,11 +71,15 @@ function main() {
         coreLogger.info('Starting server');
         gatewayServer.start();
     } catch (err) {
-        Sentry.captureException(err);
-        coreLogger.error(`Error in core server: ${String(err)}`);
-        process.exitCode = 1;
-        return;
+        return captureAndLogErrorAndSetNotZeroExitCode(err, coreLogger);
     }
 }
 
 main();
+function captureAndLogErrorAndSetNotZeroExitCode(err: unknown, coreLogger: ServerLogger) {
+    Sentry.captureException(err);
+    coreLogger.error(`Error in core server: ${String(err)}`);
+    process.exitCode = 1;
+    return;
+}
+

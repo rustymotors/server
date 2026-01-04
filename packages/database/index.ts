@@ -3,7 +3,7 @@ export {
 	getDatabaseManager,
 	getDatabase,
 } from "./src/DatabaseManager.js";
-export { databaseService, findCustomerByContext, findUser } from "./src/databaseService.js";
+export { getDatabaseService, findCustomerByContext, findUser } from "./src/databaseService.js";
 export { getTunables as getTuneables } from "./src/services/tunables.js";
 export { purchaseCar,  } from "./src/functions/purchaseCar.js";
 export { getOwnedVehiclesForPerson, getVehicleAndParts } from "./src/functions/createNewCar.js";

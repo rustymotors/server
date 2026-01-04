@@ -23,6 +23,9 @@
 	"author": "",
 	"license": "AGPL-3.0",
 	"dependencies": {
+		"@sentry/cli": "3.0.1",
+		"@sentry/node": "10.32.1",
+		"@sentry/profiling-node": "10.32.1",
 		"bunyan": "^1.8.15",
 		"fastify": "^5.4.0",
 		"pino": "^9.7.0",
