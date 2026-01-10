@@ -37,6 +37,10 @@ describe("getServerConfiguration", () => {
 	});
 
 	it("should use default values for optional environment variables", () => {
+		// Explicitly unset optional variables to test defaults
+		delete process.env["EXTERNAL_HOST"];
+		delete process.env["MCO_LOG_LEVEL"];
+		
 		process.env["CERTIFICATE_FILE"] = "/path/to/cert";
 		process.env["PRIVATE_KEY_FILE"] = "/path/to/privateKey";
 		process.env["PUBLIC_KEY_FILE"] = "/path/to/publicKey";
@@ -48,6 +52,11 @@ describe("getServerConfiguration", () => {
 	});
 
 	it("should exit the process if required environment variables are missing", () => {
+		// Explicitly unset required variables to test error handling
+		delete process.env["CERTIFICATE_FILE"];
+		delete process.env["PRIVATE_KEY_FILE"];
+		delete process.env["PUBLIC_KEY_FILE"];
+		
 		const mockExit = vi.spyOn(process, "exit").mockImplementation(() => {
 			throw new Error("process.exit called");
 		});

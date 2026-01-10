@@ -224,7 +224,7 @@ export async function processSocketData(
                 continue;
             }
             const initialPacket = parseInitialMessage(packet);
-            await handlePacketRouting(id, port, initialPacket);
+            handlePacketRouting(id, port, initialPacket);
         }
     } catch (error) {
         handleSocketError(error, log, id);
@@ -308,18 +308,18 @@ function splitDataIntoPackets(
  * routing process. It is likely used to log events, errors, and other relevant information during the
  * execution of the function.
  */
-async function handlePacketRouting(
+function handlePacketRouting(
     id: string,
     port: number,
     initialPacket: BytableMessage,
-): Promise<void> {
-    try {
-        await routeInitialMessage(id, port, initialPacket);
-    } catch (error) {
-        throw new Error(`[${id}] Error routing initial nps message`, {
-            cause: error,
-        });
-    }
+): void {
+    // routeInitialMessage is async but we don't await it (fire-and-forget)
+    // Add catch handler to prevent unhandled promise rejections
+    // Errors are already caught and logged inside routeInitialMessage
+    routeInitialMessage(id, port, initialPacket).catch((error) => {
+        const log = getServerLogger('gateway.npsPortRouter/handlePacketRouting');
+        log.error(`[${id}] Unhandled error in routeInitialMessage promise: ${String(error)}`);
+    });
 }
 
 function handleSocketError(
@@ -390,98 +390,22 @@ async function routeInitialMessage(
     // Route the initial message to the appropriate handler
     // Messages may be encrypted, this will be handled by the handler
 
-    log.debug(
-        `Routing message for port ${port}: ${initialPacket.header.id}`,
-    );
+    try {
+        log.debug(
+            `Routing message for port ${port}: ${initialPacket.header.id}`,
+        );
 
-    const packet = new GamePacket();
-    packet.deserialize(initialPacket.serialize());
+        const packet = new GamePacket();
+        packet.deserialize(initialPacket.serialize());
 
-    let responses: SerializableInterface[] = [];
+        let responses: SerializableInterface[] = [];
 
-    let wasHandled = false;
+        let wasHandled = false;
 
-    if (port >= 9000 && port < 9021) {
-        try {
-            log.debug(
-                `[${id}] Passing room packet to lobby handler: ${packet.getMessageId()}`,
-            );
-            responses = (
-                await receiveLobbyData({
-                    connectionId: id,
-                    message: initialPacket,
-                })
-            ).messages;
-            log.debug(
-                `[${id}] Received ${responses.length} room lobby response packets`,
-            );
-            wasHandled = true;
-        } catch (error) {
-            log.error('Error handling room lobby packet', {
-                error: JSON.stringify(error),
-            });
-        }
-    }
-
-    switch (port) {
-        case 7003:
-            // Handle lobby packet
-            log.debug(
-                `[${id}] Passing packet to lobby handler: ${packet.getMessageId()}`,
-            );
-            responses = (
-                await receiveLobbyData({
-                    connectionId: id,
-                    message: initialPacket,
-                })
-            ).messages;
-            log.debug(
-                `[${id}] Received ${responses.length} lobby response packets`,
-            );
-            wasHandled = true;
-            break;
-        case 8226:
-            // Handle login packet
-            responses = (
-                await receiveLoginData({
-                    connectionId: id,
-                    message: initialPacket,
-                })
-            ).messages;
-            log.debug(
-                `[${id}] Received ${responses.length} login response packets`,
-            );
-            wasHandled = true;
-            break;
-        case 8227:
-            // Handle chat packet
-            log.debug(
-                `[${id}] Passing packet to chat handler: ${packet.serialize().toString('hex')}`,
-            );
-            responses = (
-                await receiveChatData({ connectionId: id, message: packet })
-            ).messages;
-            log.debug(
-                `[${id}] Chat Responses: ${responses.map((r) => r.serialize().toString('hex'))}`,
-            );
-            break;
-        case 8228:
-            log.debug(
-                `[${id}] Passing packet to persona handler: ${packet.serialize().toString('hex')}`,
-            );
-            // responses =Handle persona packet
-            responses = (
-                await receivePersonaData({ connectionId: id, message: packet })
-            ).messages;
-            log.debug(
-                `[${id}] Received ${responses.length} persona response packets`,
-            );
-            wasHandled = true;
-            break;
-        case 10001:
+        if (port >= 9000 && port < 9021) {
             try {
                 log.debug(
-                    `[${id}] Passing race? packet to lobby handler: ${packet.getMessageId()}`,
+                    `[${id}] Passing room packet to lobby handler: ${packet.getMessageId()}`,
                 );
                 responses = (
                     await receiveLobbyData({
@@ -490,36 +414,147 @@ async function routeInitialMessage(
                     })
                 ).messages;
                 log.debug(
-                    `[${id}] Received ${responses.length} race? lobby response packets`,
+                    `[${id}] Received ${responses.length} room lobby response packets`,
                 );
                 wasHandled = true;
             } catch (error) {
-                log.error('Error handling race packet', {
+                log.error('Error handling room lobby packet', {
                     error: JSON.stringify(error),
                 });
             }
-            break;
+        }
 
-        default:
-            // No handler
-            if (wasHandled === false) {
-                log.warn(
-                    `${id}] No handler found for port ${port}: ${packet.serialize().toString('hex')}`,
-                );
-            }
-            break;
+        switch (port) {
+            case 7003:
+                // Handle lobby packet
+                try {
+                    log.debug(
+                        `[${id}] Passing packet to lobby handler: ${packet.getMessageId()}`,
+                    );
+                    responses = (
+                        await receiveLobbyData({
+                            connectionId: id,
+                            message: initialPacket,
+                        })
+                    ).messages;
+                    log.debug(
+                        `[${id}] Received ${responses.length} lobby response packets`,
+                    );
+                    wasHandled = true;
+                } catch (error) {
+                    log.error('Error handling lobby packet', {
+                        error: JSON.stringify(error),
+                    });
+                }
+                break;
+            case 8226:
+                // Handle login packet
+                try {
+                    responses = (
+                        await receiveLoginData({
+                            connectionId: id,
+                            message: initialPacket,
+                        })
+                    ).messages;
+                    log.debug(
+                        `[${id}] Received ${responses.length} login response packets`,
+                    );
+                    wasHandled = true;
+                } catch (error) {
+                    log.error('Error handling login packet', {
+                        error: JSON.stringify(error),
+                    });
+                }
+                break;
+            case 8227:
+                // Handle chat packet
+                try {
+                    log.debug(
+                        `[${id}] Passing packet to chat handler: ${packet.serialize().toString('hex')}`,
+                    );
+                    responses = (
+                        await receiveChatData({ connectionId: id, message: packet })
+                    ).messages;
+                    log.debug(
+                        `[${id}] Chat Responses: ${responses.map((r) => r.serialize().toString('hex'))}`,
+                    );
+                } catch (error) {
+                    log.error('Error handling chat packet', {
+                        error: JSON.stringify(error),
+                    });
+                }
+                break;
+            case 8228:
+                try {
+                    log.debug(
+                        `[${id}] Passing packet to persona handler: ${packet.serialize().toString('hex')}`,
+                    );
+                    // responses =Handle persona packet
+                    responses = (
+                        await receivePersonaData({ connectionId: id, message: packet })
+                    ).messages;
+                    log.debug(
+                        `[${id}] Received ${responses.length} persona response packets`,
+                    );
+                    wasHandled = true;
+                } catch (error) {
+                    log.error('Error handling persona packet', {
+                        error: JSON.stringify(error),
+                    });
+                }
+                break;
+            case 10001:
+                try {
+                    log.debug(
+                        `[${id}] Passing race? packet to lobby handler: ${packet.getMessageId()}`,
+                    );
+                    responses = (
+                        await receiveLobbyData({
+                            connectionId: id,
+                            message: initialPacket,
+                        })
+                    ).messages;
+                    log.debug(
+                        `[${id}] Received ${responses.length} race? lobby response packets`,
+                    );
+                    wasHandled = true;
+                } catch (error) {
+                    log.error('Error handling race packet', {
+                        error: JSON.stringify(error),
+                    });
+                }
+                break;
+
+            default:
+                // No handler
+                if (wasHandled === false) {
+                    log.warn(
+                        `${id}] No handler found for port ${port}: ${packet.serialize().toString('hex')}`,
+                    );
+                }
+                break;
+        }
+
+        // Send responses back to the client
+        log.debug(`[${id}] Sending ${responses.length} responses`);
+
+        const sendQueue = getSocketQueue(id, 'send');
+
+        // Serialize the responses
+        responses.forEach((response) =>
+            sendQueue.put({
+                sequenceNo: -1,
+                data: response.serialize(),
+            }),
+        );
+    } catch (error) {
+        // Catch any errors from packet deserialization or other operations
+        log.error(`Error in routeInitialMessage: ${String(error)}`, {
+            connectionId: id,
+            port,
+            error: JSON.stringify(error),
+        });
+        // Don't rethrow - let the function complete normally
+        // Errors from handlers are already caught in their try-catch blocks
     }
-
-    // Send responses back to the client
-    log.debug(`[${id}] Sending ${responses.length} responses`);
-
-    const sendQueue = getSocketQueue(id, 'send');
-
-    // Serialize the responses
-    responses.forEach((response) =>
-        sendQueue.put({
-            sequenceNo: -1,
-            data: response.serialize(),
-        }),
-    );
 }

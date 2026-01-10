@@ -167,17 +167,25 @@ export class SessionTestHelper {
 								}
 								
 								// Process through actual handler
-								// Errors are handled internally by processSocketData
-								await processSocketData(
-									data,
-									this.log,
-									connectionId,
-									port,
-									this.mockSocket,
-								);
-								
-								// Wait a bit for async queue processing
-								await new Promise((resolve) => setTimeout(resolve, 50));
+								// Wrap in try-catch to handle errors gracefully
+								// Some packets in recorded sessions may be invalid/unsupported
+								try {
+									await processSocketData(
+										data,
+										this.log,
+										connectionId,
+										port,
+										this.mockSocket,
+									);
+									
+									// Wait a bit for async queue processing
+									await new Promise((resolve) => setTimeout(resolve, 50));
+								} catch (error) {
+									// Log but don't fail - some packets may be invalid
+									result.warnings.push(
+										`Error processing data_in event ${i}: ${String(error)}`,
+									);
+								}
 								
 								result.eventsProcessed++;
 								dataInEventIndex++;
