@@ -26,6 +26,7 @@ import {
     TaggedTcpSocket,
 } from 'rusty-motors-shared';
 import { socketErrorHandler } from './socketErrorHandler.js';
+import { getSessionRecorder } from './session/SessionRecorderIntegration.js';
 
 /**
  * Handle incoming TCP connections
@@ -71,6 +72,12 @@ export function onSocketConnection({
         id,
         localPort,
     ) as TaggedTcpSocket;
+
+    // Record session start if recording is enabled
+    const recorder = getSessionRecorder();
+    if (recorder?.isRecordingEnabled()) {
+        recorder.startSession(id, localPort, remoteAddress);
+    }
 
     /*
      * At this point, we have a tagged socket with an ID.

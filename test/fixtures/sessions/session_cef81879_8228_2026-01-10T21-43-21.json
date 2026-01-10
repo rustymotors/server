@@ -1,0 +1,42 @@
+{
+  "metadata": {
+    "recordedAt": "2026-01-10T21:43:21.789Z",
+    "recordedBy": "SessionRecorder",
+    "ports": [
+      8228
+    ],
+    "connectionIds": [
+      "cef81879:8228"
+    ],
+    "description": "Auto-saved on disconnect"
+  },
+  "events": [
+    {
+      "timestamp": 1768081401789,
+      "type": "connect",
+      "port": 8228,
+      "connectionId": "cef81879:8228",
+      "remoteAddress": "10.10.5.1"
+    },
+    {
+      "timestamp": 1768081401839,
+      "type": "data_in",
+      "port": 8228,
+      "connectionId": "cef81879:8228",
+      "data": "050b0010010100000000001000000015"
+    },
+    {
+      "timestamp": 1768081401841,
+      "type": "data_out",
+      "port": 8228,
+      "connectionId": "cef81879:8228",
+      "data": "0614000e010100000000000e0000"
+    },
+    {
+      "timestamp": 1768081401855,
+      "type": "disconnect",
+      "port": 8228,
+      "connectionId": "cef81879:8228"
+    }
+  ]
+}

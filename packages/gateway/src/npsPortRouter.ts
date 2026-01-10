@@ -18,6 +18,7 @@ import {
     addSocketPair,
 } from 'rusty-motors-shared';
 import { messageStats } from './GatewayServer.js';
+import { getSessionRecorder } from './session/SessionRecorderIntegration.js';
 
 /**
  * Handles routing for the NPS (Network Play System) ports.
@@ -42,6 +43,16 @@ export async function npsPortRouter({
         10,
         async (item: messageQueueItem) => {
             try {
+                // Record incoming data if recording is enabled
+                const recorder = getSessionRecorder();
+                if (recorder?.isRecordingEnabled()) {
+                    recorder.recordDataIn(
+                        taggedSocket.connectionId,
+                        taggedSocket.localPort,
+                        item.data,
+                    );
+                }
+
                 if (!isPacketValid(item.data) && 'end' in taggedSocket.socket) {
                     taggedSocket.socket.end();
                     return;
@@ -68,6 +79,16 @@ export async function npsPortRouter({
         10,
         async (item: messageQueueItem) => {
             try {
+                // Record outgoing data if recording is enabled
+                const recorder = getSessionRecorder();
+                if (recorder?.isRecordingEnabled()) {
+                    recorder.recordDataOut(
+                        taggedSocket.connectionId,
+                        taggedSocket.localPort,
+                        item.data,
+                    );
+                }
+
                 log.debug(`Sending packet in queue`, {
                     data: item.data.toString("hex"),
                 });
@@ -107,6 +128,13 @@ export async function npsPortRouter({
     });
 
     socket.on('end', () => {
+        // Record disconnect if recording is enabled
+        const recorder = getSessionRecorder();
+        if (recorder?.isRecordingEnabled()) {
+            recorder.recordDisconnect(taggedSocket.connectionId, taggedSocket.localPort);
+            // Auto-save session on disconnect
+            recorder.saveSession(taggedSocket.connectionId, `Auto-saved on disconnect`);
+        }
         receiveQueue.exit();
     });
 
@@ -196,7 +224,7 @@ export async function processSocketData(
                 continue;
             }
             const initialPacket = parseInitialMessage(packet);
-            handlePacketRouting(id, port, initialPacket);
+            await handlePacketRouting(id, port, initialPacket);
         }
     } catch (error) {
         handleSocketError(error, log, id);
@@ -286,7 +314,7 @@ async function handlePacketRouting(
     initialPacket: BytableMessage,
 ): Promise<void> {
     try {
-        routeInitialMessage(id, port, initialPacket);
+        await routeInitialMessage(id, port, initialPacket);
     } catch (error) {
         throw new Error(`[${id}] Error routing initial nps message`, {
             cause: error,

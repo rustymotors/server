@@ -1,0 +1,21 @@
+{
+  "metadata": {
+    "recordedAt": "2026-01-10T22:02:13.579Z",
+    "recordedBy": "test",
+    "ports": [
+      7003
+    ],
+    "connectionIds": [
+      "test-123"
+    ]
+  },
+  "events": [
+    {
+      "timestamp": 1768082533579,
+      "type": "connect",
+      "port": 7003,
+      "connectionId": "test-123",
+      "remoteAddress": "127.0.0.1"
+    }
+  ]
+}

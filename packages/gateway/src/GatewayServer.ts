@@ -9,6 +9,8 @@ import { npsPortRouter } from "./npsPortRouter.js";
 import { mcotsPortRouter } from "./mcotsPortRouter.js";
 import http from "node:http";
 import { HotkeyManager } from "./HotkeyManager.js";
+import { ServerLifecycleManager, ServerStatus } from "./lifecycle/ServerLifecycleManager.js";
+import { initializeSessionRecorder } from "./session/SessionRecorderIntegration.js";
 
 
 /**
@@ -20,7 +22,7 @@ export class Gateway {
     log = getServerLogger("Gateway")
     timer: NodeJS.Timeout | null;
     loopInterval: number;
-    status: string;
+    private readonly lifecycleManager: ServerLifecycleManager;
     consoleEvents: string[];
     backlogAllowedCount: number;
     tcpListeningPortList: number[];
@@ -34,6 +36,15 @@ export class Gateway {
         log?: ServerLogger;
     }) => void;
     webServer: http.Server;
+
+    /**
+     * Gets the current server status as a string (for backward compatibility)
+     * @returns The current status as a string
+     */
+    get status(): string {
+        return this.lifecycleManager.getStatus();
+    }
+
     /**
      * Creates an instance of GatewayServer.
      * @param {GatewayOptions} options
@@ -53,8 +64,7 @@ export class Gateway {
         /** @type {NodeJS.Timeout | null} */
         this.timer = null;
         this.loopInterval = 0;
-        /** @type {"stopped" | "running" | "stopping" | "restarting"} */
-        this.status = 'stopped';
+        this.lifecycleManager = new ServerLifecycleManager(log);
         this.consoleEvents = ['userExit', 'userRestart', 'userHelp'];
         this.backlogAllowedCount = backlogAllowedCount;
         this.tcpListeningPortList = tcpListeningPortList;
@@ -66,6 +76,9 @@ export class Gateway {
         initializeRouteHandlers();
 
         this.webServer = http.createServer(processHttpRequest);
+
+        // Initialize session recorder (enabled via RECORD_SESSIONS env var)
+        initializeSessionRecorder(log);
     }
 
     /**
@@ -111,7 +124,7 @@ export class Gateway {
             this.webServer.emit('connection', incomingSocket);
         });
 
-        this.status = 'running';
+        this.lifecycleManager.setStatus(ServerStatus.RUNNING);
 
         new HotkeyManager(this);
     }
@@ -205,7 +218,7 @@ export class Gateway {
     async stop(): Promise<void> {
         // Mark the GatewayServer as stopping
         this.log.debug('Marking GatewayServer as stopping');
-        this.status = 'stopping';
+        this.lifecycleManager.setStatus(ServerStatus.STOPPING);
 
         // Stop the servers
         await this.shutdownServers();
@@ -217,7 +230,7 @@ export class Gateway {
 
         // Mark the GatewayServer as stopped
         this.log.debug('Marking GatewayServer as stopped');
-        this.status = 'stopped';
+        this.lifecycleManager.setStatus(ServerStatus.STOPPED);
 
         // Reset the global state
         this.log.debug('Resetting the global state');
