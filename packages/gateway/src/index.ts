@@ -59,12 +59,14 @@ export function onSocketConnection({
         return;
     }
 
-
-    incomingSocket.on("error", socketErrorHandler)
-
     let id = `${randomUUID()}`;
     id = id.substring(0, id.indexOf('-'));
     id = `${id}:${localPort}`;
+
+    // Attach error handler with logger and connectionId
+    incomingSocket.on("error", (error) => {
+        socketErrorHandler({ connectionId: id, error, log });
+    });
 
     const socketWithId = tagSocket(
         incomingSocket,
@@ -85,8 +87,8 @@ export function onSocketConnection({
 
     const portRouter = getPortRouter(localPort);
 
-    // Hand the socket to the port router
-    portRouter({ taggedSocket: socketWithId }).catch(
+    // Hand the socket to the port router, passing the logger
+    portRouter({ taggedSocket: socketWithId, log }).catch(
         function onSocketError(error) {
             Sentry.captureException(error);
             log.error(`Error in port router: ${error.message}`);

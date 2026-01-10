@@ -20,6 +20,8 @@
         "format:all": "pnpm run -r --stream format",
         "test:packages": "pnpm run -r --stream test",
         "test": "vitest run --coverage=false",
+        "test:session": "vitest run --coverage=false --config vitest.session.config.ts",
+        "clean:sessions": "rm -rf test/fixtures/sessions/*.json test/fixtures/sessions/test",
         "precoverage": "npm run cleancoverage && npm run test",
         "coverage": "vitest run",
         "types:db": "pnpm --filter=rusty-motors-database run types:db",

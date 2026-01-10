@@ -8,8 +8,40 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dirname } from "node:path";
 
+// CRITICAL: Set test environment flags FIRST, before loading .env
+// This ensures test environment is detected even if .env has RECORD_SESSIONS=true
+process.env.NODE_ENV = "test";
+process.env.VITEST = "true";
+process.env.RECORD_SESSIONS = "false";
+// Suppress all logger output during tests by setting log level to 'error' (only errors will show)
+// This prevents verbose/info/debug logs from other packages (database, lobby, login, etc.)
+process.env.MCO_LOG_LEVEL = "error";
+process.env.LOG_LEVEL = "error";
+
+// CRITICAL: Warn about potential live database usage
+// Only block if STRICT_DB_CHECK is set to "true"
+if (!process.env.TEST_DATABASE_URL && process.env.DATABASE_URL) {
+	const originalDbUrl = process.env.DATABASE_URL;
+	// Check if it looks like a production/live database (not a test database)
+	const isTestDb = originalDbUrl.includes("test") || 
+	                 originalDbUrl.includes("_test") ||
+	                 (originalDbUrl.includes("localhost") && originalDbUrl.includes("5432"));
+	
+	if (!isTestDb) {
+		console.warn("⚠️  WARNING: DATABASE_URL may point to a non-test database!");
+		console.warn(`   Database: ${originalDbUrl.replace(/:[^:@]+@/, ":****@")}`);
+		console.warn("   Consider using TEST_DATABASE_URL or a database with 'test' in the name");
+		
+		// Only block if explicitly requested
+		if (process.env.STRICT_DB_CHECK === "true") {
+			console.warn("   STRICT_DB_CHECK=true: Unsetting DATABASE_URL to prevent accidental writes");
+			delete process.env.DATABASE_URL;
+		}
+	}
+}
+
 // Fallback: Manually load .env if not already loaded by Node's --env-file
-if (!process.env.DATABASE_URL) {
+if (!process.env.DATABASE_URL && !process.env.TEST_DATABASE_URL) {
 	const __filename = fileURLToPath(import.meta.url);
 	const __dirname = dirname(__filename);
 	
@@ -30,7 +62,18 @@ if (!process.env.DATABASE_URL) {
 					const value = valueParts.join("=").trim();
 					// Remove quotes if present
 					const cleanValue = value.replace(/^["']|["']$/g, "");
-					if (!process.env[key]) {
+					// IMPORTANT: Don't override test environment variables
+					// Warn about DATABASE_URL from .env if it doesn't look like a test database
+					if (key === "DATABASE_URL") {
+						const isTestDb = cleanValue.includes("test") || 
+						               cleanValue.includes("_test") ||
+						               (cleanValue.includes("localhost") && cleanValue.includes("5432"));
+						if (!isTestDb && process.env.STRICT_DB_CHECK === "true") {
+							console.warn(`⚠️  Skipping DATABASE_URL from .env (not a test database, STRICT_DB_CHECK=true)`);
+							continue;
+						}
+					}
+					if (!process.env[key] || (key !== "RECORD_SESSIONS" && key !== "NODE_ENV" && key !== "VITEST")) {
 						process.env[key] = cleanValue;
 					}
 				}
@@ -55,3 +98,13 @@ if (!process.env.DATABASE_URL) {
 		// This is fine for tests that don't need Sentry
 	}
 })();
+
+// Ensure session recording is DISABLED during tests (final override)
+// Tests should only READ session files, never create/modify them
+process.env.RECORD_SESSIONS = "false";
+
+// Final check: If TEST_DATABASE_URL is set, use it as DATABASE_URL
+if (process.env.TEST_DATABASE_URL && !process.env.DATABASE_URL) {
+	process.env.DATABASE_URL = process.env.TEST_DATABASE_URL;
+	console.log("✅ Using TEST_DATABASE_URL for tests");
+}

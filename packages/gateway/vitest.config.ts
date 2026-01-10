@@ -15,6 +15,16 @@ export default defineConfig({
 		setupFiles: ["./vitest.setup.ts"],
 		globals: true,
 		environment: "node",
+		// Exclude session replay tests from default test run
+		exclude: [
+			"**/node_modules/**",
+			"**/dist/**",
+			"**/cypress/**",
+			"**/.{idea,git,cache,output,temp}/**",
+			"**/session/sessionReplay.test.ts",
+			"**/session/integration.example.test.ts",
+			"**/session/SessionRecorder.test.ts",
+		],
 		// Enable Node's built-in .env file support and legacy crypto
 		poolOptions: {
 			forks: {

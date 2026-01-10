@@ -57,7 +57,11 @@ export class Gateway {
         udpListeningPortList = [],
         socketConnectionHandler = onSocketConnection,
     }: GatewayOptions) {
-        log.debug('Creating GatewayServer instance');
+        // Only log if not in test environment to avoid log output during tests
+        const isTestEnv = process.env.NODE_ENV === "test" || process.env.VITEST === "true";
+        if (!isTestEnv) {
+            log.debug('Creating GatewayServer instance');
+        }
 
         this.config = config;
         this.log = log;

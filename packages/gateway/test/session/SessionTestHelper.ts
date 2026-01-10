@@ -1,5 +1,6 @@
 import type { ServerLogger } from "rusty-motors-shared";
-import { getServerLogger, MessageQueue, addSocketPair, type messageQueueItem } from "rusty-motors-shared";
+import { MessageQueue, addSocketPair, type messageQueueItem } from "rusty-motors-shared";
+import { loggerMock } from "rusty-motors-shared/test";
 import { SessionReplayer, type ReplayOptions, type ReplayResult } from "../../src/session/SessionReplayer.js";
 import type { RecordedSession } from "../../src/session/SessionRecorder.js";
 import { processSocketData } from "../../src/npsPortRouter.js";
@@ -39,7 +40,7 @@ export class SessionTestHelper {
 	private mockSocket: TaggedSocket;
 
 	constructor(
-		log: ServerLogger = getServerLogger("SessionTestHelper"),
+		log: ServerLogger = loggerMock,
 		fixturesDirectory: string = "test/fixtures/sessions",
 	) {
 		this.log = log;

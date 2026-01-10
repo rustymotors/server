@@ -18,7 +18,8 @@ describe("SessionRecorder", () => {
 			error: vi.fn(),
 		} as unknown as ServerLogger;
 
-		testOutputDir = join(process.cwd(), "test", "fixtures", "sessions", "test");
+		// Use a temp directory that won't create parent fixtures directory
+		testOutputDir = join(process.cwd(), "test", "fixtures", "sessions", ".test-temp");
 		// Clean up test directory
 		if (existsSync(testOutputDir)) {
 			rmSync(testOutputDir, { recursive: true, force: true });
@@ -129,7 +130,13 @@ describe("SessionReplayer", () => {
 			error: vi.fn(),
 		} as unknown as ServerLogger;
 
-		testFixturesDir = join(process.cwd(), "test", "fixtures", "sessions", "test");
+		// Use a temp directory that won't create parent fixtures directory
+		// Create in a location that won't interfere with main fixtures
+		testFixturesDir = join(process.cwd(), "test", "fixtures", "sessions", ".test-temp");
+		// Clean up if it exists
+		if (existsSync(testFixturesDir)) {
+			rmSync(testFixturesDir, { recursive: true, force: true });
+		}
 		mkdirSync(testFixturesDir, { recursive: true });
 
 		replayer = new SessionReplayer(mockLogger, testFixturesDir);

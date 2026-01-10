@@ -223,8 +223,8 @@ export async function processSocketData(
                 log.warn(`BUG: We recieved an empty packet from the splitter`);
                 continue;
             }
-            const initialPacket = parseInitialMessage(packet);
-            handlePacketRouting(id, port, initialPacket);
+            const initialPacket = parseInitialMessage(packet, log);
+            handlePacketRouting(id, port, initialPacket, log);
         }
     } catch (error) {
         handleSocketError(error, log, id);
@@ -299,25 +299,18 @@ function splitDataIntoPackets(
  * @param {BytableMessage} initialPacket - The `initialPacket` parameter in the `handlePacketRouting`
  * function is of type `BytableMessage`. It likely represents the initial packet of data that needs to
  * be routed based on the provided `id` and `port`.
- * @param {TaggedSocket} socket - The `socket` parameter in the `handlePacketRouting` function
- * represents a tagged socket that is used for communication. It likely includes information such as
- * the socket connection, address, and other relevant details for sending and receiving data over the
- * network.
- * @param {ServerLogger} log - The `log` parameter in the `handlePacketRouting` function is a
- * `ServerLogger` object used for logging messages and debugging information related to the packet
- * routing process. It is likely used to log events, errors, and other relevant information during the
- * execution of the function.
+ * @param {ServerLogger} log - Optional logger instance. Defaults to getServerLogger if not provided.
  */
 function handlePacketRouting(
     id: string,
     port: number,
     initialPacket: BytableMessage,
+    log: ServerLogger = getServerLogger('gateway.npsPortRouter/handlePacketRouting'),
 ): void {
     // routeInitialMessage is async but we don't await it (fire-and-forget)
     // Add catch handler to prevent unhandled promise rejections
     // Errors are already caught and logged inside routeInitialMessage
-    routeInitialMessage(id, port, initialPacket).catch((error) => {
-        const log = getServerLogger('gateway.npsPortRouter/handlePacketRouting');
+    routeInitialMessage(id, port, initialPacket, log).catch((error) => {
         log.error(`[${id}] Unhandled error in routeInitialMessage promise: ${String(error)}`);
     });
 }
@@ -341,11 +334,15 @@ function handleSocketError(
  * Sets the message version based on the packet ID, then deserializes the buffer into a message object.
  *
  * @param data - The buffer containing the raw initial message.
+ * @param log - Optional logger instance. Defaults to getServerLogger if not provided.
  * @returns The parsed `BytableMessage` object.
  *
  * @throws {Error} If the buffer cannot be parsed into a valid message.
  */
-function parseInitialMessage(data: Buffer): BytableMessage {
+function parseInitialMessage(
+    data: Buffer,
+    log: ServerLogger = getServerLogger('gateway.npsPortRouter/parseInitialMessage'),
+): BytableMessage {
     try {
         const message = createRawMessage();
         message.setVersion(1);
@@ -363,9 +360,7 @@ function parseInitialMessage(data: Buffer): BytableMessage {
         const err = new Error(`Error parsing initial message: ${error}`, {
             cause: error,
         });
-        getServerLogger('gateway.npsPortRouter/parseInitialMessage').error(
-            (err as Error).message,
-        );
+        log.error((err as Error).message);
         throw err;
     }
 }
@@ -411,6 +406,7 @@ async function routeInitialMessage(
                     await receiveLobbyData({
                         connectionId: id,
                         message: initialPacket,
+                        log,
                     })
                 ).messages;
                 log.debug(
@@ -435,6 +431,7 @@ async function routeInitialMessage(
                         await receiveLobbyData({
                             connectionId: id,
                             message: initialPacket,
+                            log,
                         })
                     ).messages;
                     log.debug(
@@ -454,6 +451,7 @@ async function routeInitialMessage(
                         await receiveLoginData({
                             connectionId: id,
                             message: initialPacket,
+                            log,
                         })
                     ).messages;
                     log.debug(
@@ -473,7 +471,7 @@ async function routeInitialMessage(
                         `[${id}] Passing packet to chat handler: ${packet.serialize().toString('hex')}`,
                     );
                     responses = (
-                        await receiveChatData({ connectionId: id, message: packet })
+                        await receiveChatData({ connectionId: id, message: packet, log })
                     ).messages;
                     log.debug(
                         `[${id}] Chat Responses: ${responses.map((r) => r.serialize().toString('hex'))}`,
@@ -491,7 +489,7 @@ async function routeInitialMessage(
                     );
                     // responses =Handle persona packet
                     responses = (
-                        await receivePersonaData({ connectionId: id, message: packet })
+                        await receivePersonaData({ connectionId: id, message: packet, log })
                     ).messages;
                     log.debug(
                         `[${id}] Received ${responses.length} persona response packets`,
@@ -512,6 +510,7 @@ async function routeInitialMessage(
                         await receiveLobbyData({
                             connectionId: id,
                             message: initialPacket,
+                            log,
                         })
                     ).messages;
                     log.debug(

@@ -22,7 +22,7 @@ import {
 	handleGetKey,
 	handleGetRegistry,
 } from "rusty-motors-shard";
-import { getServerConfiguration, getServerLogger } from "rusty-motors-shared";
+import { getServerConfiguration, getServerLogger, type ServerLogger } from "rusty-motors-shared";
 import { findUser } from "rusty-motors-database";
 
 type WebHandlerResponse = {
@@ -203,10 +203,12 @@ async function handleShardList(): Promise<WebHandlerResponse> {
  *
  * @param request - The incoming HTTP request object.
  * @param response - The HTTP response object to send to the client.
+ * @param log - Optional logger instance. Defaults to getServerLogger if not provided.
  */
 async function handleWebUrl(
 	request: http.IncomingMessage,
 	response: http.ServerResponse,
+	log: ServerLogger = getServerLogger("gateway.web/getWebURL"),
 ): Promise<WebHandlerResponse> {
 	const url = new URL(
 		`http://${process.env["HOST"] ?? "localhost"}${request.url}`,
@@ -224,7 +226,7 @@ async function handleWebUrl(
 		}
 	}
 
-	getServerLogger("gateway.web/getWebURL").debug(`Request for url # ${id}`)
+	log.debug(`Request for url # ${id}`)
 
 	if (id === '58') {
 		urlResponse = `101

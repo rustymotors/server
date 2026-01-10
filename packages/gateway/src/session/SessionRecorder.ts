@@ -45,11 +45,16 @@ export class SessionRecorder {
 		this.log = log;
 		this.outputDirectory = outputDirectory;
 
-		// Create output directory if it doesn't exist
-		try {
-			mkdirSync(this.outputDirectory, { recursive: true });
-		} catch (error) {
-			// Directory might already exist, ignore
+		// Only create output directory if not in test environment
+		// (Tests that need directories will create them explicitly)
+		const isTestEnv = process.env.NODE_ENV === "test" || process.env.VITEST === "true";
+		if (!isTestEnv) {
+			// Create output directory if it doesn't exist
+			try {
+				mkdirSync(this.outputDirectory, { recursive: true });
+			} catch (error) {
+				// Directory might already exist, ignore
+			}
 		}
 	}
 
@@ -210,6 +215,19 @@ export class SessionRecorder {
 		const session = this.sessions.get(connectionId);
 		if (!session) {
 			this.log.warn(`No session found to save: ${connectionId}`);
+			return null;
+		}
+
+		// Prevent saving sessions to main fixtures directory during tests
+		// Allow saving to test subdirectories (e.g., test/fixtures/sessions/test/)
+		const isTestEnv = process.env.NODE_ENV === "test" || process.env.VITEST === "true";
+		const isMainFixturesDir = this.outputDirectory.endsWith("test/fixtures/sessions") ||
+		                          this.outputDirectory.endsWith("test\\fixtures\\sessions");
+		
+		if (isTestEnv && isMainFixturesDir) {
+			this.log.warn(
+				`Session recording disabled during tests. Would have saved to: ${this.outputDirectory}`,
+			);
 			return null;
 		}
 

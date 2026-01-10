@@ -11,8 +11,10 @@ const projectRoot = resolve(__dirname, ".");
 const envPath = resolve(projectRoot, ".env");
 
 export default defineConfig({
-
     test: {
+        setupFiles: ["./packages/gateway/vitest.setup.ts"],
+        globals: true,
+        environment: "node",
         poolOptions: {
             forks: {
                 execArgv: [
@@ -22,7 +24,7 @@ export default defineConfig({
             }
         },
         coverage: {
-            enabled: true,
+            enabled: false, // Disabled by default, can be enabled via --coverage flag
             all: true,
             exclude: [
                 "src/**/*.spec.ts",
@@ -38,13 +40,11 @@ export default defineConfig({
             ],
             reporter: ["lcov", "text-summary"],
         },
+        // Include all tests, including session tests
         exclude: [
             "packages/pklib-ts",
-            "**/session/sessionReplay.test.ts",
-            "**/session/integration.example.test.ts",
-            "**/session/SessionRecorder.test.ts",
             ...configDefaults.exclude
-
+            // Note: session tests are NOT excluded here
         ],
         reporters: ["junit", "dot", "hanging-process"],
 		outputFile: "mcos.junit.xml",
