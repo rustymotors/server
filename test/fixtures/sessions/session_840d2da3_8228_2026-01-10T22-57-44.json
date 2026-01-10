@@ -1,42 +1,42 @@
 {
   "metadata": {
-    "recordedAt": "2026-01-10T21:43:16.985Z",
+    "recordedAt": "2026-01-10T22:57:44.684Z",
     "recordedBy": "SessionRecorder",
     "ports": [
       8228
     ],
     "connectionIds": [
-      "13b202fb:8228"
+      "840d2da3:8228"
     ],
     "description": "Auto-saved on disconnect"
   },
   "events": [
     {
-      "timestamp": 1768081396985,
+      "timestamp": 1768085864684,
       "type": "connect",
       "port": 8228,
-      "connectionId": "13b202fb:8228",
+      "connectionId": "840d2da3:8228",
       "remoteAddress": "10.10.5.1"
     },
     {
-      "timestamp": 1768081396996,
+      "timestamp": 1768085864695,
       "type": "data_in",
       "port": 8228,
-      "connectionId": "13b202fb:8228",
+      "connectionId": "840d2da3:8228",
       "data": "0532001000000000000000100054b46c"
     },
     {
-      "timestamp": 1768081396998,
+      "timestamp": 1768085864697,
       "type": "data_out",
       "port": 8228,
-      "connectionId": "13b202fb:8228",
+      "connectionId": "840d2da3:8228",
       "data": "06070042010100000000000000010054b46c0d0d000000150000002c00000000000844722042726f776e000000000000000000000000000000000000000000000000"
     },
     {
-      "timestamp": 1768081397018,
+      "timestamp": 1768085864717,
       "type": "disconnect",
       "port": 8228,
-      "connectionId": "13b202fb:8228"
+      "connectionId": "840d2da3:8228"
     }
   ]
 }
