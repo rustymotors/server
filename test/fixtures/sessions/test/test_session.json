@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "recordedAt": "2026-01-10T22:16:33.184Z",
+    "recordedAt": "2026-01-10T22:26:57.760Z",
     "recordedBy": "test",
     "ports": [
       7003
@@ -11,7 +11,7 @@
   },
   "events": [
     {
-      "timestamp": 1768083393184,
+      "timestamp": 1768084017760,
       "type": "connect",
       "port": 7003,
       "connectionId": "test-123",

@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "recordedAt": "2026-01-10T22:16:33.183Z",
+    "recordedAt": "2026-01-10T22:26:57.759Z",
     "recordedBy": "SessionRecorder",
     "ports": [
       8226
@@ -12,7 +12,7 @@
   },
   "events": [
     {
-      "timestamp": 1768083393183,
+      "timestamp": 1768084017759,
       "type": "connect",
       "port": 8226,
       "connectionId": "test-2",
