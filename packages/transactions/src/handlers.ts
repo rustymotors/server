@@ -206,6 +206,7 @@ export function _MSG_STRING(messageID: number): string {
 		{ id: 391, name: "MC_CLUB_GET_INVITATIONS" }, // 0x187
 		{ id: 438, name: "MC_CLIENT_CONNECT_MSG" }, // 0x1b6
 		{ id: 440, name: "MC_TRACKING_MSG" },
+		{ id: 448, name: "MC_KEEP_RACE_ALIVE" }, // 0x1C0
 		{ id: 455, name: "MC_CRC_PRE_RACE_DATA" },
 	];
 	const result = messageIds.find((id) => id.id === messageID);
