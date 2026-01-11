@@ -94,7 +94,7 @@ export const messageHandlers: MessageHandler[] = [
         handler: _getCompleteVehicleInfo,
     },
     {
-        id: 325,
+        id: 324,
         name: 'MC_GET_LOBBIES',
         handler: getLobbies,
     },

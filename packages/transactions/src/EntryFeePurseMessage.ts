@@ -48,7 +48,7 @@ export class EntryFeePurseMessage extends BytableBuffer {
 	}
 
 	override serialize() {
-		const neededSize = 5 + this._purseEntries.length * 563;
+		const neededSize = 5 + this._purseEntries.length * 8;
 		const buffer = Buffer.alloc(neededSize);
 		let offset = 0; // offset is 0
 		buffer.writeUInt16LE(this._msgNo, offset);

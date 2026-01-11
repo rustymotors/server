@@ -1,6 +1,7 @@
 import { receiveTransactionsData } from "rusty-motors-transactions";
 import * as Sentry from "@sentry/node";
 import { getServerLogger, MessageNode, ServerLogger, messageQueueItem, MessageQueue, TaggedTcpSocket } from "rusty-motors-shared";
+import { getSessionRecorder } from './session/SessionRecorderIntegration.js';
 
 /**
  * Handles the routing of messages for the MCOTS (Motor City Online Transaction Server) ports.
@@ -54,6 +55,12 @@ export async function mcotsPortRouter({
 
     // Handle the socket connection here
     socket.on('data', async (data) => {
+        // Record incoming data if recording is enabled
+        const recorder = getSessionRecorder();
+        if (recorder?.isRecordingEnabled()) {
+            recorder.recordDataIn(connectionId, port, data);
+        }
+
         receiveQueue.put({
             sequenceNo: -1,
             data
@@ -61,7 +68,14 @@ export async function mcotsPortRouter({
     });
 
     socket.on('end', () => {
-        receiveQueue.exit()
+        receiveQueue.exit();
+
+        // Record disconnect if recording is enabled
+        const recorder = getSessionRecorder();
+        if (recorder?.isRecordingEnabled()) {
+            recorder.recordDisconnect(connectionId, port);
+            recorder.saveSession(connectionId, `Auto-saved on disconnect (MCOTS port ${port})`);
+        }
     });
 
     socket.on('error', (error) => {
@@ -146,6 +160,12 @@ async function processIncomingPackets(
             const initialPacket: MessageNode = parseInitialMessage(packet);
             await routeInitialMessage(connectionId, port, initialPacket)
             .then((response) => {
+                // Record outgoing data if recording is enabled
+                const recorder = getSessionRecorder();
+                if (recorder?.isRecordingEnabled() && response.length > 0) {
+                    recorder.recordDataOut(connectionId, port, response);
+                }
+
                 // Send the response back to the client
                 socket.socket.write(response);
             })

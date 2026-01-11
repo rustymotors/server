@@ -68,20 +68,20 @@ async function _getLobbies({
     purseEntry._entryFee = 100;
     purseEntry._purse = 1000;
 
-    const perseEntryResponse = new EntryFeePurseMessage();
-    perseEntryResponse._msgNo = 408;
-    perseEntryResponse._shouldExpectMoreMessages = false;
-    perseEntryResponse.addEntry(purseEntry);
+    const purseEntryResponse = new EntryFeePurseMessage();
+    purseEntryResponse._msgNo = 408;
+    purseEntryResponse._shouldExpectMoreMessages = false;
+    purseEntryResponse.addEntry(purseEntry);
 
     log.debug(
-        `[${connectionId}] Sending purseEntryResponse: ${perseEntryResponse.toString()}`,
+        `[${connectionId}] Sending purseEntryResponse: ${purseEntryResponse.toString()}`,
     );
 
     const perseEntriesResponsePacket = new OldServerMessage();
     perseEntriesResponsePacket._header.sequence = packet.sequenceNumber;
     perseEntriesResponsePacket._header.flags = 8;
 
-    perseEntriesResponsePacket.setBuffer(perseEntryResponse.serialize());
+    perseEntriesResponsePacket.setBuffer(purseEntryResponse.serialize());
 
     return {
         connectionId,
