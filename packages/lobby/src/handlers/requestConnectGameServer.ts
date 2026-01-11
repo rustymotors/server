@@ -174,7 +174,7 @@ class PacketProcessor {
  * @param {ServiceArgs} args
  * @returns {Promise<{
  *  connectionId: string,
- * messages: SerializedBufferOld[],
+ * messages: BytableBuffer[],
  * }>}
  */
 export async function _npsRequestGameConnectServer({

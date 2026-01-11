@@ -40,7 +40,7 @@ import { getServerLogger } from 'rusty-motors-shared';
  * log: ServerLogger,
  * }) => Promise<{
  * connectionId: string,
- * messages: SerializedBufferOld[],
+ * messages: BytableBuffer[],
  * }>}[]}
  */
 export const messageHandlers: {
@@ -182,7 +182,7 @@ async function getPersonaMapsByCustomerId(
  * @param {ServerLogger} [args.log=getServerLogger({ name: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: SerializedBufferOld[],
+ * messages: BytableBuffer[],
  * }>}
  */
 async function getPersonaMaps({
@@ -195,7 +195,7 @@ async function getPersonaMaps({
     log?: ServerLogger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBufferOld[];
+    messages: BytableBuffer[];
 }> {
     log.debug('_npsGetPersonaMaps...');
 

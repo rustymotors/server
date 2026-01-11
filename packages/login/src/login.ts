@@ -11,11 +11,11 @@ import { BytableMessage } from "@rustymotors/binary";
  * @private
  * @param {object} args
  * @param {string} args.connectionId
- * @param {SerializedBufferOld} args.message
+ * @param {BytableMessage} args.message
  * @param {ServerLogger} [args.log=getServerLogger("LoginServer")]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: SerializedBufferOld[],
+ * messages: BytableBuffer[],
  * }>}
  */
 export async function login({

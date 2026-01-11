@@ -1,5 +1,4 @@
 import { NPSMessage } from "rusty-motors-shared";
-import { NPSHeader } from "rusty-motors-shared";
 
 /**
  *
@@ -290,7 +289,7 @@ export class PersonaMapsMessage extends NPSMessage {
 	deserialize(buffer: Buffer): PersonaMapsMessage {
 		try {
 			this._header._doDeserialize(buffer);
-			this.setBuffer(buffer.subarray(NPSHeader.size()));
+			this.setBuffer(buffer.subarray(12)); // 12 = NPSHeader size (version 1 header)
 			this.raw = buffer;
 			return this;
 		} catch (error) {
@@ -310,14 +309,14 @@ export class PersonaMapsMessage extends NPSMessage {
 			if (!this._personaRecords) {
 				throw Error("PersonaRecords is undefined");
 			}
-			this._header.length = NPSHeader.size() + 2 + this._personaRecords.size();
+			this._header.length = 12 + 2 + this._personaRecords.size(); // 12 = header size, 2 = persona count
 			const buffer = Buffer.alloc(this._header.length);
 			this._header._doSerialize().copy(buffer);
 
 			// Write the persona count. This is known to be correct at offset 12
 			buffer.writeUInt16BE(this._personaRecords.personaCount(), 12);
 			// This is a serialized PersonaList
-			this.data.copy(buffer, NPSHeader.size() + 2);
+			this.data.copy(buffer, 12 + 2); // 12 = header size, 2 = persona count
 			return buffer;
 		} catch (error) {
 			const err = Error(

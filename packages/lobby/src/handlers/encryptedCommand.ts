@@ -198,7 +198,7 @@ async function handleCommand({
  * @param {ServerLogger} [args.log=getServerLogger({ name: "Lobby" })]
   * @returns {Promise<{
 *  connectionId: string,
-* messages: SerializedBufferOld[],
+* messages: BytableBuffer[],
 * }>}
 
  */

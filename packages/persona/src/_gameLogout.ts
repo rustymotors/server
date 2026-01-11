@@ -11,7 +11,7 @@ import { BytableBuffer } from "@rustymotors/binary";
  * @param {ServerLogger} [args.log=getServerLogger({ name: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: SerializedBufferOld[],
+ * messages: BytableBuffer[],
  * }>}
  */
 

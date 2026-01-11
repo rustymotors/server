@@ -35,7 +35,7 @@ import { handleUdpStatus } from './handlers/handlUdpStatus.js';
  * log: ServerLogger,
  * }) => Promise<{
  * connectionId: string,
- * messages: SerializedBufferOld[],
+ * messages: BytableBuffer[],
  * }>}[]}
  */
 export const messageHandlers: {
@@ -47,7 +47,7 @@ export const messageHandlers: {
         log?: ServerLogger;
     }) => Promise<{
         connectionId: string;
-        messages: SerializedBufferOld[];
+        messages: BytableBuffer[];
     }>;
 }[] = [
     {

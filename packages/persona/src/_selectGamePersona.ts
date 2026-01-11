@@ -12,7 +12,7 @@ const defaultLogger = getServerLogger("PersonaServer");
  * @param {ServerLogger} [args.log=getServerLogger({ name: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: SerializedBufferOld[],
+ * messages: BytableBuffer[],
  * }>}
  */
 

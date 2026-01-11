@@ -14,7 +14,7 @@ vi.mock("rusty-motors-shared", () => {
         MessageNode: class {},
         ServerLogger: class {},
         McosEncryption: class {},
-        SerializedBufferOld: class {},
+        // SerializedBufferOld removed - use BytableBuffer instead
         State: class {},
         OldServerMessage: class {
             _doDeserialize(_: Buffer) { /* noop */ }
