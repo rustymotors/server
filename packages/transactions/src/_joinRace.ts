@@ -15,7 +15,7 @@ export async function _joinRace({
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
     
     const joinRaceMessage = new JoinRaceMessage()
-    joinRaceMessage.deserialize(packet.value)
+    joinRaceMessage.deserialize(packet.data)
 
     log.debug(`JoinRaceMsg: ${joinRaceMessage.toString()}`)
     

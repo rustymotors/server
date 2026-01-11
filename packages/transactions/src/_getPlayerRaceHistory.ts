@@ -19,7 +19,7 @@ export async function _getPlayerRaceHistory({
 	log.debug(`[${connectionId}] Handling _getPlayerRaceHistory...`);
 
 	const getPlayerRaceHistoryMessage = new GenericRequestMessage();
-	getPlayerRaceHistoryMessage.deserialize(packet.value);
+	getPlayerRaceHistoryMessage.deserialize(packet.data);
 
 	log.debug(`Received Message: ${getPlayerRaceHistoryMessage.toString()}`);
 

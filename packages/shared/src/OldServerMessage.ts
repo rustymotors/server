@@ -1,88 +1,116 @@
 import { IServerMessage } from "rusty-motors-protocol";
-import { BytableBuffer } from "@rustymotors/binary";
-import { serverHeader } from "./serverHeader.js";
+import { MessageNode } from "./MessageNode.js";
 
 
 
 /**
- * A server message is a message that is passed between the server and the client. It has an 11 byte header. @see {@link serverHeader}
+ * A server message is a message that is passed between the server and the client. It has an 11 byte header.
+ * This is a compatibility wrapper around MessageNode.
  *
- * @deprecated
+ * @deprecated Use MessageNode directly instead
  */
-export class OldServerMessage extends BytableBuffer implements IServerMessage {
-	_header: serverHeader;
-	_msgNo: number;
-	constructor() {
-		super();
-		this._header = new serverHeader();
-		this._msgNo = 0; // 2 bytes
-		// Initialize with empty buffer (header only, no data)
-		this.setValue(Buffer.alloc(0));
-	}
+export class OldServerMessage extends MessageNode implements IServerMessage {
+	private _headerProxy: any;
 
-	override size(): number {
-		return this._header.length + this.value.length;
+	/**
+	 * @deprecated Use this.header or this.signature/this.length instead
+	 */
+	get _header() {
+		if (!this._headerProxy) {
+			const self = this;
+			this._headerProxy = {
+				get mcoSig() { return self.signature; },
+			set mcoSig(val: string) { 
+				(self as any).signature_ = val;
+			},
+				get length() { return self.length; },
+				set length(val: number) { (self as any).msgLength_ = val; },
+				get sequence() { return self.sequence; },
+				set sequence(val: number) { self.sequence = val; },
+				get flags() { return self.flags; },
+				set flags(val: number) { 
+					// MessageNode doesn't have a direct flags setter, so we access the protected field
+					(self as any).flags_ = val; 
+				},
+				_size: 11,
+				_doDeserialize: (buffer: Buffer) => {
+					self.deserialize(buffer);
+					return self._header;
+				},
+				_doSerialize: () => {
+					return self.serialize().subarray(0, 11);
+				},
+			};
+		}
+		return this._headerProxy;
 	}
 
 	/**
-	 * @deprecated
+	 * @deprecated Use this.msgNo instead
+	 */
+	get _msgNo() {
+		return this.msgNo;
+	}
+
+	set _msgNo(val: number) {
+		// Body is already initialized to 2 bytes minimum (smallest legal MessageNode size)
+		this.msgNo = val;
+	}
+
+	constructor() {
+		super();
+		// Initialize with minimum legal body size
+		// The smallest legal MessageNode is GenericRequestMessage which has:
+		// - msgNo: 2 bytes
+		// - data: 4 bytes
+		// - data2: 4 bytes
+		// Total: 10 bytes minimum body size
+		// Note: setDataBuffer calls body.deserialize which requires at least 2 bytes,
+		// so 10 bytes is safe
+		this.setDataBuffer(Buffer.alloc(10));
+	}
+
+	override size(): number {
+		// 11 is the header size
+		// Return header (11) + body size
+		const bodySize = this.getBody().sizeOf;
+		return 11 + bodySize;
+	}
+
+	/**
+	 * @deprecated Use deserialize() instead
 	 * @param {Buffer} buffer
 	 * @returns {OldServerMessage}
 	 */
 	_doDeserialize(buffer: Buffer): OldServerMessage {
-		this._header._doDeserialize(buffer);
-		this.setValue(buffer.subarray(this._header._size));
-		if (this.value.length >= 2) {
-			this._msgNo = this.value.readUInt16LE(0);
-		}
+		this.deserialize(buffer);
 		return this;
 	}
 
 	/**
-	 * Serializes the current message into a buffer.
-	 * 
-	 * This method allocates a new buffer with a size equal to the sum of the header length and 2 bytes.
-	 * It then serializes the header and data into this buffer.
-	 * 
-	 * @returns {Buffer} The serialized buffer containing the header and data.
-	 */
-	override serialize() {
-		// Ensure value includes msgNo if it's not already set
-		let dataBuffer = this.value;
-		if (dataBuffer.length < 2 && this._msgNo !== 0) {
-			dataBuffer = Buffer.alloc(2);
-			dataBuffer.writeUInt16LE(this._msgNo, 0);
-		} else if (dataBuffer.length >= 2) {
-			// Update msgNo in the buffer
-			dataBuffer.writeUInt16LE(this._msgNo, 0);
-		}
-		
-		const buffer = Buffer.alloc(this._header.length + dataBuffer.length);
-		this._header._doSerialize().copy(buffer);
-		dataBuffer.copy(buffer, this._header._size);
-		return buffer;
-	}
-
-	/**
-	 * @deprecated
+	 * @deprecated Use setBody() or setDataBuffer() instead
 	 * @param {Buffer} buffer
 	 */
 	setBuffer(buffer: Buffer) {
-		super.setValue(buffer);
-		this._header.length = buffer.length + this._header._size - 2;
+		this.setDataBuffer(buffer);
 	}
 
 	/**
-	 * @deprecated
+	 * @deprecated Use this.msgNo instead
 	 */
 	updateMsgNo() {
-		this._msgNo = this.value.readUInt16LE(0);
+		// msgNo is already synced with body.msgNumber via MessageNode
 	}
 
 	override toString() {
 		return `ServerMessage: ${JSON.stringify({
-			header: this._header.toString(),
-			data: this.value.toString("hex"),
+			header: {
+				mcoSig: this.signature,
+				length: this.length,
+				sequence: this.sequence,
+				flags: this.flags,
+			},
+			data: this.data.toString("hex"),
 		})}`;
 	}
 
@@ -91,6 +119,6 @@ export class OldServerMessage extends BytableBuffer implements IServerMessage {
 	}
 
 	get sequenceNumber(): number {
-		return this._header.sequence;
+		return this.sequence;
 	}
 }

@@ -29,7 +29,7 @@ export async function login({
 
 	// Read the inbound packet
 	const loginMessage = new LoginPayload();
-	loginMessage.deserialize(packet.value);
+	loginMessage.deserialize(packet.data);
 	log.debug(
 		`[${connectionId}] Received LoginMessage: ${loginMessage.toString()}`,
 	);

@@ -7,7 +7,8 @@ describe("ServerMessage", () => {
 			// Arrange
 			const testMessage = new OldServerMessage();
 			// Assert
-			expect(testMessage.size()).toBe(11);
+			// Minimum size is 11 (header) + 10 (minimum body: msgNo + data + data2) = 21
+			expect(testMessage.size()).toBe(21);
 		});
 	});
 	it("should serialize and deserialize correctly", () => {

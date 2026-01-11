@@ -14,7 +14,7 @@ export async function _getPlayerInfo({
 
 ): Promise<MessageHandlerResult> {
 	const getPlayerInfoMessage = new GenericRequestMessage();
-	getPlayerInfoMessage.deserialize(packet.value);
+	getPlayerInfoMessage.deserialize(packet.data);
 
 	log.debug(
 		`[${connectionId}] Received GenericRequestMessage: ${getPlayerInfoMessage.toString()}`,

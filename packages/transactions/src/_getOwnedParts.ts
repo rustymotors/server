@@ -16,7 +16,7 @@ export async function _getOwnedParts({
 	log = defaultLogger,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
 	const getOwnedPartsMessage = new GenericRequestMessage();
-	getOwnedPartsMessage.deserialize(packet.value);
+	getOwnedPartsMessage.deserialize(packet.data);
 
 	log.debug(`Received Message: ${getOwnedPartsMessage.toString()}`);
 

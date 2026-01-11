@@ -17,7 +17,7 @@ export async function _buyNewPart({
     log = defaultLogger,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
     const buyNewPartMessage = new GenericRequestMessage();
-    buyNewPartMessage.deserialize(packet.value);
+    buyNewPartMessage.deserialize(packet.data);
 
     log.debug(`Received Message: ${buyNewPartMessage.toString()}`);
 

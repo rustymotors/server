@@ -19,7 +19,7 @@ export async function _getPlayerPhysical({
 	log = defaultLogger,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
 	const getPlayerPhysicalMessage = new GenericRequestMessage();
-	getPlayerPhysicalMessage.deserialize(packet.value);
+	getPlayerPhysicalMessage.deserialize(packet.data);
 
 	log.debug(
 		`[${connectionId}] Received GenericRequestMessage: ${getPlayerPhysicalMessage.toString()}`,
