@@ -9,12 +9,12 @@ import { npsPortRouter } from "./npsPortRouter.js";
 import { mcotsPortRouter } from "./mcotsPortRouter.js";
 import { PortRouterRegistry } from "./routing/PortRouterRegistry.js";
 import { createDefaultPortConfiguration } from "./routing/DefaultPortConfiguration.js";
-import http from "node:http";
 import { HotkeyManager } from "./HotkeyManager.js";
 import { ServerLifecycleManager, ServerStatus } from "./lifecycle/ServerLifecycleManager.js";
 import { initializeSessionRecorder } from "./session/SessionRecorderIntegration.js";
 import { NetworkServerManager } from "./network/NetworkServerManager.js";
 import { ProcessSignalHandler, type ShutdownHandler } from "./signals/ProcessSignalHandler.js";
+import { WebServerManager } from "./web/WebServerManager.js";
 
 
 /**
@@ -30,6 +30,7 @@ export class Gateway implements ShutdownHandler {
     private readonly networkManager: NetworkServerManager;
     private readonly portRouterRegistry: PortRouterRegistry;
     private readonly signalHandler: ProcessSignalHandler;
+    private readonly webServerManager: WebServerManager;
     consoleEvents: string[];
     backlogAllowedCount: number;
     tcpListeningPortList: number[];
@@ -41,7 +42,6 @@ export class Gateway implements ShutdownHandler {
         incomingSocket: TcpSocket;
         log?: ServerLogger;
     }) => void;
-    webServer: http.Server;
 
     /**
      * Gets the current server status as a string (for backward compatibility)
@@ -78,6 +78,7 @@ export class Gateway implements ShutdownHandler {
         this.networkManager = new NetworkServerManager(log, backlogAllowedCount);
         this.portRouterRegistry = new PortRouterRegistry();
         this.signalHandler = new ProcessSignalHandler(log);
+        this.webServerManager = new WebServerManager(log, processHttpRequest);
         this.consoleEvents = ['userExit', 'userRestart', 'userHelp'];
         this.backlogAllowedCount = backlogAllowedCount;
         this.tcpListeningPortList = tcpListeningPortList;
@@ -85,8 +86,6 @@ export class Gateway implements ShutdownHandler {
         this.socketconnection = socketConnectionHandler;
 
         initializeRouteHandlers();
-
-        this.webServer = http.createServer(processHttpRequest);
 
         // Initialize session recorder (enabled via RECORD_SESSIONS env var)
         initializeSessionRecorder(log);
@@ -139,12 +138,13 @@ export class Gateway implements ShutdownHandler {
 
         this.log.debug(`All sockets listening`);
 
-        // Start web server on port 3000
-        if (this.webServer === undefined) {
-            throw Error('webServer is undefined');
-        }
+        // Start web server manager (marks server as ready)
+        await this.webServerManager.start(3000);
+
+        // Start TCP server on port 3000 and connect it to HTTP server
+        // This allows both HTTP and raw packet handling on the same port
         await this.networkManager.startTcpServer(3000, ({ incomingSocket }) => {
-            this.webServer.emit('connection', incomingSocket);
+            this.webServerManager.getServer().emit('connection', incomingSocket);
         });
 
         this.lifecycleManager.setStatus(ServerStatus.RUNNING);
@@ -215,20 +215,15 @@ export class Gateway implements ShutdownHandler {
     }
 
     /**
-     * Shuts down all active servers and emits a close event on the web server.
+     * Shuts down all active servers and stops the web server.
      *
-     * @throws {Error} If the webServer is undefined.
      * @private
      * @async
      */
     private async shutdownServers() {
         this.log.info('Shutting down servers');
         await this.networkManager.shutdownAll();
-
-        if (this.webServer === undefined) {
-            throw Error('webServer is undefined');
-        }
-        this.webServer.emit('close');
+        await this.webServerManager.stop();
     }
 
     /**
