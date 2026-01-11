@@ -1,6 +1,6 @@
-import { Server, Socket as TcpSocket, createServer as createSocketServer } from "node:net";
-import {createSocket, RemoteInfo, Socket as UdpSocket} from "node:dgram"
-import { Configuration, getServerConfiguration, getServerLogger, ServerLogger,createInitialState } from "rusty-motors-shared";
+import { Server, Socket as TcpSocket } from "node:net";
+import { RemoteInfo, Socket as UdpSocket } from "node:dgram";
+import { Configuration, getServerConfiguration, getServerLogger, ServerLogger, createInitialState } from "rusty-motors-shared";
 import { onSocketConnection, onUdpMessage } from "./index.js";
 import { initializeRouteHandlers, processHttpRequest } from "./web.js";
 import type { GatewayOptions } from "./types.js";
@@ -11,6 +11,7 @@ import http from "node:http";
 import { HotkeyManager } from "./HotkeyManager.js";
 import { ServerLifecycleManager, ServerStatus } from "./lifecycle/ServerLifecycleManager.js";
 import { initializeSessionRecorder } from "./session/SessionRecorderIntegration.js";
+import { NetworkServerManager } from "./network/NetworkServerManager.js";
 
 
 /**
@@ -23,11 +24,11 @@ export class Gateway {
     timer: NodeJS.Timeout | null;
     loopInterval: number;
     private readonly lifecycleManager: ServerLifecycleManager;
+    private readonly networkManager: NetworkServerManager;
     consoleEvents: string[];
     backlogAllowedCount: number;
     tcpListeningPortList: number[];
     udpListeningPortList: number[];
-    activeServers: import('node:net').Server[];
     socketconnection: ({
         incomingSocket,
         log,
@@ -69,12 +70,11 @@ export class Gateway {
         this.timer = null;
         this.loopInterval = 0;
         this.lifecycleManager = new ServerLifecycleManager(log);
+        this.networkManager = new NetworkServerManager(log, backlogAllowedCount);
         this.consoleEvents = ['userExit', 'userRestart', 'userHelp'];
         this.backlogAllowedCount = backlogAllowedCount;
         this.tcpListeningPortList = tcpListeningPortList;
         this.udpListeningPortList = udpListeningPortList;
-        /** @type {import("node:net").Server[]} */
-        this.activeServers = [];
         this.socketconnection = socketConnectionHandler;
 
         initializeRouteHandlers();
@@ -101,30 +101,42 @@ export class Gateway {
         const tcpListeningServers: Promise<Server>[] = [];
         const udpListeningSockets: Promise<UdpSocket>[] = [];
 
+        // Start TCP servers
         for (const port of this.tcpListeningPortList) {
-            const server = this.startTcpNewServer(port, this.socketconnection);
+            const server = this.networkManager.startTcpServer(port, this.socketconnection);
             tcpListeningServers.push(server);
         }
 
+        // Start UDP sockets
         for (const port of this.udpListeningPortList) {
-            const socket = this.openUdpSocket(port, async (message: Buffer<ArrayBufferLike>, remoteInfo: RemoteInfo) => {
-                onUdpMessage({
-                    incomingSocket: await socket,
-                    message,
-                    remoteInfo
-                })
-            })
-            udpListeningSockets.push(socket)
+            // Store the socket promise so we can use it in the handler
+            let socketRef: UdpSocket | null = null;
+            const socketPromise = this.networkManager.startUdpServer(port, (message: Buffer<ArrayBufferLike>, remoteInfo: RemoteInfo) => {
+                // Use the stored socket reference
+                if (socketRef) {
+                    onUdpMessage({
+                        incomingSocket: socketRef,
+                        message,
+                        remoteInfo
+                    });
+                }
+            });
+            // Store the socket when it resolves
+            socketPromise.then(socket => {
+                socketRef = socket;
+            });
+            udpListeningSockets.push(socketPromise);
         }
 
-        await Promise.all([tcpListeningServers, udpListeningSockets]);
+        await Promise.all([...tcpListeningServers, ...udpListeningSockets]);
 
         this.log.debug(`All sockets listening`);
 
+        // Start web server on port 3000
         if (this.webServer === undefined) {
             throw Error('webServer is undefined');
         }
-        this.startTcpNewServer(3000, ({ incomingSocket }) => {
+        await this.networkManager.startTcpServer(3000, ({ incomingSocket }) => {
             this.webServer.emit('connection', incomingSocket);
         });
 
@@ -133,62 +145,6 @@ export class Gateway {
         new HotkeyManager(this);
     }
 
-    /**
-     * Starts a new server on the specified port and sets up a socket connection handler.
-     *
-     * @param port - The port number on which the server will listen.
-     * @param socketConnectionHandler - A callback function that handles incoming socket connections.
-     * @param socketConnectionHandler.incomingSocket - The incoming socket connection.
-     */
-    private async startTcpNewServer(
-        port: number,
-        socketConnectionHandler: ({
-            incomingSocket,
-        }: {
-            incomingSocket: TcpSocket;
-        }) => void,
-    ): Promise<Server> {
-        const server = createSocketServer((s) => {
-            socketConnectionHandler({ incomingSocket: s });
-        });
-
-        // Listen on the specified port
-        const handle: Promise<Server> = new Promise((resolve, reject) => {
-            try {
-                server.listen(port, '0.0.0.0', this.backlogAllowedCount, () => {
-                    resolve(server);
-                });
-            } catch (err) {
-                reject(err);
-            }
-        });
-
-        // Add the server to the list of servers
-        this.activeServers.push(server);
-        return handle;
-    }
-
-    private async openUdpSocket(
-        port: number,
-        socketConnectionHandler: (message: Buffer<ArrayBufferLike>, rinfo: RemoteInfo) => void,
-    ): Promise<UdpSocket> {
-        const server = createSocket({
-            type: "udp4"
-        }, socketConnectionHandler);
-
-        // Listen on the specified port
-        const handle: Promise<UdpSocket> = new Promise((resolve, reject) => {
-            try {
-                server.on("listening", () => {resolve(server)})
-                server.bind(port);
-            } catch (err) {
-                reject(err);
-            }
-        });
-
-        // Add the server to the list of servers
-        return handle;
-    }
 
     /**
      * Gracefully stops the GatewayServer and exits the process.
@@ -250,9 +206,7 @@ export class Gateway {
      */
     private async shutdownServers() {
         this.log.info('Shutting down servers');
-        this.activeServers.forEach((server) => {
-            server.close();
-        });
+        await this.networkManager.shutdownAll();
 
         if (this.webServer === undefined) {
             throw Error('webServer is undefined');
