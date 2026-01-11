@@ -2,7 +2,7 @@ import { getDatabaseManager, findCustomerByContext } from "rusty-motors-database
 import { NetworkMessage, configurationProvider } from "rusty-motors-shared";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { ServerLogger, getServerLogger } from "rusty-motors-shared";
-import { GamePacket } from "rusty-motors-shared-packets";
+import { GamePacket } from "rusty-motors-protocol";
 import { BytableMessage } from "@rustymotors/binary";
 
 

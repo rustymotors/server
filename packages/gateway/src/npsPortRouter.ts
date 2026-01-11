@@ -1,7 +1,7 @@
 import {
     GamePacket,
     type SerializableInterface,
-} from 'rusty-motors-shared-packets';
+} from 'rusty-motors-protocol';
 import { receiveLobbyData } from 'rusty-motors-lobby';
 import { receivePersonaData } from 'rusty-motors-personas';
 import { receiveLoginData } from 'rusty-motors-login';
@@ -471,7 +471,7 @@ async function routeInitialMessage(
                         `[${id}] Passing packet to chat handler: ${packet.serialize().toString('hex')}`,
                     );
                     responses = (
-                        await receiveChatData({ connectionId: id, message: packet, log })
+                        await receiveChatData({ connectionId: id, message: packet })
                     ).messages;
                     log.debug(
                         `[${id}] Chat Responses: ${responses.map((r) => r.serialize().toString('hex'))}`,

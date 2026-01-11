@@ -4,7 +4,7 @@ import {
 } from "rusty-motors-shared";
 import { messageHandlers } from "./internal.js";
 import { getServerLogger } from "rusty-motors-shared";
-import { GamePacket } from "rusty-motors-shared-packets";
+import { GamePacket } from "rusty-motors-protocol";
 import { BytableMessage } from "@rustymotors/binary";
 
 /**

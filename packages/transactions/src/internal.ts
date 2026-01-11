@@ -32,7 +32,7 @@ import { messageHandlers, type MessageHandlerResult, _MSG_STRING } from "./handl
 import {
 	ServerPacket,
 	type BufferSerializer,
-} from "rusty-motors-shared-packets";
+} from "rusty-motors-protocol";
 import { explode } from "pklib-ts"
 
 

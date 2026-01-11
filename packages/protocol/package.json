@@ -1,14 +1,17 @@
 {
-	"name": "rusty-motors-shared-packets",
+	"name": "rusty-motors-protocol",
 	"private": true,
 	"version": "1.0.0-next.0",
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./index.js",
-			"require": "./index.js"
+			"import": "./index.ts",
+			"require": "./index.ts",
+			"types": "./index.ts"
 		}
 	},
+	"main": "./index.ts",
+	"types": "./index.ts",
 	"scripts": {
 		"check": "tsc",
 		"lint": "npx @biomejs/biome lint --write .",

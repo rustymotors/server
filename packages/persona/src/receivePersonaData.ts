@@ -4,7 +4,7 @@ import {
 	SerializedBufferOld,
 	LegacyMessage,
 } from "rusty-motors-shared";
-import type { BufferSerializer } from "rusty-motors-shared-packets";
+import type { BufferSerializer } from "rusty-motors-protocol";
 import { messageHandlers } from "./internal.js";
 
 /**

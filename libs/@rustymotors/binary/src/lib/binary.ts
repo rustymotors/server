@@ -1,5 +1,5 @@
 import { BytableMessage } from "./BytableMessage.js";
-import { GamePacket } from "rusty-motors-shared-packets";
+import { GamePacket } from "rusty-motors-protocol";
 
 export function binary(): string {
     return "";

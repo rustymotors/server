@@ -16,7 +16,7 @@ export function initializeSessionRecorder(
 ): SessionRecorder {
 	if (globalRecorder === null) {
 		// During tests, ensure recording is disabled and use a test directory if needed
-		const isTestEnv = process.env.NODE_ENV === "test" || process.env.VITEST === "true";
+		const isTestEnv = process.env['NODE_ENV'] === "test" || process.env['VITEST'] === "true";
 		
 		// If in test environment and no output directory specified, use a test subdirectory
 		// to prevent writing to main fixtures directory

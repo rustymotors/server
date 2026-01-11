@@ -1,4 +1,4 @@
-import { IServerMessage } from "rusty-motors-shared-packets";
+import { IServerMessage } from "rusty-motors-protocol";
 import { SerializedBufferOld } from "./SerializedBufferOld.js";
 import { serverHeader } from "./serverHeader.js";
 

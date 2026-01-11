@@ -14,7 +14,7 @@
         "preclean": "npn run cleancoverage",
         "clean": "rm -rf **/node_modules node_modules",
         "start": "npx tsx --import ./instrument.mjs --openssl-legacy-provider --env-file=.env src/nps_server.ts",
-        "check": "tsc --build --noEmit",
+        "check": "tsc --build --noEmit > out.log",
         "check:all": "pnpm run -r --stream check",
         "lint:all": "pnpm run -r --stream lint",
         "format:all": "pnpm run -r --stream format",
@@ -43,7 +43,6 @@
         "@rustymotors/binary": "",
         "@rustymotors/network": "file:libs/@rustymotors/network",
         "@rustymotors/parser": "file:libs/@rustymotors/parser",
-        "@rustymotors/protocol": "file:libs/@rustymotors/protocol",
         "@rustymotors/rooms": "file:libs/@rustymotors/rooms",
         "@sentry/node": "10.32.1",
         "@sentry/profiling-node": "10.32.1",
@@ -101,7 +100,7 @@
         "packages/pklib-ts",
         "packages/shard",
         "packages/shared",
-        "packages/shared-packets",
+        "packages/protocol",
         "packages/transactions",
         "src/chat"
     ]

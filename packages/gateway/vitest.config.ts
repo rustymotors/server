@@ -35,10 +35,14 @@ export default defineConfig({
 				],
 			},
 		},
+		deps: {
+			inline: ["rusty-motors-protocol"],
+		},
 	},
 	resolve: {
 		alias: {
 			"@": resolve(__dirname, "./src"),
+			"rusty-motors-protocol": resolve(projectRoot, "packages/protocol"),
 		},
 	},
 });

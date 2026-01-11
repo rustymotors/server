@@ -2,7 +2,7 @@ import {
 	SerializedBufferOld,
 	type ServiceResponse,
 } from "rusty-motors-shared";
-import { type BufferSerializer } from "rusty-motors-shared-packets";
+import { type BufferSerializer } from "rusty-motors-protocol";
 import { ChatMessage } from "./ChatMessage.js";
 import {
 	handleListInGameEmailsMessage,

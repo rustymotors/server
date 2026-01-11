@@ -18,7 +18,7 @@ import {
 	type ServiceResponse,
 } from "rusty-motors-shared";
 import { handleLoginData } from "./handleLoginData.js";
-import { BufferSerializer, GamePacket } from "rusty-motors-shared-packets";
+import { BufferSerializer, GamePacket } from "rusty-motors-protocol";
 import { getServerLogger } from "rusty-motors-shared";
 import { BytableMessage } from "@rustymotors/binary";
 

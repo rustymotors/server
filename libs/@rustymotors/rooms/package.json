@@ -4,7 +4,7 @@
     "private": true,
     "dependencies": {
         "rusty-motors-shared": "",
-        "rusty-motors-shared-packets": ""
+        "rusty-motors-protocol": ""
     },
     "type": "module",
     "main": "src/index.js",

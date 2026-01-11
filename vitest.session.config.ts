@@ -11,7 +11,15 @@ const projectRoot = resolve(__dirname, ".");
 const envPath = resolve(projectRoot, ".env");
 
 export default defineConfig({
+    resolve: {
+        alias: {
+            "rusty-motors-protocol": resolve(projectRoot, "packages/protocol"),
+        },
+    },
     test: {
+        deps: {
+            inline: ["rusty-motors-protocol"],
+        },
         setupFiles: ["./packages/gateway/vitest.setup.ts"],
         globals: true,
         environment: "node",

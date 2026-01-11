@@ -65,7 +65,7 @@ export class SessionReplayer {
 		const filepath = join(this.fixturesDirectory, filename);
 		if (!existsSync(filepath)) {
 			// Only log error if not in test environment (tests use loggerMock anyway)
-			const isTestEnv = process.env.NODE_ENV === "test" || process.env.VITEST === "true";
+			const isTestEnv = process.env['NODE_ENV'] === "test" || process.env['VITEST'] === "true";
 			if (!isTestEnv) {
 				this.log.error(`Session file not found: ${filepath}`);
 			}
@@ -97,7 +97,7 @@ export class SessionReplayer {
 			return files.filter((file: string) => file.endsWith(".json"));
 		} catch (error) {
 			// Only log error if not in test environment (tests use loggerMock anyway)
-			const isTestEnv = process.env.NODE_ENV === "test" || process.env.VITEST === "true";
+			const isTestEnv = process.env['NODE_ENV'] === "test" || process.env['VITEST'] === "true";
 			if (!isTestEnv) {
 				this.log.error(`Failed to list sessions: ${error}`);
 			}
@@ -138,6 +138,12 @@ export class SessionReplayer {
 		try {
 			for (let i = 0; i < session.events.length; i++) {
 				const event = session.events[i];
+				
+				// Skip if event is undefined (shouldn't happen, but TypeScript needs this)
+				if (!event) {
+					result.warnings.push(`Event at index ${i} is undefined`);
+					continue;
+				}
 
 				// Check timeout
 				if (Date.now() - startTime > timeout) {

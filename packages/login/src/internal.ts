@@ -16,7 +16,7 @@
 
 import { ServerLogger } from "rusty-motors-shared";
 import { login } from "./login.js";
-import { GamePacket } from "rusty-motors-shared-packets";
+import { GamePacket } from "rusty-motors-protocol";
 import { BytableMessage } from "@rustymotors/binary";
 
 /**

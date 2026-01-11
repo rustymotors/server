@@ -69,7 +69,7 @@ export class Gateway implements ShutdownHandler {
         socketConnectionHandler = onSocketConnection,
     }: GatewayOptions) {
         // Only log if not in test environment to avoid log output during tests
-        const isTestEnv = process.env.NODE_ENV === "test" || process.env.VITEST === "true";
+        const isTestEnv = process.env['NODE_ENV'] === "test" || process.env['VITEST'] === "true";
         if (!isTestEnv) {
             log.debug('Creating GatewayServer instance');
         }
@@ -166,12 +166,13 @@ export class Gateway implements ShutdownHandler {
             // This records the raw TCP stream, not HTTP-level data
             const recorder = getSessionRecorder();
             if (recorder?.isRecordingEnabled() && localPort && remoteAddress) {
+                // Define connectionId in outer scope for use in closures
                 const connectionId = `${randomUUID().substring(0, 8)}:${localPort}`;
                 recorder.startSession(connectionId, localPort, remoteAddress);
                 
                 // Record incoming data (raw TCP bytes)
                 incomingSocket.on('data', (data: Buffer) => {
-                    if (recorder?.isRecordingEnabled()) {
+                    if (recorder?.isRecordingEnabled() && localPort) {
                         recorder.recordDataIn(connectionId, localPort, data);
                     }
                 });
@@ -179,7 +180,7 @@ export class Gateway implements ShutdownHandler {
                 // Record outgoing data (raw TCP bytes)
                 const originalWrite = incomingSocket.write.bind(incomingSocket);
                 incomingSocket.write = function(chunk: any, encoding?: any, cb?: any) {
-                    if (recorder?.isRecordingEnabled()) {
+                    if (recorder?.isRecordingEnabled() && localPort) {
                         const data = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
                         recorder.recordDataOut(connectionId, localPort, data);
                     }
@@ -188,7 +189,7 @@ export class Gateway implements ShutdownHandler {
                 
                 // Record disconnect
                 incomingSocket.once('end', () => {
-                    if (recorder?.isRecordingEnabled()) {
+                    if (recorder?.isRecordingEnabled() && localPort) {
                         recorder.recordDisconnect(connectionId, localPort);
                         recorder.saveSession(connectionId, `Auto-saved on disconnect (port ${localPort})`);
                     }
@@ -300,7 +301,7 @@ export class Gateway implements ShutdownHandler {
         // (This is separate from SignalHandler's exit listener)
         process.on('exit', () => {
             // Use logger for message stats (only logs if not in test environment)
-            const isTestEnv = process.env.NODE_ENV === "test" || process.env.VITEST === "true";
+            const isTestEnv = process.env['NODE_ENV'] === "test" || process.env['VITEST'] === "true";
             if (!isTestEnv && messageStats.size > 0) {
                 this.log.info('Message statistics:', Object.fromEntries(messageStats));
             }

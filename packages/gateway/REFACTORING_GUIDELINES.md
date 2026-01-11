@@ -527,6 +527,16 @@ Where applicable, the Gateway refactoring follows the [12 Factor App](https://12
 
 See `CONFIGURATION_BEST_PRACTICES.md` for detailed 12 Factor App implementation guidelines.
 
+## Volatility Analysis
+
+See `VOLATILITY_ANALYSIS.md` for a detailed analysis of component volatility in the Gateway package. This analysis identifies:
+
+- **High Volatility Components**: Business logic, protocol handlers (npsPortRouter, mcotsPortRouter, web.ts)
+- **Medium Volatility Components**: Infrastructure (NetworkServerManager, WebServerManager, etc.)
+- **Low Volatility Components**: Abstractions (PortRouterRegistry, GatewayConfiguration, interfaces)
+
+The analysis provides a roadmap for further refactoring to achieve the volatility-based composition taxonomy.
+
 ## References
 
 - **SOLID Principles**: Robert C. Martin (Uncle Bob)

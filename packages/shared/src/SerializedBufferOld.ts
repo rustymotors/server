@@ -1,4 +1,4 @@
-import type { SerializableInterface } from "rusty-motors-shared-packets";
+import type { SerializableInterface } from "rusty-motors-protocol";
 import { SerializableMixin, AbstractSerializable } from "./messageFactory.js";
 
 /**

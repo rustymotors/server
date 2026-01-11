@@ -8,7 +8,7 @@
 // eslint-disable-next-line no-unused-vars
 import { Cipher, Decipher } from "crypto";
 import { SerializedBufferOld } from "./SerializedBufferOld.js";
-import { BufferSerializer } from "rusty-motors-shared-packets";
+import { BufferSerializer } from "rusty-motors-protocol";
 import { ServerLogger } from "../index.js";
 
 

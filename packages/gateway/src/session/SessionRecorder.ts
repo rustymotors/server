@@ -47,7 +47,7 @@ export class SessionRecorder {
 
 		// Only create output directory if not in test environment
 		// (Tests that need directories will create them explicitly)
-		const isTestEnv = process.env.NODE_ENV === "test" || process.env.VITEST === "true";
+		const isTestEnv = process.env['NODE_ENV'] === "test" || process.env['VITEST'] === "true";
 		if (!isTestEnv) {
 			// Create output directory if it doesn't exist
 			try {
@@ -220,7 +220,7 @@ export class SessionRecorder {
 
 		// Prevent saving sessions to main fixtures directory during tests
 		// Allow saving to test subdirectories (e.g., test/fixtures/sessions/test/)
-		const isTestEnv = process.env.NODE_ENV === "test" || process.env.VITEST === "true";
+		const isTestEnv = process.env['NODE_ENV'] === "test" || process.env['VITEST'] === "true";
 		const isMainFixturesDir = this.outputDirectory.endsWith("test/fixtures/sessions") ||
 		                          this.outputDirectory.endsWith("test\\fixtures\\sessions");
 		

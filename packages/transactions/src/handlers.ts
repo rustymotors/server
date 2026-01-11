@@ -30,7 +30,7 @@ import { getLobbies } from "./getLobbies.js";
 import { login } from "./login.js";
 import { trackingPing } from "./trackingPing.js";
 import { _buyCarFromDealer } from "./_buyCarFromDealer.js";
-import { IServerMessage } from "rusty-motors-shared-packets";
+import { IServerMessage } from "rusty-motors-protocol";
 import { _crcPreRaceData } from "./_crcPreRaceData.js";
 import { _updateCachedVehicle } from "./_updateCachedVehicle.js";
 import { _getCompleteVehicleInfo } from "./_getFullCarInfo.js";
