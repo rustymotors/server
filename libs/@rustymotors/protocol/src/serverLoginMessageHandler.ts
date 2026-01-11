@@ -10,7 +10,7 @@ import { readFileSync } from "fs";
 import {
 	getServerLogger,
 	ServerLogger,
-	getServerConfiguration,
+	configurationProvider,
 } from "rusty-motors-shared";
 import { parseNPSSessionKey } from "./parseNPSSessionKey.js";
 
@@ -52,7 +52,8 @@ export async function serverLoginMessageHandler({
 
 		const sessionkeyString = Buffer.from(encryptedSessionKey as String, "hex");
 
-		const config = getServerConfiguration();
+		// Get configuration from provider (uses GatewayConfiguration if available)
+		const config = configurationProvider.getSharedConfiguration();
 
 		if (config.privateKeyFile === "") {
 			throw Error("No private key file specified");

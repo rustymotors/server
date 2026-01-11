@@ -1,6 +1,6 @@
 import { Server, Socket as TcpSocket } from "node:net";
 import { RemoteInfo, Socket as UdpSocket } from "node:dgram";
-import { Configuration, getServerConfiguration, getServerLogger, ServerLogger, createInitialState } from "rusty-motors-shared";
+import { getServerConfiguration, getServerLogger, ServerLogger, createInitialState } from "rusty-motors-shared";
 import { onSocketConnection, onUdpMessage } from "./index.js";
 import { initializeRouteHandlers, processHttpRequest } from "./web.js";
 import type { GatewayOptions } from "./types.js";
@@ -15,6 +15,7 @@ import { initializeSessionRecorder } from "./session/SessionRecorderIntegration.
 import { NetworkServerManager } from "./network/NetworkServerManager.js";
 import { ProcessSignalHandler, type ShutdownHandler } from "./signals/ProcessSignalHandler.js";
 import { WebServerManager } from "./web/WebServerManager.js";
+import { GatewayConfiguration } from "./configuration/GatewayConfiguration.js";
 
 
 /**
@@ -22,7 +23,7 @@ import { WebServerManager } from "./web/WebServerManager.js";
  * @see {@link getGatewayServer()} to get a singleton instance
  */
 export class Gateway implements ShutdownHandler {
-    config: Configuration;
+    private readonly gatewayConfig: GatewayConfiguration;
     log = getServerLogger("Gateway")
     timer: NodeJS.Timeout | null;
     loopInterval: number;
@@ -32,9 +33,6 @@ export class Gateway implements ShutdownHandler {
     private readonly signalHandler: ProcessSignalHandler;
     private readonly webServerManager: WebServerManager;
     consoleEvents: string[];
-    backlogAllowedCount: number;
-    tcpListeningPortList: number[];
-    udpListeningPortList: number[];
     socketconnection: ({
         incomingSocket,
         log,
@@ -42,6 +40,14 @@ export class Gateway implements ShutdownHandler {
         incomingSocket: TcpSocket;
         log?: ServerLogger;
     }) => void;
+
+    /**
+     * Gets the shared server configuration (for backward compatibility)
+     * @returns The shared Configuration object
+     */
+    get config() {
+        return this.gatewayConfig.getSharedConfig();
+    }
 
     /**
      * Gets the current server status as a string (for backward compatibility)
@@ -69,23 +75,36 @@ export class Gateway implements ShutdownHandler {
             log.debug('Creating GatewayServer instance');
         }
 
-        this.config = config;
+        // Create GatewayConfiguration that wraps shared config and Gateway-specific settings
+        // Extract shard ports from TCP port list if available, otherwise use defaults
+        const loginPort = tcpListeningPortList.includes(8226) ? 8226 : 8226;
+        const lobbyPort = tcpListeningPortList.includes(7003) ? 7003 : 7003;
+        
+        this.gatewayConfig = new GatewayConfiguration({
+            sharedConfig: config,
+            tcpPorts: tcpListeningPortList,
+            udpPorts: udpListeningPortList,
+            webPort: 3000, // Default web port
+            backlogAllowedCount: backlogAllowedCount,
+            loginServerPort: loginPort,
+            lobbyServerPort: lobbyPort,
+            diagnosticServerPort: 80, // Diagnostic server port (separate from web port)
+        });
+
         this.log = log;
         /** @type {NodeJS.Timeout | null} */
         this.timer = null;
         this.loopInterval = 0;
         this.lifecycleManager = new ServerLifecycleManager(log);
-        this.networkManager = new NetworkServerManager(log, backlogAllowedCount);
+        this.networkManager = new NetworkServerManager(log, this.gatewayConfig.getBacklogAllowedCount());
         this.portRouterRegistry = new PortRouterRegistry();
         this.signalHandler = new ProcessSignalHandler(log);
         this.webServerManager = new WebServerManager(log, processHttpRequest);
         this.consoleEvents = ['userExit', 'userRestart', 'userHelp'];
-        this.backlogAllowedCount = backlogAllowedCount;
-        this.tcpListeningPortList = tcpListeningPortList;
-        this.udpListeningPortList = udpListeningPortList;
         this.socketconnection = socketConnectionHandler;
 
-        initializeRouteHandlers();
+        // Initialize route handlers with GatewayConfiguration
+        initializeRouteHandlers(this.gatewayConfig);
 
         // Initialize session recorder (enabled via RECORD_SESSIONS env var)
         initializeSessionRecorder(log);
@@ -108,13 +127,13 @@ export class Gateway implements ShutdownHandler {
         const udpListeningSockets: Promise<UdpSocket>[] = [];
 
         // Start TCP servers
-        for (const port of this.tcpListeningPortList) {
+        for (const port of this.gatewayConfig.getTcpPorts()) {
             const server = this.networkManager.startTcpServer(port, this.socketconnection);
             tcpListeningServers.push(server);
         }
 
         // Start UDP sockets
-        for (const port of this.udpListeningPortList) {
+        for (const port of this.gatewayConfig.getUdpPorts()) {
             // Store the socket promise so we can use it in the handler
             let socketRef: UdpSocket | null = null;
             const socketPromise = this.networkManager.startUdpServer(port, (message: Buffer<ArrayBufferLike>, remoteInfo: RemoteInfo) => {
@@ -139,11 +158,12 @@ export class Gateway implements ShutdownHandler {
         this.log.debug(`All sockets listening`);
 
         // Start web server manager (marks server as ready)
-        await this.webServerManager.start(3000);
+        const webPort = this.gatewayConfig.getWebPort();
+        await this.webServerManager.start(webPort);
 
-        // Start TCP server on port 3000 and connect it to HTTP server
+        // Start TCP server on web port and connect it to HTTP server
         // This allows both HTTP and raw packet handling on the same port
-        await this.networkManager.startTcpServer(3000, ({ incomingSocket }) => {
+        await this.networkManager.startTcpServer(webPort, ({ incomingSocket }) => {
             this.webServerManager.getServer().emit('connection', incomingSocket);
         });
 

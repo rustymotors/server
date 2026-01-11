@@ -1,5 +1,5 @@
 import { getDatabaseManager, findCustomerByContext } from "rusty-motors-database";
-import { getServerConfiguration, NetworkMessage } from "rusty-motors-shared";
+import { NetworkMessage, configurationProvider } from "rusty-motors-shared";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { ServerLogger, getServerLogger } from "rusty-motors-shared";
 import { GamePacket } from "rusty-motors-shared-packets";
@@ -32,7 +32,9 @@ export async function login({
 }> {
 	const data = message.serialize();
 
-	const userStatus = new NPSUserStatus(data, getServerConfiguration(), log);
+	// Get configuration from provider (uses GatewayConfiguration if available, otherwise falls back)
+	const config = configurationProvider.getSharedConfiguration();
+	const userStatus = new NPSUserStatus(data, config, log);
 
 	userStatus.extractSessionKeyFromPacket(data);
 

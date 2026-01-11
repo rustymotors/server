@@ -24,6 +24,7 @@ import {
 } from "rusty-motors-shard";
 import { getServerConfiguration, getServerLogger, type ServerLogger } from "rusty-motors-shared";
 import { findUser } from "rusty-motors-database";
+import type { GatewayConfiguration } from "./configuration/GatewayConfiguration.js";
 
 type WebHandlerResponse = {
 	headers: Record<string, string>;
@@ -71,7 +72,16 @@ class AuthLoginResponse {
 
 const routeHandlers: Map<string, WebHandler> = new Map();
 
-export function initializeRouteHandlers() {
+// Store GatewayConfiguration for use in handlers
+let gatewayConfiguration: GatewayConfiguration | null = null;
+
+/**
+ * Initializes route handlers with Gateway configuration
+ *
+ * @param config - The GatewayConfiguration instance to use for handlers
+ */
+export function initializeRouteHandlers(config?: GatewayConfiguration) {
+	gatewayConfiguration = config ?? null;
 	routeHandlers.set("/", handleRoot);
 	routeHandlers.set("/games/EA_Seattle/MotorCity/UpdateInfo", handleCastanet);
 	routeHandlers.set("/games/EA_Seattle/MotorCity/NPS", handleCastanet);
@@ -192,7 +202,21 @@ async function handleAuthLogin(
  * @returns The response headers and body for the shard list request.
  */
 async function handleShardList(): Promise<WebHandlerResponse> {
-	const shardList = generateShardList(getServerConfiguration().host);
+	const sharedConfig = getServerConfiguration();
+	const host = sharedConfig.host;
+
+	// Use GatewayConfiguration if available, otherwise use defaults
+	let loginPort = 8226;
+	let lobbyPort = 7003;
+	let diagnosticPort = 80;
+
+	if (gatewayConfiguration) {
+		loginPort = gatewayConfiguration.getLoginServerPort();
+		lobbyPort = gatewayConfiguration.getLobbyServerPort();
+		diagnosticPort = gatewayConfiguration.getDiagnosticServerPort();
+	}
+
+	const shardList = generateShardList(host, loginPort, lobbyPort, diagnosticPort);
 	return {
 		headers: { "Content-Type": "text/plain" },
 		body: shardList,

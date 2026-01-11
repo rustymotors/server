@@ -2,6 +2,7 @@ import { MessageQueue } from './src/MessageQueue.js';
 export { SubThread } from './src/SubThread.js';
 export { NetworkMessage } from './src/NetworkMessage.js';
 export { Configuration, getServerConfiguration } from './src/Configuration.js';
+export { configurationProvider, type GatewayConfigurationProvider } from './src/ConfigurationProvider.js';
 export { SerializedBuffer } from './src/SerializedBuffer.js';
 export { SerializedBufferOld } from './src/SerializedBufferOld.js';
 export { RawMessage } from './src/RawMessage.js';
