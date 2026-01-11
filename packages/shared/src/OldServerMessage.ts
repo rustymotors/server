@@ -1,5 +1,6 @@
 import { IServerMessage } from "rusty-motors-protocol";
 import { MessageNode } from "./MessageNode.js";
+import { sliceBuff } from "./helpers.js";
 
 
 
@@ -34,7 +35,18 @@ export class OldServerMessage extends MessageNode implements IServerMessage {
 				},
 				_size: 11,
 				_doDeserialize: (buffer: Buffer) => {
-					self.deserialize(buffer);
+					// Only deserialize the header (first 11 bytes), not the entire message
+					// This prevents infinite recursion when subclasses call _header._doDeserialize()
+					// This matches MessageNode.deserialize() header parsing (lines 80-86)
+					let offset = 0;
+					// Use unsigned 16-bit to match MessageNode and support messages larger than 32767 bytes
+					(self as any).msgLength_ = buffer.readUInt16LE(offset);
+					offset += 2;
+					(self as any).signature_ = sliceBuff(buffer, offset, 4).toString('utf8');
+					offset += 4;
+					(self as any).sequence_ = buffer.readInt32LE(offset);
+					offset += 4;
+					(self as any).flags_ = buffer.readInt8(offset);
 					return self._header;
 				},
 				_doSerialize: () => {

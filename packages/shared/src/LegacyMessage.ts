@@ -89,13 +89,17 @@ export class LegacyMessage extends BytableMessage {
 			set length(val: number) { self.header.setMessageLength(val); },
 			_size: 4,
 			_doDeserialize: (buffer: Buffer) => {
-				// Deserialize the entire message (header + payload)
-				self.deserialize(buffer);
+				// Only deserialize the header (first 4 bytes), not the entire message
+				// This prevents infinite recursion when subclasses call _header._doDeserialize()
+				self.header.deserialize(buffer);
 				return self._header;
 			},
 			_doSerialize: () => {
 				// Return just the header portion
 				return self.header.serialize();
+			},
+			toString: () => {
+				return self.header.toString();
 			},
 		};
 	}

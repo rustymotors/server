@@ -47,4 +47,8 @@ export class BytableBuffer implements BytableObject {
 	getUint32(offset: number, _littleEndian: boolean): number {
 		return this.value_.readUInt32BE(offset);
 	}
+
+	toHexString(): string {
+		return this.serialize().toString("hex");
+	}
 }
