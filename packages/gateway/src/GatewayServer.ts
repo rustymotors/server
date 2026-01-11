@@ -4,9 +4,11 @@ import { Configuration, getServerConfiguration, getServerLogger, ServerLogger, c
 import { onSocketConnection, onUdpMessage } from "./index.js";
 import { initializeRouteHandlers, processHttpRequest } from "./web.js";
 import type { GatewayOptions } from "./types.js";
-import { addPortRouter } from "./portRouters.js";
+import { setGlobalPortRouterRegistry } from "./portRouters.js";
 import { npsPortRouter } from "./npsPortRouter.js";
 import { mcotsPortRouter } from "./mcotsPortRouter.js";
+import { PortRouterRegistry } from "./routing/PortRouterRegistry.js";
+import { createDefaultPortConfiguration } from "./routing/DefaultPortConfiguration.js";
 import http from "node:http";
 import { HotkeyManager } from "./HotkeyManager.js";
 import { ServerLifecycleManager, ServerStatus } from "./lifecycle/ServerLifecycleManager.js";
@@ -25,6 +27,7 @@ export class Gateway {
     loopInterval: number;
     private readonly lifecycleManager: ServerLifecycleManager;
     private readonly networkManager: NetworkServerManager;
+    private readonly portRouterRegistry: PortRouterRegistry;
     consoleEvents: string[];
     backlogAllowedCount: number;
     tcpListeningPortList: number[];
@@ -71,6 +74,7 @@ export class Gateway {
         this.loopInterval = 0;
         this.lifecycleManager = new ServerLifecycleManager(log);
         this.networkManager = new NetworkServerManager(log, backlogAllowedCount);
+        this.portRouterRegistry = new PortRouterRegistry();
         this.consoleEvents = ['userExit', 'userRestart', 'userHelp'];
         this.backlogAllowedCount = backlogAllowedCount;
         this.tcpListeningPortList = tcpListeningPortList;
@@ -217,21 +221,20 @@ export class Gateway {
     /**
      * Initializes the GatewayServer by setting up the web server and registering routes.
      *
-     * - Creates a Fastify web server instance.
-     * - Registers the FastifySensible plugin for additional utilities.
-     * - Adds port routers for various ports to handle incoming requests.
+     * - Registers default port router configuration.
+     * - Sets the global port router registry for backward compatibility.
      * - Sets up a signal handler to gracefully exit on SIGINT.
      */
     private init() {
-        addPortRouter(8226, npsPortRouter);
-        addPortRouter(8227, npsPortRouter);
-        addPortRouter(8228, npsPortRouter);
-        addPortRouter(7003, npsPortRouter);
-        for (let port = 9000; port < 9021; port++) {
-            addPortRouter(port, npsPortRouter);
-        }
-        addPortRouter(10001, npsPortRouter);
-        addPortRouter(43300, mcotsPortRouter);
+        // Register default port configuration
+        createDefaultPortConfiguration(
+            this.portRouterRegistry,
+            npsPortRouter,
+            mcotsPortRouter,
+        );
+
+        // Set global registry for backward compatibility with existing portRouters API
+        setGlobalPortRouterRegistry(this.portRouterRegistry);
 
         process.on('SIGINT', this.exit.bind(this));
 
