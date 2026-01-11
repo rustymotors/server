@@ -190,7 +190,7 @@ import { BytableMessage } from "@rustymotors/binary";
 
 ### Current State
 
-```
+```dir
 protocol/
   BufferSerializer      # Simple buffer wrapper
   GamePacket           # Protocol message (uses BufferSerializer)
@@ -209,6 +209,7 @@ binary/
 **Location**: `packages/shared/src/messageFactory.ts`
 
 **Problem**: Uses mixin pattern for serialization:
+
 ```typescript
 export const SerializableMixin = (
     Base: typeof AbstractSerializable,
@@ -219,11 +220,13 @@ export const SerializableMixin = (
 ```
 
 **Used by**:
+
 - `SerializedBufferOld` - Extends `SerializableMixin(AbstractSerializable)`
 - `LegacyMessage` - Extends `SerializableMixin(AbstractSerializable)`
 - `NPSMessage` - Extends `SerializableMixin(AbstractSerializable)`
 
 **Why it's bad**:
+
 - ❌ Mixins are hard to understand and debug
 - ❌ TypeScript doesn't handle mixins well (type inference issues)
 - ❌ Hard to test and maintain
@@ -260,7 +263,7 @@ export const SerializableMixin = (
 
 **Structure**:
 
-```
+```dir
 libs/@rustymotors/binary/     # Core binary serialization (low volatility)
   BytableBuffer               # Simple buffer wrapper
   BytableMessage              # Generic message structure
@@ -304,7 +307,7 @@ packages/protocol/            # Game protocol (high volatility)
 
 **Structure**:
 
-```
+```dir
 libs/@rustymotors/binary/     # Generic binary (no simple buffer wrapper)
   BytableMessage              # Complex message structures
   BytableHeader               # Complex headers
