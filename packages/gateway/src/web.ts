@@ -3493,7 +3493,6 @@ export async function processHttpRequest(
 	request: http.IncomingMessage,
 	response: http.ServerResponse,
 ) {
-
 	const url = new URL(
 		`http://${process.env["HOST"] ?? "localhost"}${request.url}`,
 	);
@@ -3509,7 +3508,6 @@ export async function processHttpRequest(
 			return;
 		}
 	}
-
 
 	response.statusCode = 404;
 	response.end("Not found");

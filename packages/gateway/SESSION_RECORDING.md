@@ -57,12 +57,15 @@ describe('Client Session Tests', () => {
 ## Integration
 
 The recorder is automatically integrated into:
-- Connection handlers (`onSocketConnection`)
-- NPS port router (data in/out)
-- MCOTS port router (when integrated)
-- Disconnect handlers
+- Connection handlers (`onSocketConnection`) - Game ports (8226, 7003, etc.)
+- NPS port router (data in/out) - Game protocol traffic
+- Web server handler (`processHttpRequest`) - HTTP traffic on port 3000
+- MCOTS port router (when integrated) - Transaction server traffic
+- Disconnect handlers - All connection types
 
 No code changes needed - just set the environment variable!
+
+**Note**: Web traffic (port 3000) is now recorded! See `WEB_TRAFFIC_RECORDING.md` for details.
 
 ## File Format
 

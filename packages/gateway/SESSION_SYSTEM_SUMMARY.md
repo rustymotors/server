@@ -25,8 +25,9 @@ A complete session recording and replay system has been created to capture real 
 
 ### ✅ Integrated
 - `Gateway` constructor - Initializes recorder
-- `onSocketConnection()` - Records connection start
-- `npsPortRouter()` - Records data in/out and disconnect
+- `onSocketConnection()` - Records connection start (game ports)
+- `npsPortRouter()` - Records data in/out and disconnect (game ports)
+- `processHttpRequest()` - Records HTTP requests/responses (web port 3000)
 
 ### 🔄 Ready for Integration
 - `mcotsPortRouter()` - Can be integrated similarly

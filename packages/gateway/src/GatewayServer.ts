@@ -1,5 +1,6 @@
 import { Server, Socket as TcpSocket } from "node:net";
 import { RemoteInfo, Socket as UdpSocket } from "node:dgram";
+import { randomUUID } from "node:crypto";
 import { getServerConfiguration, getServerLogger, ServerLogger, createInitialState } from "rusty-motors-shared";
 import { onSocketConnection, onUdpMessage } from "./index.js";
 import { initializeRouteHandlers, processHttpRequest } from "./web.js";
@@ -11,7 +12,7 @@ import { PortRouterRegistry } from "./routing/PortRouterRegistry.js";
 import { createDefaultPortConfiguration } from "./routing/DefaultPortConfiguration.js";
 import { HotkeyManager } from "./HotkeyManager.js";
 import { ServerLifecycleManager, ServerStatus } from "./lifecycle/ServerLifecycleManager.js";
-import { initializeSessionRecorder } from "./session/SessionRecorderIntegration.js";
+import { initializeSessionRecorder, getSessionRecorder } from "./session/SessionRecorderIntegration.js";
 import { NetworkServerManager } from "./network/NetworkServerManager.js";
 import { ProcessSignalHandler, type ShutdownHandler } from "./signals/ProcessSignalHandler.js";
 import { WebServerManager } from "./web/WebServerManager.js";
@@ -157,7 +158,44 @@ export class Gateway implements ShutdownHandler {
 
         // Start TCP server on web port and connect it to HTTP server
         // This allows both HTTP and raw packet handling on the same port
+        // Record raw TCP data before passing to HTTP server (consistent with other ports)
         await this.networkManager.startTcpServer(webPort, ({ incomingSocket }) => {
+            const { localPort, remoteAddress } = incomingSocket;
+            
+            // Record session start if recording is enabled (raw TCP level)
+            // This records the raw TCP stream, not HTTP-level data
+            const recorder = getSessionRecorder();
+            if (recorder?.isRecordingEnabled() && localPort && remoteAddress) {
+                const connectionId = `${randomUUID().substring(0, 8)}:${localPort}`;
+                recorder.startSession(connectionId, localPort, remoteAddress);
+                
+                // Record incoming data (raw TCP bytes)
+                incomingSocket.on('data', (data: Buffer) => {
+                    if (recorder?.isRecordingEnabled()) {
+                        recorder.recordDataIn(connectionId, localPort, data);
+                    }
+                });
+                
+                // Record outgoing data (raw TCP bytes)
+                const originalWrite = incomingSocket.write.bind(incomingSocket);
+                incomingSocket.write = function(chunk: any, encoding?: any, cb?: any) {
+                    if (recorder?.isRecordingEnabled()) {
+                        const data = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+                        recorder.recordDataOut(connectionId, localPort, data);
+                    }
+                    return originalWrite(chunk, encoding, cb);
+                };
+                
+                // Record disconnect
+                incomingSocket.once('end', () => {
+                    if (recorder?.isRecordingEnabled()) {
+                        recorder.recordDisconnect(connectionId, localPort);
+                        recorder.saveSession(connectionId, `Auto-saved on disconnect (port ${localPort})`);
+                    }
+                });
+            }
+            
+            // Pass to HTTP server (after setting up recording)
             this.webServerManager.getServer().emit('connection', incomingSocket);
         });
 
