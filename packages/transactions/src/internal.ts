@@ -52,14 +52,15 @@ async function processInput({
 	log?: ServerLogger;
 }): Promise<MessageHandlerResult> {
 	const currentMessageNo = inboundMessage.getMessageId();
-	const currentMessageString = _MSG_STRING(currentMessageNo);
+	const currentMessageString = _MSG_STRING(currentMessageNo); // For logging only
 
 	log.debug(
 		`[${connectionId}] Processing message: ${currentMessageNo} (${currentMessageString}), sequence: ${inboundMessage.getSequence()}`,
 	);
 
+	// Route by ID directly - _MSG_STRING is now only used for logging
 	const result = messageHandlers.find(
-		(msg) => msg.name === currentMessageString,
+		(handler) => handler.id === currentMessageNo,
 	);
 
 	if (typeof result !== "undefined") {

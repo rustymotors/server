@@ -40,6 +40,7 @@ vi.mock("./handlers.js", () => {
     return {
         messageHandlers: [
             {
+                id: 1, // Route by ID now
                 name: "TESTMSG",
                 handler: vi.fn(async () => {
                     // return no outbound messages to keep tests focused on decryption behavior
