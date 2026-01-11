@@ -80,8 +80,27 @@ if (!process.env.DATABASE_URL && !process.env.TEST_DATABASE_URL) {
 			}
 		}
 	} else {
-		console.warn(`Warning: .env file not found at ${envPath}`);
-		console.warn("Tests may fail if environment variables are required.");
+		// In CI, .env file may not exist - provide test defaults
+		if (process.env.CI || !process.env.DATABASE_URL) {
+			console.log("ℹ️  .env file not found - using test defaults for CI");
+			
+			// Provide defaults for required test environment variables
+			// These are safe defaults that won't cause tests to fail
+			if (!process.env.CERTIFICATE_FILE) {
+				process.env.CERTIFICATE_FILE = "data/mcouniverse.pem";
+			}
+			if (!process.env.PRIVATE_KEY_FILE) {
+				process.env.PRIVATE_KEY_FILE = "data/private_key.pem";
+			}
+			if (!process.env.PUBLIC_KEY_FILE) {
+				process.env.PUBLIC_KEY_FILE = "data/pub.key";
+			}
+			// DATABASE_URL is optional for most tests (only needed for integration tests)
+			// If required, CI should set it via environment variables
+		} else {
+			console.warn(`Warning: .env file not found at ${envPath}`);
+			console.warn("Tests may fail if environment variables are required.");
+		}
 	}
 }
 
