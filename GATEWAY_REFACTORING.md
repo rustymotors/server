@@ -60,6 +60,16 @@ Gateway (Orchestrator)
 └── GatewayConfiguration (Configuration management)
 ```
 
+### Architecture Vision: Volatility-Based Composition Taxonomy
+
+**End Goal**: Organize components using a volatility-based composition taxonomy, where:
+- **Stable components** (rarely change) are separated from **volatile components** (frequently change)
+- **Components that change together** are grouped together
+- **Dependencies flow from volatile to stable** (stable components don't depend on volatile ones)
+- **Changes are isolated** to minimize impact across the system
+
+See `REFACTORING_GUIDELINES.md` for detailed explanation of volatility-based design principles.
+
 ### 1. Extract Server Lifecycle Management
 
 **Create**: `ServerLifecycleManager`

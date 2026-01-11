@@ -285,9 +285,35 @@ Services (login, lobby, transaction, nps) can now access GatewayConfiguration vi
 
 See `CONFIGURATION_PROVIDER_INTEGRATION.md` for details.
 
+## Configuration Best Practices
+
+See `CONFIGURATION_BEST_PRACTICES.md` for comprehensive guidelines on:
+- Configuration organization and separation of concerns
+- ConfigurationProvider pattern usage
+- Type safety and validation
+- Immutability principles
+- Volatility-based organization
+- **12 Factor App principles** (Factor III: Config, Factor VII: Port Binding, Factor IX: Disposability, Factor XI: Logs, Factor VI: Processes, Factor X: Dev/Prod Parity)
+- Migration patterns
+
+## Architecture Vision: Volatility-Based Composition Taxonomy
+
+**End Goal**: Organize components using a volatility-based composition taxonomy. See `REFACTORING_GUIDELINES.md` for detailed explanation.
+
+## Cleanup Completed ✅
+
+The following cleanup has been completed:
+
+1. ✅ **Removed unused fields**: `timer`, `loopInterval`, `consoleEvents`
+2. ✅ **Made web port configurable**: Added `webPort` to `GatewayOptions`
+3. ✅ **Improved logging**: Replaced `console.dir` with structured logger
+4. ✅ **Better encapsulation**: Made `socketconnection` private
+
+See `CLEANUP_SUMMARY.md` for details.
+
 ## Next Steps
 
 1. Test with real client to ensure shard list and services work correctly
-2. Consider cleanup of unused fields (timer, loopInterval, consoleEvents)
-3. Consider making web port configurable via GatewayOptions
-4. Consider externalizing configuration to config file
+2. Add environment variable support for configuration (12 Factor App - Factor III)
+3. Add port configuration validation
+4. Continue refactoring toward volatility-based composition taxonomy

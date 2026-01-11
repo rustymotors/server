@@ -25,15 +25,12 @@ import { GatewayConfiguration } from "./configuration/GatewayConfiguration.js";
 export class Gateway implements ShutdownHandler {
     private readonly gatewayConfig: GatewayConfiguration;
     log = getServerLogger("Gateway")
-    timer: NodeJS.Timeout | null;
-    loopInterval: number;
     private readonly lifecycleManager: ServerLifecycleManager;
     private readonly networkManager: NetworkServerManager;
     private readonly portRouterRegistry: PortRouterRegistry;
     private readonly signalHandler: ProcessSignalHandler;
     private readonly webServerManager: WebServerManager;
-    consoleEvents: string[];
-    socketconnection: ({
+    private readonly socketconnection: ({
         incomingSocket,
         log,
     }: {
@@ -67,6 +64,7 @@ export class Gateway implements ShutdownHandler {
         backlogAllowedCount = 0,
         tcpListeningPortList = [],
         udpListeningPortList = [],
+        webPort = 3000,
         socketConnectionHandler = onSocketConnection,
     }: GatewayOptions) {
         // Only log if not in test environment to avoid log output during tests
@@ -84,7 +82,7 @@ export class Gateway implements ShutdownHandler {
             sharedConfig: config,
             tcpPorts: tcpListeningPortList,
             udpPorts: udpListeningPortList,
-            webPort: 3000, // Default web port
+            webPort: webPort,
             backlogAllowedCount: backlogAllowedCount,
             loginServerPort: loginPort,
             lobbyServerPort: lobbyPort,
@@ -92,15 +90,11 @@ export class Gateway implements ShutdownHandler {
         });
 
         this.log = log;
-        /** @type {NodeJS.Timeout | null} */
-        this.timer = null;
-        this.loopInterval = 0;
         this.lifecycleManager = new ServerLifecycleManager(log);
         this.networkManager = new NetworkServerManager(log, this.gatewayConfig.getBacklogAllowedCount());
         this.portRouterRegistry = new PortRouterRegistry();
         this.signalHandler = new ProcessSignalHandler(log);
         this.webServerManager = new WebServerManager(log, processHttpRequest);
-        this.consoleEvents = ['userExit', 'userRestart', 'userHelp'];
         this.socketconnection = socketConnectionHandler;
 
         // Initialize route handlers with GatewayConfiguration
@@ -206,9 +200,8 @@ export class Gateway implements ShutdownHandler {
      * This method performs the following actions:
      * 1. Marks the GatewayServer as stopping.
      * 2. Stops the servers by calling `shutdownServers`.
-     * 3. Stops the timer if it is running.
-     * 4. Marks the GatewayServer as stopped.
-     * 5. Resets the global state by creating and saving the initial state.
+     * 3. Marks the GatewayServer as stopped.
+     * 4. Resets the global state by creating and saving the initial state.
      *
      * @returns {Promise<void>} A promise that resolves when the server has been stopped.
      */
@@ -219,11 +212,6 @@ export class Gateway implements ShutdownHandler {
 
         // Stop the servers
         await this.shutdownServers();
-
-        // Stop the timer
-        if (this.timer !== null) {
-            clearInterval(this.timer);
-        }
 
         // Mark the GatewayServer as stopped
         this.log.debug('Marking GatewayServer as stopped');
@@ -273,7 +261,11 @@ export class Gateway implements ShutdownHandler {
         // Register exit handler for message stats logging
         // (This is separate from SignalHandler's exit listener)
         process.on('exit', () => {
-            console.dir(messageStats);
+            // Use logger for message stats (only logs if not in test environment)
+            const isTestEnv = process.env.NODE_ENV === "test" || process.env.VITEST === "true";
+            if (!isTestEnv && messageStats.size > 0) {
+                this.log.info('Message statistics:', Object.fromEntries(messageStats));
+            }
         });
     }
 }

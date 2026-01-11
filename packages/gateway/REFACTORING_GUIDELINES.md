@@ -314,9 +314,224 @@ export class Gateway {
 3. **Usage examples** - How to use the component
 4. **Test documentation** - What is tested, how to run
 
+## Configuration Best Practices
+
+### Principles
+
+1. **Separation of Concerns**
+   - Shared configuration (database, logging, certificates) → `Configuration` in shared package
+   - Gateway-specific configuration (ports, routing) → `GatewayConfiguration`
+   - Service-specific configuration → Service packages
+
+2. **Configuration Provider Pattern**
+   - Use `ConfigurationProvider` for cross-package access
+   - Services access configuration via provider, not direct imports
+   - Falls back gracefully if provider not registered
+   - No tight coupling between packages
+
+3. **Configuration Hierarchy**
+   ```
+   GatewayConfiguration (Gateway-specific)
+   ├── Wraps: Configuration (Shared server config)
+   ├── Adds: Port configuration, routing config
+   └── Registers with: ConfigurationProvider
+   ```
+
+4. **Access Patterns**
+   - **Within Gateway**: Use `GatewayConfiguration` directly
+   - **From Services**: Use `configurationProvider.getSharedConfiguration()`
+   - **For Gateway-specific values**: Use `configurationProvider.getGatewayConfigurationProvider()`
+
+5. **Configuration Sources**
+   - **Defaults**: Sensible defaults for all configuration values
+   - **Constructor options**: Allow override via constructor parameters
+   - **Environment variables**: Consider for future externalization
+   - **Config files**: Consider for future externalization
+
+6. **Type Safety**
+   - Use TypeScript interfaces for configuration contracts
+   - Validate configuration at construction time
+   - Provide clear error messages for invalid configuration
+
+7. **Immutability**
+   - Configuration should be immutable after construction
+   - Use `readonly` properties where possible
+   - Prevent runtime modification
+
+8. **Documentation**
+   - Document all configuration options
+   - Explain defaults and their rationale
+   - Provide examples of valid configuration
+
+### Example Pattern
+
+```typescript
+// Gateway-specific configuration
+export class GatewayConfiguration implements IGatewayConfiguration {
+    private readonly sharedConfig: Configuration;
+    private readonly tcpPorts: number[];
+    private readonly loginServerPort: number;
+
+    constructor(options: GatewayConfigOptions) {
+        // Validate and set values
+        this.sharedConfig = options.sharedConfig;
+        this.tcpPorts = options.tcpPorts ?? [];
+        this.loginServerPort = options.loginServerPort ?? 8226;
+
+        // Register with provider for service access
+        configurationProvider.register(this);
+    }
+
+    getSharedConfig(): Configuration {
+        return this.sharedConfig;
+    }
+
+    getLoginServerPort(): number {
+        return this.loginServerPort;
+    }
+}
+
+// Service usage
+import { configurationProvider } from "rusty-motors-shared";
+
+const config = configurationProvider.getSharedConfiguration();
+// Use config...
+```
+
+## Architecture Vision: Volatility-Based Composition Taxonomy
+
+### End Goal
+
+The ultimate architectural goal is to organize components using a **volatility-based composition taxonomy**. This means grouping components based on how frequently they change, ensuring that:
+
+1. **Stable components** (rarely change) are separated from **volatile components** (frequently change)
+2. **Components that change together** are grouped together
+3. **Dependencies flow from volatile to stable** (stable components don't depend on volatile ones)
+4. **Changes are isolated** to minimize impact across the system
+
+### Volatility Categories
+
+#### High Volatility (Change Frequently)
+- **Business Logic**: Game rules, transaction processing, lobby handlers
+- **Protocol Handlers**: Message parsing, packet routing
+- **Service Implementations**: Login, lobby, transaction services
+- **Configuration Values**: Ports, timeouts, feature flags
+
+#### Medium Volatility (Change Occasionally)
+- **Infrastructure Components**: Network managers, server managers
+- **Integration Points**: Database adapters, external API clients
+- **Gateway Orchestration**: Component coordination, lifecycle management
+
+#### Low Volatility (Rarely Change)
+- **Core Abstractions**: Interfaces, base classes, type definitions
+- **Shared Utilities**: Logging, serialization, error handling
+- **Configuration Structure**: Configuration interfaces, provider patterns
+
+### Benefits
+
+1. **Reduced Change Impact**: Changes to volatile components don't affect stable ones
+2. **Easier Testing**: Stable components can be tested independently
+3. **Better Maintainability**: Clear boundaries between change frequencies
+4. **Scalability**: Easy to add new volatile components without affecting stable infrastructure
+
+### Current Progress Toward Taxonomy
+
+#### Extracted Components (Moving Toward Taxonomy)
+
+**Stable (Low Volatility)**:
+- `PortRouterRegistry` - Port routing abstraction (rarely changes)
+- `GatewayConfiguration` - Configuration structure (rarely changes)
+- `ConfigurationProvider` - Provider pattern (rarely changes)
+
+**Medium Volatility**:
+- `NetworkServerManager` - Infrastructure (changes with networking needs)
+- `WebServerManager` - Infrastructure (changes with web server needs)
+- `ServerLifecycleManager` - Orchestration (changes with lifecycle needs)
+- `ProcessSignalHandler` - Infrastructure (changes with signal handling needs)
+
+**Volatile (High Volatility)**:
+- Service handlers (login, lobby, transaction) - Business logic
+- Port routers (npsPortRouter, mcotsPortRouter) - Protocol handling
+- Message processors - Business logic
+
+### Future Refactoring Toward Taxonomy
+
+1. **Identify Volatility**: Analyze change frequency of each component
+2. **Group by Volatility**: Organize components into volatility categories
+3. **Establish Boundaries**: Create clear interfaces between volatility levels
+4. **Enforce Dependency Rules**: Ensure dependencies flow from volatile to stable
+5. **Isolate Changes**: Design so changes in volatile components don't ripple to stable ones
+
+### Example: Volatility-Based Organization
+
+```
+Stable Layer (Low Volatility)
+├── ConfigurationProvider (interface)
+├── PortRouterRegistry (interface)
+└── Core Abstractions
+
+Infrastructure Layer (Medium Volatility)
+├── NetworkServerManager
+├── WebServerManager
+├── ServerLifecycleManager
+└── ProcessSignalHandler
+
+Business Logic Layer (High Volatility)
+├── Login Service
+├── Lobby Service
+├── Transaction Service
+└── Protocol Handlers
+```
+
+**Dependency Flow**: Business Logic → Infrastructure → Stable
+
+This ensures that:
+- Changes to business logic don't affect infrastructure
+- Changes to infrastructure don't affect stable abstractions
+- Stable abstractions provide a solid foundation for all layers
+
+## 12 Factor App Principles
+
+Where applicable, the Gateway refactoring follows the [12 Factor App](https://12factor.net/) methodology:
+
+### Factor III: Config
+- **Store config in the environment** - Configuration varies by deployment
+- Environment variables for deployment-specific values
+- Sensible defaults for development
+- See `CONFIGURATION_BEST_PRACTICES.md` for details
+
+### Factor VII: Port Binding
+- **Export services via port binding** - Self-contained services
+- Port configuration externalized
+- No dependency on external web servers
+
+### Factor IX: Disposability
+- **Fast startup and graceful shutdown** - Configuration loaded at startup
+- Early validation (fail fast)
+- Graceful shutdown with cleanup
+
+### Factor XI: Logs
+- **Treat logs as event streams** - Structured logging
+- Log levels configurable
+- Logging configuration externalized
+
+### Factor VI: Processes
+- **Stateless processes** - Configuration is stateless
+- No process-specific state in configuration
+- State stored in backing services
+
+### Factor X: Dev/Prod Parity
+- **Keep environments similar** - Same configuration structure
+- Only values differ between environments
+- Environment variables for differences
+
+See `CONFIGURATION_BEST_PRACTICES.md` for detailed 12 Factor App implementation guidelines.
+
 ## References
 
 - **SOLID Principles**: Robert C. Martin (Uncle Bob)
 - **Clean Code**: Robert C. Martin
 - **Refactoring**: Martin Fowler
 - **Test-Driven Development**: Kent Beck
+- **Volatility-Based Design**: Component design based on change frequency
+- **12 Factor App**: https://12factor.net/
