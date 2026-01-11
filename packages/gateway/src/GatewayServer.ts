@@ -14,13 +14,14 @@ import { HotkeyManager } from "./HotkeyManager.js";
 import { ServerLifecycleManager, ServerStatus } from "./lifecycle/ServerLifecycleManager.js";
 import { initializeSessionRecorder } from "./session/SessionRecorderIntegration.js";
 import { NetworkServerManager } from "./network/NetworkServerManager.js";
+import { ProcessSignalHandler, type ShutdownHandler } from "./signals/ProcessSignalHandler.js";
 
 
 /**
  * Gateway server
  * @see {@link getGatewayServer()} to get a singleton instance
  */
-export class Gateway {
+export class Gateway implements ShutdownHandler {
     config: Configuration;
     log = getServerLogger("Gateway")
     timer: NodeJS.Timeout | null;
@@ -28,6 +29,7 @@ export class Gateway {
     private readonly lifecycleManager: ServerLifecycleManager;
     private readonly networkManager: NetworkServerManager;
     private readonly portRouterRegistry: PortRouterRegistry;
+    private readonly signalHandler: ProcessSignalHandler;
     consoleEvents: string[];
     backlogAllowedCount: number;
     tcpListeningPortList: number[];
@@ -75,6 +77,7 @@ export class Gateway {
         this.lifecycleManager = new ServerLifecycleManager(log);
         this.networkManager = new NetworkServerManager(log, backlogAllowedCount);
         this.portRouterRegistry = new PortRouterRegistry();
+        this.signalHandler = new ProcessSignalHandler(log);
         this.consoleEvents = ['userExit', 'userRestart', 'userHelp'];
         this.backlogAllowedCount = backlogAllowedCount;
         this.tcpListeningPortList = tcpListeningPortList;
@@ -151,6 +154,16 @@ export class Gateway {
 
 
     /**
+     * Shutdown handler implementation for SignalHandler
+     * This is called when SIGINT is received
+     *
+     * @returns {Promise<void>} A promise that resolves when the server has stopped
+     */
+    async shutdown(): Promise<void> {
+        await this.stop();
+    }
+
+    /**
      * Gracefully stops the GatewayServer and exits the process.
      *
      * This method first stops the GatewayServer by calling the `stop` method,
@@ -159,7 +172,7 @@ export class Gateway {
      * @returns {Promise<void>} A promise that resolves when the server has stopped and the process has exited.
      */
     async exit(): Promise<void> {
-        console.log('Exiting GatewayServer...');
+        this.log.info('Exiting GatewayServer...');
         // Stop the GatewayServer
         await this.stop();
 
@@ -223,7 +236,7 @@ export class Gateway {
      *
      * - Registers default port router configuration.
      * - Sets the global port router registry for backward compatibility.
-     * - Sets up a signal handler to gracefully exit on SIGINT.
+     * - Registers signal handler for graceful shutdown on SIGINT.
      */
     private init() {
         // Register default port configuration
@@ -236,8 +249,14 @@ export class Gateway {
         // Set global registry for backward compatibility with existing portRouters API
         setGlobalPortRouterRegistry(this.portRouterRegistry);
 
-        process.on('SIGINT', this.exit.bind(this));
+        // Register signal handler for graceful shutdown
+        // Note: This only handles process signals (SIGINT, exit).
+        // ConsoleThread handles keyboard input separately and emits events
+        // that Gateway can listen to independently.
+        this.signalHandler.registerShutdownHandler(this);
 
+        // Register exit handler for message stats logging
+        // (This is separate from SignalHandler's exit listener)
         process.on('exit', () => {
             console.dir(messageStats);
         });
