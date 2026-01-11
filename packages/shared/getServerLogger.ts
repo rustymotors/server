@@ -7,14 +7,21 @@ let loggerInstance: winston.Logger | undefined = undefined;
 
 export function getServerLogger(name?: string): ServerLogger {
     if (typeof loggerInstance !== 'undefined') {
-        if (name) {
-            return wrapLogger(loggerInstance.child({ defaultMeta: { name }}));
-        }
-        return wrapLogger(loggerInstance.child({ defaultMeta: { name } }));
+        const loggerName = name || 'core';
+        return wrapLogger(loggerInstance.child({ defaultMeta: { name: loggerName } }));
     }
     const loggerName = name || 'core';
     const envLevel = (process.env['MCO_LOG_LEVEL'] || process.env['LOG_LEVEL']) as LogLevel;
     const logLevel: LogLevel = envLevel ?? 'verbose';
+    const logFormat = process.env['LOG_FORMAT'] === 'json' ? 'json' : 'simple';
+
+    // Choose format based on environment variable
+    const consoleFormat = logFormat === 'json'
+        ? winston.format.json()
+        : winston.format.combine(
+              winston.format.colorize(),
+              winston.format.simple(),
+          );
 
     let logger = winston.createLogger({
         defaultMeta: {
@@ -24,10 +31,7 @@ export function getServerLogger(name?: string): ServerLogger {
         transports: [
             new winston.transports.Console({
                 level: logLevel,
-                format: winston.format.combine(
-                    winston.format.colorize(),
-                    winston.format.simple(),
-                ),
+                format: consoleFormat,
             }),
             new DailyRotateFile({
                 level: logLevel,
@@ -36,6 +40,10 @@ export function getServerLogger(name?: string): ServerLogger {
                 zippedArchive: true,
                 maxSize: '20m',
                 maxFiles: '14d',
+                format: logFormat === 'json' ? winston.format.json() : winston.format.combine(
+                    winston.format.timestamp(),
+                    winston.format.simple(),
+                ),
             }),
         ],
     });

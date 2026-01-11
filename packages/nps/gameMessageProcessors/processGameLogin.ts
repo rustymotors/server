@@ -200,7 +200,10 @@ export async function processGameLogin(
 
 				return;
 			} catch (e) {
-				console.error(e);
+				defaultLogger.error('Error processing game login', {
+					error: e instanceof Error ? e.message : String(e),
+					stack: e instanceof Error ? e.stack : undefined,
+				});
 			}
 		},
 	);

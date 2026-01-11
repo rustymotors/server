@@ -35,8 +35,10 @@ export default defineConfig({
 				],
 			},
 		},
-		deps: {
-			inline: ["rusty-motors-protocol"],
+		server: {
+			deps: {
+				inline: ["rusty-motors-protocol"],
+			},
 		},
 	},
 	resolve: {

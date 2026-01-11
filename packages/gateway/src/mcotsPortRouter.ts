@@ -206,7 +206,7 @@ async function routeInitialMessage(
             ).messages;
             break;
         default:
-            console.log(`No handler found for port ${port}`);
+            log.warn(`No handler found for port ${port}`, { connectionId: id, port });
             break;
     }
 

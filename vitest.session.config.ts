@@ -17,8 +17,10 @@ export default defineConfig({
         },
     },
     test: {
-        deps: {
-            inline: ["rusty-motors-protocol"],
+        server: {
+            deps: {
+                inline: ["rusty-motors-protocol"],
+            },
         },
         setupFiles: ["./packages/gateway/vitest.setup.ts"],
         globals: true,
