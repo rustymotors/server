@@ -61,7 +61,7 @@ export class EntryFeePurseMessage extends BytableBuffer {
 			entry.serialize().copy(buffer, offset);
 			offset += entry.size();
 		}
-		// offset is now 4 + this._lobbyList.length * 563
+		// offset is now 5 + this._purseEntries.length * 8
 		return buffer;
 	}
 

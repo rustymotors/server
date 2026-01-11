@@ -25,21 +25,9 @@
 
 ---
 
-### 3. EntryFeePurseMessage Serialization Bug
+### 3. ~~EntryFeePurseMessage Serialization Bug~~ ✅ FIXED
 
-**Location:** `packages/transactions/src/EntryFeePurseMessage.ts`
-
-```typescript
-// Line 38 - size() returns:
-return 5 + this._purseEntries.length * 8;
-
-// Line 51 - serialize() allocates:
-const neededSize = 5 + this._purseEntries.length * 563;  // BUG!
-```
-
-**Issue:** The serialize() method allocates 563 bytes per entry, but PurseEntry is only 8 bytes. This wastes memory and might cause issues if the buffer is inspected/validated.
-
-**Fix:** Change line 51 to `* 8` to match `size()`.
+**Status:** ✅ FIXED - Changed allocation from 563 to 8 bytes per PurseEntry.
 
 ---
 
