@@ -1,0 +1,119 @@
+{
+  "metadata": {
+    "recordedAt": "2026-01-11T17:55:06.456Z",
+    "recordedBy": "SessionRecorder",
+    "ports": [
+      7003
+    ],
+    "connectionIds": [
+      "dbe12fe9:7003"
+    ],
+    "description": "Auto-saved on server exit"
+  },
+  "events": [
+    {
+      "timestamp": 1768154106456,
+      "type": "connect",
+      "port": 7003,
+      "connectionId": "dbe12fe9:7003",
+      "remoteAddress": "10.10.5.1"
+    },
+    {
+      "timestamp": 1768154106466,
+      "type": "data_out",
+      "port": 7003,
+      "connectionId": "dbe12fe9:7003",
+      "data": "02300004"
+    },
+    {
+      "timestamp": 1768154107367,
+      "type": "data_in",
+      "port": 7003,
+      "connectionId": "dbe12fe9:7003",
+      "data": "0100008f000000150000000944722042726f776e00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000054b46c0000000000000008342e352e302e3000000000046d636f000000000a31302e31302e352e38003977fd19577c662f9de8ded1d0b79409"
+    },
+    {
+      "timestamp": 1768154107370,
+      "type": "data_out",
+      "port": 7003,
+      "connectionId": "dbe12fe9:7003",
+      "data": "01200054000000150000000844722042726f776e00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "timestamp": 1768154107460,
+      "type": "data_in",
+      "port": 7003,
+      "connectionId": "dbe12fe9:7003",
+      "data": "1101000cc452221aca3eb495"
+    },
+    {
+      "timestamp": 1768154107463,
+      "type": "data_out",
+      "port": 7003,
+      "connectionId": "dbe12fe9:7003",
+      "data": "110103f4c303d199eda277904ee0e7a8f886deba33a7078027ec6bfea18e66c2bedc8d84bca8f2323a3591ed4808648bc28788402ac978984438eeb80e56d5467d54b037eb756f46113ced3e792315b28172315afa7d71a4fee63235101e13115908e5266ae278ca1657b4a87346559e00241410ae871211bb8f26aa5df782e89367fd3b6a5848d920aa5290b3cd9666a18b94cf5654854c853cef8e097b27f20a566d4b46a536bd15c75048f95fadf5f7c21bf75bd570e72a381a72620f1e18107ade91b6580acceaa8113f7411c3f98a3f6af5a92a753371899c98985721ea3d2e4c0e7b55e2dc12aa6e547883f25f809f17bd20ca3b9d85b6a8e67ad717b7c954eb14d51c01cf04ce5a606e7b0501093e3e56de17a6203981747bfa5406867c0cd14cb9421f641334f23b90db8428bb935728aab12c087244f91807602e046b4818afb5f0539639270713c9a9f69b92ee6c622d4c5fb542161371955cd6770b040d013e03a51f4e24d5ca31ffa2a7f590569caa1e03b197412f06a1dd332e3b6925ef58c65dfda98ce0f765bdc4ba218964841959eeb3227471eae0a94f54a55015971764aaa218de12a7d0bb85ee24026c0c947177d19b4aba0ef14ff7fe904c49d14db69a2e8dc54266b2c8481c92627224e0a5a93a87da71df42556768227bb8d2f5581f8bca8742061d383e93c8d1ced0398817f65c1a0c48fd3fe8baed6d571d74ba9f9965a38d1dd0c216bae0947548ea8460b5cb9dd95dfb8264423395ae667874af1c359a91476c7679c70402e3896242d649ce1252870152f2d4d88d82a7b956239aa9957a02445442c7dd1f521e7252768c05b9dafcb28e54d344fd30c8fc29033ca3d8a6e9d80bfdfd63b6f96719866da2c0247c47bf5ec873015bb94acc340cc5569c02ab58a470976cfc4e717a809a39dcec3ec67704f07485f59aa053aed29245381629f25e5aedbb2e04306f93ee409613edcb7d2fc9dc4904e916cc067a0b02607c8dbf5cef6dc179c6e88acd95535734b80b11d3d5a5e343ca2d7d9db9082ed50f4a086e3e85090587107a7463966201edacd0503d44baf238fdf1a3da67a673e65622ce3e586e4f7193d613e9bba55f2a9bacdf8b8593509be9fffe66352059e07a8dcd3bf4e4e6a4381a6ef3738b93ceb7d9718d533f17f175d69305e90dd9ed999de9af8df0c20422dc4bab7dd1ae7a522fe65cb1c9e4d358e4eba2619d5a47a14cc4071a48821573f469872786a5779b42acd2bdd86022dbba9fca4a6b83c0926a94f8d22bcf1d059144d2b651ce07e4d630d314b3d99edcc7b630c81fcd35175b8ec3d181f24c8d31c9447709b8dd1be16fdfeec39068ab5fe59e5f5a0fcd0d5be1dfd2cbb5cd4ae7646c2da2df8fe5a5b8cbe73ba2bb0af6a2b1aa857b29663b09f21af59dcad6"
+    },
+    {
+      "timestamp": 1768154107472,
+      "type": "data_in",
+      "port": 7003,
+      "connectionId": "dbe12fe9:7003",
+      "data": "1101000c0e726d1ee740e1de"
+    },
+    {
+      "timestamp": 1768154107474,
+      "type": "data_out",
+      "port": 7003,
+      "connectionId": "dbe12fe9:7003",
+      "data": "11010034ce6239fca0499f77a957bbef35f5d83bbe8c2bfd2213bf79e400b607160376cc98aaafa96fe6eeb570f330e52b79b8ec"
+    },
+    {
+      "timestamp": 1768154109110,
+      "type": "data_in",
+      "port": 7003,
+      "connectionId": "dbe12fe9:7003",
+      "data": "1101000cdc475dbefff35dfb"
+    },
+    {
+      "timestamp": 1768154109112,
+      "type": "data_out",
+      "port": 7003,
+      "connectionId": "dbe12fe9:7003",
+      "data": "1101003ce33bafb9dae223d3ec12228f3d0ed6f07caaa825d845a57f75239af94fc6533413f54e8d71a7948cd154905c862bd42f498f0c4c863d0993"
+    },
+    {
+      "timestamp": 1768154109337,
+      "type": "data_in",
+      "port": 7003,
+      "connectionId": "dbe12fe9:7003",
+      "data": "1101005cee6854bba425daad46bf229b9fd543409eea01086e881c97c04679a89fc4be741de25fd7b884f6ee89de0b3c1130f2204b530424d7dc71b05268ae8b11fcf0a2e56caca6dd69d57e7cbecac867f151774afd5f71c26122d6"
+    },
+    {
+      "timestamp": 1768154109341,
+      "type": "data_out",
+      "port": 7003,
+      "connectionId": "dbe12fe9:7003",
+      "data": "1101005c9269f8fbc135858ade4ff283bbc982e06af2d2c3c07402473a12b637939fdc91420465ba0569367d79336cd32aae43a89e791cc78669e1e8662ad079c9354238f45dd6fb8e634f0be8324927fe8f6e5be6b30e11d8efb890"
+    },
+    {
+      "timestamp": 1768154109577,
+      "type": "data_in",
+      "port": 7003,
+      "connectionId": "dbe12fe9:7003",
+      "data": "1101005cdce8773e84cfb9072255312039e1c861abbeb9ed660160e0f9521ddb22903aa6630a966f205103cb2d3008dbe039bf3865aab3a9ebfaf2cad5aa47fc4db59ef778f3a4ddf2b799118c9ea6c1b91f2b49fcdbd6c331ad69ce"
+    },
+    {
+      "timestamp": 1768154109579,
+      "type": "data_out",
+      "port": 7003,
+      "connectionId": "dbe12fe9:7003",
+      "data": "1101005cbe9f0607f103adc60cd20dacf06d57c687c60404e83d87eb44363b1589fc06dd4bfbb36b2a7ba5f355a5442b3bfd21e11cb4ad3681dfbc99751d31a61c92d59d5d6f3f409e5895b634d415b2f791cf4420747ec1980873f2"
+    },
+    {
+      "timestamp": 1768154123428,
+      "type": "disconnect",
+      "port": 7003,
+      "connectionId": "dbe12fe9:7003"
+    }
+  ]
+}

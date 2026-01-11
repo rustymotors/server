@@ -1,0 +1,36 @@
+{
+  "metadata": {
+    "recordedAt": "2026-01-11T17:55:03.901Z",
+    "recordedBy": "SessionRecorder",
+    "ports": [
+      3000
+    ],
+    "connectionIds": [
+      "51b9209c:3000"
+    ],
+    "description": "Auto-saved on server exit"
+  },
+  "events": [
+    {
+      "timestamp": 1768154103901,
+      "type": "connect",
+      "port": 3000,
+      "connectionId": "51b9209c:3000",
+      "remoteAddress": "172.28.0.3"
+    },
+    {
+      "timestamp": 1768154103949,
+      "type": "data_out",
+      "port": 3000,
+      "connectionId": "51b9209c:3000",
+      "data": "485454502f312e3120323030204f4b0d0a436f6e74656e742d547970653a20746578742f706c61696e0d0a446174653a2053756e2c203131204a616e20323032362031373a35353a303320474d540d0a436f6e6e656374696f6e3a20636c6f73650d0a0d0a56616c69643d545255450a5469636b65743d64333136636432646436626638373038393364666261616631376639363538383465"
+    },
+    {
+      "timestamp": 1768154103949,
+      "type": "data_out",
+      "port": 3000,
+      "connectionId": "51b9209c:3000",
+      "data": ""
+    }
+  ]
+}
