@@ -1,5 +1,6 @@
 import readline from "readline";
 import { getServerLogger, type ServerLogger } from "rusty-motors-shared";
+import { saveAllSessions, getSessionRecorder } from "./session/SessionRecorderIntegration.js";
 
 export class HotkeyManager {
 	private rl = readline.createInterface({
@@ -43,6 +44,9 @@ export class HotkeyManager {
 				case "g":
 					this.greetUser();
 					break;
+				case "s":
+					this.saveSessions();
+					break;
 				case "e":
 					this.exit();
 					break;
@@ -56,6 +60,7 @@ export class HotkeyManager {
 	private showHelp(): void {
 		this.log.info("Available hotkeys:");
 		this.log.info("  h - Show this help message");
+		this.log.info("  s - Save all active sessions");
 		this.log.info("  g - Greet the user");
 		this.log.info("  e - Exit the program");
 	}
@@ -64,8 +69,32 @@ export class HotkeyManager {
 		this.log.info("Hello, user!");
 	}
 
+	private saveSessions(): void {
+		const recorder = getSessionRecorder();
+		if (!recorder?.isRecordingEnabled()) {
+			this.log.info("Session recording is not enabled. Set RECORD_SESSIONS=true to enable.");
+			return;
+		}
+		const saved = saveAllSessions("Manual save via hotkey");
+		if (saved.length === 0) {
+			this.log.info("No active sessions to save.");
+		} else {
+			this.log.info(`Saved ${saved.length} session(s): ${saved.join(", ")}`);
+		}
+	}
+
 	private async exit(): Promise<void> {
 		this.log.info("Exiting...");
+		
+		// Save all sessions before exiting
+		const recorder = getSessionRecorder();
+		if (recorder?.isRecordingEnabled()) {
+			const saved = saveAllSessions("Auto-saved on server exit");
+			if (saved.length > 0) {
+				this.log.info(`Saved ${saved.length} session(s) before exit.`);
+			}
+		}
+		
 		this.rl.close();
         if (this.GatewayServer) {
             await this.GatewayServer.exit();
