@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { SerializedBufferOld, ServerLogger } from 'rusty-motors-shared';
-import { LegacyMessage } from 'rusty-motors-shared';
+import { ServerLogger, LegacyMessage } from 'rusty-motors-shared';
+import { BytableBuffer } from '@rustymotors/binary';
 import {
     PersonaList,
     PersonaMapsMessage,
@@ -52,7 +52,7 @@ export const messageHandlers: {
         log: ServerLogger;
     }) => Promise<{
         connectionId: string;
-        messages: SerializedBufferOld[];
+        messages: BytableBuffer[];
     }>;
 }[] = [
     {
@@ -255,8 +255,8 @@ async function getPersonaMaps({
             })}`,
         );
 
-        const outboundMessage = new SerializedBufferOld();
-        outboundMessage._doDeserialize(personaMapsMessage.serialize());
+        const outboundMessage = new BytableBuffer();
+        outboundMessage.deserialize(personaMapsMessage.serialize());
 
         return {
             connectionId,

@@ -16,7 +16,7 @@ export async function _getArcadeCarInfo({
 	log = defaultLogger,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
 	const getArcadeCarInfoMessage = new GenericRequestMessage();
-	getArcadeCarInfoMessage.deserialize(packet.data);
+	getArcadeCarInfoMessage.deserialize(packet.value);
 
 	log.debug(`Received Message: ${getArcadeCarInfoMessage.toString()}`);
 

@@ -17,7 +17,7 @@ export async function _getStockCarInfo({
 	log = defaultLogger,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
 	const getStockCarInfoMessage = new GenericRequestMessage();
-	getStockCarInfoMessage.deserialize(packet.data);
+	getStockCarInfoMessage.deserialize(packet.value);
 
 	log.debug(`Received Message: ${getStockCarInfoMessage.toString()}`);
 

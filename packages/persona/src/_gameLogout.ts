@@ -1,6 +1,6 @@
-import { SerializedBufferOld, ServerLogger } from "rusty-motors-shared";
-import { LegacyMessage } from "rusty-motors-shared";
+import { ServerLogger, LegacyMessage } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
+import { BytableBuffer } from "@rustymotors/binary";
 
 
 /**
@@ -25,7 +25,7 @@ export async function _gameLogout({
 	log?: ServerLogger;
 }): Promise<{
 	connectionId: string;
-	messages: SerializedBufferOld[];
+	messages: BytableBuffer[];
 }> {
 	const requestPacket = message;
 	log.debug(`[${connectionId}] _npsLogoutGameUser request: ${requestPacket.toHexString()}`);
@@ -35,8 +35,8 @@ export async function _gameLogout({
 	responsePacket._header.id = 519;
 	log.debug(`[${connectionId}] _npsLogoutGameUser response: ${responsePacket.toHexString()}`);
 
-	const outboundMessage = new SerializedBufferOld();
-	outboundMessage._doDeserialize(responsePacket._doSerialize());
+	const outboundMessage = new BytableBuffer();
+	outboundMessage.deserialize(responsePacket._doSerialize());
 
 	return {
 		connectionId,

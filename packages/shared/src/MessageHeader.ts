@@ -1,6 +1,6 @@
-import { SerializedBufferOld } from "./SerializedBufferOld.js";
+import { BytableBuffer } from "@rustymotors/binary";
 
-export class MessageHeader extends SerializedBufferOld {
+export class MessageHeader extends BytableBuffer {
 	_size: number;
 	_messageId: number;
 	_messageLength: number;
@@ -52,17 +52,6 @@ export class MessageHeader extends SerializedBufferOld {
 		return buffer;
 	}
 
-	/**
-	 * @param {Buffer} buffer
-	 * @returns {MessageHeader}
-	 */
-	override _doDeserialize(buffer: Buffer): MessageHeader {
-		return this.deserialize(buffer);
-	}
-
-	override _doSerialize() {
-		return this.serialize();
-	}
 
 	override toString() {
 		return `MessageHeader: ${JSON.stringify({

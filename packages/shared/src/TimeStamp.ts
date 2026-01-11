@@ -1,6 +1,6 @@
-import { SerializedBufferOld } from "./SerializedBufferOld.js";
+import { BytableBuffer } from "@rustymotors/binary";
 
-export class Timestamp extends SerializedBufferOld {
+export class Timestamp extends BytableBuffer {
 	_year: number;
 	_month: number;
 	_day: number;

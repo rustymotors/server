@@ -7,9 +7,9 @@
 
 // eslint-disable-next-line no-unused-vars
 import { Cipher, Decipher } from "crypto";
-import { SerializedBufferOld } from "./SerializedBufferOld.js";
 import { BufferSerializer } from "rusty-motors-protocol";
 import { ServerLogger } from "../index.js";
+import { BytableBuffer } from "@rustymotors/binary";
 
 
 /**
@@ -149,7 +149,7 @@ type OnDataHandlerArgs = {
 
 export interface ServiceResponse {
 	connectionId: string;
-	messages: SerializedBufferOld[];
+	messages: BytableBuffer[];
 }
 
 export type OnDataHandler = (

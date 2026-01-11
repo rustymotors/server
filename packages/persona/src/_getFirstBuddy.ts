@@ -1,6 +1,5 @@
-import { SerializedBufferOld } from "rusty-motors-shared";
-import { NPSMessage } from "rusty-motors-shared";
-import { LegacyMessage } from "rusty-motors-shared";
+import { NPSMessage, LegacyMessage } from "rusty-motors-shared";
+import { BytableBuffer } from "@rustymotors/binary";
 import { BuddyCount, BuddyInfoMessage, BuddyList } from "./BuddyInfoMessage.js";
 import { getServerLogger, ServerLogger } from "rusty-motors-shared";
 
@@ -16,7 +15,7 @@ export async function _getFirstBuddy({
 	log?: ServerLogger;
 }): Promise<{
 	connectionId: string;
-	messages: SerializedBufferOld[];
+	messages: BytableBuffer[];
 }> {
 	// This message is a versioned nps message
 	const incomingMessage = new NPSMessage();
@@ -39,8 +38,8 @@ export async function _getFirstBuddy({
 	const buddyCountMessage = new BuddyCount();
 	buddyCountMessage.buddyCount = 0;
 
-	const outboundMessage1 = new SerializedBufferOld();
-	outboundMessage1._doDeserialize(buddyCountMessage.serialize());
+	const outboundMessage1 = new BytableBuffer();
+	outboundMessage1.deserialize(buddyCountMessage.serialize());
 
 	const buddyInfoMessage = new BuddyInfoMessage();
 
@@ -59,8 +58,8 @@ export async function _getFirstBuddy({
 		buddyInfoMessage.add(buddyInfo);
 	}
 
-	const outboundMessage = new SerializedBufferOld();
-	outboundMessage._doDeserialize(buddyInfoMessage.serialize());
+	const outboundMessage = new BytableBuffer();
+	outboundMessage.deserialize(buddyInfoMessage.serialize());
 
 	log.debug(
 		`in _getFirstBuddy, outboundMessage: ${outboundMessage1.toString()}`,

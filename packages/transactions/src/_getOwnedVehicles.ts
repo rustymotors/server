@@ -26,7 +26,7 @@ export async function _getOwnedVehicles({
     log = defaultLogger,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
     const getOwnedVehiclesMessage = new GenericRequestMessage();
-    getOwnedVehiclesMessage.deserialize(packet.data);
+    getOwnedVehiclesMessage.deserialize(packet.value);
 
     log.debug(`Received Message: ${getOwnedVehiclesMessage.toString()}`);
 

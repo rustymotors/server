@@ -2,10 +2,10 @@
  * @module interfaces
  */
 
-import type { SerializedBufferOld } from './SerializedBufferOld.js';
 import type { Socket as TcpSocket } from 'node:net';
 import { Socket as UdpSocket } from 'node:dgram';
 import { LeveledLogMethod } from 'winston';
+import type { BytableBuffer } from '@rustymotors/binary';
 
 export const name = 'interfaces';
 
@@ -91,7 +91,7 @@ export interface RaceLobbyRecord {
 
 export interface ServiceArgs {
     connectionId: string;
-    message: SerializedBufferOld;
+    message: BytableBuffer;
     log?: ServerLogger;
 }
 

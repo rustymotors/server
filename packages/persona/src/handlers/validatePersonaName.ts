@@ -1,7 +1,7 @@
-import { SerializedBufferOld, ServerLogger } from "rusty-motors-shared";
-import { LegacyMessage } from "rusty-motors-shared";
+import { ServerLogger, LegacyMessage } from "rusty-motors-shared";
 import { RawMessage } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
+import { BytableBuffer } from "@rustymotors/binary";
 
 const defaultLogger = getServerLogger("PersonaServer");
 
@@ -19,7 +19,7 @@ export async function validatePersonaName({
 	log?: ServerLogger;
 }): Promise<{
 	connectionId: string;
-	messages: SerializedBufferOld[];
+	messages: BytableBuffer[];
 }> {
 	log.debug("validatePersonaName called");
 	const requestPacket = message;
@@ -42,8 +42,8 @@ export async function validatePersonaName({
 			})}`,
 	);
 
-	const outboundMessage = new SerializedBufferOld();
-	outboundMessage._doDeserialize(responsePacket.serialize());
+	const outboundMessage = new BytableBuffer();
+	outboundMessage.deserialize(responsePacket.serialize());
 
 	return {
 		connectionId,

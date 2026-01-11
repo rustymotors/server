@@ -1,6 +1,6 @@
-import { SerializedBufferOld } from "rusty-motors-shared";
+import { BytableBuffer } from "@rustymotors/binary";
 
-export class PartsAssemblyMessage extends SerializedBufferOld {
+export class PartsAssemblyMessage extends BytableBuffer {
 	_msgNo: number;
 	_ownerId: number;
 	_numberOfParts: number;
@@ -37,7 +37,7 @@ export class PartsAssemblyMessage extends SerializedBufferOld {
 	}
 }
 
-export class Part extends SerializedBufferOld {
+export class Part extends BytableBuffer {
 	_partId: number; // 4 bytes
 	_parentPartId: number; // 4 bytes
 	_brandedPartId: number; // 4 bytes

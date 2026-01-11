@@ -157,7 +157,7 @@ export async function _getCompleteVehicleInfo({
     log = getServerLogger("transactions/getCompleteVehicleInfo"),
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
     const getCompleteVehicleInfoMessage = new GenericRequestMessage();
-    getCompleteVehicleInfoMessage.deserialize(packet.data);
+    getCompleteVehicleInfoMessage.deserialize(packet.value);
 
     log.debug(`Received Message: ${getCompleteVehicleInfoMessage.toString()}`);
 

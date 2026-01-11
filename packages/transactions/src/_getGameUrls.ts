@@ -16,7 +16,7 @@ export async function _getGameUrls({
 	log = defaultLogger,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
 	const getGameUrlsMessage = new GenericRequestMessage();
-	getGameUrlsMessage.deserialize(packet.data);
+	getGameUrlsMessage.deserialize(packet.value);
 
 	log.debug(`Received Message: ${getGameUrlsMessage.toString()}`);
 

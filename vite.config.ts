@@ -14,12 +14,13 @@ export default defineConfig({
     resolve: {
         alias: {
             "rusty-motors-protocol": resolve(projectRoot, "packages/protocol"),
+            "@rustymotors/binary": resolve(projectRoot, "libs/@rustymotors/binary"),
         },
     },
     test: {
         server: {
             deps: {
-                inline: ["rusty-motors-protocol"],
+                inline: ["rusty-motors-protocol", "@rustymotors/binary"],
             },
         },
         poolOptions: {

@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { SerializedBufferOld } from "rusty-motors-shared";
+import { BytableBuffer } from "@rustymotors/binary";
 
 /**
  * A message listing the entry fees and purses for each entry fee
  * This is the body of a MessageNode
  */
-export class EntryFeePurseMessage extends SerializedBufferOld {
+export class EntryFeePurseMessage extends BytableBuffer {
 	_msgNo: number;
 	_numberOfPurseEntries: number;
 	_shouldExpectMoreMessages: boolean;
@@ -70,7 +70,7 @@ export class EntryFeePurseMessage extends SerializedBufferOld {
 	}
 }
 
-export class PurseEntry extends SerializedBufferOld {
+export class PurseEntry extends BytableBuffer {
 	_entryFee: number; // 4 bytes
 	_purse: number; // 4 bytes
 	constructor() {

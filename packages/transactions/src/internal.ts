@@ -19,9 +19,9 @@ import * as Sentry from "@sentry/node"
 
 import {
 	McosEncryption,
-	SerializedBufferOld,
 	type State,
 } from "rusty-motors-shared";
+import { BytableBuffer } from "@rustymotors/binary";
 import {
 	fetchStateFromDatabase,
 	getEncryption,
@@ -89,11 +89,11 @@ async function processInput({
 /**
  * @param {object} args
  * @param {string} args.connectionId
- * @param {SerializedBufferOld} args.message
+ * @param {MessageNode} args.message
  * @param {ServerLogger} [args.log=getServerLogger({ name: "transactionServer" })]
  * @returns {Promise<{
  *     connectionId: string,
- *    messages: SerializedBufferOld[]
+ *    messages: BytableBuffer[]
  * }>}
  */
 export async function receiveTransactionsData({
@@ -106,7 +106,7 @@ export async function receiveTransactionsData({
 	log?: ServerLogger;
 }): Promise<{
 	connectionId: string;
-	messages: MessageNode[];
+	messages: BytableBuffer[];
 }> {
 
 	// Normalize the message
@@ -205,10 +205,10 @@ export async function receiveTransactionsData({
 		`[${connectionId}] Exiting transaction module with ${outboundMessages.length} messages`,
 	);
 
-	// Convert the outbound messages to SerializedBufferOld
+	// Convert the outbound messages to BytableBuffer
 	const outboundMessagesSerialized = outboundMessages.map((message) => {
-		const serialized = new SerializedBufferOld();
-		serialized._doDeserialize(message.serialize());
+		const serialized = new BytableBuffer();
+		serialized.deserialize(message.serialize());
 		return serialized;
 	});
 

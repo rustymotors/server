@@ -1,4 +1,5 @@
 export * from "./lib/Bytable.js";
+export * from "./lib/BytableBuffer.js";
 export * from "./lib/BytableContainer.js";
 export * from "./lib/BytableDword.js";
 export * from "./lib/BytableServerHeader.js";

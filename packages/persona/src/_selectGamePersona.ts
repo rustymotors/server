@@ -1,6 +1,6 @@
-import { SerializedBufferOld, ServerLogger } from "rusty-motors-shared";
-import { LegacyMessage } from "rusty-motors-shared";
+import { ServerLogger, LegacyMessage } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
+import { BytableBuffer } from "@rustymotors/binary";
 
 const defaultLogger = getServerLogger("PersonaServer");
 
@@ -26,7 +26,7 @@ export async function _selectGamePersona({
 	log?: ServerLogger;
 }): Promise<{
 	connectionId: string;
-	messages: SerializedBufferOld[];
+	messages: BytableBuffer[];
 }> {
 	log.debug("_npsSelectGamePersona...");
 	const requestPacket = message;
@@ -51,8 +51,8 @@ export async function _selectGamePersona({
 			.toString("hex")} `,
 	);
 
-	const outboundMessage = new SerializedBufferOld();
-	outboundMessage.setBuffer(responsePacket._doSerialize());
+	const outboundMessage = new BytableBuffer();
+	outboundMessage.setValue(responsePacket._doSerialize());
 
 	return {
 		connectionId,

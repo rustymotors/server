@@ -16,7 +16,7 @@ export async function _getTunables({
 	log = defaultLogger,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
 	const getTunablesMessage = new GenericRequestMessage();
-	getTunablesMessage.deserialize(packet.data);
+	getTunablesMessage.deserialize(packet.value);
 
 	log.debug(`Received Message: ${getTunablesMessage.toString()}`);
 

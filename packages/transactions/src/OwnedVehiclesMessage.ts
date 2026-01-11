@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { SerializedBufferOld } from "rusty-motors-shared";
+import { BytableBuffer } from "@rustymotors/binary";
 
 /**
  * A message listing the player's owned vehicles
  * This is the body of a MessageNode
  */
-export class OwnedVehiclesMessage extends SerializedBufferOld {
+export class OwnedVehiclesMessage extends BytableBuffer {
 	_msgNo: number;
 	_numberOfVehicles: number;
 	_vehicleList: OwnedVehicle[];
@@ -67,7 +67,7 @@ export class OwnedVehiclesMessage extends SerializedBufferOld {
 	}
 }
 
-export class OwnedVehicle extends SerializedBufferOld {
+export class OwnedVehicle extends BytableBuffer {
 	_vehicleId: number;
 	_brandedPartId: number;
 	constructor() {

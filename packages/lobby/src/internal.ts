@@ -17,8 +17,8 @@
 import { handleEncryptedNPSCommand } from './handlers/encryptedCommand.js';
 import { handleTrackingPing } from './handlers/handleTrackingPing.js';
 import { _npsRequestGameConnectServer } from './handlers/requestConnectGameServer.js';
-import { getServerLogger, getSocketQueue, SerializedBufferOld, ServerLogger } from 'rusty-motors-shared';
-import { BytableMessage } from '@rustymotors/binary';
+import { getServerLogger, getSocketQueue, ServerLogger } from 'rusty-motors-shared';
+import { BytableMessage, BytableBuffer } from '@rustymotors/binary';
 import * as Sentry from '@sentry/node';
 import { handleOpenCommChannel } from './handlers/handleOpenCommChannel.js';
 import { handleUdpStatus } from './handlers/handlUdpStatus.js';
@@ -80,11 +80,11 @@ export const messageHandlers: {
 /**
  * @param {object} args
  * @param {string} args.connectionId
- * @param {SerializedBufferOld} args.message
+ * @param {BytableBuffer} args.message
  * @param {ServerLogger} [args.log=getServerLogger({ name: "PersonaServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: SerializedBufferOld[],
+ * messages: BytableBuffer[],
  * }>}
  * @throws {Error} Unknown code was received
  */
@@ -98,7 +98,7 @@ export async function receiveLobbyData({
     log?: ServerLogger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBufferOld[];
+    messages: BytableBuffer[];
 }> {
     const data = message.serialize();
     log.debug('Received Lobby packet', {

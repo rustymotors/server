@@ -17,10 +17,9 @@ import {
     fetchStateFromDatabase,
     getEncryption,
 } from 'rusty-motors-shared';
-import { SerializedBufferOld } from 'rusty-motors-shared';
 import { getDatabaseManager } from 'rusty-motors-database';
 import { getServerLogger } from 'rusty-motors-shared';
-import { BytableMessage } from '@rustymotors/binary';
+import { BytableMessage, BytableBuffer } from '@rustymotors/binary';
 
 const NPS_INVALID_KEY = 0x22a;
 
@@ -42,7 +41,7 @@ export function toHex(data: Buffer): string {
 
 class PacketProcessor {
     private connectionId: string;
-    private message: SerializedBufferOld;
+    private message: BytableBuffer;
     private log: ServerLogger;
     private database: DatabaseManager
 
@@ -228,7 +227,7 @@ function createGameServerResponsePacket(inboundMessage: LoginInfoMessage) {
 }
 
 function portPacketToLegacyFormat(responsePacket: BytableMessage) {
-    const outboundMessage = new SerializedBufferOld();
+    const outboundMessage = new BytableBuffer();
     outboundMessage.deserialize(responsePacket.serialize());
     return outboundMessage;
 }

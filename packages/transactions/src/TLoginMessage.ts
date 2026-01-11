@@ -15,15 +15,15 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { OldServerMessage } from "rusty-motors-shared";
-import { SerializedBufferOld } from "rusty-motors-shared";
+import { BytableBuffer } from "@rustymotors/binary";
 
-export class ListEntry extends SerializedBufferOld {
+export class ListEntry extends BytableBuffer {
 	constructor() {
 		super();
 	}
 }
 
-export class LoginCompleteMessage extends SerializedBufferOld {
+export class LoginCompleteMessage extends BytableBuffer {
 	_msgNo: number;
 	_serverTime: number;
 	_firstTime: boolean;

@@ -15,14 +15,14 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Timestamp } from "rusty-motors-shared";
-import { SerializedBufferOld } from "rusty-motors-shared";
 import { serializeStringRaw } from "rusty-motors-shared";
+import { BytableBuffer } from "@rustymotors/binary";
 
 /**
  * A message listing the player's owned vehicles
  * This is the body of a MessageNode
  */
-export class PlayerInfoMessage extends SerializedBufferOld {
+export class PlayerInfoMessage extends BytableBuffer {
 	_msgNo: number; // 2 bytes
 	_playerId: number; // 4 bytes
 	_playerName: string; // 13 bytes

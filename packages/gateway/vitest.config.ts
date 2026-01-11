@@ -37,7 +37,7 @@ export default defineConfig({
 		},
 		server: {
 			deps: {
-				inline: ["rusty-motors-protocol"],
+				inline: ["rusty-motors-protocol", "@rustymotors/binary"],
 			},
 		},
 	},
@@ -45,6 +45,7 @@ export default defineConfig({
 		alias: {
 			"@": resolve(__dirname, "./src"),
 			"rusty-motors-protocol": resolve(projectRoot, "packages/protocol"),
+			"@rustymotors/binary": resolve(projectRoot, "libs/@rustymotors/binary"),
 		},
 	},
 });

@@ -1,10 +1,10 @@
 import {
 	getServerLogger,
 	ServerLogger,
-	SerializedBufferOld,
 	LegacyMessage,
 } from "rusty-motors-shared";
 import type { BufferSerializer } from "rusty-motors-protocol";
+import { BytableBuffer } from "@rustymotors/binary";
 import { messageHandlers } from "./internal.js";
 
 /**
@@ -12,11 +12,11 @@ import { messageHandlers } from "./internal.js";
  *
  * @param {object} args
  * @param {string} args.connectionId
- * @param {SerializedBufferOld} args.message
+ * @param {BufferSerializer} args.message
  * @param {ServerLogger} [args.log=getServerLogger({ name: "PersonaServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: SerializedBufferOld[],
+ * messages: BytableBuffer[],
  * }>}
  * @throws {Error} Unknown code was received
  */
@@ -31,7 +31,7 @@ export async function receivePersonaData({
 	log?: ServerLogger;
 }): Promise<{
 	connectionId: string;
-	messages: SerializedBufferOld[];
+	messages: BytableBuffer[];
 }> {
 	// The packet needs to be an NPSMessage
 	const inboundMessage = new LegacyMessage();

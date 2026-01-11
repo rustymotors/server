@@ -1,6 +1,6 @@
-import { SerializedBufferOld } from "rusty-motors-shared";
+import { BytableBuffer } from "@rustymotors/binary";
 
-export class PlayerRacingHistoryMessage extends SerializedBufferOld {
+export class PlayerRacingHistoryMessage extends BytableBuffer {
 	_msgId: number; // 2 bytes
 	_userId: number; // 4 bytes
 	_numRaces: number; // 2 bytes
@@ -85,7 +85,7 @@ export class PlayerRacingHistoryMessage extends SerializedBufferOld {
 	}
 }
 
-export class RacingHistoryRecordEntry extends SerializedBufferOld {
+export class RacingHistoryRecordEntry extends BytableBuffer {
 	raceType: number; // 4 bytes
 	numberOfRacesEntered: number; // 4 bytes
 	numberOfRacesFinished: number; // 4 bytes

@@ -1,5 +1,5 @@
 import { IServerMessage } from "rusty-motors-protocol";
-import { SerializedBufferOld } from "./SerializedBufferOld.js";
+import { BytableBuffer } from "@rustymotors/binary";
 import { serverHeader } from "./serverHeader.js";
 
 
@@ -7,20 +7,21 @@ import { serverHeader } from "./serverHeader.js";
 /**
  * A server message is a message that is passed between the server and the client. It has an 11 byte header. @see {@link serverHeader}
  *
- * @mixin {SerializableMixin}
  * @deprecated
  */
-export class OldServerMessage extends SerializedBufferOld implements IServerMessage {
+export class OldServerMessage extends BytableBuffer implements IServerMessage {
 	_header: serverHeader;
 	_msgNo: number;
 	constructor() {
 		super();
 		this._header = new serverHeader();
 		this._msgNo = 0; // 2 bytes
+		// Initialize with empty buffer (header only, no data)
+		this.setValue(Buffer.alloc(0));
 	}
 
 	override size(): number {
-		return this._header.length + this.data.length;
+		return this._header.length + this.value.length;
 	}
 
 	/**
@@ -28,11 +29,11 @@ export class OldServerMessage extends SerializedBufferOld implements IServerMess
 	 * @param {Buffer} buffer
 	 * @returns {OldServerMessage}
 	 */
-	override _doDeserialize(buffer: Buffer): OldServerMessage {
+	_doDeserialize(buffer: Buffer): OldServerMessage {
 		this._header._doDeserialize(buffer);
-		this.setBuffer(buffer.subarray(this._header._size));
-		if (this.data.length > 2) {
-			this._msgNo = this.data.readUInt16LE(0);
+		this.setValue(buffer.subarray(this._header._size));
+		if (this.value.length >= 2) {
+			this._msgNo = this.value.readUInt16LE(0);
 		}
 		return this;
 	}
@@ -46,9 +47,19 @@ export class OldServerMessage extends SerializedBufferOld implements IServerMess
 	 * @returns {Buffer} The serialized buffer containing the header and data.
 	 */
 	override serialize() {
-		const buffer = Buffer.alloc(this._header.length + 2);
+		// Ensure value includes msgNo if it's not already set
+		let dataBuffer = this.value;
+		if (dataBuffer.length < 2 && this._msgNo !== 0) {
+			dataBuffer = Buffer.alloc(2);
+			dataBuffer.writeUInt16LE(this._msgNo, 0);
+		} else if (dataBuffer.length >= 2) {
+			// Update msgNo in the buffer
+			dataBuffer.writeUInt16LE(this._msgNo, 0);
+		}
+		
+		const buffer = Buffer.alloc(this._header.length + dataBuffer.length);
 		this._header._doSerialize().copy(buffer);
-		this.data.copy(buffer, this._header._size);
+		dataBuffer.copy(buffer, this._header._size);
 		return buffer;
 	}
 
@@ -56,8 +67,8 @@ export class OldServerMessage extends SerializedBufferOld implements IServerMess
 	 * @deprecated
 	 * @param {Buffer} buffer
 	 */
-	override setBuffer(buffer: Buffer) {
-		super.setBuffer(buffer);
+	setBuffer(buffer: Buffer) {
+		super.setValue(buffer);
 		this._header.length = buffer.length + this._header._size - 2;
 	}
 
@@ -65,13 +76,13 @@ export class OldServerMessage extends SerializedBufferOld implements IServerMess
 	 * @deprecated
 	 */
 	updateMsgNo() {
-		this._msgNo = this.data.readUInt16LE(0);
+		this._msgNo = this.value.readUInt16LE(0);
 	}
 
 	override toString() {
 		return `ServerMessage: ${JSON.stringify({
 			header: this._header.toString(),
-			data: this.data.toString("hex"),
+			data: this.value.toString("hex"),
 		})}`;
 	}
 

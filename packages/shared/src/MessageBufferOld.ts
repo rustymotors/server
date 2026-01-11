@@ -1,7 +1,7 @@
 import { MessageHeader } from "./MessageHeader.js";
-import { SerializedBufferOld } from "./SerializedBufferOld.js";
+import { BytableBuffer } from "@rustymotors/binary";
 
-export class MessageBufferOld extends SerializedBufferOld {
+export class MessageBufferOld extends BytableBuffer {
 	_header: MessageHeader;
 	_buffer: Buffer;
 	constructor() {
@@ -66,7 +66,7 @@ export class MessageBufferOld extends SerializedBufferOld {
 	}
 
 	/** @param {Buffer} buffer */
-	override setBuffer(buffer: Buffer) {
+	setBuffer(buffer: Buffer) {
 		this.buffer = buffer;
 
 		return this._buffer;
