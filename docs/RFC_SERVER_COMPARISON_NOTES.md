@@ -7,89 +7,21 @@
 
 ## 🔴 Issues / Potential Bugs
 
-### 0. ⚠️ ARCHITECTURAL: Handler ID Field is Dead Code
+### 0. ~~ARCHITECTURAL: Handler ID Field is Dead Code~~ ✅ FIXED
 
-**Location:** `packages/transactions/src/handlers.ts` + `internal.ts`
-
-The routing logic in `internal.ts` (lines 54-62) works like this:
-
-```typescript
-const currentMessageNo = inboundMessage.getMessageId();      // e.g., 324
-const currentMessageString = _MSG_STRING(currentMessageNo);  // "MC_GET_LOBBIES"
-
-const result = messageHandlers.find(
-    (msg) => msg.name === currentMessageString,              // Match by NAME!
-);
-```
-
-**The `id` field in `messageHandlers` is NEVER USED for routing.**
-
-This is fragile because:
-1. Handler IDs can be wrong (as with MC_GET_LOBBIES below) and still work
-2. If a handler is registered but not in `_MSG_STRING()`, it WILL FAIL
-
-**Options:**
-- A) Remove the `id` field from handlers (it's unused)
-- B) Route by `id` instead of name (more direct, less fragile)
-- C) Merge the two arrays into one (single source of truth)
+**Status:** ✅ FIXED - Now routes by `handler.id` instead of name. `_MSG_STRING` is now only used for logging.
 
 ---
 
-### 1. MC_GET_LOBBIES Handler ID Mismatch
+### 1. ~~MC_GET_LOBBIES Handler ID Mismatch~~ ✅ FIXED
 
-**Location:** `packages/transactions/src/handlers.ts`
-
-```typescript
-// Handler registration says:
-{ id: 325, name: 'MC_GET_LOBBIES', handler: getLobbies }
-
-// But _MSG_STRING mapping says:
-{ id: 324, name: "MC_GET_LOBBIES" },  // 0x144
-{ id: 325, name: "MC_LOBBIES" },       // 0x145 (response)
-```
-
-**Original source confirms:**
-```c
-MC_GET_LOBBIES = 324,
-MC_LOBBIES = 325,
-```
-
-**Analysis:** The routing uses `_MSG_STRING(msgNo)` to convert ID → name, then matches by name. So if client sends 324, it works:
-- 324 → "MC_GET_LOBBIES" → finds handler with `name: 'MC_GET_LOBBIES'`
-
-But the `id: 325` in the handler is misleading/wrong. The `id` field isn't used for routing, but it could confuse anyone reading the code.
-
-**Question:** What ID does the client actually send? Need to verify with packet capture.
+**Status:** ✅ FIXED - Handler ID corrected to 324, and routing now uses ID directly.
 
 ---
 
-### 2. MC_KEEP_RACE_ALIVE (448) WILL FAIL ⚠️
+### 2. ~~MC_KEEP_RACE_ALIVE (448) WILL FAIL~~ ✅ FIXED
 
-**Location:** `packages/transactions/src/handlers.ts`
-
-The handler is registered (lines 77-80) but **448 is NOT in `_MSG_STRING()`**.
-
-**From original source (MCDefs.h):**
-```c
-#define MC_KEEP_RACE_ALIVE_SECONDS  (15*60)  // 15 minutes
-MC_KEEP_RACE_ALIVE = 448, // Client sends as heartbeat so raceInfo does not get timed-out
-```
-
-**This is an MCOTS MessageNode packet** sent via TCP every 15 minutes during a race.
-
-**Result:** If a race lasts 15+ minutes:
-1. Client sends MC_KEEP_RACE_ALIVE (448)
-2. `_MSG_STRING(448)` → `"Unknown"`
-3. `messageHandlers.find(name === "Unknown")` → `undefined`
-4. **💥 Error: "UNSUPPORTED_MESSAGECODE: 448 (Unknown)"**
-5. Race info gets purged on server, race breaks!
-
-**Fix:** Add to `_MSG_STRING`:
-```typescript
-{ id: 448, name: "MC_KEEP_RACE_ALIVE" },
-```
-
-**Status:** ✅ FIXED - Added to `_MSG_STRING` in handlers.ts
+**Status:** ✅ FIXED - Added to `_MSG_STRING` for logging, and now routes by handler ID directly.
 
 ---
 
@@ -111,50 +43,27 @@ const neededSize = 5 + this._purseEntries.length * 563;  // BUG!
 
 ---
 
-### 4. LobbyMessage Size Inconsistency
+### 4. ~~LobbyMessage Size Inconsistency~~ ✅ FIXED
 
-**Location:** `packages/transactions/src/LobbyMessage.ts`
-
-```typescript
-// Line 38 - size() returns:
-return 5 + this._lobbyList.length * 567;
-
-// Line 51 - serialize() allocates:
-const neededSize = 5 + this._lobbyList.length * 569;
-
-// LobbyInfo.size() returns:
-return 569;
-```
-
-**Issue:** `size()` uses 567, but `serialize()` and `LobbyInfo.size()` use 569. This is a 2-byte discrepancy per lobby.
+**Status:** ✅ FIXED - `size()` now correctly returns 569 bytes per LobbyInfo.
 
 ---
 
-### 5. LobbyInfo 6-Byte Gap
+### 5. ~~LobbyInfo 6-Byte Gap~~ ✅ FIXED
 
-**Location:** `packages/transactions/src/LobbyMessage.ts`, lines 550-552, 375
+**Status:** ✅ FIXED - The 6-byte gap was caused by:
+1. Missing `bdamagedefault` and `bdamageenabled` fields (4 bytes)
+2. `teamTrialsBaseTimeUnderPar` was WORD instead of DWORD (2 bytes)
 
-In both `serialize()` and `deserialize()`:
-```typescript
-offset += 6; // What are these 6 bytes?
-```
-
-**Question:** What's in this 6-byte gap after `_driverAIEnabled`? Is this padding, unknown fields, or a bug?
+Added `_defaultDamage` and `_damageEnabled` fields, fixed `teamTrialsBaseTimeUnderPar` to 4 bytes.
 
 ---
 
 ## 🟡 Missing from Server (Documented in RFC)
 
-### 1. NPS_OK_TO_LOGIN Not in Command Enums
+### 1. ~~NPS_OK_TO_LOGIN Not in Command Enums~~ ✅ N/A
 
-**Location:** `packages/lobby/src/NPS_LOBBYSERVER_COMMANDS.ts`
-
-The `NPS_OK_TO_LOGIN` (0x230 = 560) is sent by `npsPortRouter.ts` but isn't defined in the command enums. It should be added for completeness:
-
-```typescript
-{ name: "NPS_OK_TO_LOGIN", value: 560, module: "Lobby" },
-{ name: "NPS_Q_POSITION", value: 561, module: "Lobby" },
-```
+**Status:** N/A - The `NPS_LOBBY*_COMMANDS.ts` files were unused and have been deleted. Command definitions are tracked in the RFC and actual handler code instead.
 
 ---
 
