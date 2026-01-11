@@ -141,6 +141,13 @@ export async function npsPortRouter({
     socket.on('error', (error) => {
         if (error.message.includes('ECONNRESET')) {
             log.debug(`[${connectionId}] Connection reset by client`);
+            // Still save the session on reset - client likes to RST instead of FIN
+            const recorder = getSessionRecorder();
+            if (recorder?.isRecordingEnabled()) {
+                recorder.recordDisconnect(taggedSocket.connectionId, taggedSocket.localPort);
+                recorder.saveSession(taggedSocket.connectionId, `Auto-saved on ECONNRESET`);
+            }
+            receiveQueue.exit();
             return;
         }
         log.error(`[${connectionId}] Socket error: ${error}`);

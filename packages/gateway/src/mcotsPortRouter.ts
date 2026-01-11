@@ -84,6 +84,13 @@ export async function mcotsPortRouter({
                 connectionId,
                 port: socket.localPort
             });
+            // Still save the session on reset - client likes to RST instead of FIN
+            const recorder = getSessionRecorder();
+            if (recorder?.isRecordingEnabled()) {
+                recorder.recordDisconnect(connectionId, port);
+                recorder.saveSession(connectionId, `Auto-saved on ECONNRESET (MCOTS port ${port})`);
+            }
+            receiveQueue.exit();
             return;
         }
         log.error(`Socket error: ${error}`, {
