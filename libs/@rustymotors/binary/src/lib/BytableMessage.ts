@@ -9,7 +9,16 @@ import { BytableDword } from './BytableDword.js';
 import { BytableHeader } from './BytableHeader.js';
 import { BytableWord } from './BytableWord.js';
 import { BytableObject } from './types.js';
-import { getServerLogger, RawMessage } from 'rusty-motors-shared';
+
+// Type for RawMessage-like objects to avoid circular dependency with rusty-motors-shared
+interface SerializableMessage {
+    serialize(): Buffer;
+}
+
+// Simple logger fallback to avoid circular dependency
+function logError(name: string, msg: string, meta?: any): void {
+    console.error(`[${name}]`, msg, meta || '');
+}
 
 export class BytableStructure extends BytableBase implements BytableObject {
     protected fields_: Array<BytableObject> = [];
@@ -208,10 +217,11 @@ export class BytableMessage extends Bytable {
                         cause: error,
                     },
                 );
-                getServerLogger('BytableMessage/deserializeFields').error(
-                    String(err),
-                    { field, offset, fieldsSoFar: this.fields_ },
-                );
+                logError('BytableMessage/deserializeFields', String(err), {
+                    field,
+                    offset,
+                    fieldsSoFar: this.fields_,
+                });
                 throw err;
             }
             this.fields_.push(fieldInstance);
