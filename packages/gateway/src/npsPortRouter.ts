@@ -109,10 +109,10 @@ export async function npsPortRouter({
         receive: receiveQueue,
     });
 
-    // TODO: Document this
+    // Lobby handshake - client blocks until these are received
     if (port === 7003) {
-        // Sent ok to login packet
-        log.debug(`Sending ok to login packet`);
+        // Send NPS_OK_TO_LOGIN (0x0230)
+        log.debug(`Sending NPS_OK_TO_LOGIN packet`);
         sendQueue.put({
             sequenceNo: -1,
             data: Buffer.from([0x02, 0x30, 0x00, 0x04]),
