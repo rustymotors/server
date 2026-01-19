@@ -4,7 +4,19 @@ import * as Sentry from '@sentry/node';
 import { getServerLogger } from 'rusty-motors-shared';
 import { buildVehiclePartTree, saveVehicle, saveVehiclePartTree } from '../cache.js';
 
-const { slonik, sql } = await getDatabase();
+// Lazy initialization - only connect when needed
+let slonik: Awaited<ReturnType<typeof getDatabase>>["slonik"] | null = null;
+let sql: Awaited<ReturnType<typeof getDatabase>>["sql"] | null = null;
+
+async function ensureDatabase() {
+    if (!slonik || !sql) {
+        const db = await getDatabase();
+        slonik = db.slonik;
+        sql = db.sql;
+    }
+    return { slonik, sql };
+}
+
 const log = getServerLogger('createNewCar');
 
 // async function playerExists(playerId: number): Promise<boolean> {
@@ -26,6 +38,7 @@ const log = getServerLogger('createNewCar');
 // }
 
 async function skinExists(skinId: number): Promise<boolean> {
+    const { slonik, sql } = await ensureDatabase();
     return Sentry.startSpan(
         {
             name: 'skinExists',
@@ -95,6 +108,7 @@ export async function createNewCar(
     skinId: number,
     newCarOwnerId: number,
 ): Promise<number> {
+    const { slonik } = await ensureDatabase();
     if ((await skinExists(skinId)) === false) {
         log.error('skin does not exist');
         throw new Error('skin does not exist');
@@ -433,6 +447,7 @@ export type VehicleRecord = {
 export async function getVehicleAndParts(
     vehicleId: number,
 ): Promise<VehicleRecord | null> {
+    const { slonik, sql } = await ensureDatabase();
     const vehicle: VehicleRecord = {
         vehicleId: vehicleId,
         skinId: 0,
@@ -560,6 +575,7 @@ export async function getOwnedVehiclesForPerson(
         scrapValue: number;
     }[]
 > {
+    const { slonik, sql } = await ensureDatabase();
     return Sentry.startSpan(
         {
             name: 'Get owned vehicles for person',
