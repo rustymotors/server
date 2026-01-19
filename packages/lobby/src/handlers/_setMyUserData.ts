@@ -1,9 +1,9 @@
-import { databaseManager } from 'rusty-motors-database';
 import {
     ServerLogger,
     getServerLogger,
     UserInfoMessage,
     diffObj,
+    databaseProvider,
 } from 'rusty-motors-shared';
 import { BytableMessage } from '@rustymotors/binary';
 
@@ -40,7 +40,8 @@ export async function _setMyUserData({
             },
         );
 
-        const existingUserInfo = await databaseManager.getUser(userId)
+        const sessionStore = databaseProvider.getSessionStore();
+        const existingUserInfo = await sessionStore.getUser(userId)
 
         const { isDataDiff, diffs } = diffObj(
             existingUserInfo,
@@ -56,12 +57,12 @@ export async function _setMyUserData({
         }
 
         // Update the user's data
-        await databaseManager.updateUser({
+        await sessionStore.updateUser({
             userId: incomingMessage.userInfo.userId,
             userInfo: incomingMessage.userInfo,
         });
 
-        const userInfo = await databaseManager.getUser(userId);
+        const userInfo = await sessionStore.getUser(userId);
 
         if (typeof userInfo === 'undefined') {
             throw new Error(`Unable to locate user info for user ${userId}`);

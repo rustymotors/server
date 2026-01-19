@@ -1,11 +1,10 @@
-import { fetchStateFromDatabase, findSessionByConnectionId, OldServerMessage } from "rusty-motors-shared";
+import { fetchStateFromDatabase, findSessionByConnectionId, OldServerMessage, databaseProvider } from "rusty-motors-shared";
 import type { MessageHandlerArgs, MessageHandlerResult } from './handlers.js';
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { addVehicle } from "./_getOwnedVehicles.js";
 
 import { getServerLogger } from "rusty-motors-shared";
 import { PurchaseStockCarMessage } from './PurchaseStockCarMessage.js';
-import { purchaseCar } from "rusty-motors-database";
 
 const defaultLogger = getServerLogger("handlers/_buyCarFromDealer");
 
@@ -39,7 +38,8 @@ export async function _buyCarFromDealer({
 
     // TODO: Implement car purchase logic here
     // TODO: Get the new car ID from the database
-    const newCarId = await purchaseCar(session.gameId, purchaseStockCarMessage.dealerId, purchaseStockCarMessage.brandedPardId, purchaseStockCarMessage.skinId, purchaseStockCarMessage.tradeInCarId)
+    const gameDataStore = databaseProvider.getGameDataStore();
+    const newCarId = await gameDataStore.purchaseCar(session.gameId, purchaseStockCarMessage.dealerId, purchaseStockCarMessage.brandedPardId, purchaseStockCarMessage.skinId, purchaseStockCarMessage.tradeInCarId)
     .then((newCarId) => {
         log.debug(
             'Purchased car',

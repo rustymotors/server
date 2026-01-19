@@ -3,6 +3,17 @@ export { SubThread } from './src/SubThread.js';
 export { NetworkMessage } from './src/NetworkMessage.js';
 export { Configuration, getServerConfiguration } from './src/Configuration.js';
 export { configurationProvider, type GatewayConfigurationProvider } from './src/ConfigurationProvider.js';
+export { databaseProvider } from './src/database/DatabaseProvider.js';
+export type {
+    IDatabaseServices,
+    ISessionStore,
+    IGameDataStore,
+    IAuthStore,
+    Player,
+    PartEntry,
+    VehicleRecord,
+    OwnedVehicle,
+} from './src/database/interfaces.js';
 export { SerializedBuffer } from './src/SerializedBuffer.js';
 // SerializedBufferOld removed - use BytableBuffer instead
 export { RawMessage } from './src/RawMessage.js';

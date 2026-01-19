@@ -22,8 +22,7 @@ import {
 	handleGetKey,
 	handleGetRegistry,
 } from "rusty-motors-shard";
-import { getServerConfiguration, getServerLogger, type ServerLogger } from "rusty-motors-shared";
-import { findUser } from "rusty-motors-database";
+import { getServerConfiguration, getServerLogger, type ServerLogger, databaseProvider } from "rusty-motors-shared";
 import type { GatewayConfiguration } from "./configuration/GatewayConfiguration.js";
 
 type WebHandlerResponse = {
@@ -179,7 +178,12 @@ async function handleAuthLogin(
 		"https://winehq.com",
 	);
 
-	const user = await findUser(username, password);
+	let user = null;
+	try {
+		user = await databaseProvider.getAuthStore().findUser(username, password);
+	} catch {
+		// User not found or invalid password
+	}
 
 	if (user !== null) {
 		const ticket = generateTicket(user.customerId);

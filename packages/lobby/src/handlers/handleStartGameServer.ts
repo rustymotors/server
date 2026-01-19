@@ -5,8 +5,8 @@ import {
     RawMessage,
     RunningServerInfo,
     ServerLogger,
+    databaseProvider,
 } from 'rusty-motors-shared';
-import { getDatabaseManager } from 'rusty-motors-database';
 
 export async function handleStartGameServer({
     connectionId,
@@ -47,7 +47,7 @@ export async function handleStartGameServer({
         newServerInfo.userId = 21;
         newServerInfo.numberOfPlayers = 1;
 
-        getDatabaseManager().updateGameServer(commId, newServerInfo)
+        databaseProvider.getSessionStore().updateGameServer(commId, newServerInfo)
 
         const newServerInfoMessage = new RawMessage();
         newServerInfoMessage.id = 0x20d;

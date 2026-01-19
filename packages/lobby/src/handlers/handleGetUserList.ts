@@ -3,8 +3,8 @@ import {
     getServerLogger,
     ServerLogger,
     UserInfo,
+    databaseProvider,
 } from "rusty-motors-shared";
-import { getDatabaseManager } from "rusty-motors-database";
 
 export async function handleGetUserList({
     connectionId,
@@ -52,7 +52,7 @@ export async function handleGetUserList({
 
         const userList: UserInfo[] = [];
 
-        const user1 = await getDatabaseManager().getUser(21);
+        const user1 = await databaseProvider.getSessionStore().getUser(21);
 
         if (typeof user1 !== 'undefined') {
             log.debug(`Fetched userData: ${JSON.stringify(user1.userData)}`);

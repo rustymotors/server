@@ -1,5 +1,5 @@
 import type { ServerLogger } from "rusty-motors-shared";
-import { MessageQueue, addSocketPair, type messageQueueItem } from "rusty-motors-shared";
+import { MessageQueue, addSocketPair, type messageQueueItem, databaseProvider } from "rusty-motors-shared";
 import { loggerMock } from "rusty-motors-shared/test";
 import { SessionReplayer, type ReplayOptions, type ReplayResult } from "../../src/session/SessionReplayer.js";
 import type { RecordedSession } from "../../src/session/SessionRecorder.js";
@@ -115,9 +115,52 @@ export class SessionTestHelper {
 		options: ReplayOptions = {},
 	): Promise<SessionReplayResult> {
 		this.capturedResponses = [];
-		
+
 		// Initialize state
 		createInitialState({}).save();
+
+		// Register mock database provider for tests
+		if (!databaseProvider.isRegistered()) {
+			databaseProvider.register({
+				session: {
+					updateSessionKey: async () => {},
+					fetchSessionKeyByCustomerId: async () => ({
+						customerId: 0,
+						sessionKey: "test-session-key",
+						sKey: "test-s-key",
+						contextId: "test-context",
+						connectionId: "test-connection"
+					}),
+					fetchSessionKeyByConnectionId: async () => ({
+						customerId: 0,
+						sessionKey: "test-session-key",
+						sKey: "test-s-key",
+						contextId: "test-context",
+						connectionId: "test-connection"
+					}),
+					updateUser: async () => {},
+					getUser: async () => undefined,
+					updateConnection: async () => {},
+					findUserByConnectionId: async () => undefined,
+					updateGameServer: async () => {},
+					getGameServers: async () => [],
+				},
+				gameData: {
+					getPlayer: async () => { throw new Error("Not implemented in test"); },
+					getOwnedVehiclesForPerson: async () => [],
+					getVehicleAndParts: async () => null,
+					createNewCar: async () => 0,
+					purchaseCar: async () => 0,
+				},
+				auth: {
+					isDatabaseConnected: true,
+					findUser: async () => ({ customerId: 0, userName: "test", loginLevel: 0 }),
+					findCustomerByContext: () => ({ customerId: 1212555, contextId: "5213dee3a6bcdb133373b2d4f3b9962758", profileId: 1 }),
+					updateSession: () => {},
+					registerNewUser: () => {},
+				},
+			});
+		}
 
 		// Extract recorded responses for comparison
 		const recordedResponses = session.events

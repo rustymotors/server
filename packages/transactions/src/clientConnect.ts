@@ -9,12 +9,12 @@ import {
 	addSession,
 	fetchStateFromDatabase,
 	getEncryption,
+	databaseProvider,
 } from "rusty-motors-shared";
 import { OldServerMessage, getServerLogger } from "rusty-motors-shared";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { TClientConnectMessage } from "./TClientConnectMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
-import { getDatabaseManager } from "rusty-motors-database";
 const defaultLogger = getServerLogger("clientConnect");
 
 /**
@@ -55,7 +55,7 @@ export async function clientConnect({
 
 	log.debug(`Looking up the session key for ${customerId}...`);
 
-	result = await getDatabaseManager().fetchSessionKeyByCustomerId(customerId);
+	result = await databaseProvider.getSessionStore().fetchSessionKeyByCustomerId(customerId);
 
 	if (!result) {
 		log.error(`Session key not found for ${customerId}`);
