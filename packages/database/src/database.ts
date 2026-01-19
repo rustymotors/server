@@ -10,6 +10,11 @@ let _db: ConnectionPool | null = null;
 
 function ensureDb(): ConnectionPool {
     if (!_db) {
+        // Only create connection pool if DATABASE_URL is set
+        // This prevents connection attempts in test environments
+        if (!process.env['DATABASE_URL']) {
+            throw new Error('DATABASE_URL environment variable is required');
+        }
         _db = (pg.default as unknown as createConnectionPool)(
             {
                 bigIntMode: "bigint"
