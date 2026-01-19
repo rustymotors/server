@@ -19,7 +19,7 @@ This assumes you know the basics of checking out a git repo. If you don't, pleas
 ## Installing
 
 - `nvm install && nvm use` (Optional, but recomended)
-- `pnpm install`
+- `npm install`
 
 ### Ports
 

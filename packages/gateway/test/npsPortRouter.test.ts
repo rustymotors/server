@@ -18,8 +18,12 @@ vi.mock("rusty-motors-lobby", () => ({
 	}),
 }));
 
-vi.mock("rusty-motors-login", () => ({
+vi.mock("rusty-motors-authentication", () => ({
 	receiveLoginData: vi.fn().mockResolvedValue({
+		messages: [],
+		connectionId: "test-id",
+	}),
+	receivePersonaData: vi.fn().mockResolvedValue({
 		messages: [],
 		connectionId: "test-id",
 	}),
@@ -27,13 +31,6 @@ vi.mock("rusty-motors-login", () => ({
 
 vi.mock("rusty-motors-chat", () => ({
 	receiveChatData: vi.fn().mockResolvedValue({
-		messages: [],
-		connectionId: "test-id",
-	}),
-}));
-
-vi.mock("rusty-motors-personas", () => ({
-	receivePersonaData: vi.fn().mockResolvedValue({
 		messages: [],
 		connectionId: "test-id",
 	}),
@@ -258,7 +255,8 @@ describe("npsPortRouter - Core Functions", () => {
 		});
 
 		it("should route port 8226 to login handler", async () => {
-			const { receiveLoginData } = await import("rusty-motors-login");
+			const { receiveLoginData } =
+                await import('rusty-motors-authentication');
 			const packet = createValidTestPacket(0x0101);
 			
 			await processSocketData(
@@ -292,7 +290,8 @@ describe("npsPortRouter - Core Functions", () => {
 		});
 
 		it("should route port 8228 to persona handler", async () => {
-			const { receivePersonaData } = await import("rusty-motors-personas");
+			const { receivePersonaData } =
+                await import('rusty-motors-authentication');
 			const packet = createValidTestPacket(0x0101);
 			
 			await processSocketData(

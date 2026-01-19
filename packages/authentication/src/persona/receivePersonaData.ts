@@ -5,7 +5,7 @@ import {
 } from "rusty-motors-shared";
 import type { BufferSerializer } from "rusty-motors-protocol";
 import { BytableBuffer } from "@rustymotors/binary";
-import { messageHandlers } from "./internal.js";
+import { messageHandlers } from "../internal.js";
 
 /**
  *

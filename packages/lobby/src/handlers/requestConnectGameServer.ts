@@ -1,4 +1,4 @@
-import { getPersonaByPersonaId } from 'rusty-motors-personas';
+import { getPersonaByPersonaId } from 'rusty-motors-authentication';
 import { LoginInfoMessage } from '../LoginInfoMessage.js';
 
 import {

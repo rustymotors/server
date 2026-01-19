@@ -24,11 +24,11 @@ test: ## Run tests
 
 .PHONY: build
 build: ## Build the project
-	@pnpm run build
+	@npm run build
 
 .PHONY: start
 start: ## Start the project
-	@pnpx tsx --import ./instrument.mjs --openssl-legacy-provider --env-file=.env src/nps_server.ts
+	@npx tsx --import ./instrument.mjs --openssl-legacy-provider --env-file=.env src/nps_server.ts
 
 .PHONY: prod_node
 prod_node: ## Start the project in production mode
@@ -62,7 +62,7 @@ migration-up: ## Run migrations
 
 .PHONY: install
 install: ## Install dependencies and run migrations
-	@pnpm install
+	@npm install
 	npx dotenvx run -- make migration-up
 
 help: ## Display this help

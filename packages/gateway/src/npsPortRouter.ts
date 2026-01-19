@@ -3,8 +3,10 @@ import {
     type SerializableInterface,
 } from 'rusty-motors-protocol';
 import { receiveLobbyData } from 'rusty-motors-lobby';
-import { receivePersonaData } from 'rusty-motors-personas';
-import { receiveLoginData } from 'rusty-motors-login';
+import {
+    receivePersonaData,
+    receiveLoginData
+} from 'rusty-motors-authentication';
 import { receiveChatData } from 'rusty-motors-chat';
 import { BytableMessage, createRawMessage } from '@rustymotors/binary';
 import * as Sentry from '@sentry/node';
@@ -466,6 +468,7 @@ async function routeInitialMessage(
                     );
                     wasHandled = true;
                 } catch (error) {
+                    Sentry.captureException(error)
                     log.error('Error handling login packet', {
                         error: JSON.stringify(error),
                     });

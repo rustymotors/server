@@ -69,9 +69,9 @@ class MCOProtocol {
 		socket.on("close", () => {
 			this.connections.delete(connectionId);
 		});
-		socket.on("error", (error) => {
-			if (error.message === "read ECONNRESET") {
-				log.debug(
+		socket.on("error", (error: NodeJS.ErrnoException) => {
+			if (error.code === "ECONNRESET") {
+				log.verbose(
                     "Connection reset by client",
                     { connectionId }, 
                 );
