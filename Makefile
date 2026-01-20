@@ -15,7 +15,7 @@
 certs: ## Generate new certs
 	@openssl req -x509 -extensions v3_req -config data/mcouniverse.cnf -newkey rsa:1024 -nodes -keyout ./data/private_key.pem -out ./data/mcouniverse.pem -days 365
 	@openssl rsa -in ./data/private_key.pem -outform DER -pubout | xxd -ps -c 300 | tr -d '\n' > ./data/pub.key
-	@cp ./data/mcouniverse.pem  ./data/private_key.pem ./services/sslProxy/
+	@cp ./data/mcouniverse.pem  ./data/private_key.pem ./docker/sslProxy/
 	@echo "certs regenerated. remember to update pub.key for all clients"
 
 .PHONY: test
@@ -28,19 +28,19 @@ build: ## Build the project
 
 .PHONY: start
 start: ## Start the project
-	@npx tsx --import ./instrument.mjs --openssl-legacy-provider --env-file=.env src/nps_server.ts
+	@npx tsx --import ./src/instrument.mjs --openssl-legacy-provider --env-file=.env src/nps_server.ts
 
 .PHONY: prod_node
 prod_node: ## Start the project in production mode
-	docker-compose --file docker-compose.yml up -d --build
+	docker compose -f docker/docker-compose.yml up -d --build
 
 .PHONY: up
 up: ## Start the project in development mode
-	docker compose up -d --build
+	docker compose -f docker/docker-compose.yml up -d --build
 
 .PHONY: down
 down: ## Stop the project
-	docker-compose down
+	docker compose -f docker/docker-compose.yml down
 
 .PHONY: enable-node
 enable-node: ## Enable node to bind to port 80
@@ -58,7 +58,7 @@ clean: ## Clean the project
 
 .PHONY: migration-up
 migration-up: ## Run migrations
-	vendor/goose --dir ./migrations up
+	packages/database/vendor/goose --dir ./packages/database/migrations up
 
 .PHONY: install
 install: ## Install dependencies and run migrations
