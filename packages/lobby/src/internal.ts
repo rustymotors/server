@@ -14,68 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { handleEncryptedNPSCommand } from './handlers/encryptedCommand.js';
-import { handleTrackingPing } from './handlers/handleTrackingPing.js';
-import { _npsRequestGameConnectServer } from './handlers/requestConnectGameServer.js';
 import { getServerLogger, getSocketQueue, ServerLogger } from 'rusty-motors-shared';
 import { BytableMessage, BytableBuffer } from '@rustymotors/binary';
 import * as Sentry from '@sentry/node';
-import { handleOpenCommChannel } from './handlers/handleOpenCommChannel.js';
-import { handleUdpStatus } from './handlers/handlUdpStatus.js';
-
-/**
- * Array of supported message handlers
- *
- * @type {{
- *  opCode: number,
- * name: string,
- * handler: (args: {
- * connectionId: string,
- * message: BytableMessage,
- * log: ServerLogger,
- * }) => Promise<{
- * connectionId: string,
- * messages: BytableBuffer[],
- * }>}[]}
- */
-export const messageHandlers: {
-    opCode: number;
-    name: string;
-    handler: (args: {
-        connectionId: string;
-        message: BytableMessage;
-        log?: ServerLogger;
-    }) => Promise<{
-        connectionId: string;
-        messages: BytableBuffer[];
-    }>;
-}[] = [
-    {
-        opCode: 256, // 0x100
-        name: 'User login',
-        handler: _npsRequestGameConnectServer,
-    },
-    {
-        opCode: 0x106,
-        name: "PT_OPEN_COMM_CHANNEL",
-        handler: handleOpenCommChannel
-    },
-    {
-        opCode: 0x125,
-        name: "PT_UDP_STATUS",
-        handler: handleUdpStatus
-    },
-    {
-        opCode: 4353, // 0x1101
-        name: 'Encrypted command',
-        handler: handleEncryptedNPSCommand,
-    },
-    {
-        opCode: 535, // 0x0217
-        name: 'Tracking ping',
-        handler: handleTrackingPing,
-    },
-];
+import { getLobbyHandlerRegistry } from './handlers/registry.js';
 
 /**
  * @param {object} args
@@ -106,11 +48,11 @@ export async function receiveLobbyData({
         data: data.toString('hex'),
     });
 
-    const supportedHandler = messageHandlers.find((h) => {
-        return h.opCode === message.header.id;
-    });
+    // Use the handler registry to find the appropriate handler
+    const registry = getLobbyHandlerRegistry();
+    const handlerEntry = registry.getHandler(message.header.id);
 
-    if (typeof supportedHandler === 'undefined') {
+    if (!handlerEntry) {
         // We do not yet support this message code
         log.error(
             `UNSUPPORTED_MESSAGECODE: ${message.header.id.toString(16)}`,
@@ -122,7 +64,7 @@ export async function receiveLobbyData({
     }
 
     try {
-        const result = await supportedHandler.handler({
+        const result = await handlerEntry.handler({
             connectionId,
             message,
         });

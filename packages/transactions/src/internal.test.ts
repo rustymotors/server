@@ -35,20 +35,33 @@ vi.mock("rusty-motors-shared", () => {
     };
 });
 
-// Mock handlers module used by internal.ts so processInput finds a handler
+// Mock handlers module used by internal.ts for _MSG_STRING
 vi.mock("./handlers.js", () => {
     return {
-        messageHandlers: [
-            {
-                id: 1, // Route by ID now
-                name: "TESTMSG",
-                handler: vi.fn(async () => {
-                    // return no outbound messages to keep tests focused on decryption behavior
-                    return { messages: [] };
-                }),
-            },
-        ],
         _MSG_STRING: (_: number) => "TESTMSG",
+    };
+});
+
+// Mock the handler registry used by internal.ts so processInput finds a handler
+vi.mock("./handlers/registry.js", () => {
+    const mockHandler = vi.fn(async () => {
+        // return no outbound messages to keep tests focused on decryption behavior
+        return { messages: [] };
+    });
+    const mockRegistry = {
+        getHandler: vi.fn((opCode: number) => {
+            if (opCode === 1) {
+                return {
+                    opCode: 1,
+                    name: "TESTMSG",
+                    handler: mockHandler,
+                };
+            }
+            return undefined;
+        }),
+    };
+    return {
+        getTransactionsHandlerRegistry: vi.fn(() => mockRegistry),
     };
 });
 

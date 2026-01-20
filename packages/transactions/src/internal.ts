@@ -28,7 +28,8 @@ import {
 	updateEncryption,
 } from "rusty-motors-shared";
 import { OldServerMessage } from "rusty-motors-shared";
-import { messageHandlers, type MessageHandlerResult, _MSG_STRING } from "./handlers.js";
+import { type MessageHandlerResult, _MSG_STRING } from "./handlers.js";
+import { getTransactionsHandlerRegistry } from "./handlers/registry.js";
 import {
 	ServerPacket,
 	type BufferSerializer,
@@ -58,18 +59,17 @@ async function processInput({
 		`[${connectionId}] Processing message: ${currentMessageNo} (${currentMessageString}), sequence: ${inboundMessage.getSequence()}`,
 	);
 
-	// Route by ID directly - _MSG_STRING is now only used for logging
-	const result = messageHandlers.find(
-		(handler) => handler.id === currentMessageNo,
-	);
+	// Use the handler registry to find the appropriate handler
+	const registry = getTransactionsHandlerRegistry();
+	const handlerEntry = registry.getHandler(currentMessageNo);
 
-	if (typeof result !== "undefined") {
+	if (handlerEntry) {
 		// Turn this into an OldServerMessage for compatibility
 		const packet = new OldServerMessage();
 		packet._doDeserialize(inboundMessage.serialize());
 
 		try {
-			const responsePackets = await result.handler({
+			const responsePackets = await handlerEntry.handler({
 				connectionId,
 				packet,
 			});

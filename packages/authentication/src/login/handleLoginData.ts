@@ -2,7 +2,7 @@ import {
 	NPSMessage,
 	ServerLogger,
 } from "rusty-motors-shared";
-import { messageHandlers } from "../internal.js";
+import { getAuthHandlerRegistry } from "../internal.js";
 import { getServerLogger } from "rusty-motors-shared";
 import { GamePacket } from "rusty-motors-protocol";
 import { BytableMessage } from "@rustymotors/binary";
@@ -36,11 +36,11 @@ export async function handleLoginData({
 	const inboundMessage = new NPSMessage();
 	inboundMessage._doDeserialize(message.serialize());
 
-	const supportedHandler = messageHandlers.find((h) => {
-		return h.opCode === inboundMessage._header.id;
-	});
+	// Use the handler registry to find the appropriate handler
+	const registry = getAuthHandlerRegistry();
+	const handlerEntry = registry.getHandler(inboundMessage._header.id);
 
-	if (typeof supportedHandler === "undefined") {
+	if (!handlerEntry) {
 		// We do not yet support this message code
 		throw Error(
 			`[${connectionId}] UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
@@ -48,7 +48,7 @@ export async function handleLoginData({
 	}
 
 	try {
-		const result = await supportedHandler.handler({
+		const result = await handlerEntry.handler({
 			connectionId,
 			message,
 		});

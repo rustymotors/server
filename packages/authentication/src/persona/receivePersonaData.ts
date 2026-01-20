@@ -5,22 +5,17 @@ import {
 } from "rusty-motors-shared";
 import type { BufferSerializer } from "rusty-motors-protocol";
 import { BytableBuffer } from "@rustymotors/binary";
-import { messageHandlers } from "../internal.js";
+import { getAuthHandlerRegistry } from "../internal.js";
 
 /**
+ * Receives and processes persona data messages.
  *
- *
- * @param {object} args
- * @param {string} args.connectionId
- * @param {BufferSerializer} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ name: "PersonaServer" })]
- * @returns {Promise<{
- *  connectionId: string,
- * messages: BytableBuffer[],
- * }>}
- * @throws {Error} Unknown code was received
+ * @param args.connectionId - The connection ID
+ * @param args.message - The incoming message
+ * @param args.log - Optional logger instance
+ * @returns The connection ID and response messages
+ * @throws {Error} If the message code is not supported
  */
-
 export async function receivePersonaData({
 	connectionId,
 	message,
@@ -37,11 +32,11 @@ export async function receivePersonaData({
 	const inboundMessage = new LegacyMessage();
 	inboundMessage._doDeserialize(message.serialize());
 
-	const supportedHandler = messageHandlers.find((h) => {
-		return h.opCode === inboundMessage._header.id;
-	});
+	// Use the handler registry to find the appropriate handler
+	const registry = getAuthHandlerRegistry();
+	const handlerEntry = registry.getHandler(inboundMessage._header.id);
 
-	if (typeof supportedHandler === "undefined") {
+	if (!handlerEntry) {
 		// We do not yet support this message code
 		throw Error(
 			`[${connectionId}] UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
@@ -49,7 +44,7 @@ export async function receivePersonaData({
 	}
 
 	try {
-		const result = await supportedHandler.handler({
+		const result = await handlerEntry.handler({
 			connectionId,
 			message: inboundMessage,
 			log,
