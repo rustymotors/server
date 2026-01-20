@@ -271,3 +271,11 @@ Migrations use `@databases/pg-migrations` and are stored in `migrations/`. Run w
 - **Port Requirements**: Many ports needed; ensure firewall allows all required ports
 - **OpenSSL Legacy**: Required for legacy cipher support; server won't work without it
 - **Database Dependency**: Server requires both SQLite (local) and PostgreSQL (networked) to be available
+
+## Developer Documentation
+
+For detailed guides on extending the server:
+
+- [Packet Serialization](docs/protocol/PACKET_SERIALIZATION.md) - Binary protocol and message formats
+- [Adding Handlers](docs/handlers/ADDING_HANDLERS.md) - Step-by-step handler implementation guide
+- [Contributing](CONTRIBUTING.md) - Contribution guidelines and code style
