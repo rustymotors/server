@@ -13,7 +13,7 @@
         "cleancoverage": "rm -rf coverage",
         "preclean": "npn run cleancoverage",
         "clean": "rm -rf **/node_modules node_modules",
-        "start": "npx tsx --import ./instrument.mjs --openssl-legacy-provider --env-file=.env src/nps_server.ts",
+        "start": "npx tsx --import ./src/instrument.mjs --openssl-legacy-provider --env-file=.env src/nps_server.ts",
         "check": "tsc --build --noEmit > out.log",
         "check:all": "npm run check --workspaces --if-present",
         "lint:all": "npm run lint --workspaces --if-present",
@@ -26,7 +26,7 @@
         "coverage": "vitest run",
         "types:db": "npm run types:db --workspace=rusty-motors-database",
         "types": "dotenvx run -- npm run types:db",
-        "migrate": "dotenvx run pg-migrations apply -- --directory migrations",
+        "migrate": "dotenvx run -- npm run migrate --workspace=rusty-motors-database",
         "build": "tsc"
     },
     "files": [
