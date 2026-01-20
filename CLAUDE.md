@@ -11,11 +11,9 @@ MCOS (Motor City Online Server) is a from-scratch implementation of a legacy gam
 ### Development
 ```bash
 # Install dependencies and run database migrations
-make install
+npm run setup
 
 # Start the server (development mode)
-make start
-# OR using npm directly:
 npm start
 
 # Type checking (all packages)
@@ -30,16 +28,17 @@ npm run format:all
 
 ### Testing
 ```bash
-# Run all tests with coverage
-make test
-# OR:
-npm run coverage
+# Run all tests (unit + session)
+npm run test:all
 
-# Run tests without coverage
+# Run unit tests only
 npm test
 
 # Run session tests specifically
 npm run test:session
+
+# Run tests with coverage
+npm run coverage
 
 # Run package-specific tests
 npm run test:packages
@@ -51,8 +50,6 @@ npm run clean:sessions
 ### Building
 ```bash
 # Build TypeScript
-make build
-# OR:
 npm run build
 ```
 
@@ -62,27 +59,22 @@ npm run build
 npm run types
 
 # Run database migrations
-make migration-up
-# OR:
 npm run migrate
 ```
 
 ### Docker
 ```bash
-# Start services in development mode (PostgreSQL, SSL gateway, etc.)
-make up
+# Start services (PostgreSQL, SSL gateway, etc.)
+npm run docker:up
 
 # Stop services
-make down
-
-# Production mode
-make prod_node
+npm run docker:down
 ```
 
 ### SSL Certificates
 ```bash
 # Generate development SSL certificates (RSA-1024 for XP compatibility)
-make certs
+npm run certs
 ```
 
 ## Architecture
@@ -162,11 +154,11 @@ The codebase is organized into two distinct categories:
 See [Package Structure Guide](docs/architecture/PACKAGE_STRUCTURE.md) for detailed documentation on the libs/ vs packages/ distinction.
 
 **Service Packages**:
-- `packages/login`: User authentication on port 8226
+- `packages/authentication`: User authentication on port 8226
 - `packages/lobby`: Lobby management on port 7003
-- `packages/persona`: Character profiles on port 8228
 - `packages/gateway`: Main server orchestration
 - `packages/shared`: Config, logging, message queues, utilities
+- `packages/database`: Database connections, migrations, and schema
 
 **Library Packages**:
 - `libs/@rustymotors/protocol`: Protocol definitions
@@ -206,17 +198,17 @@ This is a **composite TypeScript project** with project references. Each package
    - `CERTIFICATE_FILE`, `PRIVATE_KEY_FILE`, `PUBLIC_KEY_FILE`: SSL cert paths
    - `MCO_LOG_LEVEL`: Logging verbosity (debug, verbose, info, warn, error)
 
-2. Generate certificates: `make certs` (development only, RSA-1024 for Windows XP compatibility)
+2. Generate certificates: `npm run certs` (development only, RSA-1024 for Windows XP compatibility)
 
-3. Start database services: `make up`
+3. Start database services: `npm run docker:up`
 
-4. Run migrations: `make migration-up`
+4. Run migrations: `npm run migrate`
 
-5. Start server: `make start` (requires `--openssl-legacy-provider` flag for legacy ciphers)
+5. Start server: `npm start` (requires `--openssl-legacy-provider` flag for legacy ciphers)
 
 ### OpenSSL Legacy Provider
 
-The server requires Node.js to be started with `--openssl-legacy-provider` to support legacy encryption used by the original game client. This is handled automatically in the npm scripts and Makefile.
+The server requires Node.js to be started with `--openssl-legacy-provider` to support legacy encryption used by the original game client. This is handled automatically in the npm scripts.
 
 ### Session Recording
 
@@ -245,12 +237,7 @@ Session tests replay recorded traffic through handlers to verify protocol correc
 
 ### Port Management
 
-The server binds to many ports including privileged ports (80, 443). On Linux, grant Node.js capability:
-```bash
-make enable-node
-# OR:
-sudo setcap cap_net_bind_service=+ep $(which node)
-```
+The server binds to many ports. Privileged ports (80, 443) are handled by the nginx Docker container, so no special permissions are needed for Node.js.
 
 ### Message Handler Pattern
 
@@ -269,7 +256,7 @@ When adding new protocol handlers:
 
 ### Database Migrations
 
-Migrations use `@databases/pg-migrations` and are stored in `migrations/`. Run with `make migration-up` or `npm run migrate` (requires environment variables via dotenvx).
+Migrations use goose format and are stored in `packages/database/migrations/`. Run with `npm run migrate` (requires environment variables via dotenvx).
 
 ## Important Constraints
 
