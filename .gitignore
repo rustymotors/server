@@ -28,3 +28,18 @@ vite.config.*.timestamp*
 vitest.config.*.timestamp*
 data/*-audit.json
 data/*.log.gz
+
+# Build artifacts
+out.log
+
+# IDE/Editor
+.idea/
+*.swp
+*.swo
+
+# OS files
+Thumbs.db
+
+# Environment variations
+.env.*
+!.env.example

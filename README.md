@@ -1,37 +1,141 @@
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://stand-with-ukraine.pp.ua)
 
-# mcos
+# MCOS - Motor City Online Server
 
-[![Node.js CI](https://github.com/drazisil/mcos/actions/workflows/node.yml/badge.svg?branch=dev)](https://github.com/drazisil/mcos/actions/workflows/node.yml) [![CodeQL](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml?branch=dev) [![codecov](https://codecov.io/gh/rustymotors/server/graph/badge.svg?token=XiwYgbHCeN)](https://codecov.io/gh/rustymotors/server)  
+[![Node.js CI](https://github.com/drazisil/mcos/actions/workflows/node.yml/badge.svg?branch=dev)](https://github.com/drazisil/mcos/actions/workflows/node.yml) [![CodeQL](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml?branch=dev) [![codecov](https://codecov.io/gh/rustymotors/server/graph/badge.svg?token=XiwYgbHCeN)](https://codecov.io/gh/rustymotors/server)
 
-## About
+> A from-scratch implementation of the server infrastructure for Motor City Online, a defunct online racing game. This project recreates the authentication, lobby, persona management, and game protocol handling required to run the original client.
 
-This is a game server, being written from scratch, for a very old and long dead game. The owners of said game have shown no interest in bringing it back, but even so all names of their IP have been avoided to prevent issues.
+## Features
 
-## Help Wanted
+- **Multi-Protocol Support** - NPS and MCOTS protocol handlers for full client compatibility
+- **Complete Authentication** - Login, session management, and persona handling
+- **Lobby System** - Game lobby with user lists and room management
+- **Transaction Processing** - In-game transactions and race management
+- **Session Recording** - Debug and replay socket traffic for testing
 
-I'm writing this from scratch. While I'm proud of what I've done, I'm hitting the point where I need help. Therefore, I'm open-sourcing this. Any assistance you can provide, either from code help, to suggestions, to even pointing out better ways to do things are greatly appreciated.
+## Quick Start
 
-You can [contribute on GitHub](https://github.com/drazisil/mcos/contribute)
+### Prerequisites
 
-There's a brief explanation of the thought process here [link](https://github.com/drazisil/mcos/issues/164), and the [docs directory](./docs/) also contains some notes.
+- Node.js 20+ (use `nvm install && nvm use`)
+- Docker (for PostgreSQL and services)
+- Linux recommended (Windows XP client compatibility requires RSA-1024 certs)
 
-## Server Setup
+### Installation
 
--   See [server docs](./docs/server.md)
+```bash
+# Clone and install
+git clone https://github.com/rustymotors/mcos.git
+cd mcos
+make install
 
-## Client Setup
+# Start services and database
+make up
+make migration-up
 
--   See [client docs](./docs/client.md)
+# Generate SSL certificates (development only)
+make certs
+
+# Run the server
+make start
+```
+
+For detailed configuration, see [Server Setup](docs/server.md).
+
+## Architecture Overview
+
+MCOS uses a **port-based routing architecture** where different game services listen on different TCP/UDP ports:
+
+| Port | Service | Description |
+|------|---------|-------------|
+| 8226 | Login | Authentication and session management |
+| 7003 | Lobby | Game lobby and user lists |
+| 8228 | Persona | Character profiles |
+| 43300 | MCOTS | Legacy transaction protocol |
+| 3000 | Web | HTTP API for diagnostics |
+
+```
+Client --> Gateway --> Port Router --> Service Handler --> Database
+                           |
+                      MessageQueue (async processing)
+```
+
+For detailed architecture documentation, see [docs/architecture/MASTER_DESIGN.md](docs/architecture/MASTER_DESIGN.md).
+
+## Project Structure
+
+```
+mcos/
+├── libs/@rustymotors/    # Low-level technical libraries
+│   ├── binary/           # Binary serialization primitives
+│   ├── network/          # Network utilities
+│   ├── parser/           # Protocol parsing
+│   ├── protocol/         # Protocol definitions
+│   └── rooms/            # Room management
+│
+├── packages/             # High-level domain services
+│   ├── gateway/          # Server orchestration
+│   ├── authentication/   # User authentication
+│   ├── lobby/            # Lobby management
+│   ├── transactions/     # Game transactions
+│   └── shared/           # Cross-cutting utilities
+│
+├── src/                  # Entry points
+│   ├── nps_server.ts     # Main server entry
+│   └── chat/             # Chat functionality
+│
+└── docs/                 # Documentation
+```
+
+See [Package Structure Guide](docs/architecture/PACKAGE_STRUCTURE.md) for details on the `libs/` vs `packages/` organization.
+
+## Documentation
+
+- [Server Setup](docs/server.md) - Detailed server configuration
+- [Client Setup](docs/client.md) - Client connection guide
+- [Architecture](docs/architecture/MASTER_DESIGN.md) - Design decisions and patterns
+- [Adding Handlers](docs/handlers/ADDING_HANDLERS.md) - Implementing new protocol handlers
+- [Packet Serialization](docs/protocol/PACKET_SERIALIZATION.md) - Binary protocol format
+- [Documentation Index](docs/README.md) - Full documentation listing
+
+## Development
+
+```bash
+# Type checking
+npm run check:all
+
+# Linting and formatting
+npm run lint:all
+npm run format:all
+
+# Run tests
+npm test
+
+# Run tests with coverage
+npm run coverage
+
+# Run session replay tests
+npm run test:session
+```
+
+## Contributing
+
+Contributions are welcome! This is a passion project reverse-engineering a long-dead game, and community help makes it possible.
+
+- See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
+- Check [open issues](https://github.com/rustymotors/mcos/issues) for ways to help
 
 ## Timeline
 
--   March 6, 2016 - Started
+| Date | Milestone |
+|------|-----------|
+| March 2016 | Project started |
+| October 2023 | First successful lobby connection |
+| January 2025 | Clean Code/SOLID refactoring complete |
 
--   October 12, 2023 - Connected to lobby
+![First lobby connection](images/2012-10-12_lobby.png)
 
-![img The first non-hacked image of the MCO lobby since it was shutdown](images/2012-10-12_lobby.png)
+## License
 
-## Current Status
-
--   [TODO Issues](https://github.com/drazisil/mcos/labels/todo%20%3Aspiral_notepad%3A)
+AGPL-3.0 - See [LICENSE](LICENSE)

@@ -152,7 +152,14 @@ Responses serialized and sent via MessageQueue
 - **PostgreSQL** (Sentry/Sequelize): Persistent game data (vehicles, parts, brands, players)
 - Demo user: `admin/admin`
 
-### Packages
+### Package Organization
+
+The codebase is organized into two distinct categories:
+
+- **libs/@rustymotors/**: Low-volatility technical infrastructure (binary, network, parser, protocol, rooms)
+- **packages/**: Higher-volatility domain services (gateway, authentication, lobby, transactions, etc.)
+
+See [Package Structure Guide](docs/architecture/PACKAGE_STRUCTURE.md) for detailed documentation on the libs/ vs packages/ distinction.
 
 **Service Packages**:
 - `packages/login`: User authentication on port 8226
@@ -276,6 +283,9 @@ Migrations use `@databases/pg-migrations` and are stored in `migrations/`. Run w
 
 For detailed guides on extending the server:
 
+- [Documentation Index](docs/README.md) - Full documentation listing
 - [Packet Serialization](docs/protocol/PACKET_SERIALIZATION.md) - Binary protocol and message formats
 - [Adding Handlers](docs/handlers/ADDING_HANDLERS.md) - Step-by-step handler implementation guide
+- [Package Structure](docs/architecture/PACKAGE_STRUCTURE.md) - libs/ vs packages/ organization
+- [Architecture](docs/architecture/MASTER_DESIGN.md) - Design decisions and patterns
 - [Contributing](CONTRIBUTING.md) - Contribution guidelines and code style
