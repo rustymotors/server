@@ -1,7 +1,7 @@
 import { emitKeypressEvents } from "node:readline";
 // eslint-disable-next-line no-unused-vars
-import { Gateway } from "rusty-motors-gateway";
-import { ServerLogger, SubThread, type KeypressEvent } from "rusty-motors-shared";
+import type { Gateway } from "rusty-motors-gateway";
+import { type ServerLogger, SubThread, type KeypressEvent } from "rusty-motors-shared";
 
 
 /**

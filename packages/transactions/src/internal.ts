@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getServerLogger, MessageNode, ServerLogger } from "rusty-motors-shared";
+import { getServerLogger, type MessageNode, type ServerLogger } from "rusty-motors-shared";
 import * as Sentry from "@sentry/node"
 
-import {
+import type {
 	McosEncryption,
-	type State,
+	State,
 } from "rusty-motors-shared";
 import { BytableBuffer } from "@rustymotors/binary";
 import {

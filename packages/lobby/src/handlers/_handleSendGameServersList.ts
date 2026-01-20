@@ -2,7 +2,7 @@ import { BytableMessage } from '@rustymotors/binary';
 import * as Sentry from "@sentry/node"
 import {
     getServerLogger,
-    ServerLogger,
+    type ServerLogger,
     GameServerListMessage,
     GameServerInfo,
     RawMessage,

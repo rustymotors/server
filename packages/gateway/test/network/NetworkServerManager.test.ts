@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { type ServerLogger, getServerLogger } from "rusty-motors-shared";
-import { Server, Socket as TcpSocket, createConnection } from "node:net";
-import { Socket as UdpSocket, createSocket, RemoteInfo } from "node:dgram";
+import { Server, type Socket as TcpSocket, createConnection } from "node:net";
+import { Socket as UdpSocket, createSocket, type RemoteInfo } from "node:dgram";
 import { NetworkServerManager } from "../../src/network/NetworkServerManager.js";
 
 /**

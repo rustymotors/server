@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { type ServerLogger } from "rusty-motors-shared";
+import type { ServerLogger } from "rusty-motors-shared";
 import { SessionRecorder } from "../../src/session/SessionRecorder.js";
 import { SessionReplayer } from "../../src/session/SessionReplayer.js";
 import { mkdirSync, rmSync, existsSync } from "node:fs";

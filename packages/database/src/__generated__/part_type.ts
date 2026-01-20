@@ -8,8 +8,8 @@
 /* eslint-disable */
 // tslint:disable
 
-import AbstractPartType from './abstract_part_type'
-import PartGrade from './part_grade'
+import type AbstractPartType from './abstract_part_type'
+import type PartGrade from './part_grade'
 
 interface PartType {
   abstract_part_type_id: AbstractPartType['abstract_part_type_id']

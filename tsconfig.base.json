@@ -84,6 +84,9 @@
             "path": "libs/@rustymotors/rooms"
         },
         {
+            "path": "libs/@rustymotors/logging"
+        },
+        {
             "path": "src/chat"
         }
     ]

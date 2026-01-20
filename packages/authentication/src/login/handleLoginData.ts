@@ -1,11 +1,11 @@
 import {
 	NPSMessage,
-	ServerLogger,
+	type ServerLogger,
 } from "rusty-motors-shared";
 import { getAuthHandlerRegistry } from "../internal.js";
 import { getServerLogger } from "rusty-motors-shared";
-import { GamePacket } from "rusty-motors-protocol";
-import { BytableMessage } from "@rustymotors/binary";
+import type { GamePacket } from "rusty-motors-protocol";
+import type { BytableMessage } from "@rustymotors/binary";
 
 /**
  * Handles the reception of login data, deserializes the incoming message, and processes it.

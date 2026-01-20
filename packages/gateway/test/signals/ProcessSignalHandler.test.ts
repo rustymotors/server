@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { type ServerLogger } from "rusty-motors-shared";
+import type { ServerLogger } from "rusty-motors-shared";
 import { ProcessSignalHandler, type ShutdownHandler } from "../../src/signals/ProcessSignalHandler.js";
 
 /**

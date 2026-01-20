@@ -1,4 +1,4 @@
-import { IServerMessage } from "rusty-motors-protocol";
+import type { IServerMessage } from "rusty-motors-protocol";
 import { MessageNode } from "./MessageNode.js";
 import { sliceBuff } from "./helpers.js";
 

@@ -1,10 +1,10 @@
 import {
 	getServerLogger,
-	ServerLogger,
+	type ServerLogger,
 	LegacyMessage,
 } from "rusty-motors-shared";
 import type { BufferSerializer } from "rusty-motors-protocol";
-import { BytableBuffer } from "@rustymotors/binary";
+import type { BytableBuffer } from "@rustymotors/binary";
 import { getAuthHandlerRegistry } from "../internal.js";
 
 /**

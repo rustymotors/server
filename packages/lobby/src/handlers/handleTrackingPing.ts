@@ -1,5 +1,5 @@
-import { BytableMessage, BytableBuffer } from "@rustymotors/binary";
-import { getServerLogger, RawMessage, ServerLogger } from "rusty-motors-shared";
+import { type BytableMessage, BytableBuffer } from "@rustymotors/binary";
+import { getServerLogger, RawMessage, type ServerLogger } from "rusty-motors-shared";
 
 export async function handleTrackingPing({
 	connectionId,

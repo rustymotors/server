@@ -1,11 +1,11 @@
 import {
     fetchStateFromDatabase,
     getEncryption,
-    ServerLogger,
+    type ServerLogger,
     updateEncryption,
 } from 'rusty-motors-shared';
 import { getServerLogger } from 'rusty-motors-shared';
-import { BytableMessage, BytableBuffer, createRawMessage } from '@rustymotors/binary';
+import { type BytableMessage, BytableBuffer, createRawMessage } from '@rustymotors/binary';
 import { npsCommandHandlers } from './npsCommandHandlers.js';
 
 /**

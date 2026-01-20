@@ -8,7 +8,7 @@
 /* eslint-disable */
 // tslint:disable
 
-import Profile from './profile'
+import type Profile from './profile'
 
 interface Key {
   profile_id: Profile['profile_id']

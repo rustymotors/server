@@ -1,7 +1,7 @@
-import { NPSMessage, LegacyMessage } from "rusty-motors-shared";
+import { NPSMessage, type LegacyMessage } from "rusty-motors-shared";
 import { BytableBuffer } from "@rustymotors/binary";
 import { BuddyCount, BuddyInfoMessage, BuddyList } from "./BuddyInfoMessage.js";
-import { getServerLogger, ServerLogger } from "rusty-motors-shared";
+import { getServerLogger, type ServerLogger } from "rusty-motors-shared";
 
 const defaultLogger = getServerLogger("PersonaServer");
 

@@ -8,8 +8,8 @@
 /* eslint-disable */
 // tslint:disable
 
-import Model from './model'
-import PartType from './part_type'
+import type Model from './model'
+import type PartType from './part_type'
 
 interface BrandedPart {
   branded_part_id: number & {readonly __brand?: 'branded_part_branded_part_id'}

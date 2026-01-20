@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { type ServerLogger, type TaggedTcpSocket } from "rusty-motors-shared";
+import type { ServerLogger, TaggedTcpSocket } from "rusty-motors-shared";
 import { PortRouterRegistry, type PortMapping } from "../../src/routing/PortRouterRegistry.js";
 import type { PortRouter } from "../../src/types.js";
 

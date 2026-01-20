@@ -1,4 +1,4 @@
-import { LegacyMessage, ServerLogger,  } from "rusty-motors-shared";
+import { LegacyMessage, type ServerLogger,  } from "rusty-motors-shared";
 import { serializeString } from "rusty-motors-shared";
 import { channelRecordSize, channels, chatChannelIds } from "./channels.js";
 import { getServerLogger } from "rusty-motors-shared";

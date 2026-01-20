@@ -1,5 +1,5 @@
 import { BytableMessage } from "@rustymotors/binary";
-import { getServerLogger, ServerLogger } from "rusty-motors-shared";
+import { getServerLogger, ServerLogger } from "@rustymotors/logging";
 
 
 export async function defaultMessageHandler({

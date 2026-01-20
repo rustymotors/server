@@ -7,7 +7,7 @@ import {
     sliceBuff,
 } from './helpers.js';
 import { MessageNodeBody } from './MessageNode.js';
-import { Serializable } from './types.js';
+import type { Serializable } from './types.js';
 
 export class RaceInfo implements Serializable {
     private _raceId; // 4

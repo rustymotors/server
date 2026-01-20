@@ -1,4 +1,4 @@
-import { ServerLogger, LegacyMessage } from "rusty-motors-shared";
+import type { ServerLogger, LegacyMessage } from "rusty-motors-shared";
 import { RawMessage } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 import { BytableBuffer } from "@rustymotors/binary";

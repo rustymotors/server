@@ -7,11 +7,8 @@ import {
 } from "@rustymotors/binary";
 import { privateDecrypt } from "crypto";
 import { readFileSync } from "fs";
-import {
-	getServerLogger,
-	ServerLogger,
-	configurationProvider,
-} from "rusty-motors-shared";
+import { getServerLogger, ServerLogger } from "@rustymotors/logging";
+import { configurationProvider } from "rusty-motors-shared";
 import { parseNPSSessionKey } from "./parseNPSSessionKey.js";
 
 export async function serverLoginMessageHandler({

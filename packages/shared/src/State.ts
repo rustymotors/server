@@ -6,10 +6,10 @@
  */
 
 // eslint-disable-next-line no-unused-vars
-import { Cipher, Decipher } from "crypto";
-import { BufferSerializer } from "rusty-motors-protocol";
-import { ServerLogger } from "../index.js";
-import { BytableBuffer } from "@rustymotors/binary";
+import type { Cipher, Decipher } from "crypto";
+import type { BufferSerializer } from "rusty-motors-protocol";
+import type { ServerLogger } from "../index.js";
+import type { BytableBuffer } from "@rustymotors/binary";
 
 
 /**

@@ -6,12 +6,12 @@ import {
     createDataEncryptionPair,
 } from 'rusty-motors-gateway';
 import {
-    ConnectionRecord,
+    type ConnectionRecord,
     McosEncryption,
-    ServerLogger,
-    ServiceArgs,
-    ServiceResponse,
-    State,
+    type ServerLogger,
+    type ServiceArgs,
+    type ServiceResponse,
+    type State,
     addEncryption,
     fetchStateFromDatabase,
     getEncryption,

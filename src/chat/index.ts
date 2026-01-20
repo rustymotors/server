@@ -1,7 +1,7 @@
-import {
-	type ServiceResponse,
+import type {
+	ServiceResponse,
 } from "rusty-motors-shared";
-import { type BufferSerializer } from "rusty-motors-protocol";
+import type { BufferSerializer } from "rusty-motors-protocol";
 import { BytableBuffer } from "@rustymotors/binary";
 import { ChatMessage } from "./ChatMessage.js";
 import {

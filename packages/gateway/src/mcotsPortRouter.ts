@@ -1,6 +1,6 @@
 import { receiveTransactionsData } from "rusty-motors-transactions";
 import * as Sentry from "@sentry/node";
-import { getServerLogger, MessageNode, ServerLogger, messageQueueItem, MessageQueue, TaggedTcpSocket } from "rusty-motors-shared";
+import { getServerLogger, MessageNode, type ServerLogger, type messageQueueItem, MessageQueue, type TaggedTcpSocket } from "rusty-motors-shared";
 import { getSessionRecorder } from './session/SessionRecorderIntegration.js';
 
 /**
@@ -127,7 +127,7 @@ async function processIncomingPackets(
     socket: TaggedTcpSocket,
 ) {
     try {
-        let inPackets: Buffer[] = [];
+        const inPackets: Buffer[] = [];
 
         log.debug(
             `Received data`, {
@@ -143,11 +143,11 @@ async function processIncomingPackets(
          * Each packet starts with the 2 bytes (16 bits) length of the packet
          * followed by the 4 bytes package signature
          */
-        let indices = findPackageSignatureIndices(data);
+        const indices = findPackageSignatureIndices(data);
 
-        for (let indexOfPackageSignature of indices) {
-            let length = data.readUInt16LE(indexOfPackageSignature - 2);
-            let packet = data.subarray(
+        for (const indexOfPackageSignature of indices) {
+            const length = data.readUInt16LE(indexOfPackageSignature - 2);
+            const packet = data.subarray(
                 indexOfPackageSignature - 2,
                 indexOfPackageSignature + length,
             );

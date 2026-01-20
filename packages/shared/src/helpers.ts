@@ -1,4 +1,4 @@
-import { Serializable } from './types.js';
+import type { Serializable } from './types.js';
 
 export class Short implements Serializable {
     private _value = 0;

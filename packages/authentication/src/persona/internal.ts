@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerLogger, LegacyMessage } from 'rusty-motors-shared';
+import type { ServerLogger, LegacyMessage } from 'rusty-motors-shared';
 import { BytableBuffer } from '@rustymotors/binary';
 import {
     PersonaList,
@@ -217,7 +217,7 @@ async function getPersonaMaps({
 
     try {
         /** @type {PersonaList} */
-        let personaList: PersonaList = new PersonaList();
+        const personaList: PersonaList = new PersonaList();
 
         if (personas.length > 1) {
             log.warn(

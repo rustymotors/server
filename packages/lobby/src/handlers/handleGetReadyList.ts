@@ -2,7 +2,7 @@ import { BytableMessage } from '@rustymotors/binary';
 import {
     getServerLogger,
     RawMessage,
-    ServerLogger,
+    type ServerLogger,
     ReadyForGame,
     ReadyForGameList,
 } from 'rusty-motors-shared';

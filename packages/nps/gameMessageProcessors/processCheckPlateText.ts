@@ -1,4 +1,4 @@
-import { GameMessage } from "../messageStructs/GameMessage.js";
+import type { GameMessage } from "../messageStructs/GameMessage.js";
 import type { UserStatus } from "../messageStructs/UserStatus.js";
 import { getLenString } from "../src/utils/pureGet.js";
 import { sendNPSAck } from "../src/utils/sendNPSAck.js";

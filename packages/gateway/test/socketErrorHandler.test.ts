@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { socketErrorHandler } from "../src/socketErrorHandler.js";
-import { type ServerLogger } from "rusty-motors-shared";
+import type { ServerLogger } from "rusty-motors-shared";
 
 describe("socketErrorHandler", () => {
 	it("should log a debug message when error code is ECONNRESET", () => {

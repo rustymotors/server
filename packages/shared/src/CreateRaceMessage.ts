@@ -1,6 +1,6 @@
 import { Bool, checkMinLength, padBuffer, sliceBuff } from './helpers.js';
 import { MessageNodeBody } from './MessageNode.js';
-import { Serializable } from './types.js';
+import type { Serializable } from './types.js';
 
 export class CreateRaceMessage extends MessageNodeBody {
     private _msgNo; // 2

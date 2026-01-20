@@ -4,7 +4,7 @@ import {
     checkSize4,
     sliceBuff,
 } from './helpers.js';
-import { MCOTSMessage, Serializable } from './types.js';
+import type { MCOTSMessage, Serializable } from './types.js';
 
 export class MessageNodeBody implements Serializable {
     protected body_: Buffer;

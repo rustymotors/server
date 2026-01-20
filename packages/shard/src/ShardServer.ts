@@ -32,7 +32,7 @@ export function generateShardList(
 		diagnosticServerPort,
 	);
 
-	let _possibleShards: string[] = [];
+	const _possibleShards: string[] = [];
 	_possibleShards.push(shardClockTower.formatForShardList());
 
 	const shardTwinPinesMall = new ShardEntry(

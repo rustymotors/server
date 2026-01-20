@@ -1,6 +1,6 @@
 import { handleSendGameServersList } from "./_handleSendGameServersList.js";
 import { _setMyUserData } from "./_setMyUserData.js";
-import { NpsCommandHandler } from "./encryptedCommand.js";
+import type { NpsCommandHandler } from "./encryptedCommand.js";
 import { handleCloseCommChannel } from "./handleCloseCommChannel.js";
 import { handleGetMiniUserList } from "./handleGetMiniUserList.js";
 import { handleGetReadyList } from "./handleGetReadyList.js";

@@ -1,7 +1,7 @@
 import {
     LegacyMessage,
     NPSMessage,
-    ServerLogger,
+    type ServerLogger,
 } from 'rusty-motors-shared';
 import { BytableBuffer } from '@rustymotors/binary';
 import { createGameProfile } from 'rusty-motors-nps';

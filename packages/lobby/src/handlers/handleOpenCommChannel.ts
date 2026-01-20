@@ -2,8 +2,8 @@ import { BytableMessage } from '@rustymotors/binary';
 import {
     getServerLogger,
     RawMessage,
-    Serializable,
-    ServerLogger,
+    type Serializable,
+    type ServerLogger,
     UserJoinedChannelMessage,
     databaseProvider,
 } from 'rusty-motors-shared';

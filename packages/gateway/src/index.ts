@@ -14,16 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Socket as TcpSocket } from 'node:net';
-import { RemoteInfo, Socket as UdpSocket } from 'node:dgram';
+import type { Socket as TcpSocket } from 'node:net';
+import type { RemoteInfo, Socket as UdpSocket } from 'node:dgram';
 import { randomUUID } from 'node:crypto';
 import { tagSocket } from './socketUtility.js';
 import { getPortRouter } from './portRouters.js';
 import * as Sentry from '@sentry/node';
 import {
     getServerLogger,
-    ServerLogger,
-    TaggedTcpSocket,
+    type ServerLogger,
+    type TaggedTcpSocket,
 } from 'rusty-motors-shared';
 import { socketErrorHandler } from './socketErrorHandler.js';
 import { getSessionRecorder } from './session/SessionRecorderIntegration.js';

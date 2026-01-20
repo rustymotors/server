@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import http from "node:http";
+import type http from "node:http";
 import { CastanetResponse } from "./CastanetResponse.js";
 import { generateShardList } from "rusty-motors-shard";
 import {

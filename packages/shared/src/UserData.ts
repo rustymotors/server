@@ -1,4 +1,4 @@
-import { Serializable, NPSMessage } from './types.js';
+import type { Serializable, NPSMessage } from './types.js';
 import { RawMessageHeader } from './RawMessage.js';
 import {
     checkMinLength,

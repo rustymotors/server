@@ -16,7 +16,7 @@
 
 import { compareSync, hashSync } from "bcrypt";
 import Database from "better-sqlite3";
-import { ConnectionPool, ConnectionPoolConfig, sql } from "@databases/pg";
+import { type ConnectionPool, type ConnectionPoolConfig, sql } from "@databases/pg";
 import * as pg from "@databases/pg";
 import { getServerLogger, type ServerLogger, type UserRecordMini, type IAuthStore } from "rusty-motors-shared";
 

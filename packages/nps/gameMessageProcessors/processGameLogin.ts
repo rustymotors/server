@@ -4,7 +4,7 @@ import * as Sentry from "@sentry/node";
 import { configurationProvider } from "rusty-motors-shared";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SessionKey } from "../messageStructs/SessionKey.js";
-import { UserStatus } from "../messageStructs/UserStatus.js";
+import type { UserStatus } from "../messageStructs/UserStatus.js";
 import { getToken } from "../services/token.js";
 import { UserStatusManager } from "../src/UserStatusManager.js";
 import { getAsHex, getLenString } from "../src/utils/pureGet.js";

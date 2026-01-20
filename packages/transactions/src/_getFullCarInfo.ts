@@ -1,6 +1,6 @@
 import { buildVehiclePartTreeFromDB, type TPart, getVehiclePartTree, vehiclePartTreeToJSON } from "rusty-motors-database";
 import { getServerLogger, OldServerMessage } from "rusty-motors-shared";
-import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 
 const DAMAGE_SIZE = 2000;

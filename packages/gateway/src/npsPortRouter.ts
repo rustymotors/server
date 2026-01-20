@@ -1,11 +1,11 @@
 import { GamePacket } from 'rusty-motors-protocol';
-import { BytableMessage, createRawMessage } from '@rustymotors/binary';
+import { type BytableMessage, createRawMessage } from '@rustymotors/binary';
 import * as Sentry from '@sentry/node';
 import {
     getServerLogger,
-    messageQueueItem,
-    ServerLogger,
-    TaggedSocket,
+    type messageQueueItem,
+    type ServerLogger,
+    type TaggedSocket,
     MessageQueue,
     getSocketQueue,
     addSocketPair,
@@ -28,7 +28,7 @@ export async function npsPortRouter({
     taggedSocket: TaggedSocket;
     log?: ServerLogger;
 }): Promise<void> {
-    const { socket: socket, connectionId, localPort } = taggedSocket;
+    const { socket, connectionId, localPort } = taggedSocket;
 
     const port = localPort;
 

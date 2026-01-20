@@ -1,11 +1,11 @@
 import {
-    ServerLogger,
+    type ServerLogger,
     getServerLogger,
     UserInfoMessage,
     diffObj,
     databaseProvider,
 } from 'rusty-motors-shared';
-import { BytableMessage } from '@rustymotors/binary';
+import type { BytableMessage } from '@rustymotors/binary';
 
 export async function _setMyUserData({
     connectionId,

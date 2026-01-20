@@ -2,10 +2,7 @@
     "name": "@rustymotors/rooms",
     "version": "0.0.1",
     "private": true,
-    "dependencies": {
-        "rusty-motors-shared": "",
-        "rusty-motors-protocol": ""
-    },
+    "dependencies": {},
     "type": "module",
     "main": "src/index.js",
     "typings": "src/index.d.ts"

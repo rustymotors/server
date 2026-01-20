@@ -8,8 +8,8 @@
 /* eslint-disable */
 // tslint:disable
 
-import AttachmentPoint from './attachment_point'
-import BrandedPart from './branded_part'
+import type AttachmentPoint from './attachment_point'
+import type BrandedPart from './branded_part'
 
 interface StockAssembly {
   attachment_point_id: AttachmentPoint['attachment_point_id']

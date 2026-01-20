@@ -1,8 +1,8 @@
 import { NetworkMessage, configurationProvider, databaseProvider } from "rusty-motors-shared";
 import { NPSUserStatus } from "./NPSUserStatus.js";
-import { ServerLogger, getServerLogger } from "rusty-motors-shared";
+import { type ServerLogger, getServerLogger } from "rusty-motors-shared";
 import { GamePacket } from "rusty-motors-protocol";
-import { BytableMessage } from "@rustymotors/binary";
+import type { BytableMessage } from "@rustymotors/binary";
 
 
 /**

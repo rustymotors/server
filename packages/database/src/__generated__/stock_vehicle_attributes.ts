@@ -8,9 +8,9 @@
 /* eslint-disable */
 // tslint:disable
 
-import BrandedPart from './branded_part'
-import SvaCarClass from './sva_car_class'
-import SvaModeRestriction from './sva_mode_restriction'
+import type BrandedPart from './branded_part'
+import type SvaCarClass from './sva_car_class'
+import type SvaModeRestriction from './sva_mode_restriction'
 
 interface StockVehicleAttributes {
   ai_restriction_class: (number) | null

@@ -1,7 +1,7 @@
-import { Server, Socket as TcpSocket } from "node:net";
-import { RemoteInfo, Socket as UdpSocket } from "node:dgram";
+import type { Server, Socket as TcpSocket } from "node:net";
+import type { RemoteInfo, Socket as UdpSocket } from "node:dgram";
 import { randomUUID } from "node:crypto";
-import { getServerConfiguration, getServerLogger, ServerLogger, createInitialState } from "rusty-motors-shared";
+import { getServerConfiguration, getServerLogger, type ServerLogger, createInitialState } from "rusty-motors-shared";
 import { onSocketConnection, onUdpMessage } from "./index.js";
 import { initializeRouteHandlers, processHttpRequest } from "./web.js";
 import type { GatewayOptions } from "./types.js";
@@ -179,7 +179,7 @@ export class Gateway implements ShutdownHandler {
                 
                 // Record outgoing data (raw TCP bytes)
                 const originalWrite = incomingSocket.write.bind(incomingSocket);
-                incomingSocket.write = function(chunk: any, encoding?: any, cb?: any) {
+                incomingSocket.write = (chunk: any, encoding?: any, cb?: any) => {
                     if (recorder?.isRecordingEnabled() && localPort) {
                         const data = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
                         recorder.recordDataOut(connectionId, localPort, data);

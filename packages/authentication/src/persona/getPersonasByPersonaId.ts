@@ -1,4 +1,4 @@
-import { NoResultsError, ServerLogger } from "rusty-motors-shared";
+import { NoResultsError, type ServerLogger } from "rusty-motors-shared";
 import { personaRecords } from "./internal.js";
 import type { PersonaRecord } from "./PersonaMapsMessage.js";
 

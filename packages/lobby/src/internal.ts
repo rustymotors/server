@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getServerLogger, getSocketQueue, ServerLogger } from 'rusty-motors-shared';
-import { BytableMessage, BytableBuffer } from '@rustymotors/binary';
+import { getServerLogger, getSocketQueue, type ServerLogger } from 'rusty-motors-shared';
+import type { BytableMessage, BytableBuffer } from '@rustymotors/binary';
 import * as Sentry from '@sentry/node';
 import { getLobbyHandlerRegistry } from './handlers/registry.js';
 

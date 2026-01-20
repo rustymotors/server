@@ -3,7 +3,7 @@
  */
 
 import { EventEmitter } from "node:events";
-import { ServerLogger } from "rusty-motors-shared";
+import type { ServerLogger } from "rusty-motors-shared";
 import { getServerLogger } from "../getServerLogger.js";
 
 

@@ -1,7 +1,7 @@
 import { BytableMessage } from "@rustymotors/binary";
 import {
     getServerLogger,
-    ServerLogger,
+    type ServerLogger,
 } from "rusty-motors-shared";
 
 export async function handleCloseCommChannel({

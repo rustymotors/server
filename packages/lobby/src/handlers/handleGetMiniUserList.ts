@@ -1,4 +1,4 @@
-import { ServerLogger } from "rusty-motors-shared";
+import type { ServerLogger } from "rusty-motors-shared";
 import { LegacyMessage } from "rusty-motors-shared";
 import { MiniUserInfo } from "../UserInfoMessage.js";
 import { getServerLogger } from "rusty-motors-shared";

@@ -1,7 +1,7 @@
 import { privateDecrypt } from "node:crypto";
 import { readFileSync } from "node:fs";
 
-import { Configuration, getServerLogger, ServerLogger,  } from "rusty-motors-shared";
+import { type Configuration, getServerLogger, type ServerLogger,  } from "rusty-motors-shared";
 import { LegacyMessage } from "rusty-motors-shared";
 
 const SESSION_KEY_START = 52;

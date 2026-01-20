@@ -13,14 +13,14 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import {
+import type {
 	ServerLogger,
-	type ServiceResponse,
+	ServiceResponse,
 } from "rusty-motors-shared";
 import { handleLoginData } from "./handleLoginData.js";
-import { BufferSerializer, GamePacket } from "rusty-motors-protocol";
+import { BufferSerializer, type GamePacket } from "rusty-motors-protocol";
 import { getServerLogger } from "rusty-motors-shared";
-import { BytableMessage } from "@rustymotors/binary";
+import type { BytableMessage } from "@rustymotors/binary";
 
 
 /**
@@ -69,7 +69,7 @@ export async function receiveLoginData({
 function GamePacketArrayToBufferSerializerArray(
 	packets: GamePacket[],
 ): BufferSerializer[] {
-	let bufferSerializers: BufferSerializer[] = [];
+	const bufferSerializers: BufferSerializer[] = [];
 	for (const packet of packets) {
 		const bufferSerializer = new BufferSerializer();
 		bufferSerializer.deserialize(packet.serialize());

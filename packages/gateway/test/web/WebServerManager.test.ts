@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { type ServerLogger } from "rusty-motors-shared";
+import type { ServerLogger } from "rusty-motors-shared";
 import http from "node:http";
-import { Socket as TcpSocket, createConnection } from "node:net";
+import { type Socket as TcpSocket, createConnection } from "node:net";
 import { WebServerManager } from "../../src/web/WebServerManager.js";
 
 /**

@@ -4,7 +4,7 @@ import {
     getServerLogger,
     RawMessage,
     RunningServerInfo,
-    ServerLogger,
+    type ServerLogger,
     databaseProvider,
 } from 'rusty-motors-shared';
 

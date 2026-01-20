@@ -1,8 +1,8 @@
 import { BytableMessage } from "@rustymotors/binary";
 import {
     getServerLogger,
-    ServerLogger,
-    UserInfo,
+    type ServerLogger,
+    type UserInfo,
     databaseProvider,
 } from "rusty-motors-shared";
 

@@ -3,8 +3,8 @@
     "version": "0.0.1",
     "private": true,
     "dependencies": {
-        "rusty-motors-shared": "",
-        "rusty-motors-shared-packets": ""
+        "@rustymotors/logging": "",
+        "rusty-motors-shared": ""
     },
     "type": "module",
     "main": "src/index.js",

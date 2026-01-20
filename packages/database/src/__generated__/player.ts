@@ -8,8 +8,8 @@
 /* eslint-disable */
 // tslint:disable
 
-import DriverClass from './driver_class'
-import PlayerType from './player_type'
+import type DriverClass from './driver_class'
+import type PlayerType from './player_type'
 
 interface Player {
   address: (string) | null

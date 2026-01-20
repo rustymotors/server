@@ -4,7 +4,7 @@ import {
 	MiniUserList,
 	getAsHex,
 } from "rusty-motors-nps";
-import { getServerLogger, ServerLogger } from "rusty-motors-shared";
+import { getServerLogger, type ServerLogger } from "rusty-motors-shared";
 
 // Command id: 0x128
 export async function getLobMiniUserList(

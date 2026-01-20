@@ -1,6 +1,6 @@
 import type { PortRouter, PortRouterArgs } from "./types.js";
 import { getServerLogger } from "rusty-motors-shared";
-import { PortRouterRegistry } from "./routing/PortRouterRegistry.js";
+import type { PortRouterRegistry } from "./routing/PortRouterRegistry.js";
 
 /**
  * A map that associates port numbers with their corresponding router functions.

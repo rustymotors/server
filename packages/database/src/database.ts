@@ -1,4 +1,4 @@
-import { ConnectionPool, ConnectionPoolConfig, sql,   } from '@databases/pg';
+import { type ConnectionPool, type ConnectionPoolConfig, sql,   } from '@databases/pg';
 import * as pg from "@databases/pg"
 
 type createConnectionPool = (connectionConfig?: string | ConnectionPoolConfig | undefined) => ConnectionPool;

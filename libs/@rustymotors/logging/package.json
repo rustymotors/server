@@ -1,0 +1,12 @@
+{
+	"name": "@rustymotors/logging",
+	"version": "0.0.1",
+	"private": true,
+	"type": "module",
+	"main": "src/index.js",
+	"typings": "src/index.d.ts",
+	"dependencies": {
+		"winston": "^3.18.3",
+		"winston-daily-rotate-file": "^5.0.0"
+	}
+}

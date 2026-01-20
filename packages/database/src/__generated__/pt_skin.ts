@@ -8,8 +8,8 @@
 /* eslint-disable */
 // tslint:disable
 
-import PartType from './part_type'
-import SkinType from './skin_type'
+import type PartType from './part_type'
+import type SkinType from './skin_type'
 
 interface PtSkin {
   b_skin: (string) | null

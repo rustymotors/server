@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Server, Socket as TcpSocket, createServer as createSocketServer } from "node:net";
-import { createSocket, RemoteInfo, Socket as UdpSocket } from "node:dgram";
-import { type ServerLogger } from "rusty-motors-shared";
+import { type Server, type Socket as TcpSocket, createServer as createSocketServer } from "node:net";
+import { createSocket, type RemoteInfo, type Socket as UdpSocket } from "node:dgram";
+import type { ServerLogger } from "rusty-motors-shared";
 
 /**
  * Represents a network server (TCP or UDP)

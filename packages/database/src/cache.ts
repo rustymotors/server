@@ -1,8 +1,8 @@
-import { getServerLogger, ServerLogger } from "rusty-motors-shared";
+import { getServerLogger, type ServerLogger } from "rusty-motors-shared";
 import type { TBrand } from "./models/Brand.js";
 import { getSlonik, getDatabase } from "./services/database.js";
 import * as Sentry from "@sentry/node";
-import { TPart } from "./models/Part.js";
+import type { TPart } from "./models/Part.js";
 import { getDatabaseManager } from "./DatabaseManager.js";
 
 // Lazy initialization - only connect when needed
