@@ -6,6 +6,8 @@ import type { RecordedSession } from "../../src/session/SessionRecorder.js";
 import { processSocketData } from "../../src/npsPortRouter.js";
 import { createInitialState } from "rusty-motors-shared";
 import type { TaggedSocket } from "rusty-motors-shared";
+import { getServiceRegistry, clearServiceRegistry } from "../../src/routing/ServiceRegistry.js";
+import { createDefaultServiceConfiguration } from "../../src/routing/DefaultServiceConfiguration.js";
 
 /**
  * Captured response from replaying a session
@@ -118,6 +120,11 @@ export class SessionTestHelper {
 
 		// Initialize state
 		createInitialState({}).save();
+
+		// Initialize the service registry with default handlers
+		clearServiceRegistry();
+		const registry = getServiceRegistry();
+		createDefaultServiceConfiguration(registry);
 
 		// Register mock database provider for tests
 		if (!databaseProvider.isRegistered()) {

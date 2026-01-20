@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import * as Sentry from '@sentry/node';
-import { Gateway } from 'rusty-motors-gateway';
+import { Gateway, initializeServiceRegistry } from 'rusty-motors-gateway';
 import {
     getServerLogger,
     verifyLegacyCipherSupport,
@@ -54,6 +54,10 @@ function main() {
         }
 
         coreLogger.info('Database services initialized');
+
+        // Initialize the service registry with default services
+        initializeServiceRegistry();
+        coreLogger.info('Service registry initialized');
     } catch (err) {
         coreLogger.error(`Error in core server: ${String(err)}`);
         process.exitCode = 1;

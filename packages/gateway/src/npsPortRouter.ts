@@ -1,13 +1,4 @@
-import {
-    GamePacket,
-    type SerializableInterface,
-} from 'rusty-motors-protocol';
-import { receiveLobbyData } from 'rusty-motors-lobby';
-import {
-    receivePersonaData,
-    receiveLoginData
-} from 'rusty-motors-authentication';
-import { receiveChatData } from 'rusty-motors-chat';
+import { GamePacket } from 'rusty-motors-protocol';
 import { BytableMessage, createRawMessage } from '@rustymotors/binary';
 import * as Sentry from '@sentry/node';
 import {
@@ -21,6 +12,7 @@ import {
 } from 'rusty-motors-shared';
 import { messageStats } from './GatewayServer.js';
 import { getSessionRecorder } from './session/SessionRecorderIntegration.js';
+import { getServiceRegistry, type Serializable } from './routing/ServiceRegistry.js';
 
 /**
  * Handles routing for the NPS (Network Play System) ports.
@@ -376,14 +368,14 @@ function parseInitialMessage(
 
 /**
  * Routes the initial message to the appropriate handler based on the port number.
- * Handles different types of packets such as lobby data, login data, chat data, and persona data.
- * Logs the routing process and the number of responses sent back to the client.
+ *
+ * Uses the ServiceRegistry to look up handlers, following the Open/Closed Principle.
+ * New services can be added by registering them in the registry without modifying this code.
  *
  * @param id - The connection ID of the client.
  * @param port - The port number to determine the type of packet.
  * @param initialPacket - The initial packet received from the client.
  * @param log - The logger to use for logging messages.
- * @returns A promise that resolves to a Buffer containing the serialized responses.
  */
 async function routeInitialMessage(
     id: string,
@@ -391,179 +383,72 @@ async function routeInitialMessage(
     initialPacket: BytableMessage,
     log = getServerLogger('gateway.npsPortRouter/routeInitialMessage'),
 ): Promise<void> {
-    // Route the initial message to the appropriate handler
-    // Messages may be encrypted, this will be handled by the handler
-
     try {
         log.debug(
             `Routing message for port ${port}: ${initialPacket.header.id}`,
         );
 
-        const packet = new GamePacket();
-        packet.deserialize(initialPacket.serialize());
+        // Look up handler from the service registry
+        const registry = getServiceRegistry();
+        const handler = registry.getHandler(port);
+        const serviceName = registry.getServiceName(port) ?? 'unknown';
 
-        let responses: SerializableInterface[] = [];
-
-        let wasHandled = false;
-
-        if (port >= 9000 && port < 9021) {
-            try {
-                log.debug(
-                    `[${id}] Passing room packet to lobby handler: ${packet.getMessageId()}`,
-                );
-                responses = (
-                    await receiveLobbyData({
-                        connectionId: id,
-                        message: initialPacket,
-                        log,
-                    })
-                ).messages;
-                log.debug(
-                    `[${id}] Received ${responses.length} room lobby response packets`,
-                );
-                wasHandled = true;
-            } catch (error) {
-                log.error('Error handling room lobby packet', {
-                    error: JSON.stringify(error),
-                });
-            }
+        if (!handler) {
+            const packet = new GamePacket();
+            packet.deserialize(initialPacket.serialize());
+            log.warn(
+                `[${id}] No handler found for port ${port}: ${packet.serialize().toString('hex')}`,
+            );
+            return;
         }
 
-        switch (port) {
-            case 7003:
-                // Handle lobby packet
-                try {
-                    log.debug(
-                        `[${id}] Passing packet to lobby handler: ${packet.getMessageId()}`,
-                    );
-                    responses = (
-                        await receiveLobbyData({
-                            connectionId: id,
-                            message: initialPacket,
-                            log,
-                        })
-                    ).messages;
-                    log.debug(
-                        `[${id}] Received ${responses.length} lobby response packets`,
-                    );
-                    wasHandled = true;
-                } catch (error) {
-                    log.error('Error handling lobby packet', {
-                        error: JSON.stringify(error),
-                    });
-                }
-                break;
-            case 8226:
-                // Handle login packet
-                try {
-                    responses = (
-                        await receiveLoginData({
-                            connectionId: id,
-                            message: initialPacket,
-                            log,
-                        })
-                    ).messages;
-                    log.debug(
-                        `[${id}] Received ${responses.length} login response packets`,
-                    );
-                    wasHandled = true;
-                } catch (error) {
-                    Sentry.captureException(error)
-                    log.error('Error handling login packet', {
-                        error: JSON.stringify(error),
-                    });
-                }
-                break;
-            case 8227:
-                // Handle chat packet
-                try {
-                    log.debug(
-                        `[${id}] Passing packet to chat handler: ${packet.serialize().toString('hex')}`,
-                    );
-                    responses = (
-                        await receiveChatData({ connectionId: id, message: packet })
-                    ).messages;
-                    log.debug(
-                        `[${id}] Chat Responses: ${responses.map((r) => r.serialize().toString('hex'))}`,
-                    );
-                } catch (error) {
-                    log.error('Error handling chat packet', {
-                        error: JSON.stringify(error),
-                    });
-                }
-                break;
-            case 8228:
-                try {
-                    log.debug(
-                        `[${id}] Passing packet to persona handler: ${packet.serialize().toString('hex')}`,
-                    );
-                    // responses =Handle persona packet
-                    responses = (
-                        await receivePersonaData({ connectionId: id, message: packet, log })
-                    ).messages;
-                    log.debug(
-                        `[${id}] Received ${responses.length} persona response packets`,
-                    );
-                    wasHandled = true;
-                } catch (error) {
-                    log.error('Error handling persona packet', {
-                        error: JSON.stringify(error),
-                    });
-                }
-                break;
-            case 10001:
-                try {
-                    log.debug(
-                        `[${id}] Passing race? packet to lobby handler: ${packet.getMessageId()}`,
-                    );
-                    responses = (
-                        await receiveLobbyData({
-                            connectionId: id,
-                            message: initialPacket,
-                            log,
-                        })
-                    ).messages;
-                    log.debug(
-                        `[${id}] Received ${responses.length} race? lobby response packets`,
-                    );
-                    wasHandled = true;
-                } catch (error) {
-                    log.error('Error handling race packet', {
-                        error: JSON.stringify(error),
-                    });
-                }
-                break;
+        // Call the registered handler
+        let responses: Serializable[] = [];
 
-            default:
-                // No handler
-                if (wasHandled === false) {
-                    log.warn(
-                        `${id}] No handler found for port ${port}: ${packet.serialize().toString('hex')}`,
-                    );
-                }
-                break;
+        try {
+            log.debug(
+                `[${id}] Passing packet to ${serviceName} handler: ${initialPacket.header.id}`,
+            );
+
+            const result = await handler({
+                connectionId: id,
+                message: initialPacket,
+                log,
+            });
+
+            responses = result.messages as Serializable[];
+            log.debug(
+                `[${id}] Received ${responses.length} ${serviceName} response packets`,
+            );
+        } catch (error) {
+            Sentry.captureException(error);
+            log.error(`Error handling ${serviceName} packet`, {
+                connectionId: id,
+                port,
+                error: error instanceof Error ? error.message : String(error),
+            });
+            return;
         }
 
         // Send responses back to the client
-        log.debug(`[${id}] Sending ${responses.length} responses`);
+        if (responses.length > 0) {
+            log.debug(`[${id}] Sending ${responses.length} responses`);
+            const sendQueue = getSocketQueue(id, 'send');
 
-        const sendQueue = getSocketQueue(id, 'send');
-
-        // Serialize the responses
-        responses.forEach((response) =>
-            sendQueue.put({
-                sequenceNo: -1,
-                data: response.serialize(),
-            }),
-        );
+            responses.forEach((response) =>
+                sendQueue.put({
+                    sequenceNo: -1,
+                    data: response.serialize(),
+                }),
+            );
+        }
     } catch (error) {
         // Catch any errors from packet deserialization or other operations
         log.error(`Error in routeInitialMessage: ${String(error)}`, {
             connectionId: id,
             port,
-            error: JSON.stringify(error),
+            error: error instanceof Error ? error.message : String(error),
         });
-        // Don't rethrow - let the function complete normally
-        // Errors from handlers are already caught in their try-catch blocks
+        Sentry.captureException(error);
     }
 }

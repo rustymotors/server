@@ -6,6 +6,7 @@ import { Socket } from "node:net";
 import { SessionTestHelper } from "./session/SessionTestHelper.js";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { getServiceRegistry, clearServiceRegistry } from "../src/routing/ServiceRegistry.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -41,22 +42,53 @@ describe("npsPortRouter - Core Functions", () => {
 	let mockSocket: TaggedSocket;
 	let connectionId: string;
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		// Reset state
 		createInitialState({ saveFunction: () => {} });
-		
+
+		// Clear and re-initialize the service registry with mocked handlers
+		clearServiceRegistry();
+		const registry = getServiceRegistry();
+
+		// Import the mocked handlers
+		const { receiveLobbyData } = await import("rusty-motors-lobby");
+		const { receiveLoginData, receivePersonaData } = await import("rusty-motors-authentication");
+		const { receiveChatData } = await import("rusty-motors-chat");
+
+		// Register mocked handlers with the service registry
+		registry.register({
+			name: 'lobby',
+			ports: [7003, ...Array.from({ length: 21 }, (_, i) => 9000 + i), 10001],
+			handler: receiveLobbyData,
+		});
+		registry.register({
+			name: 'login',
+			ports: [8226],
+			handler: receiveLoginData,
+		});
+		registry.register({
+			name: 'persona',
+			ports: [8228],
+			handler: receivePersonaData,
+		});
+		registry.register({
+			name: 'chat',
+			ports: [8227],
+			handler: receiveChatData,
+		});
+
 		connectionId = "test-connection-123";
 		const socket = new Socket();
 		socket.write = vi.fn();
 		socket.end = vi.fn();
-		
+
 		mockSocket = {
 			socket,
 			connectionId,
 			localPort: 7003,
 			connectedAt: Date.now(),
 		};
-		
+
 		// Set up socket pair for queue system
 		// Create proper MessageQueue instances for send and receive
 		const sendQueue = new MessageQueue(
@@ -66,7 +98,7 @@ describe("npsPortRouter - Core Functions", () => {
 				// No-op for tests
 			},
 		);
-		
+
 		const receiveQueue = new MessageQueue(
 			'testReceive',
 			10,
@@ -74,7 +106,7 @@ describe("npsPortRouter - Core Functions", () => {
 				// No-op for tests
 			},
 		);
-		
+
 		addSocketPair(connectionId, {
 			send: sendQueue,
 			receive: receiveQueue,
@@ -83,6 +115,7 @@ describe("npsPortRouter - Core Functions", () => {
 
 	afterEach(() => {
 		vi.clearAllMocks();
+		clearServiceRegistry();
 	});
 
 	describe("processSocketData - Packet Validation", () => {

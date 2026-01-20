@@ -86,6 +86,35 @@ export { getServerLogger } from './getServerLogger.js';
 export { NoResultsError } from './src/errors/NoResultError.js';
 export * from './src/types.js';
 
+// Handler utilities (Clean Code & SOLID patterns)
+export type {
+    HandlerContext,
+    HandlerContextWithServices,
+    HandlerResult,
+    MessageHandler,
+    LegacyHandlerArgs,
+    LegacyHandlerResult,
+} from './src/handlers/index.js';
+export {
+    HandlerError,
+    wrapHandlerError,
+    withErrorBoundary,
+    createValidationError,
+    createUnsupportedMessageError,
+    createNoEncryptionError,
+    createNoSessionError,
+    MessageHandlerRegistry,
+    createHandlerContext,
+    createHandlerContextWithServices,
+    createTestContext,
+    ResponseBuilder,
+} from './src/handlers/index.js';
+export type {
+    HandlerServices,
+    ContextFactoryOptions,
+    SerializableMessage,
+} from './src/handlers/index.js';
+
 // Function to convert ARGB to 32-bit integer
 export function argbToInt(
     alpha: number,
