@@ -1,6 +1,7 @@
 import { BytableMessage } from '@rustymotors/binary';
 import {
     getServerLogger,
+    NPS_MESSAGE_IDS,
     RawMessage,
     type Serializable,
     type ServerLogger,
@@ -85,7 +86,7 @@ export async function handleOpenCommChannel({
             );
 
             const userJoinedMessage = BytableMessage.FromRawMessage(
-                createRawMessage(0x20c, userJoined),
+                createRawMessage(NPS_MESSAGE_IDS.USER_JOINED_CHANNEL, userJoined),
             );
 
             log.debug('Outbound user join message', {
@@ -128,7 +129,7 @@ export function createNPSChannelGrantedPacket(
         { name: 'port', field: 'Dword' },
     ]);
 
-    outgoingGameMessage.header.setId(0x214);
+    outgoingGameMessage.header.setId(NPS_MESSAGE_IDS.CHANNEL_GRANTED);
     outgoingGameMessage.setVersion(0);
     outgoingGameMessage.setFieldValueByName('commId', commId);
     outgoingGameMessage.setFieldValueByName('port', commPort);

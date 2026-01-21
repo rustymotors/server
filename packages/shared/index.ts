@@ -86,6 +86,9 @@ export { getServerLogger } from './getServerLogger.js';
 export { NoResultsError } from './src/errors/NoResultError.js';
 export * from './src/types.js';
 
+// Message ID constants
+export * from './src/constants/index.js';
+
 // Handler utilities (Clean Code & SOLID patterns)
 export type {
     HandlerContext,

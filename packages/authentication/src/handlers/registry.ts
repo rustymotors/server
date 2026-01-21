@@ -21,7 +21,7 @@
  * Includes both login handlers (port 8226) and persona handlers (port 8228).
  */
 
-import { MessageHandlerRegistry } from 'rusty-motors-shared';
+import { MessageHandlerRegistry, AUTH_MESSAGE_IDS } from 'rusty-motors-shared';
 import type { ServerLogger, LegacyMessage } from 'rusty-motors-shared';
 import type { GamePacket } from 'rusty-motors-protocol';
 import type { BytableMessage, BytableBuffer } from '@rustymotors/binary';
@@ -67,44 +67,44 @@ export function createAuthHandlerRegistry(): MessageHandlerRegistry<
 
     // Login handlers (port 8226)
     registry.register({
-        opCode: 0x501, // 1281
+        opCode: AUTH_MESSAGE_IDS.USER_LOGIN,
         name: 'UserLogin',
         handler: login,
     });
 
     // Persona handlers (port 8228)
     registry.register({
-        opCode: 0x503, // 1283
+        opCode: AUTH_MESSAGE_IDS.GAME_LOGIN,
         name: 'Game login',
         handler: _selectGamePersona,
     });
 
     registry.register({
-        opCode: 0x50F, // 1295
+        opCode: AUTH_MESSAGE_IDS.GAME_LOGOUT,
         name: 'Game logout',
         handler: _gameLogout,
     });
 
     registry.register({
-        opCode: 0x519, // 1305
+        opCode: AUTH_MESSAGE_IDS.GET_PERSONA_INFO,
         name: 'Get persona info',
         handler: getPersonaInfo,
     });
 
     registry.register({
-        opCode: 0x532, // 1330
+        opCode: AUTH_MESSAGE_IDS.GET_PERSONA_MAPS,
         name: 'Get persona maps',
         handler: getPersonaMaps,
     });
 
     registry.register({
-        opCode: 0x533, // 1331
+        opCode: AUTH_MESSAGE_IDS.VALIDATE_PERSONA_NAME,
         name: 'Validate persona name',
         handler: validatePersonaName,
     });
 
     registry.register({
-        opCode: 0x50B, // 1291
+        opCode: AUTH_MESSAGE_IDS.GET_FIRST_BUDDY,
         name: 'Get first buddy',
         handler: _getFirstBuddy,
     });
