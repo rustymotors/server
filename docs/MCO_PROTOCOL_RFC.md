@@ -2,9 +2,16 @@
 
 ## Cleanroom Reference Document
 
-**Status:** Informational (Cleanroom Specification)  
-**Version:** 0.1.0  
-**Date:** 2026-01-11  
+**Status:** Informational (Cleanroom Specification)
+**Version:** 0.2.0
+**Date:** 2026-01-20
+
+### Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 0.2.0 | 2026-01-20 | Added section 4.6: Room/Game Server Protocol (ports 9000-9014, 9500-9508) |
+| 0.1.0 | 2026-01-11 | Initial release |
 
 ---
 
@@ -57,7 +64,8 @@ layers:
 | Component | Purpose | Default Port(s) | Byte Order |
 |-----------|---------|-----------------|------------|
 | **Login Server** | Authentication, persona management | 8226 | Big-endian |
-| **Lobby Server** | Game room coordination, chat | 7003 | Big-endian |
+| **Lobby Server (PLS)** | Game room coordination, chat | 7003 | Big-endian |
+| **Game/Room Servers** | In-race communication, game state | 9000-9014 (TCP), 9500-9508 (UDP) | Big-endian |
 | **MCOTS** | Game transactions (vehicles, races, etc.) | 43300 | Little-endian |
 
 ### 1.1. Document Scope
@@ -96,9 +104,13 @@ This document uses:
 
 - **NPS**: Network Programming System - lobby/matchmaking protocol layer
 - **MCOTS**: Motor City Online Transaction Server - game state protocol layer
+- **PLS**: Primary Lobby Server - the main lobby server on port 7003
 - **Persona**: A player character/profile within a customer account
 - **Customer**: The EA account holder (may have multiple personas)
 - **Shard**: A game server cluster
+- **Riff**: A room/channel identifier string (32 bytes max)
+- **CommId**: Communication channel identifier returned when joining a room
+- **Channel**: A communication room that players join for racing or chat
 
 ### 2.4. Naming Conventions
 
@@ -365,7 +377,295 @@ server. The message ID indicates the routing behavior:
 | 0x82 | NPS_SEND_GAME_READY_LIST | Send to ready players |
 | 0x83 | NPS_SEND_LIST | Send to specified user list |
 | 0x86 | NPS_SEND_SINGLE | Send to single user |
+| 0x87 | NPS_SEND_NOT_SINGLE | Send to all except one user |
 | 0x88 | NPS_GAME_MESSAGE | Generic game message |
+
+### 4.6. Room/Game Server Protocol
+
+Game/Room servers handle in-race communication and game state synchronization.
+They use the same NPS protocol as the lobby server but with additional
+room-specific message handling.
+
+#### 4.6.1. Port Allocation
+
+| Type | Port Range | Count | Purpose |
+|------|------------|-------|---------|
+| TCP Game Servers | 9000-9014 | 15 | Reliable in-race messages |
+| UDP Game Servers | 9500-9508 | 9 | Fast position/state updates |
+
+**Note:** Port 5050 appears to be explicitly reserved/ignored.
+
+#### 4.6.2. Room Message Opcodes
+
+**Client → Server Commands (0x1xx range):**
+
+| Opcode | Name | Description |
+|--------|------|-------------|
+| 0x100 | NPS_LOGIN | Initial authentication to server |
+| 0x103 | NPS_SET_MY_USER_DATA | Send user data (car, level, etc.) |
+| 0x104 | NPS_LOG_OFF_SERVER | Disconnect from server |
+| 0x105 | NPS_CLOSE_COMM_CHANNEL | Leave a room/channel |
+| 0x106 | NPS_OPEN_COMM_CHANNEL | Join or create a room |
+| 0x108 | NPS_START_GAME | Force start the game |
+| 0x109 | NPS_READY_FOR_GAME | Set player ready state |
+| 0x10A | NPS_START_GAME_SERVER | Request game server launch |
+| 0x10D | NPS_SET_COMM_FLAGS | Set channel flags (ready state, etc.) |
+| 0x10E | NPS_GET_READY_LIST | Request list of ready players |
+| 0x113 | NPS_SET_CHANNEL_DATA | Send room/race configuration |
+| 0x117 | NPS_BOOT_USER_FROM_CHANNEL | Kick user from room |
+| 0x11D | NPS_TERMINATE_GAME_SERVER | End game server |
+
+**Server → Client Commands (0x2xx range):**
+
+| Opcode | Name | Description |
+|--------|------|-------------|
+| 0x201 | NPS_FORCE_LOGOFF | Server forcing disconnect |
+| 0x202 | NPS_USER_LEFT | User left server |
+| 0x203 | NPS_USER_JOINED | User joined server |
+| 0x208 | NPS_USER_LEFT_CHANNEL | User left room |
+| 0x20C | NPS_USER_JOINED_CHANNEL | User joined room |
+| 0x20E | NPS_CHANNEL_CREATED | New room created |
+| 0x20F | NPS_CHANNEL_DELETED | Room removed |
+| 0x210 | NPS_READY_LIST | List of ready players |
+| 0x211 | NPS_USER_LIST | Full user list |
+| 0x213 | NPS_CHANNEL_DENIED | Wrong password / access denied |
+| 0x214 | NPS_CHANNEL_GRANTED | Successfully joined room |
+| 0x215 | NPS_CHANNEL_CONDITIONAL | Joined opaque channel (can't ready) |
+| 0x219 | NPS_CHANNEL_UPDATE | Room info changed |
+| 0x21C | NPS_GAME_SERVER_STARTED | Game server is running |
+| 0x21D | NPS_GAME_SERVER_TERMINATED | Game server ended |
+| 0x224 | NPS_GAME_SERVER_STATE_CHANGE | Server state transition |
+| 0x227 | NPS_CHANNEL_MASTER | Channel ownership info |
+
+#### 4.6.3. Channel Types and Flags
+
+**Channel Types:**
+
+| Value | Name | Description |
+|-------|------|-------------|
+| 0x01 | NPS_PRIVATE_CHANNEL | Password required |
+| 0x02 | NPS_PUBLIC_CHANNEL | Open to all |
+| 0x04 | NPS_OPAQUE_CHANNEL | Can join but not ready without password |
+| 0x08 | NPS_PERMANENT_CHANNEL | Persistent room |
+| 0x10 | NPS_TRANSIENT_CHANNEL | Closes when empty |
+
+**Channel Flags:**
+
+| Value | Name | Description |
+|-------|------|-------------|
+| 0x20 | NPS_SET_GAME_READY | Mark player ready |
+| 0x40 | NPS_CLEAR_GAME_READY | Mark player not ready |
+| 0x80 | NPS_HIDE_CHANNEL | Hidden room |
+| 0x100 | NPS_EXPOSE_CHANNEL | Visible room |
+
+#### 4.6.4. Room Channel Data Structure (256 bytes max)
+
+```ebnf
+RoomChannelData =
+    raceID: DWORD ,                (* Database race ID *)
+    raceName: char[64] ,           (* Room/pit name, null-terminated *)
+    entryFee: DWORD ,
+    purseBonusPerPlayer: DWORD ,
+    purseBonusPerRace: DWORD ,
+    racerCounts: BYTE ,            (* maxNPSracers:4 | minNPSracers:4 *)
+    roundLaps: BYTE ,              (* numRounds:4 | numLaps:4 *)
+    flags: BYTE ,                  (* See flags bitfield below *)
+    mode: DWORD ,                  (* eRoomMode enum *)
+    sponsorBPT: DWORD ,
+    minlevel: BYTE ,
+    maxlevel: BYTE ,
+    requiredBodyClass: BYTE ,
+    maxPowerClass: BYTE ,
+    flags2: BYTE ,                 (* See flags2 bitfield below *)
+    hostID: NPS_USERID ,
+    hostName: char[32] ,           (* Persona name *)
+    userIDs: NPS_USERID[6] ,       (* Player user IDs *)
+    dbCarIDs: DWORD[6] ,           (* Car database IDs *)
+    dbBptIDs: DWORD[6] ,           (* BPT database IDs *)
+    majorVersionNum: DWORD ,
+    minorVersionNum: DWORD ,
+    revisionVersionNum: DWORD ;
+```
+
+**Flags Bitfield (offset 0x52):**
+- bit 0: backwardRace
+- bit 1: mirrored
+- bit 2: nightDriving
+- bit 3: weatherDriving
+- bits 4-5: damageMode
+- bit 6: traffic
+- bit 7: handicapped
+
+**Flags2 Bitfield (offset 0x5F):**
+- bit 0: bDisallowNOS
+- bit 1: RaceInProgress
+- bits 2-5: connectedPlayers (0-6)
+
+**Room Modes (eRoomMode):**
+
+| Value | Name | Description |
+|-------|------|-------------|
+| 0 | RM_OPEN | Open race |
+| 1 | RM_SPONSORED | Sponsored race |
+| 2 | RM_CLUB | Club race |
+| 3 | RM_PINKSLIP | Pink slip race |
+| 4 | RM_TEAMTRIAL | Team trial |
+
+#### 4.6.5. User Data Structure (64 bytes max)
+
+```ebnf
+UserData =
+    carIDs: tCarIDs ,              (* 40 bytes *)
+    lobbyID: DWORD ,
+    clubID: DWORD ,
+    flags: BYTE ,                  (* See flags bitfield below *)
+    performance: uint24 ,          (* mps, acc, handling encoded *)
+    points: DWORD ,
+    level: WORD ;
+```
+
+**User Data Flags:**
+- bit 0: IsInLobby
+- bit 1: IsInTransition
+- bit 2: IsRacing
+- bit 3: IsDataValid (must be TRUE for valid data)
+
+#### 4.6.6. Game Server State Machine
+
+**States:**
+
+| Value | Name |
+|-------|------|
+| 1 | NPS_SERVER_NOT_RUNNING |
+| 2 | NPS_SERVER_START_PENDING |
+| 4 | NPS_SERVER_RUNNING |
+| 8 | NPS_CHANNEL_CLOSED_MASK |
+
+**State Transitions:**
+
+```
+NOT_RUNNING → START_PENDING → RUNNING → NOT_RUNNING
+     ↑                            │
+     └────────────────────────────┘
+```
+
+#### 4.6.7. Room Join Flow
+
+**Step 1: Client Request**
+
+Client → Server: `NPS_OPEN_COMM_CHANNEL` (0x106)
+
+Payload:
+- ServerId (from login)
+- Protocol (NPSTCP=33 or NPSUDP=44)
+- Riff (room name, 32 bytes)
+- Password (17 bytes max)
+- ChannelData (256 bytes, race config)
+- MaxReadyPlayers
+- ChannelType (PUBLIC/PRIVATE based on password presence)
+- ChannelFlags
+
+**Step 2: Server Response**
+
+Server → Client: One of:
+- `NPS_CHANNEL_GRANTED` (0x214) = Success, returns CommId
+- `NPS_CHANNEL_DENIED` (0x213) = Wrong password
+- `NPS_CHANNEL_CONDITIONAL` (0x215) = Joined but can't ready
+
+#### 4.6.8. Game Server Startup Sequence
+
+```
+1. Host calls NPSStartGameServer(ServerId, CommId)
+   → Sends NPS_START_GAME_SERVER (0x10A)
+
+2. Server broadcasts NPS_GAME_SERVER_STATE_CHANGE (0x224)
+   State = NPS_SERVER_START_PENDING (2)
+
+3. When server ready, broadcasts NPS_GAME_SERVER_STATE_CHANGE (0x224)
+   State = NPS_SERVER_RUNNING (4)
+
+4. Server sends NPS_GAME_SERVER_STARTED (0x21C) with:
+   - Riff (room name)
+   - CommId
+   - IpAddress (16 bytes)
+   - Port
+   - UserId (game server's ID)
+   - NumberOfPlayers
+
+5. Clients connect directly to game server at IpAddress:Port
+
+6. When race ends: NPS_GAME_SERVER_TERMINATED (0x21D)
+```
+
+**Running Server Info Structure:**
+
+| Offset | Size | Field |
+|--------|------|-------|
+| 0x00 | 32 | Riff (room name) |
+| 0x20 | 4 | CommId |
+| 0x24 | 16 | IpAddress (string) |
+| 0x34 | 4 | Port |
+| 0x38 | 4 | UserId (game server NPS ID) |
+| 0x3C | 4 | NumberOfPlayers |
+
+#### 4.6.9. Complete Room Session Flow
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. NPSConnectToServer() → Connect to PLS (port 7003)            │
+│    Returns: ServerId                                             │
+├─────────────────────────────────────────────────────────────────┤
+│ 2. NPSAddCommChannel() → Join/Create Room                        │
+│    Input: ServerId, Riff, Password, ChannelData                  │
+│    Returns: CommId (or error)                                    │
+├─────────────────────────────────────────────────────────────────┤
+│ 3. NPSSetMyUserData() → Send car/player info                     │
+├─────────────────────────────────────────────────────────────────┤
+│ 4. NPSSetCommChannelFlags(NPS_SET_GAME_READY) → Mark ready       │
+├─────────────────────────────────────────────────────────────────┤
+│ 5. NPSGetReadyList() → Poll ready players                        │
+├─────────────────────────────────────────────────────────────────┤
+│ 6. When all ready: NPSStartGameServer()                          │
+│    → Receive NPS_GAME_SERVER_STATE_CHANGE messages               │
+├─────────────────────────────────────────────────────────────────┤
+│ 7. Receive NPS_GAME_SERVER_STARTED with connection info          │
+│    → Connect to game server IP:Port (ports 9000-9014)            │
+├─────────────────────────────────────────────────────────────────┤
+│ 8. Race occurs (game messages on TCP channel 0, UDP channel 1)   │
+├─────────────────────────────────────────────────────────────────┤
+│ 9. Receive NPS_GAME_SERVER_TERMINATED                            │
+├─────────────────────────────────────────────────────────────────┤
+│ 10. NPSCloseCommChannel() → Leave room                           │
+├─────────────────────────────────────────────────────────────────┤
+│ 11. NPSLogOffServer() → Disconnect from PLS                      │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### 4.6.10. NPS Error Codes
+
+| Code | Name | Description |
+|------|------|-------------|
+| 0 | NPS_OK | Success |
+| -4 | NPS_ERR_SERVER_FULL | Room/server full |
+| -12 | NPS_GAME_NOT_FOUND | Game server not found |
+| -20 | NPS_SERVER_NOT_FOUND | Server offline |
+| -33 | NPS_PASSWORD_CHECK_FAILED | Authentication failure |
+| -52 | NPS_NOT_ENOUGH_PLAYERS | Can't start race |
+| -72 | NPS_ROOM_NOT_FOUND | Room doesn't exist |
+
+#### 4.6.11. String Length Constants
+
+| Constant | Value |
+|----------|-------|
+| NPS_HOSTNAME_LEN | 64 |
+| NPS_RIFF_NAME_LEN | 32 |
+| NPS_GAMENAME_LEN | 64 |
+| NPS_PASSWORD_LEN | 17 |
+| NPS_USERNAME_LEN | 32 |
+| NPS_USERDATA_LEN | 64 |
+| NPS_CHANNEL_DATA_SIZE | 256 |
+| NPS_SESSION_KEY_LEN | 32 |
+| NPS_IPADDR_LEN | 16 |
 
 ---
 
