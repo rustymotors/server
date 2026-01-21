@@ -22,7 +22,7 @@
  * processing a specific message type.
  */
 
-import { MessageHandlerRegistry } from 'rusty-motors-shared';
+import { MessageHandlerRegistry, NPS_MESSAGE_IDS } from 'rusty-motors-shared';
 import type { BytableMessage, BytableBuffer } from '@rustymotors/binary';
 import type { ServerLogger } from 'rusty-motors-shared';
 
@@ -60,37 +60,37 @@ export function createLobbyHandlerRegistry(): MessageHandlerRegistry<
 > {
     const registry = new MessageHandlerRegistry<LobbyHandlerArgs, LobbyHandlerResult>('lobby');
 
-    // User login request (0x100)
+    // User login request
     registry.register({
-        opCode: 0x100,
+        opCode: NPS_MESSAGE_IDS.USER_LOGIN,
         name: 'User login',
         handler: _npsRequestGameConnectServer,
     });
 
-    // Open communication channel (0x106)
+    // Open communication channel
     registry.register({
-        opCode: 0x106,
+        opCode: NPS_MESSAGE_IDS.OPEN_COMM_CHANNEL,
         name: 'PT_OPEN_COMM_CHANNEL',
         handler: handleOpenCommChannel,
     });
 
-    // UDP status (0x125)
+    // UDP status
     registry.register({
-        opCode: 0x125,
+        opCode: NPS_MESSAGE_IDS.UDP_STATUS,
         name: 'PT_UDP_STATUS',
         handler: handleUdpStatus,
     });
 
-    // Encrypted command (0x1101)
+    // Encrypted command
     registry.register({
-        opCode: 0x1101,
+        opCode: NPS_MESSAGE_IDS.ENCRYPTED_COMMAND,
         name: 'Encrypted command',
         handler: handleEncryptedNPSCommand,
     });
 
-    // Tracking ping (0x217)
+    // Tracking ping
     registry.register({
-        opCode: 0x217,
+        opCode: NPS_MESSAGE_IDS.TRACKING_PING,
         name: 'Tracking ping',
         handler: handleTrackingPing,
     });
