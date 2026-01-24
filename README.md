@@ -2,7 +2,7 @@
 
 # MCOS - Motor City Online Server
 
-[![Node.js CI](https://github.com/drazisil/mcos/actions/workflows/node.yml/badge.svg?branch=dev)](https://github.com/drazisil/mcos/actions/workflows/node.yml) [![CodeQL](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml?branch=dev) [![codecov](https://codecov.io/gh/rustymotors/server/graph/badge.svg?token=XiwYgbHCeN)](https://codecov.io/gh/rustymotors/server) [![Coverage Status](https://coveralls.io/repos/github/drazisil/mcos/badge.svg?branch=dev)](https://coveralls.io/github/drazisil/mcos?branch=dev)
+[![Node.js CI](https://github.com/rustymotors/server/actions/workflows/node.yml/badge.svg?branch=dev)](https://github.com/rustymotors/server/actions/workflows/node.yml) [![CodeQL](https://github.com/rustymotors/server/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/rustymotors/server/actions/workflows/codeql-analysis.yml?branch=dev) [![codecov](https://codecov.io/gh/rustymotors/server/graph/badge.svg?token=XiwYgbHCeN)](https://codecov.io/gh/rustymotors/server) [![Coverage Status](https://coveralls.io/repos/github/rustymotors/server/badge.svg?branch=dev)](https://coveralls.io/github/rustymotors/server?branch=dev)
 
 > A from-scratch implementation of the server infrastructure for Motor City Online, a defunct online racing game. This project recreates the authentication, lobby, persona management, and game protocol handling required to run the original client.
 
@@ -124,7 +124,7 @@ npm run test:session
 Contributions are welcome! This is a passion project reverse-engineering a long-dead game, and community help makes it possible.
 
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
-- Check [open issues](https://github.com/rustymotors/mcos/issues) for ways to help
+- Check [open issues](https://github.com/rustymotors/server/issues) for ways to help
 
 ## Timeline
 
