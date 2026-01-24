@@ -55,6 +55,12 @@ jobs:
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
               run: |
                   codecovcli --verbose do-upload --fail-on-error --name ${{ matrix.node-version }}
+            - name: Upload coverage to Coveralls
+              if: matrix.node-version == '24.x'
+              uses: coverallsapp/github-action@v2
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  file: ./coverage/lcov.info
             - uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4
               with:
                   name: coverage_${{ matrix.node-version }}

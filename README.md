@@ -2,7 +2,7 @@
 
 # MCOS - Motor City Online Server
 
-[![Node.js CI](https://github.com/drazisil/mcos/actions/workflows/node.yml/badge.svg?branch=dev)](https://github.com/drazisil/mcos/actions/workflows/node.yml) [![CodeQL](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml?branch=dev) [![codecov](https://codecov.io/gh/rustymotors/server/graph/badge.svg?token=XiwYgbHCeN)](https://codecov.io/gh/rustymotors/server)
+[![Node.js CI](https://github.com/drazisil/mcos/actions/workflows/node.yml/badge.svg?branch=dev)](https://github.com/drazisil/mcos/actions/workflows/node.yml) [![CodeQL](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/drazisil/mcos/actions/workflows/codeql-analysis.yml?branch=dev) [![codecov](https://codecov.io/gh/rustymotors/server/graph/badge.svg?token=XiwYgbHCeN)](https://codecov.io/gh/rustymotors/server) [![Coverage Status](https://coveralls.io/repos/github/drazisil/mcos/badge.svg?branch=dev)](https://coveralls.io/github/drazisil/mcos?branch=dev)
 
 > A from-scratch implementation of the server infrastructure for Motor City Online, a defunct online racing game. This project recreates the authentication, lobby, persona management, and game protocol handling required to run the original client.
 
