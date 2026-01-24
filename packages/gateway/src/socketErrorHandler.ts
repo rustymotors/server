@@ -1,14 +1,13 @@
 import { getServerLogger, type ServerLogger } from "rusty-motors-shared";
 
 /**
- * Handles socket errors by logging specific error codes or throwing an error.
+ * Handles socket errors by logging them.
+ * Never throws - all errors are logged to prevent uncaught exceptions from crashing the server.
  *
  * @param {Object} params - The parameters for the socket error handler.
  * @param {string} params.connectionId - The ID of the connection where the error occurred.
  * @param {NodeJS.ErrnoException} params.error - The error object containing details of the socket error.
  * @param {ServerLogger} [params.log] - Optional logger instance for logging error details. Defaults to a server logger named "socketErrorHandler".
- *
- * @throws {Error} Throws an error if the socket error code is not handled.
  */
 export function socketErrorHandler({
 	connectionId,
@@ -19,10 +18,14 @@ export function socketErrorHandler({
 	error: NodeJS.ErrnoException;
 	log?: ServerLogger;
 }) {
-	// Handle socket errors
-	if (error.code == "ECONNRESET") {
-		log.debug(`Connection ${connectionId} reset`);
+	// Handle socket errors - all errors are logged, never thrown
+	if (error.code === "ECONNRESET") {
+		log.debug(`Connection ${connectionId} reset by peer`);
 		return;
 	}
-	throw Error(`Socket error: ${error.message} on connection ${connectionId}`);
+	// Log other socket errors without throwing - throwing from event handlers crashes the process
+	log.error(`Socket error on connection ${connectionId}: ${error.message}`, {
+		code: error.code,
+		errno: error.errno,
+	});
 }

@@ -63,7 +63,8 @@ export async function npsPortRouter({
                 );
             } catch (err) {
                 log.error(`Error receiving item: ${err}`);
-                throw err;
+                // Do not re-throw - log and exit queue to prevent unhandled rejection crashes
+                receiveQueue.exit();
             }
         },
     );
@@ -93,7 +94,8 @@ export async function npsPortRouter({
                 }
             } catch (err) {
                 log.error(`Error sending item: ${err}`);
-                throw err;
+                // Do not re-throw - log and exit queue to prevent unhandled rejection crashes
+                sendQueue.exit();
             }
         },
     );

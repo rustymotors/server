@@ -13,11 +13,11 @@ describe("socketErrorHandler", () => {
 		socketErrorHandler({ connectionId, error, log: mockLogger });
 
 		expect(mockLogger.debug).toHaveBeenCalledWith(
-			`Connection ${connectionId} reset`,
+			`Connection ${connectionId} reset by peer`,
 		);
 	});
 
-	it("should throw an error when error code is not handled", () => {
+	it("should log an error when error code is not handled", () => {
 		const connectionId = "12345";
 		const error = {
 			code: "EUNKNOWN",
@@ -25,10 +25,17 @@ describe("socketErrorHandler", () => {
 		} as NodeJS.ErrnoException;
 		const mockLogger = {
 			debug: vi.fn(),
+			error: vi.fn(),
 		} as unknown as ServerLogger;
 
-		expect(() =>
-			socketErrorHandler({ connectionId, error, log: mockLogger }),
-		).toThrow(`Socket error: ${error.message} on connection ${connectionId}`);
+		socketErrorHandler({ connectionId, error, log: mockLogger });
+
+		expect(mockLogger.error).toHaveBeenCalledWith(
+			`Socket error on connection ${connectionId}: ${error.message}`,
+			expect.objectContaining({
+				code: error.code,
+				errno: error.errno,
+			}),
+		);
 	});
 });
