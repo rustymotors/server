@@ -1,0 +1,36 @@
+{
+	"name": "rusty-motors-protocol",
+	"private": true,
+	"version": "1.0.0-next.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./index.ts",
+			"require": "./index.ts",
+			"types": "./index.ts"
+		}
+	},
+	"main": "./index.ts",
+	"types": "./index.ts",
+	"scripts": {
+		"check": "tsc",
+		"lint": "npx @biomejs/biome lint --write .",
+		"format": "npx @biomejs/biome format --write .",
+		"test": "vitest run --coverage",
+		"build": "tsc"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "AGPL-3.0",
+	"description": "",
+	"devDependencies": {
+		"@vitest/coverage-v8": "3.2.4",
+		"vitest": "^3.2.4"
+	},
+	"dependencies": {
+		"@sentry/cli": "3.0.1",
+		"@sentry/node": "10.32.1",
+		"@sentry/profiling-node": "10.32.1",
+		"winston-daily-rotate-file": "^5.0.0"
+	}
+}

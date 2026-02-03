@@ -1,0 +1,265 @@
+# Rusty Motors Server - Cursor AI Rules
+
+## Project Overview
+
+This is a **monolith game server** for Motor City Online reverse engineering.
+
+- Language: TypeScript
+- Runtime: Node.js
+- Package Manager: npm
+- Test Framework: Vitest
+
+## MUST READ FIRST
+
+Before making changes, read `MASTER_DESIGN.md` in the project root.
+It contains all architectural decisions and refactoring guidance.
+
+---
+
+## Quick Rules
+
+### 1. Package Structure
+
+Packages are FLAT. Do NOT create subdirectories unless the package has 20+ files.
+
+**Exception**: `packages/gateway/` has internal structure (`core/`, `infrastructure/`, `handlers/`).
+
+### 2. Layer Rules (CRITICAL)
+
+```
+Layer 4: src/nps_server.ts, src/mcots_server.ts (entry points)
+Layer 3: packages/gateway, src/chat (orchestration)
+Layer 2: packages/login, persona, transactions, lobby, nps, shard, cli (domain)
+Layer 1: libs/@rustymotors/*, packages/shared, database, protocol (infrastructure)
+```
+
+**FORBIDDEN**: Layer 2 packages cannot import from each other!
+
+```typescript
+// ❌ WRONG - login cannot import from transactions
+import { something } from "rusty-motors-transactions";
+
+// ✅ OK - login can import from shared (Layer 1)
+import { ServerLogger } from "rusty-motors-shared";
+```
+
+### 3. Logging
+
+NEVER use `console.log`, `console.error`, `console.warn`, or `console.dir`.
+
+ALWAYS use the logger:
+
+```typescript
+import { getServerLogger } from "rusty-motors-shared";
+
+const log = getServerLogger("myModule");
+log.info("message");
+log.error("error message");
+log.warn("warning");
+log.verbose("debug info");
+```
+
+### 4. Dependency Injection Pattern
+
+ALL public functions should accept dependencies as optional parameters:
+
+```typescript
+// ✅ CORRECT pattern
+export async function myFunction(
+    input: InputType,
+    log: ServerLogger = getServerLogger("myModule"),
+): Promise<ResultType> {
+    log.info("Processing...");
+    // implementation
+}
+
+// ❌ WRONG - no way to inject mock logger for testing
+export async function myFunction(input: InputType): Promise<ResultType> {
+    const log = getServerLogger("myModule");
+    // implementation
+}
+```
+
+### 5. Serialization
+
+Use `@rustymotors/binary` for all serialization:
+
+```typescript
+// ✅ CORRECT
+import { BytableBuffer, BytableMessage } from "@rustymotors/binary";
+
+// ❌ DEPRECATED - do not use
+import { SerializedBufferOld } from "rusty-motors-shared";
+import { BufferSerializer } from "rusty-motors-protocol";
+```
+
+### 6. Error Handling
+
+Wrap errors with context:
+
+```typescript
+try {
+    await riskyOperation();
+} catch (error) {
+    throw new Error("Failed to process login", { cause: error });
+}
+```
+
+### 7. Exports
+
+Use named exports, NOT default exports:
+
+```typescript
+// ✅ CORRECT
+export function myFunction() {}
+export class MyClass {}
+
+// ❌ WRONG
+export default function myFunction() {}
+```
+
+### 8. Async/Await
+
+Use async/await, NOT .then().catch():
+
+```typescript
+// ✅ CORRECT
+try {
+    const result = await asyncOperation();
+} catch (error) {
+    log.error("Failed", { error });
+}
+
+// ❌ WRONG
+asyncOperation()
+    .then(result => {})
+    .catch(error => {});
+```
+
+### 9. Strict Equality
+
+Always use `===` and `!==`, never `==` or `!=`:
+
+```typescript
+// ✅ CORRECT
+if (value === "expected") {}
+if (value !== undefined) {}
+
+// ❌ WRONG
+if (value == "expected") {}
+if (value != undefined) {}
+```
+
+---
+
+## File Locations
+
+### Where to put new code
+
+| Type of Code | Location |
+|--------------|----------|
+| Shared types/utilities | `packages/shared/src/` |
+| Database operations | `packages/database/src/` |
+| Protocol definitions | `packages/protocol/src/` |
+| Binary serialization | `libs/@rustymotors/binary/src/` |
+| Login logic | `packages/login/src/` |
+| Persona logic | `packages/persona/src/` |
+| Transaction logic | `packages/transactions/src/` |
+| Lobby logic | `packages/lobby/src/` |
+| NPS handlers | `packages/nps/src/` |
+| Gateway/routing | `packages/gateway/src/` |
+| Chat | `src/chat/` |
+| Entry points | `src/` (root level .ts files) |
+
+### Where NOT to put code
+
+- Do NOT create new top-level directories
+- Do NOT create new packages without explicit approval
+- Do NOT add files to `libs/` except in existing `@rustymotors/` packages
+
+---
+
+## Testing
+
+### Test file location
+
+Tests go next to the source file or in a `test/` directory:
+
+```
+packages/login/src/login.ts
+packages/login/src/login.test.ts    # Option 1: next to source
+packages/login/test/login.test.ts   # Option 2: in test dir
+```
+
+### Test pattern
+
+```typescript
+import { describe, it, expect } from "vitest";
+import { mockLogger } from "../../mocks.js";
+
+describe("functionName", () => {
+    it("should do expected behavior", async () => {
+        // Arrange
+        const input = createTestInput();
+
+        // Act
+        const result = await functionName(input, mockLogger);
+
+        // Assert
+        expect(result).toBeDefined();
+        expect(mockLogger.error).not.toHaveBeenCalled();
+    });
+});
+```
+
+**Note**: Use the shared `mockLogger` from `mocks.ts` - don't create inline mocks.
+
+---
+
+## Common Tasks
+
+### Adding a new message handler
+
+1. Find the appropriate package (login, persona, transactions, lobby, nps)
+2. Create handler function with dependency injection pattern
+3. Register in the package's handler map/registry
+4. Add tests
+5. Export from package index
+
+### Fixing a bug
+
+1. Write a test that reproduces the bug
+2. Fix the bug with minimal changes
+3. Verify test passes
+4. Do NOT refactor unrelated code in the same commit
+
+### Refactoring
+
+1. Check `MASTER_DESIGN.md` for architectural decisions
+2. Run existing tests first
+3. Make incremental changes
+4. Run tests after each change
+5. Update imports if moving files
+
+---
+
+## Do NOT
+
+- ❌ Create directories in flat packages (unless 20+ files)
+- ❌ Import Layer 2 packages from other Layer 2 packages
+- ❌ Use console.log/error/warn/dir
+- ❌ Use default exports
+- ❌ Use .then().catch() chains
+- ❌ Use == or != for comparisons
+- ❌ Use SerializedBufferOld or BufferSerializer (deprecated)
+- ❌ Create abstractions "for the future" - only when needed now
+- ❌ Add features beyond what was requested
+
+---
+
+## Reference
+
+Full documentation: `MASTER_DESIGN.md`
+Layer analysis tool: `tsx scripts/analyze-layers.ts`
+Quick wins list: `QUICK_WINS.md`
+Test coverage gaps: `CRITICAL_TEST_COVERAGE.md`
