@@ -8,8 +8,8 @@
 /* eslint-disable */
 // tslint:disable
 
-import Part from './part'
-import PtSkin from './pt_skin'
+import type Part from './part'
+import type PtSkin from './pt_skin'
 
 interface Vehicle {
   class: number

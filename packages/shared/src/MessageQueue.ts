@@ -1,4 +1,4 @@
-import { messageQueueItem } from 'rusty-motors-shared';
+import type { messageQueueItem } from 'rusty-motors-shared';
 
 export class MessageQueue {
     private _name: string;

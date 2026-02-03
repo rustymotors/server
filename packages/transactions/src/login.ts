@@ -5,7 +5,7 @@ import {
 	LoginCompletePayload,
 	LoginPayload,
 	ServerPacket,
-} from "rusty-motors-shared-packets";
+} from "rusty-motors-protocol";
 import { getServerLogger } from "rusty-motors-shared";
 
 const defaultLogger = getServerLogger("handlers/login");

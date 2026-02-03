@@ -10,17 +10,14 @@
 		{ "path": "packages/database" },
 		{ "path": "packages/gateway" },
 		{ "path": "packages/lobby" },
-		{ "path": "packages/login" },
 		{ "path": "packages/nps" },
-		{ "path": "packages/persona" },
 		{ "path": "packages/shard" },
 		{ "path": "packages/shared" },
-		{ "path": "packages/shared-packets" },
+		{ "path": "packages/protocol" },
 		{ "path": "packages/transactions" },
 		{ "path": "libs/@rustymotors/binary" },
 		{ "path": "libs/@rustymotors/network" },
 		{ "path": "libs/@rustymotors/parser" },
-		{ "path": "libs/@rustymotors/protocol" },
 		{ "path": "libs/@rustymotors/rooms" },
 		{ "path": "src/chat" }
 	]

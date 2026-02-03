@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import http from "node:http";
+import type http from "node:http";
 import { CastanetResponse } from "./CastanetResponse.js";
 import { generateShardList } from "rusty-motors-shard";
 import {
@@ -22,8 +22,8 @@ import {
 	handleGetKey,
 	handleGetRegistry,
 } from "rusty-motors-shard";
-import { getServerConfiguration, getServerLogger } from "rusty-motors-shared";
-import { findUser } from "rusty-motors-database";
+import { getServerConfiguration, getServerLogger, type ServerLogger, databaseProvider } from "rusty-motors-shared";
+import type { GatewayConfiguration } from "./configuration/GatewayConfiguration.js";
 
 type WebHandlerResponse = {
 	headers: Record<string, string>;
@@ -71,7 +71,16 @@ class AuthLoginResponse {
 
 const routeHandlers: Map<string, WebHandler> = new Map();
 
-export function initializeRouteHandlers() {
+// Store GatewayConfiguration for use in handlers
+let gatewayConfiguration: GatewayConfiguration | null = null;
+
+/**
+ * Initializes route handlers with Gateway configuration
+ *
+ * @param config - The GatewayConfiguration instance to use for handlers
+ */
+export function initializeRouteHandlers(config?: GatewayConfiguration) {
+	gatewayConfiguration = config ?? null;
 	routeHandlers.set("/", handleRoot);
 	routeHandlers.set("/games/EA_Seattle/MotorCity/UpdateInfo", handleCastanet);
 	routeHandlers.set("/games/EA_Seattle/MotorCity/NPS", handleCastanet);
@@ -169,7 +178,12 @@ async function handleAuthLogin(
 		"https://winehq.com",
 	);
 
-	const user = await findUser(username, password);
+	let user = null;
+	try {
+		user = await databaseProvider.getAuthStore().findUser(username, password);
+	} catch {
+		// User not found or invalid password
+	}
 
 	if (user !== null) {
 		const ticket = generateTicket(user.customerId);
@@ -192,7 +206,21 @@ async function handleAuthLogin(
  * @returns The response headers and body for the shard list request.
  */
 async function handleShardList(): Promise<WebHandlerResponse> {
-	const shardList = generateShardList(getServerConfiguration().host);
+	const sharedConfig = getServerConfiguration();
+	const host = sharedConfig.host;
+
+	// Use GatewayConfiguration if available, otherwise use defaults
+	let loginPort = 8226;
+	let lobbyPort = 7003;
+	let diagnosticPort = 80;
+
+	if (gatewayConfiguration) {
+		loginPort = gatewayConfiguration.getLoginServerPort();
+		lobbyPort = gatewayConfiguration.getLobbyServerPort();
+		diagnosticPort = gatewayConfiguration.getDiagnosticServerPort();
+	}
+
+	const shardList = generateShardList(host, loginPort, lobbyPort, diagnosticPort);
 	return {
 		headers: { "Content-Type": "text/plain" },
 		body: shardList,
@@ -203,10 +231,12 @@ async function handleShardList(): Promise<WebHandlerResponse> {
  *
  * @param request - The incoming HTTP request object.
  * @param response - The HTTP response object to send to the client.
+ * @param log - Optional logger instance. Defaults to getServerLogger if not provided.
  */
 async function handleWebUrl(
 	request: http.IncomingMessage,
 	response: http.ServerResponse,
+	log: ServerLogger = getServerLogger("gateway.web/getWebURL"),
 ): Promise<WebHandlerResponse> {
 	const url = new URL(
 		`http://${process.env["HOST"] ?? "localhost"}${request.url}`,
@@ -224,7 +254,7 @@ async function handleWebUrl(
 		}
 	}
 
-	getServerLogger("gateway.web/getWebURL").debug(`Request for url # ${id}`)
+	log.debug(`Request for url # ${id}`)
 
 	if (id === '58') {
 		urlResponse = `101
@@ -3467,7 +3497,6 @@ export async function processHttpRequest(
 	request: http.IncomingMessage,
 	response: http.ServerResponse,
 ) {
-
 	const url = new URL(
 		`http://${process.env["HOST"] ?? "localhost"}${request.url}`,
 	);
@@ -3483,7 +3512,6 @@ export async function processHttpRequest(
 			return;
 		}
 	}
-
 
 	response.statusCode = 404;
 	response.end("Not found");

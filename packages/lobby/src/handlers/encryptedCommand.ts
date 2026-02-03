@@ -1,12 +1,11 @@
 import {
     fetchStateFromDatabase,
     getEncryption,
-    SerializedBufferOld,
-    ServerLogger,
+    type ServerLogger,
     updateEncryption,
 } from 'rusty-motors-shared';
 import { getServerLogger } from 'rusty-motors-shared';
-import { BytableMessage, createRawMessage } from '@rustymotors/binary';
+import { type BytableMessage, BytableBuffer, createRawMessage } from '@rustymotors/binary';
 import { npsCommandHandlers } from './npsCommandHandlers.js';
 
 /**
@@ -199,7 +198,7 @@ async function handleCommand({
  * @param {ServerLogger} [args.log=getServerLogger({ name: "Lobby" })]
   * @returns {Promise<{
 *  connectionId: string,
-* messages: SerializedBufferOld[],
+* messages: BytableBuffer[],
 * }>}
 
  */
@@ -213,7 +212,7 @@ export async function handleEncryptedNPSCommand({
     log?: ServerLogger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBufferOld[];
+    messages: BytableBuffer[];
 }> {
     log.debug(`Received encrypted command: ${message.header.id}`, {
         connectionId,
@@ -268,7 +267,7 @@ export async function handleEncryptedNPSCommand({
                 connectionId,
             });
 
-            const outPacket = new SerializedBufferOld();
+            const outPacket = new BytableBuffer();
             outPacket.deserialize(encryptedResponse.serialize());
             return outPacket;
         } catch (error) {

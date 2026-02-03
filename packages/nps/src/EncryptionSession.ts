@@ -1,6 +1,6 @@
 import {
-	Cipher,
-	Decipher,
+	type Cipher,
+	type Decipher,
 	createCipheriv,
 	createDecipheriv,
 } from "node:crypto";

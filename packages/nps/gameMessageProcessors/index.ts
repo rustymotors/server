@@ -1,4 +1,4 @@
-import { GameMessage } from "../messageStructs/GameMessage.js";
+import type { GameMessage } from "../messageStructs/GameMessage.js";
 import type { UserStatus } from "../messageStructs/UserStatus.js";
 import { processCheckPlateText } from "./processCheckPlateText.js";
 import { processCheckProfileName } from "./processCheckProfileName.js";

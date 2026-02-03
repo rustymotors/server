@@ -12,6 +12,8 @@ built
 junit.xml
 .dccache
 *.db
+*.db-shm
+*.db-wal
 node_modules/
 .DS_Store
 
@@ -26,3 +28,19 @@ vite.config.*.timestamp*
 vitest.config.*.timestamp*
 data/*-audit.json
 data/*.log.gz
+
+# Build artifacts
+out.log
+build/
+
+# IDE/Editor
+.idea/
+*.swp
+*.swo
+
+# OS files
+Thumbs.db
+
+# Environment variations
+.env.*
+!.env.example

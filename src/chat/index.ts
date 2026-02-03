@@ -1,8 +1,8 @@
-import {
-	SerializedBufferOld,
-	type ServiceResponse,
+import type {
+	ServiceResponse,
 } from "rusty-motors-shared";
-import { type BufferSerializer } from "rusty-motors-shared-packets";
+import type { BufferSerializer } from "rusty-motors-protocol";
+import { BytableBuffer } from "@rustymotors/binary";
 import { ChatMessage } from "./ChatMessage.js";
 import {
 	handleListInGameEmailsMessage,
@@ -66,8 +66,8 @@ async function receiveChatData({
 			`Responses: ${responses.map((response) => bufferToHexString(response))}`,
 		);
 		const messages = responses.map((response) => {
-			const responseBuffer = new SerializedBufferOld();
-			responseBuffer._doDeserialize(response);
+			const responseBuffer = new BytableBuffer();
+			responseBuffer.deserialize(response);
 			return responseBuffer;
 		});
 

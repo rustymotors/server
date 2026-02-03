@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import { DatabaseManager, ServerLogger } from "../src/types.js";
+import type { DatabaseManager, ServerLogger } from "../src/types.js";
 
 export const loggerMock: ServerLogger = {
 	error: vi.fn(),

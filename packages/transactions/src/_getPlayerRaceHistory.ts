@@ -5,7 +5,7 @@ import {
 } from "./PlayerRacingHistoryMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 import { getRacingHistoryRecords } from "./database/racingHistoryRecords.js";
-import { GenericReplyPayload } from "rusty-motors-shared-packets";
+import { GenericReplyPayload } from "rusty-motors-protocol";
 import { getServerLogger } from "rusty-motors-shared";
 
 const defaultLogger = getServerLogger("handlers/_getPlayerRaceHistory");

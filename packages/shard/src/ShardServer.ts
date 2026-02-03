@@ -3,17 +3,25 @@ import { ShardEntry } from "./shard-entry.js";
 /**
  * Generate a shard list web document
  *
- * @param {string} shardHost
+ * @param {string} shardHost - The host address for the shard server
+ * @param {number} loginServerPort - The port for the login server (default: 8226)
+ * @param {number} lobbyServerPort - The port for the lobby server (default: 7003)
+ * @param {number} diagnosticServerPort - The port for the diagnostic server (default: 80)
  */
-export function generateShardList(shardHost: string) {
+export function generateShardList(
+	shardHost: string,
+	loginServerPort: number = 8226,
+	lobbyServerPort: number = 7003,
+	diagnosticServerPort: number = 80,
+) {
 	const shardClockTower = new ShardEntry(
 		"The Clocktower",
 		"The Clocktower",
 		44,
 		shardHost,
-		8226,
+		loginServerPort,
 		shardHost,
-		7003,
+		lobbyServerPort,
 		shardHost,
 		0,
 		"",
@@ -21,10 +29,10 @@ export function generateShardList(shardHost: string) {
 		88,
 		2,
 		shardHost,
-		80,
+		diagnosticServerPort,
 	);
 
-	let _possibleShards: string[] = [];
+	const _possibleShards: string[] = [];
 	_possibleShards.push(shardClockTower.formatForShardList());
 
 	const shardTwinPinesMall = new ShardEntry(
@@ -32,9 +40,9 @@ export function generateShardList(shardHost: string) {
 		"Twin Pines Mall",
 		88,
 		shardHost,
-		8226,
+		loginServerPort,
 		shardHost,
-		7003,
+		lobbyServerPort,
 		shardHost,
 		0,
 		"",
@@ -42,7 +50,7 @@ export function generateShardList(shardHost: string) {
 		88,
 		2,
 		shardHost,
-		80,
+		diagnosticServerPort,
 	);
 
 	_possibleShards.push(shardTwinPinesMall.formatForShardList());

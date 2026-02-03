@@ -1,5 +1,5 @@
 import { BytableMessage } from "@rustymotors/binary";
-import { RawMessage, ServerLogger } from "rusty-motors-shared";
+import { RawMessage, type ServerLogger } from "rusty-motors-shared";
 
 export async function handleSetChannelFlags({
     connectionId,

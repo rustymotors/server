@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { SerializedBufferOld } from "rusty-motors-shared";
+import { BytableBuffer } from "@rustymotors/binary";
 
 /**
  * A message listing the lobbies
  * This is the body of a MessageNode
  */
-export class LobbyMessage extends SerializedBufferOld {
+export class LobbyMessage extends BytableBuffer {
 	_msgNo: number;
 	_lobbyCount: number;
 	_shouldExpectMoreMessages: boolean;
@@ -35,7 +35,7 @@ export class LobbyMessage extends SerializedBufferOld {
 	}
 
 	override size() {
-		return 5 + this._lobbyList.length * 567;
+		return 5 + this._lobbyList.length * 569; // LobbyInfo is 569 bytes
 	}
 
 	/**
@@ -70,7 +70,7 @@ export class LobbyMessage extends SerializedBufferOld {
 	}
 }
 
-export class LobbyInfo extends SerializedBufferOld {
+export class LobbyInfo extends BytableBuffer {
 	_lobbyId: number;
 	_raceTypeId: number;
 	_terfId: number;
@@ -106,6 +106,8 @@ export class LobbyInfo extends SerializedBufferOld {
 	_backwardsEnabled: boolean;
 	_defaultTraffic: boolean;
 	_trafficEnabled: boolean;
+	_defaultDamage: boolean;
+	_damageEnabled: boolean;
 	_defaultDriverAI: boolean;
 	_driverAIEnabled: boolean;
 	_topDog: string;
@@ -189,6 +191,8 @@ export class LobbyInfo extends SerializedBufferOld {
 		this._backwardsEnabled = false; // 2 bytes
 		this._defaultTraffic = false; // 2 bytes
 		this._trafficEnabled = false; // 2 bytes
+		this._defaultDamage = false; // 2 bytes
+		this._damageEnabled = false; // 2 bytes
 		this._defaultDriverAI = false; // 2 bytes
 		this._driverAIEnabled = false; // 2 bytes
 		this._topDog = ""; // 13 bytes
@@ -233,7 +237,7 @@ export class LobbyInfo extends SerializedBufferOld {
 		this._teamTrialsNightFlag = false; // 2 bytes
 		this._teamTrialsBackwardsFlag = false; // 2 bytes
 		this._teamTrialsNumberLaps = 0; // 2 bytes
-		this._teamTrialsBaseTimeUnderPar = 0; // 2 bytes
+		this._teamTrialsBaseTimeUnderPar = 0; // 4 bytes (DWORD)
 		this._raceCashFactor = 0; // 4 bytes
 	}
 
@@ -365,6 +369,14 @@ export class LobbyInfo extends SerializedBufferOld {
 			data.subarray(offset, offset + 2),
 		);
 		offset += 2;
+		this._defaultDamage = this.deserializeBool(
+			data.subarray(offset, offset + 2),
+		);
+		offset += 2;
+		this._damageEnabled = this.deserializeBool(
+			data.subarray(offset, offset + 2),
+		);
+		offset += 2;
 		this._defaultDriverAI = this.deserializeBool(
 			data.subarray(offset, offset + 2),
 		);
@@ -372,7 +384,7 @@ export class LobbyInfo extends SerializedBufferOld {
 		this._driverAIEnabled = this.deserializeBool(
 			data.subarray(offset, offset + 2),
 		);
-		offset += 6;
+		offset += 2;
 		this._topDog = data.toString("utf8", offset, offset + 13);
 		offset += 13;
 		this._turfOwner = data.toString("utf8", offset, offset + 33);
@@ -463,10 +475,10 @@ export class LobbyInfo extends SerializedBufferOld {
 		offset += 2;
 		this._teamTrialsNumberLaps = data.readUInt16LE(offset);
 		offset += 2;
-		this._teamTrialsBaseTimeUnderPar = data.readUInt16LE(offset);
-		offset += 2;
+		this._teamTrialsBaseTimeUnderPar = data.readUInt32LE(offset);
+		offset += 4;
 		this._raceCashFactor = data.readUInt32LE(offset);
-		// 563 total bytes
+		// 569 total bytes
 
 		return this;
 	}
@@ -544,17 +556,16 @@ export class LobbyInfo extends SerializedBufferOld {
 		offset += 2; // offset is 383
 		buf.writeUInt16LE(this._trafficEnabled ? 1 : 0, offset);
 		offset += 2; // offset is 385
-		buf.writeUInt16LE(this._defaultDriverAI ? 1 : 0, offset);
+		buf.writeUInt16LE(this._defaultDamage ? 1 : 0, offset);
 		offset += 2; // offset is 387
+		buf.writeUInt16LE(this._damageEnabled ? 1 : 0, offset);
+		offset += 2; // offset is 389
+		buf.writeUInt16LE(this._defaultDriverAI ? 1 : 0, offset);
+		offset += 2; // offset is 391
 		buf.writeUInt16LE(this._driverAIEnabled ? 1 : 0, offset);
-		
-		
-		offset += 6; // offset is 389
-
-
-
+		offset += 2; // offset is 393
 		buf.write(this._topDog, offset, 13);
-		offset += 13; // offset is 402
+		offset += 13; // offset is 406
 		buf.write(this._turfOwner, offset, 33);
 		offset += 33; // offset is 435
 		buf.writeUInt32LE(this._qualifyingTime, offset);
@@ -636,9 +647,9 @@ export class LobbyInfo extends SerializedBufferOld {
 		buf.writeUInt16LE(this._teamTrialsBackwardsFlag ? 1 : 0, offset);
 		offset += 2; // offset is 555
 		buf.writeUInt16LE(this._teamTrialsNumberLaps, offset);
-		offset += 2; // offset is 557
-		buf.writeUInt16LE(this._teamTrialsBaseTimeUnderPar, offset);
-		offset += 2; // offset is 559
+		offset += 2; // offset is 561
+		buf.writeUInt32LE(this._teamTrialsBaseTimeUnderPar, offset);
+		offset += 4; // offset is 565
 		buf.writeUInt32LE(this._raceCashFactor, offset);
 		// offset is 569
 

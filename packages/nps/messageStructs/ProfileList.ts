@@ -1,5 +1,5 @@
 import type { ISerializable } from "rusty-motors-nps";
-import { GameProfile } from "./GameProfile.js";
+import type { GameProfile } from "./GameProfile.js";
 import { NPSList } from "./NPSList.js";
 
 export class ProfileList extends NPSList implements ISerializable {

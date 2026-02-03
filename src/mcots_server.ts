@@ -20,18 +20,40 @@ import {
     getServerLogger,
     verifyLegacyCipherSupport,
     getServerConfiguration,
+    databaseProvider,
 } from "rusty-motors-shared";
-import { databaseService } from "rusty-motors-database";
+import { createDatabaseServices } from "rusty-motors-database";
 
 function main() {
     const coreLogger = getServerLogger("mcots/core");
 
     try {
         verifyLegacyCipherSupport();
-        if (!databaseService.isDatabaseConnected) {
+
+        // Initialize database services from environment (12-factor app pattern)
+        const databaseUrl = process.env['DATABASE_URL'];
+        const sqlitePath = process.env['SQLITE_PATH'] ?? 'data/lotus.db';
+
+        if (!databaseUrl) {
+            coreLogger.error('DATABASE_URL environment variable is required');
+            process.exit(1);
+        }
+
+        // Create and register injectable database services
+        const dbServices = createDatabaseServices({
+            postgresUrl: databaseUrl,
+            sqlitePath,
+            logger: coreLogger,
+        });
+        databaseProvider.register(dbServices);
+
+        // Verify connection
+        if (!dbServices.auth.isDatabaseConnected) {
             coreLogger.error("Database connection failed. Exiting.");
             process.exit(1);
         }
+
+        coreLogger.info('Database services initialized');
     } catch (err) {
         coreLogger.error(`Error in core server: ${String(err)}`);
         process.exitCode = 1;

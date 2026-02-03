@@ -1,12 +1,13 @@
 import { BytableMessage } from '@rustymotors/binary';
 import {
     getServerLogger,
+    NPS_MESSAGE_IDS,
     RawMessage,
-    Serializable,
-    ServerLogger,
+    type Serializable,
+    type ServerLogger,
     UserJoinedChannelMessage,
+    databaseProvider,
 } from 'rusty-motors-shared';
-import { getDatabaseManager } from 'rusty-motors-database';
 
 export async function handleOpenCommChannel({
     connectionId,
@@ -63,14 +64,15 @@ export async function handleOpenCommChannel({
 
         if (requestedCommId > 100) {
             // Create user joined channel message
+            const sessionStore = databaseProvider.getSessionStore();
             const userId =
-                await getDatabaseManager().findUserByConnectionId(connectionId);
+                await sessionStore.findUserByConnectionId(connectionId);
             if (typeof userId === 'undefined') {
                 throw new Error(
                     `Unable to locate user for connection ${connectionId}`,
                 );
             }
-            const user = await getDatabaseManager().getUser(userId);
+            const user = await sessionStore.getUser(userId);
             if (typeof user === 'undefined') {
                 throw new Error(
                     `Unable to locate user data for user ${userId}`,
@@ -84,7 +86,7 @@ export async function handleOpenCommChannel({
             );
 
             const userJoinedMessage = BytableMessage.FromRawMessage(
-                createRawMessage(0x20c, userJoined),
+                createRawMessage(NPS_MESSAGE_IDS.USER_JOINED_CHANNEL, userJoined),
             );
 
             log.debug('Outbound user join message', {
@@ -127,7 +129,7 @@ export function createNPSChannelGrantedPacket(
         { name: 'port', field: 'Dword' },
     ]);
 
-    outgoingGameMessage.header.setId(0x214);
+    outgoingGameMessage.header.setId(NPS_MESSAGE_IDS.CHANNEL_GRANTED);
     outgoingGameMessage.setVersion(0);
     outgoingGameMessage.setFieldValueByName('commId', commId);
     outgoingGameMessage.setFieldValueByName('port', commPort);

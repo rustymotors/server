@@ -1,7 +1,7 @@
 import { checkSize4 } from "./helpers.js";
 import { checkSize2 } from "./helpers.js";
 import { sliceBuff } from "./helpers.js";
-import { NPSMessage } from "./types.js";
+import type { NPSMessage } from "./types.js";
 
 
 export class RawMessage implements NPSMessage {

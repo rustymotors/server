@@ -1,4 +1,4 @@
-import { getServerLogger, ServerLogger } from "rusty-motors-shared";
+import { getServerLogger, ServerLogger } from "@rustymotors/logging";
 import { getMCOProtocolInstance } from "./MCOProtocol.js";
 
 export function writePacket({

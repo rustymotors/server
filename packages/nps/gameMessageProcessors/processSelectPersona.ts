@@ -1,7 +1,7 @@
-import { GameMessage, getDWord } from "rusty-motors-nps";
+import { type GameMessage, getDWord } from "rusty-motors-nps";
 import type { GameSocketCallback } from "./index.js";
 
-import { UserStatus, UserStatusManager, sendNPSAck } from "rusty-motors-nps";
+import { type UserStatus, UserStatusManager, sendNPSAck } from "rusty-motors-nps";
 import { getServerLogger } from "rusty-motors-shared";
 
 const defaultLogger = getServerLogger("nps.processSelectPersona");

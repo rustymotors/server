@@ -116,7 +116,7 @@ export class DatabaseService {
 		this.database = new Database(databasePath);
 		this.database.pragma('journal_mode = WAL');
 
-
+		this.database.exec(SQL.CREATE_USER_TABLE);
 		this.database.exec(
 			"CREATE INDEX IF NOT EXISTS idx_user_username ON user(username)",
 		);

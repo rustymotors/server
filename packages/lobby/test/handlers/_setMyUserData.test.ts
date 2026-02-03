@@ -1,25 +1,36 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { _setMyUserData } from "../../src/handlers/_setMyUserData.js";
-import { UserInfoMessage, UserInfo, UserData } from "rusty-motors-shared";
+import { UserInfoMessage, UserInfo, UserData, databaseProvider } from "rusty-motors-shared";
 import {loggerMock} from "rusty-motors-shared/test"
 import { BytableMessage } from "@rustymotors/binary";
 
-// Mock the databaseManager
-vi.mock("rusty-motors-database", () => {
-	return {
-		databaseManager: {
-			getUser: vi.fn(),
-			updateUser: vi.fn(),
-		},
-	};
-});
-
-import { databaseManager } from "rusty-motors-database";
+// Mock session store
+const mockSessionStore = {
+	getUser: vi.fn(),
+	updateUser: vi.fn(),
+	updateSessionKey: vi.fn(),
+	fetchSessionKeyByCustomerId: vi.fn(),
+	fetchSessionKeyByConnectionId: vi.fn(),
+	updateConnection: vi.fn(),
+	findUserByConnectionId: vi.fn(),
+	updateGameServer: vi.fn(),
+	getGameServers: vi.fn(),
+};
 
 describe("_setMyUserData", () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks();
+		// Register mock session store with the database provider
+		databaseProvider.register({
+			session: mockSessionStore as any,
+			gameData: {} as any,
+			auth: {} as any,
+		});
+	});
+
+	afterEach(() => {
+		databaseProvider.unregister();
 	});
 
 	it("should handle user data update when no differences are found", async () => {
@@ -50,10 +61,10 @@ describe("_setMyUserData", () => {
 		};
 
 		// getUser is called twice: once before diffObj, once after updateUser
-		vi.mocked(databaseManager.getUser)
+		mockSessionStore.getUser
 			.mockResolvedValueOnce(existingUserInfo) // First call before diffObj
 			.mockResolvedValueOnce(existingUserInfo); // Second call after updateUser
-		vi.mocked(databaseManager.updateUser).mockResolvedValue(undefined);
+		mockSessionStore.updateUser.mockResolvedValue(undefined);
 
 		// Act
 		const result = await _setMyUserData({
@@ -63,9 +74,9 @@ describe("_setMyUserData", () => {
 		});
 
 		// Assert
-		expect(databaseManager.getUser).toHaveBeenCalledTimes(2);
-		expect(databaseManager.getUser).toHaveBeenNthCalledWith(1, userId);
-		expect(databaseManager.updateUser).toHaveBeenCalledWith({
+		expect(mockSessionStore.getUser).toHaveBeenCalledTimes(2);
+		expect(mockSessionStore.getUser).toHaveBeenNthCalledWith(1, userId);
+		expect(mockSessionStore.updateUser).toHaveBeenCalledWith({
 			userId,
 			userInfo: incomingMessage.userInfo,
 		});
@@ -103,10 +114,10 @@ describe("_setMyUserData", () => {
 		};
 
 		// getUser is called twice: once before diffObj, once after updateUser
-		vi.mocked(databaseManager.getUser)
+		mockSessionStore.getUser
 			.mockResolvedValueOnce(existingUserInfo) // First call before diffObj
 			.mockResolvedValueOnce(existingUserInfo); // Second call after updateUser
-		vi.mocked(databaseManager.updateUser).mockResolvedValue(undefined);
+		mockSessionStore.updateUser.mockResolvedValue(undefined);
 
 		// Act
 		const result = await _setMyUserData({
@@ -116,8 +127,8 @@ describe("_setMyUserData", () => {
 		});
 
 		// Assert - verify diffObj path was executed
-		expect(databaseManager.getUser).toHaveBeenCalledTimes(2);
-		expect(databaseManager.getUser).toHaveBeenNthCalledWith(1, userId);
+		expect(mockSessionStore.getUser).toHaveBeenCalledTimes(2);
+		expect(mockSessionStore.getUser).toHaveBeenNthCalledWith(1, userId);
 		expect(loggerMock.warn).toHaveBeenCalledWith(
 			"Changes in UserInfo",
 			expect.objectContaining({
@@ -130,7 +141,7 @@ describe("_setMyUserData", () => {
 				],
 			}),
 		);
-		expect(databaseManager.updateUser).toHaveBeenCalledWith({
+		expect(mockSessionStore.updateUser).toHaveBeenCalledWith({
 			userId,
 			userInfo: incomingMessage.userInfo,
 		});
@@ -170,10 +181,10 @@ describe("_setMyUserData", () => {
 		};
 
 		// getUser is called twice: once before diffObj, once after updateUser
-		vi.mocked(databaseManager.getUser)
+		mockSessionStore.getUser
 			.mockResolvedValueOnce(existingUserInfo) // First call before diffObj
 			.mockResolvedValueOnce(existingUserInfo); // Second call after updateUser
-		vi.mocked(databaseManager.updateUser).mockResolvedValue(undefined);
+		mockSessionStore.updateUser.mockResolvedValue(undefined);
 
 		// Act
 		const result = await _setMyUserData({
@@ -183,8 +194,8 @@ describe("_setMyUserData", () => {
 		});
 
 		// Assert - verify diffObj was called and may have detected differences
-		expect(databaseManager.getUser).toHaveBeenCalledWith(userId);
-		expect(databaseManager.updateUser).toHaveBeenCalledWith({
+		expect(mockSessionStore.getUser).toHaveBeenCalledWith(userId);
+		expect(mockSessionStore.updateUser).toHaveBeenCalledWith({
 			userId,
 			userInfo: incomingMessage.userInfo,
 		});
@@ -213,10 +224,10 @@ describe("_setMyUserData", () => {
 		};
 
 		// getUser is called twice: once before diffObj, once after updateUser
-		vi.mocked(databaseManager.getUser)
+		mockSessionStore.getUser
 			.mockResolvedValueOnce(undefined) // First call before diffObj - user doesn't exist
 			.mockResolvedValueOnce(incomingMessage.userInfo); // Second call after updateUser
-		vi.mocked(databaseManager.updateUser).mockResolvedValue(undefined);
+		mockSessionStore.updateUser.mockResolvedValue(undefined);
 
 		// Act
 		const result = await _setMyUserData({
@@ -226,8 +237,8 @@ describe("_setMyUserData", () => {
 		});
 
 		// Assert - diffObj should detect differences when before is undefined
-		expect(databaseManager.getUser).toHaveBeenCalledTimes(2);
-		expect(databaseManager.getUser).toHaveBeenNthCalledWith(1, userId);
+		expect(mockSessionStore.getUser).toHaveBeenCalledTimes(2);
+		expect(mockSessionStore.getUser).toHaveBeenNthCalledWith(1, userId);
 		expect(loggerMock.warn).toHaveBeenCalledWith(
 			"Changes in UserInfo",
 			expect.objectContaining({
@@ -236,7 +247,7 @@ describe("_setMyUserData", () => {
 				diffs: expect.any(Array),
 			}),
 		);
-		expect(databaseManager.updateUser).toHaveBeenCalledWith({
+		expect(mockSessionStore.updateUser).toHaveBeenCalledWith({
 			userId,
 			userInfo: incomingMessage.userInfo,
 		});
@@ -269,10 +280,10 @@ describe("_setMyUserData", () => {
 			return dataField as Buffer<ArrayBuffer>;
 		};
 
-		vi.mocked(databaseManager.getUser)
+		mockSessionStore.getUser
 			.mockResolvedValueOnce(existingUserInfo) // First call before update
 			.mockResolvedValueOnce(undefined); // Second call after update - should fail
-		vi.mocked(databaseManager.updateUser).mockResolvedValue(undefined);
+		mockSessionStore.updateUser.mockResolvedValue(undefined);
 
 		// Act & Assert
 		await expect(

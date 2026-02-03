@@ -1,9 +1,9 @@
 import {
     LegacyMessage,
     NPSMessage,
-    SerializedBufferOld,
     ServerLogger,
 } from 'rusty-motors-shared';
+import { BytableBuffer } from '@rustymotors/binary';
 import { createGameProfile } from 'rusty-motors-nps';
 import { getPersonaByPersonaId } from '../getPersonasByPersonaId.js';
 import { personaToString } from '../internal.js';
@@ -23,7 +23,7 @@ export async function getPersonaInfo({
     log?: ServerLogger;
 }): Promise<{
     connectionId: string;
-    messages: SerializedBufferOld[];
+    messages: BytableBuffer[];
 }> {
     log.debug('getPersonaInfo...');
     const requestPacket = new NPSMessage();
@@ -33,7 +33,7 @@ export async function getPersonaInfo({
         `LegacyMsg request object from getPersonaInfo ${requestPacket.toString()}`,
     );
 
-    const outboundMessage = new SerializedBufferOld();
+    const outboundMessage = new BytableBuffer();
 
     const responsePacket = new LegacyMessage();
     const personaId = requestPacket.data.readUInt32BE(0);
@@ -64,15 +64,15 @@ export async function getPersonaInfo({
                     .toString('hex')} `,
             );
 
-            const outboundMessage = new SerializedBufferOld();
-            outboundMessage.setBuffer(responsePacket._doSerialize());
+            const outboundMessage = new BytableBuffer();
+            outboundMessage.setValue(responsePacket._doSerialize());
             return outboundMessage;
         });
     } catch (error) {
         log.error(`Error fetching persions for ${personaId}`);
         Sentry.captureException(error);
         responsePacket._header.id = 0x612; // no persona
-        outboundMessage.setBuffer(responsePacket._doSerialize());
+        outboundMessage.setValue(responsePacket._doSerialize());
     }
 
     return {

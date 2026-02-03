@@ -1,39 +1,60 @@
-import { Server, Socket as TcpSocket, createServer as createSocketServer } from "node:net";
-import {createSocket, RemoteInfo, Socket as UdpSocket} from "node:dgram"
-import { Configuration, getServerConfiguration, getServerLogger, ServerLogger,createInitialState } from "rusty-motors-shared";
+import type { Server, Socket as TcpSocket } from "node:net";
+import type { RemoteInfo, Socket as UdpSocket } from "node:dgram";
+import { randomUUID } from "node:crypto";
+import { getServerConfiguration, getServerLogger, type ServerLogger, createInitialState } from "rusty-motors-shared";
 import { onSocketConnection, onUdpMessage } from "./index.js";
 import { initializeRouteHandlers, processHttpRequest } from "./web.js";
 import type { GatewayOptions } from "./types.js";
-import { addPortRouter } from "./portRouters.js";
+import { setGlobalPortRouterRegistry } from "./portRouters.js";
 import { npsPortRouter } from "./npsPortRouter.js";
 import { mcotsPortRouter } from "./mcotsPortRouter.js";
-import http from "node:http";
+import { PortRouterRegistry } from "./routing/PortRouterRegistry.js";
+import { createDefaultPortConfiguration } from "./routing/DefaultPortConfiguration.js";
 import { HotkeyManager } from "./HotkeyManager.js";
+import { ServerLifecycleManager, ServerStatus } from "./lifecycle/ServerLifecycleManager.js";
+import { initializeSessionRecorder, getSessionRecorder } from "./session/SessionRecorderIntegration.js";
+import { NetworkServerManager } from "./network/NetworkServerManager.js";
+import { ProcessSignalHandler, type ShutdownHandler } from "./signals/ProcessSignalHandler.js";
+import { WebServerManager } from "./web/WebServerManager.js";
+import { GatewayConfiguration } from "./configuration/GatewayConfiguration.js";
 
 
 /**
  * Gateway server
  * @see {@link getGatewayServer()} to get a singleton instance
  */
-export class Gateway {
-    config: Configuration;
+export class Gateway implements ShutdownHandler {
+    private readonly gatewayConfig: GatewayConfiguration;
     log = getServerLogger("Gateway")
-    timer: NodeJS.Timeout | null;
-    loopInterval: number;
-    status: string;
-    consoleEvents: string[];
-    backlogAllowedCount: number;
-    tcpListeningPortList: number[];
-    udpListeningPortList: number[];
-    activeServers: import('node:net').Server[];
-    socketconnection: ({
+    private readonly lifecycleManager: ServerLifecycleManager;
+    private readonly networkManager: NetworkServerManager;
+    private readonly portRouterRegistry: PortRouterRegistry;
+    private readonly signalHandler: ProcessSignalHandler;
+    private readonly webServerManager: WebServerManager;
+    private readonly socketconnection: ({
         incomingSocket,
         log,
     }: {
         incomingSocket: TcpSocket;
         log?: ServerLogger;
     }) => void;
-    webServer: http.Server;
+
+    /**
+     * Gets the shared server configuration (for backward compatibility)
+     * @returns The shared Configuration object
+     */
+    get config() {
+        return this.gatewayConfig.getSharedConfig();
+    }
+
+    /**
+     * Gets the current server status as a string (for backward compatibility)
+     * @returns The current status as a string
+     */
+    get status(): string {
+        return this.lifecycleManager.getStatus();
+    }
+
     /**
      * Creates an instance of GatewayServer.
      * @param {GatewayOptions} options
@@ -44,28 +65,44 @@ export class Gateway {
         backlogAllowedCount = 0,
         tcpListeningPortList = [],
         udpListeningPortList = [],
+        webPort = 3000,
         socketConnectionHandler = onSocketConnection,
     }: GatewayOptions) {
-        log.debug('Creating GatewayServer instance');
+        // Only log if not in test environment to avoid log output during tests
+        const isTestEnv = process.env['NODE_ENV'] === "test" || process.env['VITEST'] === "true";
+        if (!isTestEnv) {
+            log.debug('Creating GatewayServer instance');
+        }
 
-        this.config = config;
+        // Create GatewayConfiguration that wraps shared config and Gateway-specific settings
+        // Extract shard ports from TCP port list if available, otherwise use defaults
+        const loginPort = tcpListeningPortList.includes(8226) ? 8226 : 8226;
+        const lobbyPort = tcpListeningPortList.includes(7003) ? 7003 : 7003;
+        
+        this.gatewayConfig = new GatewayConfiguration({
+            sharedConfig: config,
+            tcpPorts: tcpListeningPortList,
+            udpPorts: udpListeningPortList,
+            webPort: webPort,
+            backlogAllowedCount: backlogAllowedCount,
+            loginServerPort: loginPort,
+            lobbyServerPort: lobbyPort,
+            diagnosticServerPort: 80, // Diagnostic server port (separate from web port)
+        });
+
         this.log = log;
-        /** @type {NodeJS.Timeout | null} */
-        this.timer = null;
-        this.loopInterval = 0;
-        /** @type {"stopped" | "running" | "stopping" | "restarting"} */
-        this.status = 'stopped';
-        this.consoleEvents = ['userExit', 'userRestart', 'userHelp'];
-        this.backlogAllowedCount = backlogAllowedCount;
-        this.tcpListeningPortList = tcpListeningPortList;
-        this.udpListeningPortList = udpListeningPortList;
-        /** @type {import("node:net").Server[]} */
-        this.activeServers = [];
+        this.lifecycleManager = new ServerLifecycleManager(log);
+        this.networkManager = new NetworkServerManager(log, this.gatewayConfig.getBacklogAllowedCount());
+        this.portRouterRegistry = new PortRouterRegistry();
+        this.signalHandler = new ProcessSignalHandler(log);
+        this.webServerManager = new WebServerManager(log, processHttpRequest);
         this.socketconnection = socketConnectionHandler;
 
-        initializeRouteHandlers();
+        // Initialize route handlers with GatewayConfiguration
+        initializeRouteHandlers(this.gatewayConfig);
 
-        this.webServer = http.createServer(processHttpRequest);
+        // Initialize session recorder (enabled via RECORD_SESSIONS env var)
+        initializeSessionRecorder(log);
     }
 
     /**
@@ -84,93 +121,99 @@ export class Gateway {
         const tcpListeningServers: Promise<Server>[] = [];
         const udpListeningSockets: Promise<UdpSocket>[] = [];
 
-        for (const port of this.tcpListeningPortList) {
-            const server = this.startTcpNewServer(port, this.socketconnection);
+        // Start TCP servers
+        for (const port of this.gatewayConfig.getTcpPorts()) {
+            const server = this.networkManager.startTcpServer(port, this.socketconnection);
             tcpListeningServers.push(server);
         }
 
-        for (const port of this.udpListeningPortList) {
-            const socket = this.openUdpSocket(port, async (message: Buffer<ArrayBufferLike>, remoteInfo: RemoteInfo) => {
-                onUdpMessage({
-                    incomingSocket: await socket,
-                    message,
-                    remoteInfo
-                })
-            })
-            udpListeningSockets.push(socket)
+        // Start UDP sockets
+        for (const port of this.gatewayConfig.getUdpPorts()) {
+            // Store the socket promise so we can use it in the handler
+            let socketRef: UdpSocket | null = null;
+            const socketPromise = this.networkManager.startUdpServer(port, (message: Buffer<ArrayBufferLike>, remoteInfo: RemoteInfo) => {
+                // Use the stored socket reference
+                if (socketRef) {
+                    onUdpMessage({
+                        incomingSocket: socketRef,
+                        message,
+                        remoteInfo
+                    });
+                }
+            });
+            // Store the socket when it resolves
+            socketPromise.then(socket => {
+                socketRef = socket;
+            });
+            udpListeningSockets.push(socketPromise);
         }
 
-        await Promise.all([tcpListeningServers, udpListeningSockets]);
+        await Promise.all([...tcpListeningServers, ...udpListeningSockets]);
 
         this.log.debug(`All sockets listening`);
 
-        if (this.webServer === undefined) {
-            throw Error('webServer is undefined');
-        }
-        this.startTcpNewServer(3000, ({ incomingSocket }) => {
-            this.webServer.emit('connection', incomingSocket);
+        // Start web server manager (marks server as ready)
+        const webPort = this.gatewayConfig.getWebPort();
+        await this.webServerManager.start(webPort);
+
+        // Start TCP server on web port and connect it to HTTP server
+        // This allows both HTTP and raw packet handling on the same port
+        // Record raw TCP data before passing to HTTP server (consistent with other ports)
+        await this.networkManager.startTcpServer(webPort, ({ incomingSocket }) => {
+            const { localPort, remoteAddress } = incomingSocket;
+            
+            // Record session start if recording is enabled (raw TCP level)
+            // This records the raw TCP stream, not HTTP-level data
+            const recorder = getSessionRecorder();
+            if (recorder?.isRecordingEnabled() && localPort && remoteAddress) {
+                // Define connectionId in outer scope for use in closures
+                const connectionId = `${randomUUID().substring(0, 8)}:${localPort}`;
+                recorder.startSession(connectionId, localPort, remoteAddress);
+                
+                // Record incoming data (raw TCP bytes)
+                incomingSocket.on('data', (data: Buffer) => {
+                    if (recorder?.isRecordingEnabled() && localPort) {
+                        recorder.recordDataIn(connectionId, localPort, data);
+                    }
+                });
+                
+                // Record outgoing data (raw TCP bytes)
+                const originalWrite = incomingSocket.write.bind(incomingSocket);
+                incomingSocket.write = (chunk: any, encoding?: any, cb?: any) => {
+                    if (recorder?.isRecordingEnabled() && localPort) {
+                        const data = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+                        recorder.recordDataOut(connectionId, localPort, data);
+                    }
+                    return originalWrite(chunk, encoding, cb);
+                };
+                
+                // Record disconnect
+                incomingSocket.once('end', () => {
+                    if (recorder?.isRecordingEnabled() && localPort) {
+                        recorder.recordDisconnect(connectionId, localPort);
+                        recorder.saveSession(connectionId, `Auto-saved on disconnect (port ${localPort})`);
+                    }
+                });
+            }
+            
+            // Pass to HTTP server (after setting up recording)
+            this.webServerManager.getServer().emit('connection', incomingSocket);
         });
 
-        this.status = 'running';
+        this.lifecycleManager.setStatus(ServerStatus.RUNNING);
 
         new HotkeyManager(this);
     }
 
+
     /**
-     * Starts a new server on the specified port and sets up a socket connection handler.
+     * Shutdown handler implementation for SignalHandler
+     * This is called when SIGINT is received
      *
-     * @param port - The port number on which the server will listen.
-     * @param socketConnectionHandler - A callback function that handles incoming socket connections.
-     * @param socketConnectionHandler.incomingSocket - The incoming socket connection.
+     * @returns {Promise<void>} A promise that resolves when the server has stopped
      */
-    private async startTcpNewServer(
-        port: number,
-        socketConnectionHandler: ({
-            incomingSocket,
-        }: {
-            incomingSocket: TcpSocket;
-        }) => void,
-    ): Promise<Server> {
-        const server = createSocketServer((s) => {
-            socketConnectionHandler({ incomingSocket: s });
-        });
-
-        // Listen on the specified port
-        const handle: Promise<Server> = new Promise((resolve, reject) => {
-            try {
-                server.listen(port, '0.0.0.0', this.backlogAllowedCount, () => {
-                    resolve(server);
-                });
-            } catch (err) {
-                reject(err);
-            }
-        });
-
-        // Add the server to the list of servers
-        this.activeServers.push(server);
-        return handle;
-    }
-
-    private async openUdpSocket(
-        port: number,
-        socketConnectionHandler: (message: Buffer<ArrayBufferLike>, rinfo: RemoteInfo) => void,
-    ): Promise<UdpSocket> {
-        const server = createSocket({
-            type: "udp4"
-        }, socketConnectionHandler);
-
-        // Listen on the specified port
-        const handle: Promise<UdpSocket> = new Promise((resolve, reject) => {
-            try {
-                server.on("listening", () => {resolve(server)})
-                server.bind(port);
-            } catch (err) {
-                reject(err);
-            }
-        });
-
-        // Add the server to the list of servers
-        return handle;
+    async shutdown(): Promise<void> {
+        await this.stop();
     }
 
     /**
@@ -182,7 +225,7 @@ export class Gateway {
      * @returns {Promise<void>} A promise that resolves when the server has stopped and the process has exited.
      */
     async exit(): Promise<void> {
-        console.log('Exiting GatewayServer...');
+        this.log.info('Exiting GatewayServer...');
         // Stop the GatewayServer
         await this.stop();
 
@@ -196,28 +239,22 @@ export class Gateway {
      * This method performs the following actions:
      * 1. Marks the GatewayServer as stopping.
      * 2. Stops the servers by calling `shutdownServers`.
-     * 3. Stops the timer if it is running.
-     * 4. Marks the GatewayServer as stopped.
-     * 5. Resets the global state by creating and saving the initial state.
+     * 3. Marks the GatewayServer as stopped.
+     * 4. Resets the global state by creating and saving the initial state.
      *
      * @returns {Promise<void>} A promise that resolves when the server has been stopped.
      */
     async stop(): Promise<void> {
         // Mark the GatewayServer as stopping
         this.log.debug('Marking GatewayServer as stopping');
-        this.status = 'stopping';
+        this.lifecycleManager.setStatus(ServerStatus.STOPPING);
 
         // Stop the servers
         await this.shutdownServers();
 
-        // Stop the timer
-        if (this.timer !== null) {
-            clearInterval(this.timer);
-        }
-
         // Mark the GatewayServer as stopped
         this.log.debug('Marking GatewayServer as stopped');
-        this.status = 'stopped';
+        this.lifecycleManager.setStatus(ServerStatus.STOPPED);
 
         // Reset the global state
         this.log.debug('Resetting the global state');
@@ -225,47 +262,49 @@ export class Gateway {
     }
 
     /**
-     * Shuts down all active servers and emits a close event on the web server.
+     * Shuts down all active servers and stops the web server.
      *
-     * @throws {Error} If the webServer is undefined.
      * @private
      * @async
      */
     private async shutdownServers() {
         this.log.info('Shutting down servers');
-        this.activeServers.forEach((server) => {
-            server.close();
-        });
-
-        if (this.webServer === undefined) {
-            throw Error('webServer is undefined');
-        }
-        this.webServer.emit('close');
+        await this.networkManager.shutdownAll();
+        await this.webServerManager.stop();
     }
 
     /**
      * Initializes the GatewayServer by setting up the web server and registering routes.
      *
-     * - Creates a Fastify web server instance.
-     * - Registers the FastifySensible plugin for additional utilities.
-     * - Adds port routers for various ports to handle incoming requests.
-     * - Sets up a signal handler to gracefully exit on SIGINT.
+     * - Registers default port router configuration.
+     * - Sets the global port router registry for backward compatibility.
+     * - Registers signal handler for graceful shutdown on SIGINT.
      */
     private init() {
-        addPortRouter(8226, npsPortRouter);
-        addPortRouter(8227, npsPortRouter);
-        addPortRouter(8228, npsPortRouter);
-        addPortRouter(7003, npsPortRouter);
-        for (let port = 9000; port < 9021; port++) {
-            addPortRouter(port, npsPortRouter);
-        }
-        addPortRouter(10001, npsPortRouter);
-        addPortRouter(43300, mcotsPortRouter);
+        // Register default port configuration
+        createDefaultPortConfiguration(
+            this.portRouterRegistry,
+            npsPortRouter,
+            mcotsPortRouter,
+        );
 
-        process.on('SIGINT', this.exit.bind(this));
+        // Set global registry for backward compatibility with existing portRouters API
+        setGlobalPortRouterRegistry(this.portRouterRegistry);
 
+        // Register signal handler for graceful shutdown
+        // Note: This only handles process signals (SIGINT, exit).
+        // ConsoleThread handles keyboard input separately and emits events
+        // that Gateway can listen to independently.
+        this.signalHandler.registerShutdownHandler(this);
+
+        // Register exit handler for message stats logging
+        // (This is separate from SignalHandler's exit listener)
         process.on('exit', () => {
-            console.dir(messageStats);
+            // Use logger for message stats (only logs if not in test environment)
+            const isTestEnv = process.env['NODE_ENV'] === "test" || process.env['VITEST'] === "true";
+            if (!isTestEnv && messageStats.size > 0) {
+                this.log.info('Message statistics:', Object.fromEntries(messageStats));
+            }
         });
     }
 }

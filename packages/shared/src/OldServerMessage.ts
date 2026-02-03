@@ -1,76 +1,127 @@
-import { IServerMessage } from "rusty-motors-shared-packets";
-import { SerializedBufferOld } from "./SerializedBufferOld.js";
-import { serverHeader } from "./serverHeader.js";
+import type { IServerMessage } from "rusty-motors-protocol";
+import { MessageNode } from "./MessageNode.js";
+import { sliceBuff } from "./helpers.js";
 
 
 
 /**
- * A server message is a message that is passed between the server and the client. It has an 11 byte header. @see {@link serverHeader}
+ * A server message is a message that is passed between the server and the client. It has an 11 byte header.
+ * This is a compatibility wrapper around MessageNode.
  *
- * @mixin {SerializableMixin}
- * @deprecated
+ * @deprecated Use MessageNode directly instead
  */
-export class OldServerMessage extends SerializedBufferOld implements IServerMessage {
-	_header: serverHeader;
-	_msgNo: number;
-	constructor() {
-		super();
-		this._header = new serverHeader();
-		this._msgNo = 0; // 2 bytes
-	}
+export class OldServerMessage extends MessageNode implements IServerMessage {
+	private _headerProxy: any;
 
-	override size(): number {
-		return this._header.length + this.data.length;
+	/**
+	 * @deprecated Use this.header or this.signature/this.length instead
+	 */
+	get _header() {
+		if (!this._headerProxy) {
+			const self = this;
+			this._headerProxy = {
+				get mcoSig() { return self.signature; },
+			set mcoSig(val: string) { 
+				(self as any).signature_ = val;
+			},
+				get length() { return self.length; },
+				set length(val: number) { (self as any).msgLength_ = val; },
+				get sequence() { return self.sequence; },
+				set sequence(val: number) { self.sequence = val; },
+				get flags() { return self.flags; },
+				set flags(val: number) { 
+					// MessageNode doesn't have a direct flags setter, so we access the protected field
+					(self as any).flags_ = val; 
+				},
+				_size: 11,
+				_doDeserialize: (buffer: Buffer) => {
+					// Only deserialize the header (first 11 bytes), not the entire message
+					// This prevents infinite recursion when subclasses call _header._doDeserialize()
+					// This matches MessageNode.deserialize() header parsing (lines 80-86)
+					let offset = 0;
+					// Use unsigned 16-bit to match MessageNode and support messages larger than 32767 bytes
+					(self as any).msgLength_ = buffer.readUInt16LE(offset);
+					offset += 2;
+					(self as any).signature_ = sliceBuff(buffer, offset, 4).toString('utf8');
+					offset += 4;
+					(self as any).sequence_ = buffer.readInt32LE(offset);
+					offset += 4;
+					(self as any).flags_ = buffer.readInt8(offset);
+					return self._header;
+				},
+				_doSerialize: () => {
+					return self.serialize().subarray(0, 11);
+				},
+			};
+		}
+		return this._headerProxy;
 	}
 
 	/**
-	 * @deprecated
+	 * @deprecated Use this.msgNo instead
+	 */
+	get _msgNo() {
+		return this.msgNo;
+	}
+
+	set _msgNo(val: number) {
+		// Body is already initialized to 2 bytes minimum (smallest legal MessageNode size)
+		this.msgNo = val;
+	}
+
+	constructor() {
+		super();
+		// Initialize with minimum legal body size
+		// The smallest legal MessageNode is GenericRequestMessage which has:
+		// - msgNo: 2 bytes
+		// - data: 4 bytes
+		// - data2: 4 bytes
+		// Total: 10 bytes minimum body size
+		// Note: setDataBuffer calls body.deserialize which requires at least 2 bytes,
+		// so 10 bytes is safe
+		this.setDataBuffer(Buffer.alloc(10));
+	}
+
+	override size(): number {
+		// 11 is the header size
+		// Return header (11) + body size
+		const bodySize = this.getBody().sizeOf;
+		return 11 + bodySize;
+	}
+
+	/**
+	 * @deprecated Use deserialize() instead
 	 * @param {Buffer} buffer
 	 * @returns {OldServerMessage}
 	 */
-	override _doDeserialize(buffer: Buffer): OldServerMessage {
-		this._header._doDeserialize(buffer);
-		this.setBuffer(buffer.subarray(this._header._size));
-		if (this.data.length > 2) {
-			this._msgNo = this.data.readUInt16LE(0);
-		}
+	_doDeserialize(buffer: Buffer): OldServerMessage {
+		this.deserialize(buffer);
 		return this;
 	}
 
 	/**
-	 * Serializes the current message into a buffer.
-	 * 
-	 * This method allocates a new buffer with a size equal to the sum of the header length and 2 bytes.
-	 * It then serializes the header and data into this buffer.
-	 * 
-	 * @returns {Buffer} The serialized buffer containing the header and data.
-	 */
-	override serialize() {
-		const buffer = Buffer.alloc(this._header.length + 2);
-		this._header._doSerialize().copy(buffer);
-		this.data.copy(buffer, this._header._size);
-		return buffer;
-	}
-
-	/**
-	 * @deprecated
+	 * @deprecated Use setBody() or setDataBuffer() instead
 	 * @param {Buffer} buffer
 	 */
-	override setBuffer(buffer: Buffer) {
-		super.setBuffer(buffer);
-		this._header.length = buffer.length + this._header._size - 2;
+	setBuffer(buffer: Buffer) {
+		this.setDataBuffer(buffer);
 	}
 
 	/**
-	 * @deprecated
+	 * @deprecated Use this.msgNo instead
 	 */
 	updateMsgNo() {
-		this._msgNo = this.data.readUInt16LE(0);
+		// msgNo is already synced with body.msgNumber via MessageNode
 	}
 
 	override toString() {
 		return `ServerMessage: ${JSON.stringify({
-			header: this._header.toString(),
+			header: {
+				mcoSig: this.signature,
+				length: this.length,
+				sequence: this.sequence,
+				flags: this.flags,
+			},
 			data: this.data.toString("hex"),
 		})}`;
 	}
@@ -80,6 +131,6 @@ export class OldServerMessage extends SerializedBufferOld implements IServerMess
 	}
 
 	get sequenceNumber(): number {
-		return this._header.sequence;
+		return this.sequence;
 	}
 }

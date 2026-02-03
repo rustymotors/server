@@ -3,9 +3,21 @@ import { getDatabase } from "../services/database.js"
 
 const log = getServerLogger("db/player")
 
-const { slonik, sql } = await getDatabase()
+// Lazy initialization - only connect when needed
+let slonik: Awaited<ReturnType<typeof getDatabase>>["slonik"] | null = null;
+let sql: Awaited<ReturnType<typeof getDatabase>>["sql"] | null = null;
+
+async function ensureDatabase() {
+    if (!slonik || !sql) {
+        const db = await getDatabase();
+        slonik = db.slonik;
+        sql = db.sql;
+    }
+    return { slonik, sql };
+}
 
 export async function getPlayer(player_id: number) {
+    const { slonik, sql } = await ensureDatabase();
     try {
         const player = await slonik.one(sql.typeAlias('player')`
             SELECT * 

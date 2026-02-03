@@ -1,9 +1,8 @@
-import { OldServerMessage } from "rusty-motors-shared";
+import { OldServerMessage, databaseProvider } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { OwnedVehicle, OwnedVehiclesMessage } from "./OwnedVehiclesMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 import { getServerLogger } from "rusty-motors-shared";
-import { getOwnedVehiclesForPerson } from 'rusty-motors-database';
 
 const defaultLogger = getServerLogger("handlers/_getOwnedVehicles");
 
@@ -34,7 +33,7 @@ export async function _getOwnedVehicles({
 
     const ownedVehiclesMessage = new OwnedVehiclesMessage();
 
-    const vehicles = await getOwnedVehiclesForPerson(personId);
+    const vehicles = await databaseProvider.getGameDataStore().getOwnedVehiclesForPerson(personId);
 
     for (const vehicle of vehicles) {
         const ownedVehicle = new OwnedVehicle();

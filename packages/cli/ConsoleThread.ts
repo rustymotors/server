@@ -1,7 +1,7 @@
 import { emitKeypressEvents } from "node:readline";
 // eslint-disable-next-line no-unused-vars
-import { Gateway } from "rusty-motors-gateway";
-import { ServerLogger, SubThread  } from "rusty-motors-shared";
+import type { Gateway } from "rusty-motors-gateway";
+import { type ServerLogger, SubThread, type KeypressEvent } from "rusty-motors-shared";
 
 
 /**
@@ -40,7 +40,7 @@ export class ConsoleThread extends SubThread {
 
 	/** @param {KeypressEvent} key */
 	handleKeypressEvent(
-		key: import("../shared/src/interfaces.js").KeypressEvent,
+		key: KeypressEvent,
 	) {
 		const keyString = key.sequence;
 

@@ -6,10 +6,10 @@ import {loggerMock} from "rusty-motors-shared/test"
 describe("_getPlayerRaceHistory", () => {
 	it("should return a PlayerRacingHistoryMessage", async () => {
 		const incomingMessage = new OldServerMessage();
-		incomingMessage.internalBuffer = Buffer.from([
+		incomingMessage.setDataBuffer(Buffer.from([
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01,
 			0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01,
-		]);
+		]));
 		const result = await _getPlayerRaceHistory({
 			connectionId: "0",
 			packet: incomingMessage,

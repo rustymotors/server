@@ -1,6 +1,6 @@
-import { Socket as UdpSocket } from "node:dgram";
+import type { Socket as UdpSocket } from "node:dgram";
 import type { Socket as TcpSocket } from "node:net";
-import { ServerLogger, TaggedSocket } from "rusty-motors-shared";
+import type { ServerLogger, TaggedSocket } from "rusty-motors-shared";
 
 
 

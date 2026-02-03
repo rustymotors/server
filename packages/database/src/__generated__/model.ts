@@ -8,7 +8,7 @@
 /* eslint-disable */
 // tslint:disable
 
-import Brand from './brand'
+import type Brand from './brand'
 
 interface Model {
   b_extra_info: (string) | null

@@ -1,15 +1,10 @@
-export {
-	databaseManager,
-	getDatabaseManager,
-	getDatabase,
-} from "./src/DatabaseManager.js";
-export { getDatabaseService, findCustomerByContext, findUser } from "./src/databaseService.js";
-export { getTunables as getTuneables } from "./src/services/tunables.js";
-export { purchaseCar,  } from "./src/functions/purchaseCar.js";
-export { getOwnedVehiclesForPerson, getVehicleAndParts } from "./src/functions/createNewCar.js";
+// Injectable database services (12-factor app pattern)
+export { createDatabaseServices, type DatabaseServicesConfig } from "./src/createDatabaseServices.js";
+export { SessionStore } from "./src/stores/SessionStore.js";
+export { GameDataStore } from "./src/stores/GameDataStore.js";
+export { AuthStore } from "./src/stores/AuthStore.js";
+
+// Vehicle part cache utilities (used by transactions package)
 export { getVehiclePartTree, setVehiclePartTree, buildVehiclePartTreeFromDB, vehiclePartTreeToJSON } from "./src/cache.js";
-export { DamageInfo } from "./src/models/DamageInfo.js";
-export { getPlayer, type Player } from "./src/functions/player.js"
-export {db, sql } from "./src/database.js"
 export type { TPart } from "./src/models/Part.js";
 

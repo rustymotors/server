@@ -2,6 +2,12 @@
 export const DATABASE_PATH = process.env["DATABASE_PATH"] ?? "data/lotus.db";
 // SQL Queries
 export const SQL = {
+	CREATE_USER_TABLE: `
+        CREATE TABLE IF NOT EXISTS user(
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        customerId INTEGER PRIMARY KEY NOT NULL
+    ) STRICT`,
 	CREATE_SESSION_TABLE: `
         CREATE TABLE IF NOT EXISTS session(
         id INTEGER PRIMARY KEY AUTOINCREMENT,

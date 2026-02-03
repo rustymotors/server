@@ -1,4 +1,4 @@
-import { ServerPacket } from "rusty-motors-shared-packets";
+import { ServerPacket } from "rusty-motors-protocol";
 
 export class PurchaseStockCarMessage extends ServerPacket {
     dealerId = 0;

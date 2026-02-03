@@ -2,10 +2,22 @@
  * @module interfaces
  */
 
-import type { SerializedBufferOld } from './SerializedBufferOld.js';
 import type { Socket as TcpSocket } from 'node:net';
-import { Socket as UdpSocket } from 'node:dgram';
-import { LeveledLogMethod } from 'winston';
+import type { Socket as UdpSocket } from 'node:dgram';
+import type { BytableBuffer } from '@rustymotors/binary';
+import type { ServerLogger as LoggingServerLogger, LogLevel as LoggingLogLevel } from '@rustymotors/logging';
+
+/**
+ * @deprecated Import from '@rustymotors/logging' instead.
+ * This re-export will be removed in a future version.
+ */
+export type ServerLogger = LoggingServerLogger;
+
+/**
+ * @deprecated Import from '@rustymotors/logging' instead.
+ * This re-export will be removed in a future version.
+ */
+export type LogLevel = LoggingLogLevel;
 
 export const name = 'interfaces';
 
@@ -91,7 +103,7 @@ export interface RaceLobbyRecord {
 
 export interface ServiceArgs {
     connectionId: string;
-    message: SerializedBufferOld;
+    message: BytableBuffer;
     log?: ServerLogger;
 }
 
@@ -147,27 +159,7 @@ export type TaggedUdpSocket = {
 
 export type TaggedSocket = TaggedTcpSocket | TaggedUdpSocket;
 
-// {
-//   error: 0,
-//   warn: 1,
-//   info: 2,
-//   http: 3,
-//   verbose: 4,
-//   debug: 5,
-//   silly: 6
-// }
-
-export interface ServerLogger {
-    error: LeveledLogMethod;
-    warn: LeveledLogMethod;
-    info: LeveledLogMethod;
-    verbose: LeveledLogMethod;
-    /** @deprecated Use verbose instead */
-    debug: LeveledLogMethod;
-    /** @deprecated Use verbose instead */
-    trace: LeveledLogMethod;
-}
-export type LogLevel = 'error' | 'warn' | 'info' | 'verbose';
+// ServerLogger and LogLevel are now re-exported from @rustymotors/logging at the top of this file
 export interface KeypressEvent {
     sequence: string;
     name: string;

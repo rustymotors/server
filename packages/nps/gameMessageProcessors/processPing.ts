@@ -1,4 +1,4 @@
-import { GameMessage } from "rusty-motors-nps";
+import type { GameMessage } from "rusty-motors-nps";
 import type { GameSocketCallback } from "./index.js";
 
 import type { UserStatus } from "rusty-motors-nps";

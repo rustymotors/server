@@ -1,10 +1,10 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import * as Sentry from "@sentry/node";
-import { getServerConfiguration  } from "rusty-motors-shared";
+import { configurationProvider } from "rusty-motors-shared";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SessionKey } from "../messageStructs/SessionKey.js";
-import { UserStatus } from "../messageStructs/UserStatus.js";
+import type { UserStatus } from "../messageStructs/UserStatus.js";
 import { getToken } from "../services/token.js";
 import { UserStatusManager } from "../src/UserStatusManager.js";
 import { getAsHex, getLenString } from "../src/utils/pureGet.js";
@@ -59,8 +59,9 @@ export function unpackUserLoginMessage(message: ISerializable): {
 		.subarray(dataOffset + 2, dataOffset + 2 + nextDataLength)
 		.toString("utf8");
 
-	// Load the private key
-	const privateKey = loadPrivateKey(getServerConfiguration().privateKeyFile);
+	// Load the private key - use configurationProvider to get config
+	const config = configurationProvider.getSharedConfiguration();
+	const privateKey = loadPrivateKey(config.privateKeyFile);
 
 	// Decrypt the session key
 	const sessionKey = decryptSessionKey(encryptedSessionKey, privateKey);
@@ -199,7 +200,10 @@ export async function processGameLogin(
 
 				return;
 			} catch (e) {
-				console.error(e);
+				defaultLogger.error('Error processing game login', {
+					error: e instanceof Error ? e.message : String(e),
+					stack: e instanceof Error ? e.stack : undefined,
+				});
 			}
 		},
 	);

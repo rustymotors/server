@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { SerializedBufferOld } from "rusty-motors-shared";
+import { BytableBuffer } from "@rustymotors/binary";
 
 /**
  * A message listing the lobbies
  * This is the body of a MessageNode
  */
-export class ArcadeCarMessage extends SerializedBufferOld {
+export class ArcadeCarMessage extends BytableBuffer {
 	_msgNo: number;
 	_carCount: number;
 	_shouldExpectMoreMessages: boolean;
@@ -70,7 +70,7 @@ export class ArcadeCarMessage extends SerializedBufferOld {
 	}
 }
 
-export class ArcadeCarInfo extends SerializedBufferOld {
+export class ArcadeCarInfo extends BytableBuffer {
 	_brandedPartId: number;
 	_lobbyId: number;
 	constructor() {

@@ -14,18 +14,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Socket as TcpSocket } from 'node:net';
-import { RemoteInfo, Socket as UdpSocket } from 'node:dgram';
+import type { Socket as TcpSocket } from 'node:net';
+import type { RemoteInfo, Socket as UdpSocket } from 'node:dgram';
 import { randomUUID } from 'node:crypto';
 import { tagSocket } from './socketUtility.js';
 import { getPortRouter } from './portRouters.js';
 import * as Sentry from '@sentry/node';
 import {
     getServerLogger,
-    ServerLogger,
-    TaggedTcpSocket,
+    type ServerLogger,
+    type TaggedTcpSocket,
 } from 'rusty-motors-shared';
 import { socketErrorHandler } from './socketErrorHandler.js';
+import { getSessionRecorder } from './session/SessionRecorderIntegration.js';
 
 /**
  * Handle incoming TCP connections
@@ -58,12 +59,14 @@ export function onSocketConnection({
         return;
     }
 
-
-    incomingSocket.on("error", socketErrorHandler)
-
     let id = `${randomUUID()}`;
     id = id.substring(0, id.indexOf('-'));
     id = `${id}:${localPort}`;
+
+    // Attach error handler with logger and connectionId
+    incomingSocket.on("error", (error) => {
+        socketErrorHandler({ connectionId: id, error, log });
+    });
 
     const socketWithId = tagSocket(
         incomingSocket,
@@ -72,14 +75,20 @@ export function onSocketConnection({
         localPort,
     ) as TaggedTcpSocket;
 
+    // Record session start if recording is enabled
+    const recorder = getSessionRecorder();
+    if (recorder?.isRecordingEnabled()) {
+        recorder.startSession(id, localPort, remoteAddress);
+    }
+
     /*
      * At this point, we have a tagged socket with an ID.
      */
 
     const portRouter = getPortRouter(localPort);
 
-    // Hand the socket to the port router
-    portRouter({ taggedSocket: socketWithId }).catch(
+    // Hand the socket to the port router, passing the logger
+    portRouter({ taggedSocket: socketWithId, log }).catch(
         function onSocketError(error) {
             Sentry.captureException(error);
             log.error(`Error in port router: ${error.message}`);

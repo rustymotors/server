@@ -1,23 +1,18 @@
-import {
-    GamePacket,
-    type SerializableInterface,
-} from 'rusty-motors-shared-packets';
-import { receiveLobbyData } from 'rusty-motors-lobby';
-import { receivePersonaData } from 'rusty-motors-personas';
-import { receiveLoginData } from 'rusty-motors-login';
-import { receiveChatData } from 'rusty-motors-chat';
-import { BytableMessage, createRawMessage } from '@rustymotors/binary';
+import { GamePacket } from 'rusty-motors-protocol';
+import { type BytableMessage, createRawMessage } from '@rustymotors/binary';
 import * as Sentry from '@sentry/node';
 import {
     getServerLogger,
-    messageQueueItem,
-    ServerLogger,
-    TaggedSocket,
+    type messageQueueItem,
+    type ServerLogger,
+    type TaggedSocket,
     MessageQueue,
     getSocketQueue,
     addSocketPair,
 } from 'rusty-motors-shared';
 import { messageStats } from './GatewayServer.js';
+import { getSessionRecorder } from './session/SessionRecorderIntegration.js';
+import { getServiceRegistry, type Serializable } from './routing/ServiceRegistry.js';
 
 /**
  * Handles routing for the NPS (Network Play System) ports.
@@ -33,7 +28,7 @@ export async function npsPortRouter({
     taggedSocket: TaggedSocket;
     log?: ServerLogger;
 }): Promise<void> {
-    const { socket: socket, connectionId, localPort } = taggedSocket;
+    const { socket, connectionId, localPort } = taggedSocket;
 
     const port = localPort;
 
@@ -42,6 +37,16 @@ export async function npsPortRouter({
         10,
         async (item: messageQueueItem) => {
             try {
+                // Record incoming data if recording is enabled
+                const recorder = getSessionRecorder();
+                if (recorder?.isRecordingEnabled()) {
+                    recorder.recordDataIn(
+                        taggedSocket.connectionId,
+                        taggedSocket.localPort,
+                        item.data,
+                    );
+                }
+
                 if (!isPacketValid(item.data) && 'end' in taggedSocket.socket) {
                     taggedSocket.socket.end();
                     return;
@@ -58,7 +63,8 @@ export async function npsPortRouter({
                 );
             } catch (err) {
                 log.error(`Error receiving item: ${err}`);
-                throw err;
+                // Do not re-throw - log and exit queue to prevent unhandled rejection crashes
+                receiveQueue.exit();
             }
         },
     );
@@ -68,6 +74,16 @@ export async function npsPortRouter({
         10,
         async (item: messageQueueItem) => {
             try {
+                // Record outgoing data if recording is enabled
+                const recorder = getSessionRecorder();
+                if (recorder?.isRecordingEnabled()) {
+                    recorder.recordDataOut(
+                        taggedSocket.connectionId,
+                        taggedSocket.localPort,
+                        item.data,
+                    );
+                }
+
                 log.debug(`Sending packet in queue`, {
                     data: item.data.toString("hex"),
                 });
@@ -78,7 +94,8 @@ export async function npsPortRouter({
                 }
             } catch (err) {
                 log.error(`Error sending item: ${err}`);
-                throw err;
+                // Do not re-throw - log and exit queue to prevent unhandled rejection crashes
+                sendQueue.exit();
             }
         },
     );
@@ -88,10 +105,10 @@ export async function npsPortRouter({
         receive: receiveQueue,
     });
 
-    // TODO: Document this
+    // Lobby handshake - client blocks until these are received
     if (port === 7003) {
-        // Sent ok to login packet
-        log.debug(`Sending ok to login packet`);
+        // Send NPS_OK_TO_LOGIN (0x0230)
+        log.debug(`Sending NPS_OK_TO_LOGIN packet`);
         sendQueue.put({
             sequenceNo: -1,
             data: Buffer.from([0x02, 0x30, 0x00, 0x04]),
@@ -107,12 +124,26 @@ export async function npsPortRouter({
     });
 
     socket.on('end', () => {
+        // Record disconnect if recording is enabled
+        const recorder = getSessionRecorder();
+        if (recorder?.isRecordingEnabled()) {
+            recorder.recordDisconnect(taggedSocket.connectionId, taggedSocket.localPort);
+            // Auto-save session on disconnect
+            recorder.saveSession(taggedSocket.connectionId, `Auto-saved on disconnect`);
+        }
         receiveQueue.exit();
     });
 
     socket.on('error', (error) => {
         if (error.message.includes('ECONNRESET')) {
             log.debug(`[${connectionId}] Connection reset by client`);
+            // Still save the session on reset - client likes to RST instead of FIN
+            const recorder = getSessionRecorder();
+            if (recorder?.isRecordingEnabled()) {
+                recorder.recordDisconnect(taggedSocket.connectionId, taggedSocket.localPort);
+                recorder.saveSession(taggedSocket.connectionId, `Auto-saved on ECONNRESET`);
+            }
+            receiveQueue.exit();
             return;
         }
         log.error(`[${connectionId}] Socket error: ${error}`);
@@ -195,8 +226,8 @@ export async function processSocketData(
                 log.warn(`BUG: We recieved an empty packet from the splitter`);
                 continue;
             }
-            const initialPacket = parseInitialMessage(packet);
-            handlePacketRouting(id, port, initialPacket);
+            const initialPacket = parseInitialMessage(packet, log);
+            handlePacketRouting(id, port, initialPacket, log);
         }
     } catch (error) {
         handleSocketError(error, log, id);
@@ -271,27 +302,20 @@ function splitDataIntoPackets(
  * @param {BytableMessage} initialPacket - The `initialPacket` parameter in the `handlePacketRouting`
  * function is of type `BytableMessage`. It likely represents the initial packet of data that needs to
  * be routed based on the provided `id` and `port`.
- * @param {TaggedSocket} socket - The `socket` parameter in the `handlePacketRouting` function
- * represents a tagged socket that is used for communication. It likely includes information such as
- * the socket connection, address, and other relevant details for sending and receiving data over the
- * network.
- * @param {ServerLogger} log - The `log` parameter in the `handlePacketRouting` function is a
- * `ServerLogger` object used for logging messages and debugging information related to the packet
- * routing process. It is likely used to log events, errors, and other relevant information during the
- * execution of the function.
+ * @param {ServerLogger} log - Optional logger instance. Defaults to getServerLogger if not provided.
  */
-async function handlePacketRouting(
+function handlePacketRouting(
     id: string,
     port: number,
     initialPacket: BytableMessage,
-): Promise<void> {
-    try {
-        routeInitialMessage(id, port, initialPacket);
-    } catch (error) {
-        throw new Error(`[${id}] Error routing initial nps message`, {
-            cause: error,
-        });
-    }
+    log: ServerLogger = getServerLogger('gateway.npsPortRouter/handlePacketRouting'),
+): void {
+    // routeInitialMessage is async but we don't await it (fire-and-forget)
+    // Add catch handler to prevent unhandled promise rejections
+    // Errors are already caught and logged inside routeInitialMessage
+    routeInitialMessage(id, port, initialPacket, log).catch((error) => {
+        log.error(`[${id}] Unhandled error in routeInitialMessage promise: ${String(error)}`);
+    });
 }
 
 function handleSocketError(
@@ -313,11 +337,15 @@ function handleSocketError(
  * Sets the message version based on the packet ID, then deserializes the buffer into a message object.
  *
  * @param data - The buffer containing the raw initial message.
+ * @param log - Optional logger instance. Defaults to getServerLogger if not provided.
  * @returns The parsed `BytableMessage` object.
  *
  * @throws {Error} If the buffer cannot be parsed into a valid message.
  */
-function parseInitialMessage(data: Buffer): BytableMessage {
+function parseInitialMessage(
+    data: Buffer,
+    log: ServerLogger = getServerLogger('gateway.npsPortRouter/parseInitialMessage'),
+): BytableMessage {
     try {
         const message = createRawMessage();
         message.setVersion(1);
@@ -335,23 +363,21 @@ function parseInitialMessage(data: Buffer): BytableMessage {
         const err = new Error(`Error parsing initial message: ${error}`, {
             cause: error,
         });
-        getServerLogger('gateway.npsPortRouter/parseInitialMessage').error(
-            (err as Error).message,
-        );
+        log.error((err as Error).message);
         throw err;
     }
 }
 
 /**
  * Routes the initial message to the appropriate handler based on the port number.
- * Handles different types of packets such as lobby data, login data, chat data, and persona data.
- * Logs the routing process and the number of responses sent back to the client.
+ *
+ * Uses the ServiceRegistry to look up handlers, following the Open/Closed Principle.
+ * New services can be added by registering them in the registry without modifying this code.
  *
  * @param id - The connection ID of the client.
  * @param port - The port number to determine the type of packet.
  * @param initialPacket - The initial packet received from the client.
  * @param log - The logger to use for logging messages.
- * @returns A promise that resolves to a Buffer containing the serialized responses.
  */
 async function routeInitialMessage(
     id: string,
@@ -359,139 +385,72 @@ async function routeInitialMessage(
     initialPacket: BytableMessage,
     log = getServerLogger('gateway.npsPortRouter/routeInitialMessage'),
 ): Promise<void> {
-    // Route the initial message to the appropriate handler
-    // Messages may be encrypted, this will be handled by the handler
+    try {
+        log.debug(
+            `Routing message for port ${port}: ${initialPacket.header.id}`,
+        );
 
-    log.debug(
-        `Routing message for port ${port}: ${initialPacket.header.id}`,
-    );
+        // Look up handler from the service registry
+        const registry = getServiceRegistry();
+        const handler = registry.getHandler(port);
+        const serviceName = registry.getServiceName(port) ?? 'unknown';
 
-    const packet = new GamePacket();
-    packet.deserialize(initialPacket.serialize());
+        if (!handler) {
+            const packet = new GamePacket();
+            packet.deserialize(initialPacket.serialize());
+            log.warn(
+                `[${id}] No handler found for port ${port}: ${packet.serialize().toString('hex')}`,
+            );
+            return;
+        }
 
-    let responses: SerializableInterface[] = [];
+        // Call the registered handler
+        let responses: Serializable[] = [];
 
-    let wasHandled = false;
-
-    if (port >= 9000 && port < 9021) {
         try {
             log.debug(
-                `[${id}] Passing room packet to lobby handler: ${packet.getMessageId()}`,
+                `[${id}] Passing packet to ${serviceName} handler: ${initialPacket.header.id}`,
             );
-            responses = (
-                await receiveLobbyData({
-                    connectionId: id,
-                    message: initialPacket,
-                })
-            ).messages;
-            log.debug(
-                `[${id}] Received ${responses.length} room lobby response packets`,
-            );
-            wasHandled = true;
-        } catch (error) {
-            log.error('Error handling room lobby packet', {
-                error: JSON.stringify(error),
+
+            const result = await handler({
+                connectionId: id,
+                message: initialPacket,
+                log,
             });
+
+            responses = result.messages as Serializable[];
+            log.debug(
+                `[${id}] Received ${responses.length} ${serviceName} response packets`,
+            );
+        } catch (error) {
+            Sentry.captureException(error);
+            log.error(`Error handling ${serviceName} packet`, {
+                connectionId: id,
+                port,
+                error: error instanceof Error ? error.message : String(error),
+            });
+            return;
         }
+
+        // Send responses back to the client
+        if (responses.length > 0) {
+            log.debug(`[${id}] Sending ${responses.length} responses`);
+            const sendQueue = getSocketQueue(id, 'send');
+
+            responses.forEach((response) =>
+                sendQueue.put({
+                    sequenceNo: -1,
+                    data: response.serialize(),
+                }),
+            );
+        }
+    } catch (error) {
+        // Catch any errors from packet deserialization or other operations
+        log.error(`Error in routeInitialMessage: ${String(error)}`, {
+            connectionId: id,
+            port,
+            error: error instanceof Error ? error.message : String(error),
+        });
+        Sentry.captureException(error);
     }
-
-    switch (port) {
-        case 7003:
-            // Handle lobby packet
-            log.debug(
-                `[${id}] Passing packet to lobby handler: ${packet.getMessageId()}`,
-            );
-            responses = (
-                await receiveLobbyData({
-                    connectionId: id,
-                    message: initialPacket,
-                })
-            ).messages;
-            log.debug(
-                `[${id}] Received ${responses.length} lobby response packets`,
-            );
-            wasHandled = true;
-            break;
-        case 8226:
-            // Handle login packet
-            responses = (
-                await receiveLoginData({
-                    connectionId: id,
-                    message: initialPacket,
-                })
-            ).messages;
-            log.debug(
-                `[${id}] Received ${responses.length} login response packets`,
-            );
-            wasHandled = true;
-            break;
-        case 8227:
-            // Handle chat packet
-            log.debug(
-                `[${id}] Passing packet to chat handler: ${packet.serialize().toString('hex')}`,
-            );
-            responses = (
-                await receiveChatData({ connectionId: id, message: packet })
-            ).messages;
-            log.debug(
-                `[${id}] Chat Responses: ${responses.map((r) => r.serialize().toString('hex'))}`,
-            );
-            break;
-        case 8228:
-            log.debug(
-                `[${id}] Passing packet to persona handler: ${packet.serialize().toString('hex')}`,
-            );
-            // responses =Handle persona packet
-            responses = (
-                await receivePersonaData({ connectionId: id, message: packet })
-            ).messages;
-            log.debug(
-                `[${id}] Received ${responses.length} persona response packets`,
-            );
-            wasHandled = true;
-            break;
-        case 10001:
-            try {
-                log.debug(
-                    `[${id}] Passing race? packet to lobby handler: ${packet.getMessageId()}`,
-                );
-                responses = (
-                    await receiveLobbyData({
-                        connectionId: id,
-                        message: initialPacket,
-                    })
-                ).messages;
-                log.debug(
-                    `[${id}] Received ${responses.length} race? lobby response packets`,
-                );
-                wasHandled = true;
-            } catch (error) {
-                log.error('Error handling race packet', {
-                    error: JSON.stringify(error),
-                });
-            }
-            break;
-
-        default:
-            // No handler
-            if (wasHandled === false) {
-                log.warn(
-                    `${id}] No handler found for port ${port}: ${packet.serialize().toString('hex')}`,
-                );
-            }
-            break;
-    }
-
-    // Send responses back to the client
-    log.debug(`[${id}] Sending ${responses.length} responses`);
-
-    const sendQueue = getSocketQueue(id, 'send');
-
-    // Serialize the responses
-    responses.forEach((response) =>
-        sendQueue.put({
-            sequenceNo: -1,
-            data: response.serialize(),
-        }),
-    );
 }

@@ -1,10 +1,22 @@
-import { getServerLogger, ServerLogger } from "rusty-motors-shared";
+import { getServerLogger, type ServerLogger } from "rusty-motors-shared";
 import type { TBrand } from "./models/Brand.js";
 import { getSlonik, getDatabase } from "./services/database.js";
 import * as Sentry from "@sentry/node";
-import { TPart } from "./models/Part.js";
+import type { TPart } from "./models/Part.js";
 import { getDatabaseManager } from "./DatabaseManager.js";
-const { slonik, sql } = await getDatabase();
+
+// Lazy initialization - only connect when needed
+let slonik: Awaited<ReturnType<typeof getDatabase>>["slonik"] | null = null;
+let sql: Awaited<ReturnType<typeof getDatabase>>["sql"] | null = null;
+
+async function ensureDatabase() {
+    if (!slonik || !sql) {
+        const db = await getDatabase();
+        slonik = db.slonik;
+        sql = db.sql;
+    }
+    return { slonik, sql };
+}
 
 const level1PartTypes = [1001, 2001, 4001, 5001, 6001, 15001, 36001, 37001];
 
@@ -259,6 +271,7 @@ export async function buildVehiclePartTreeFromDB(
     vehicleId: number,
 ): Promise<VehiclePartTreeType> {
     const log = getServerLogger("database/cache");
+    const { slonik, sql } = await ensureDatabase();
     const vehicle = await Sentry.startSpan(
         {
             name: "Get vehicle",

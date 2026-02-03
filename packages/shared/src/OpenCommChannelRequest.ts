@@ -1,4 +1,4 @@
-import { Serializable, CString, CBlock, checkMinLength, sliceBuff } from 'rusty-motors-shared';
+import { type Serializable, CString, CBlock, checkMinLength, sliceBuff } from 'rusty-motors-shared';
 
 
 export class OpenCommChannelRequest implements Serializable {

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerLogger  } from "rusty-motors-shared";
+import type { ServerLogger  } from "rusty-motors-shared";
 import { _getArcadeCarInfo } from "./_getArcadeCarInfo.js";
 import { _getGameUrls } from "./_getGameUrls.js";
 import { _getOwnedParts } from "./_getOwnedParts.js";
@@ -30,7 +30,7 @@ import { getLobbies } from "./getLobbies.js";
 import { login } from "./login.js";
 import { trackingPing } from "./trackingPing.js";
 import { _buyCarFromDealer } from "./_buyCarFromDealer.js";
-import { IServerMessage } from "rusty-motors-shared-packets";
+import type { IServerMessage } from "rusty-motors-protocol";
 import { _crcPreRaceData } from "./_crcPreRaceData.js";
 import { _updateCachedVehicle } from "./_updateCachedVehicle.js";
 import { _getCompleteVehicleInfo } from "./_getFullCarInfo.js";
@@ -94,7 +94,7 @@ export const messageHandlers: MessageHandler[] = [
         handler: _getCompleteVehicleInfo,
     },
     {
-        id: 325,
+        id: 324,
         name: 'MC_GET_LOBBIES',
         handler: getLobbies,
     },
@@ -206,6 +206,7 @@ export function _MSG_STRING(messageID: number): string {
 		{ id: 391, name: "MC_CLUB_GET_INVITATIONS" }, // 0x187
 		{ id: 438, name: "MC_CLIENT_CONNECT_MSG" }, // 0x1b6
 		{ id: 440, name: "MC_TRACKING_MSG" },
+		{ id: 448, name: "MC_KEEP_RACE_ALIVE" }, // 0x1C0
 		{ id: 455, name: "MC_CRC_PRE_RACE_DATA" },
 	];
 	const result = messageIds.find((id) => id.id === messageID);

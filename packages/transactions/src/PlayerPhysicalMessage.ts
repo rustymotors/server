@@ -1,6 +1,6 @@
-import { SerializedBufferOld } from "rusty-motors-shared";
+import { BytableBuffer } from "@rustymotors/binary";
 
-export class PlayerPhysicalMessage extends SerializedBufferOld {
+export class PlayerPhysicalMessage extends BytableBuffer {
 	_msgNo: number; // 2 bytes
 	_playerId: number; // 4 bytes
 	_bodytype: number; // 4 bytes

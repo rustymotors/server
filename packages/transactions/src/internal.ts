@@ -14,25 +14,26 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getServerLogger, MessageNode, ServerLogger } from "rusty-motors-shared";
+import { getServerLogger, type MessageNode, type ServerLogger } from "rusty-motors-shared";
 import * as Sentry from "@sentry/node"
 
-import {
+import type {
 	McosEncryption,
-	SerializedBufferOld,
-	type State,
+	State,
 } from "rusty-motors-shared";
+import { BytableBuffer } from "@rustymotors/binary";
 import {
 	fetchStateFromDatabase,
 	getEncryption,
 	updateEncryption,
 } from "rusty-motors-shared";
 import { OldServerMessage } from "rusty-motors-shared";
-import { messageHandlers, type MessageHandlerResult, _MSG_STRING } from "./handlers.js";
+import { type MessageHandlerResult, _MSG_STRING } from "./handlers.js";
+import { getTransactionsHandlerRegistry } from "./handlers/registry.js";
 import {
 	ServerPacket,
 	type BufferSerializer,
-} from "rusty-motors-shared-packets";
+} from "rusty-motors-protocol";
 import { explode } from "pklib-ts"
 
 
@@ -52,23 +53,23 @@ async function processInput({
 	log?: ServerLogger;
 }): Promise<MessageHandlerResult> {
 	const currentMessageNo = inboundMessage.getMessageId();
-	const currentMessageString = _MSG_STRING(currentMessageNo);
+	const currentMessageString = _MSG_STRING(currentMessageNo); // For logging only
 
 	log.debug(
 		`[${connectionId}] Processing message: ${currentMessageNo} (${currentMessageString}), sequence: ${inboundMessage.getSequence()}`,
 	);
 
-	const result = messageHandlers.find(
-		(msg) => msg.name === currentMessageString,
-	);
+	// Use the handler registry to find the appropriate handler
+	const registry = getTransactionsHandlerRegistry();
+	const handlerEntry = registry.getHandler(currentMessageNo);
 
-	if (typeof result !== "undefined") {
+	if (handlerEntry) {
 		// Turn this into an OldServerMessage for compatibility
 		const packet = new OldServerMessage();
 		packet._doDeserialize(inboundMessage.serialize());
 
 		try {
-			const responsePackets = await result.handler({
+			const responsePackets = await handlerEntry.handler({
 				connectionId,
 				packet,
 			});
@@ -89,11 +90,11 @@ async function processInput({
 /**
  * @param {object} args
  * @param {string} args.connectionId
- * @param {SerializedBufferOld} args.message
+ * @param {MessageNode} args.message
  * @param {ServerLogger} [args.log=getServerLogger({ name: "transactionServer" })]
  * @returns {Promise<{
  *     connectionId: string,
- *    messages: SerializedBufferOld[]
+ *    messages: BytableBuffer[]
  * }>}
  */
 export async function receiveTransactionsData({
@@ -106,7 +107,7 @@ export async function receiveTransactionsData({
 	log?: ServerLogger;
 }): Promise<{
 	connectionId: string;
-	messages: MessageNode[];
+	messages: BytableBuffer[];
 }> {
 
 	// Normalize the message
@@ -205,10 +206,10 @@ export async function receiveTransactionsData({
 		`[${connectionId}] Exiting transaction module with ${outboundMessages.length} messages`,
 	);
 
-	// Convert the outbound messages to SerializedBufferOld
+	// Convert the outbound messages to BytableBuffer
 	const outboundMessagesSerialized = outboundMessages.map((message) => {
-		const serialized = new SerializedBufferOld();
-		serialized._doDeserialize(message.serialize());
+		const serialized = new BytableBuffer();
+		serialized.deserialize(message.serialize());
 		return serialized;
 	});
 

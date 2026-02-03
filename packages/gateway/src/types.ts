@@ -14,6 +14,7 @@ export interface GatewayOptions {
     backlogAllowedCount?: number;
     tcpListeningPortList?: number[];
     udpListeningPortList?: number[];
+    webPort?: number; // Web server port (default: 3000)
     socketConnectionHandler?: ({
         incomingSocket,
         log,

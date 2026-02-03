@@ -1,4 +1,4 @@
-import { getPersonaByPersonaId } from 'rusty-motors-personas';
+import { getPersonaByPersonaId } from 'rusty-motors-authentication';
 import { LoginInfoMessage } from '../LoginInfoMessage.js';
 
 import {
@@ -6,21 +6,20 @@ import {
     createDataEncryptionPair,
 } from 'rusty-motors-gateway';
 import {
-    ConnectionRecord,
-    DatabaseManager,
+    type ConnectionRecord,
     McosEncryption,
-    ServerLogger,
-    ServiceArgs,
-    ServiceResponse,
-    State,
+    type ServerLogger,
+    type ServiceArgs,
+    type ServiceResponse,
+    type State,
     addEncryption,
     fetchStateFromDatabase,
     getEncryption,
+    databaseProvider,
+    type ISessionStore,
 } from 'rusty-motors-shared';
-import { SerializedBufferOld } from 'rusty-motors-shared';
-import { getDatabaseManager } from 'rusty-motors-database';
 import { getServerLogger } from 'rusty-motors-shared';
-import { BytableMessage } from '@rustymotors/binary';
+import { BytableMessage, BytableBuffer } from '@rustymotors/binary';
 
 const NPS_INVALID_KEY = 0x22a;
 
@@ -42,20 +41,20 @@ export function toHex(data: Buffer): string {
 
 class PacketProcessor {
     private connectionId: string;
-    private message: SerializedBufferOld;
+    private message: BytableBuffer;
     private log: ServerLogger;
-    private database: DatabaseManager
+    private sessionStore: ISessionStore
 
     constructor({
         connectionId,
         message,
         log = getServerLogger('PacketProcessor'),
-        database = getDatabaseManager(),
-    }: ServiceArgs & { database?: DatabaseManager }) {
+        sessionStore = databaseProvider.getSessionStore(),
+    }: ServiceArgs & { sessionStore?: ISessionStore }) {
         this.connectionId = connectionId;
         this.message = message;
         this.log = log;
-        this.database = database
+        this.sessionStore = sessionStore
     }
 
     async invoke() {
@@ -99,7 +98,7 @@ class PacketProcessor {
 
             try {
                 keys =
-                    await this.database.fetchSessionKeyByCustomerId(
+                    await this.sessionStore.fetchSessionKeyByCustomerId(
                         customerId,
                     );
             } catch (err) {
@@ -137,7 +136,7 @@ class PacketProcessor {
         }
 
         // We have a session, we are good to go!
-        await this.database.updateConnection(
+        await this.sessionStore.updateConnection(
             this.connectionId,
             new LoginInfoMessage()._userId,
         );
@@ -175,16 +174,16 @@ class PacketProcessor {
  * @param {ServiceArgs} args
  * @returns {Promise<{
  *  connectionId: string,
- * messages: SerializedBufferOld[],
+ * messages: BytableBuffer[],
  * }>}
  */
 export async function _npsRequestGameConnectServer({
     connectionId,
     message,
     log = getServerLogger('handlers/_npsRequestGameConnectServer'),
-    database = getDatabaseManager()
-}: ServiceArgs & { database?: DatabaseManager}): Promise<ServiceResponse> {
-    const packetProcessor = new PacketProcessor({ connectionId, message, log, database });
+    sessionStore = databaseProvider.getSessionStore()
+}: ServiceArgs & { sessionStore?: ISessionStore}): Promise<ServiceResponse> {
+    const packetProcessor = new PacketProcessor({ connectionId, message, log, sessionStore });
     return await packetProcessor.invoke();
 }
 
@@ -228,7 +227,7 @@ function createGameServerResponsePacket(inboundMessage: LoginInfoMessage) {
 }
 
 function portPacketToLegacyFormat(responsePacket: BytableMessage) {
-    const outboundMessage = new SerializedBufferOld();
+    const outboundMessage = new BytableBuffer();
     outboundMessage.deserialize(responsePacket.serialize());
     return outboundMessage;
 }

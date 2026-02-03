@@ -66,7 +66,7 @@
             "path": "packages/shared"
         },
         {
-            "path": "packages/shared-packets"
+            "path": "packages/protocol"
         },
         {
             "path": "packages/transactions"
@@ -81,10 +81,10 @@
             "path": "libs/@rustymotors/parser"
         },
         {
-            "path": "libs/@rustymotors/protocol"
+            "path": "libs/@rustymotors/rooms"
         },
         {
-            "path": "libs/@rustymotors/rooms"
+            "path": "libs/@rustymotors/logging"
         },
         {
             "path": "src/chat"

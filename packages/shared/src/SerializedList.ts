@@ -1,4 +1,4 @@
-import { Serializable } from "./types.js";
+import type { Serializable } from "./types.js";
 
 export class SerializedList<T extends Serializable> implements Serializable {
     private _items: T[];

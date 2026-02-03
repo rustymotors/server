@@ -12,8 +12,8 @@
 		"check": "tsc",
 		"lint": "npx @biomejs/biome lint --write .",
 		"format": "npx @biomejs/biome format --write .",
-		"test": "pnpm node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage",
-		"test:crypto": "pnpm node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage",
+		"test": "node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage",
+		"test:crypto": "node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage",
 		"build": "tsc"
 	},
 	"keywords": [],
@@ -28,6 +28,7 @@
 		"@sentry/cli": "3.0.1",
 		"@sentry/node": "10.32.1",
 		"@sentry/profiling-node": "10.32.1",
+		"rusty-motors-protocol": "",
 		"winston-daily-rotate-file": "^5.0.0"
 	}
 }

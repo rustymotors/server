@@ -25,7 +25,7 @@ import { BytableMessage } from "@rustymotors/binary";
  * 
  * This class serializes its properties into a fixed-size buffer for network transmission.
  * 
- * @extends SerializedBufferOld
+ * @extends BytableMessage
  * 
  * @property _msgNo - Message number (2 bytes).
  * @property _clubCreationCost - Cost to create a club (4 bytes).

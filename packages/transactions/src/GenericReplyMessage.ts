@@ -14,9 +14,9 @@
  * @property {Buffer} data2
  */
 
-import { SerializedBufferOld } from "rusty-motors-shared";
+import { BytableBuffer } from "@rustymotors/binary";
 
-export class GenericReply extends SerializedBufferOld {
+export class GenericReply extends BytableBuffer {
 	msgNo: number;
 	msgReply: number;
 	result: Buffer;
@@ -27,7 +27,7 @@ export class GenericReply extends SerializedBufferOld {
 		this.msgNo = 0; // 2 bytes (ethier MC_SUCCESS (0x101) or MC_FAILURE(0x102))
 		this.msgReply = 0; // 2 bytes (message # being replied to (ex: MC_PURCHASE_STOCK_CAR))
 		this.result = Buffer.alloc(4); // 4 bytes (specific to the message sent, often the reason for a failure)
-		this.setBuffer(Buffer.alloc(4)); // 4 bytes (specific to the message sent (but usually 0))
+		this.setValue(Buffer.alloc(4)); // 4 bytes (specific to the message sent (but usually 0))
 		this.data2 = Buffer.alloc(4); // 4 bytes (specific to the message sent (but usually 0))
 	}
 
@@ -36,7 +36,7 @@ export class GenericReply extends SerializedBufferOld {
 		this.rawBuffer.writeUInt16LE(this.msgNo, 0);
 		this.rawBuffer.writeUInt16LE(this.msgReply, 2);
 		this.result.copy(this.rawBuffer, 4);
-		this.data.copy(this.rawBuffer, 8);
+		this.value.copy(this.rawBuffer, 8);
 		this.data2.copy(this.rawBuffer, 12);
 		return this.rawBuffer;
 	}
@@ -46,7 +46,7 @@ export class GenericReply extends SerializedBufferOld {
 			msgNo: this.msgNo,
 			msgReply: this.msgReply,
 			result: this.result.toString("hex"),
-			data: this.data.toString("hex"),
+			data: this.value.toString("hex"),
 			data2: this.data2.toString("hex"),
 		};
 	}
@@ -56,7 +56,7 @@ export class GenericReply extends SerializedBufferOld {
 	}
 }
 
-export class GenericReplyMessage extends SerializedBufferOld {
+export class GenericReplyMessage extends BytableBuffer {
 	msgNo: number;
 	toFrom: number;
 	appId: number;
@@ -80,7 +80,7 @@ export class GenericReplyMessage extends SerializedBufferOld {
 		this.appId = 0; // 2 bytes
 		this.msgReply = 0; // 2 bytes
 		this.result = Buffer.alloc(4); // 4 bytes
-		this.setBuffer(Buffer.alloc(4)); // 4 bytes
+		this.setValue(Buffer.alloc(4)); // 4 bytes
 		this.data2 = Buffer.alloc(4); // 4 bytes
 		this.rawBuffer = Buffer.alloc(0);
 	}
@@ -90,7 +90,7 @@ export class GenericReplyMessage extends SerializedBufferOld {
 	 * @param {Buffer} value
 	 */
 	setData(value: Buffer) {
-		this.setBuffer(value);
+		this.setValue(value);
 	}
 
 	/**
@@ -126,7 +126,7 @@ export class GenericReplyMessage extends SerializedBufferOld {
 
 		node.msgReply = buffer.readUInt16LE(2);
 		node.result = buffer.subarray(4, 8);
-		node.setBuffer(buffer.subarray(8, 12));
+		node.setValue(buffer.subarray(8, 12));
 		node.data2 = buffer.subarray(12);
 		return node;
 	}
@@ -144,7 +144,7 @@ export class GenericReplyMessage extends SerializedBufferOld {
 		offset += 2;
 		this.result.copy(packet, offset);
 		offset += 4;
-		this.data.copy(packet, offset);
+		this.value.copy(packet, offset);
 		offset += 4;
 		this.data2.copy(packet, offset);
 		// offset is now 16
@@ -169,7 +169,7 @@ export class GenericReplyMessage extends SerializedBufferOld {
 					msgNo: this.msgNo,
 					msgReply: this.msgReply,
 					result: this.result.toString("hex"),
-					data: this.data.toString("hex"),
+					data: this.value.toString("hex"),
 					tdata2: this.data2.toString("hex"),
 				})}`;
 	}
@@ -178,6 +178,6 @@ export class GenericReplyMessage extends SerializedBufferOld {
 	 * @return {string}
 	 */
 	override toString(): string {
-		return `GenericReplyMessage: msgNo=${this.msgNo} msgReply=${this.msgReply} result=${this.result.readUInt32LE()} data=${this.data.readUInt32LE()} data2=${this.data2.readUInt32LE()}`;
+		return `GenericReplyMessage: msgNo=${this.msgNo} msgReply=${this.msgReply} result=${this.result.readUInt32LE()} data=${this.value.readUInt32LE()} data2=${this.data2.readUInt32LE()}`;
 	}
 }

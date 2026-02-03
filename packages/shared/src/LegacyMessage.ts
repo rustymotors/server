@@ -1,77 +1,130 @@
-import { SerializableMixin, AbstractSerializable } from "./messageFactory.js";
-import { legacyHeader } from "./legacyHeader.js";
+import { BytableMessage } from "@rustymotors/binary";
 
 /**
- * A legacy message is an older nps message type. It has a 4 byte header. @see {@link legacyHeader}
+ * A legacy message is an older nps message type. It has a 4 byte header.
+ * This is a compatibility wrapper around BytableMessage (version 0 = 4-byte header).
  *
- * @mixin {SerializableMixin}
+ * @deprecated Use BytableMessage directly instead
  */
-
-export class LegacyMessage extends SerializableMixin(AbstractSerializable) {
-	_header: legacyHeader;
+export class LegacyMessage extends BytableMessage {
 	constructor() {
-		super();
-		this._header = new legacyHeader();
-	}
-
-	getMessageId() {
-		return this._header.id;
-	}
-
-	setMessageId(id: number) {
-		this._header.id = id;
+		super(0); // Version 0 = 4-byte header (matches legacyHeader)
 	}
 
 	/**
-	 * Deserializes the given buffer and updates the current instance with the deserialized data.
-	 *
-	 * @param buffer - The buffer containing the serialized data.
-	 * @returns The current instance with the deserialized data.
+	 * Get the message ID from the header
 	 */
-	deserialize(buffer: Buffer) {
-		this._header.deserialize(buffer);
-		this.setBuffer(buffer.subarray(this._header._size));
+	getMessageId(): number {
+		return this.header.id;
+	}
+
+	/**
+	 * Set the message ID in the header
+	 */
+	setMessageId(id: number): void {
+		this.header.setId(id);
+		// Update header length to include payload
+		this.updateHeaderLength();
+	}
+
+	/**
+	 * Set the buffer (payload data)
+	 * @deprecated Use this.data = buffer instead
+	 */
+	setBuffer(buffer: Buffer): void {
+		this.data = buffer;
+		this.updateHeaderLength();
+	}
+
+	/**
+	 * Update the header length to match header size + payload size
+	 */
+	private updateHeaderLength(): void {
+		const payloadSize = this.data.length;
+		// Header length = header size (4) + payload size
+		this.header.setMessageLength(4 + payloadSize);
+	}
+
+	/**
+	 * Deserialize from buffer
+	 */
+	override deserialize(buffer: Buffer): this {
+		super.deserialize(buffer);
 		return this;
 	}
 
-	serialize() {
-		const buffer = Buffer.alloc(this._header.length);
-		this._header.serialize().copy(buffer);
-		super.data.copy(buffer, this._header._size);
-		return buffer;
+	/**
+	 * Serialize to buffer
+	 */
+	override serialize(): Buffer {
+		// Update header length before serializing
+		this.updateHeaderLength();
+		return super.serialize();
 	}
 
 	/**
-	 * @param {Buffer} buffer
+	 * @deprecated Use deserialize() instead
 	 */
-	override setBuffer(buffer: Buffer) {
-		super.setBuffer(buffer);
-		this._header.length = buffer.length + 4;
+	_doDeserialize(buffer: Buffer): this {
+		return this.deserialize(buffer);
+	}
+
+	/**
+	 * @deprecated Use serialize() instead
+	 */
+	_doSerialize(): Buffer {
+		return this.serialize();
+	}
+
+	/**
+	 * Get header object (for compatibility)
+	 * @deprecated Use this.header directly instead
+	 */
+	get _header() {
+		const self = this;
+		return {
+			get id() { return self.header.id; },
+			set id(val: number) { self.header.setId(val); self.updateHeaderLength(); },
+			get length() { return self.header.messageLength; },
+			set length(val: number) { self.header.setMessageLength(val); },
+			_size: 4,
+			_doDeserialize: (buffer: Buffer) => {
+				// Only deserialize the header (first 4 bytes), not the entire message
+				// This prevents infinite recursion when subclasses call _header._doDeserialize()
+				self.header.deserialize(buffer);
+				return self._header;
+			},
+			_doSerialize: () => {
+				// Return just the header portion
+				return self.header.serialize();
+			},
+			toString: () => {
+				return self.header.toString();
+			},
+		};
 	}
 
 	asJSON() {
 		return {
-			header: this._header,
-			data: super.data.toString("hex"),
+			header: {
+				id: this.header.id,
+				length: this.header.messageLength,
+			},
+			data: this.data.toString("hex"),
 		};
 	}
 
-	override toString() {
+	override toString(): string {
 		return `LegacyMessage: ${JSON.stringify({
-			header: this._header.toString(),
-			data: super.data.toString("hex"),
+			header: {
+				id: this.header.id,
+				length: this.header.messageLength,
+			},
+			data: this.data.toString("hex"),
 		})}`;
 	}
 
-	toHexString() {
+	toHexString(): string {
 		return this.serialize().toString("hex");
-	}
-
-	override _doDeserialize(_buffer: Buffer): AbstractSerializable {
-		return this.deserialize(_buffer)
-	}
-
-	override _doSerialize() {
-		return this.serialize()
 	}
 }

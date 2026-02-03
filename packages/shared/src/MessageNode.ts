@@ -4,7 +4,7 @@ import {
     checkSize4,
     sliceBuff,
 } from './helpers.js';
-import { MCOTSMessage, Serializable } from './types.js';
+import type { MCOTSMessage, Serializable } from './types.js';
 
 export class MessageNodeBody implements Serializable {
     protected body_: Buffer;
@@ -62,7 +62,8 @@ export class MessageNode implements MCOTSMessage {
         this.msgLength_ = 9 + this.body_.sizeOf;
         const buf = Buffer.alloc(this.sizeOf);
         let offset = 0;
-        buf.writeInt16LE(this.msgLength_, offset);
+        // Use unsigned 16-bit to support messages larger than 32767 bytes
+        buf.writeUInt16LE(this.msgLength_, offset);
         offset = offset + 2;
         buf.write(this.signature_, offset, 'utf8');
         offset = offset + 4;
@@ -77,7 +78,8 @@ export class MessageNode implements MCOTSMessage {
     deserialize(buf: Buffer) {
         checkMinLength(buf, 11);
         let offset = 0;
-        this.msgLength_ = buf.readInt16LE(offset);
+        // Use unsigned 16-bit to match serialize() and support messages larger than 32767 bytes
+        this.msgLength_ = buf.readUInt16LE(offset);
         offset = offset + 2;
         this.signature_ = sliceBuff(buf, offset, 4).toString('utf8');
         offset = offset + 4;

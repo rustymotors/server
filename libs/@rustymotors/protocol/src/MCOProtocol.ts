@@ -1,6 +1,6 @@
 import { Socket } from "node:net";
 import { BytableMessage, createRawMessage } from "@rustymotors/binary";
-import { getServerLogger, ServerLogger } from "rusty-motors-shared";
+import { getServerLogger, ServerLogger } from "@rustymotors/logging";
 import { serverLoginMessageHandler } from "./serverLoginMessageHandler.js";
 import { writePacket } from "./writePacket.js";
 import { defaultMessageHandler } from "./defaultMessageHandler.js";
@@ -69,9 +69,9 @@ class MCOProtocol {
 		socket.on("close", () => {
 			this.connections.delete(connectionId);
 		});
-		socket.on("error", (error) => {
-			if (error.message === "read ECONNRESET") {
-				log.debug(
+		socket.on("error", (error: NodeJS.ErrnoException) => {
+			if (error.code === "ECONNRESET") {
+				log.verbose(
                     "Connection reset by client",
                     { connectionId }, 
                 );

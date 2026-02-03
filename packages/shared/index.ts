@@ -1,15 +1,24 @@
-import { MessageQueue } from './src/MessageQueue.js';
+import type { MessageQueue } from './src/MessageQueue.js';
 export { SubThread } from './src/SubThread.js';
 export { NetworkMessage } from './src/NetworkMessage.js';
 export { Configuration, getServerConfiguration } from './src/Configuration.js';
+export { configurationProvider, type GatewayConfigurationProvider } from './src/ConfigurationProvider.js';
+export { databaseProvider } from './src/database/DatabaseProvider.js';
+export type {
+    IDatabaseServices,
+    ISessionStore,
+    IGameDataStore,
+    IAuthStore,
+    Player,
+    PartEntry,
+    VehicleRecord,
+    OwnedVehicle,
+} from './src/database/interfaces.js';
 export { SerializedBuffer } from './src/SerializedBuffer.js';
-export { SerializedBufferOld } from './src/SerializedBufferOld.js';
+// SerializedBufferOld removed - use BytableBuffer instead
 export { RawMessage } from './src/RawMessage.js';
 export { ServerMessage } from './src/ServerMessage.js';
-export {
-    AbstractSerializable,
-    SerializableMixin,
-} from './src/messageFactory.js';
+// AbstractSerializable and SerializableMixin removed - use Bytable* classes instead
 export { NPSMessage } from './src/NPSMessage.js';
 export { OldServerMessage } from './src/OldServerMessage.js';
 export { MessageBufferOld } from './src/MessageBufferOld.js';
@@ -34,7 +43,7 @@ export { ensureLegacyCipherCompatibility as verifyLegacyCipherSupport } from './
 export type { State } from './src/State.js';
 export type { OnDataHandler, ServiceResponse } from './src/State.js';
 export { LegacyMessage } from './src/LegacyMessage.js';
-export { NPSHeader } from './src/NPSHeader.js';
+// NPSHeader removed - use BytableHeader (version 1) instead
 export {
     UserData,
     UserInfo,
@@ -76,6 +85,38 @@ export { OpenCommChannelRequest } from './src/OpenCommChannelRequest.js';
 export { getServerLogger } from './getServerLogger.js';
 export { NoResultsError } from './src/errors/NoResultError.js';
 export * from './src/types.js';
+
+// Message ID constants
+export * from './src/constants/index.js';
+
+// Handler utilities (Clean Code & SOLID patterns)
+export type {
+    HandlerContext,
+    HandlerContextWithServices,
+    HandlerResult,
+    MessageHandler,
+    LegacyHandlerArgs,
+    LegacyHandlerResult,
+} from './src/handlers/index.js';
+export {
+    HandlerError,
+    wrapHandlerError,
+    withErrorBoundary,
+    createValidationError,
+    createUnsupportedMessageError,
+    createNoEncryptionError,
+    createNoSessionError,
+    MessageHandlerRegistry,
+    createHandlerContext,
+    createHandlerContextWithServices,
+    createTestContext,
+    ResponseBuilder,
+} from './src/handlers/index.js';
+export type {
+    HandlerServices,
+    ContextFactoryOptions,
+    SerializableMessage,
+} from './src/handlers/index.js';
 
 // Function to convert ARGB to 32-bit integer
 export function argbToInt(

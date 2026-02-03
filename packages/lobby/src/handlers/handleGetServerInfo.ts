@@ -1,5 +1,5 @@
 import { BytableMessage } from '@rustymotors/binary';
-import { getServerLogger, ServerLogger } from 'rusty-motors-shared';
+import { getServerLogger, type ServerLogger } from 'rusty-motors-shared';
 import { chatChannelIds } from './channels.js';
 
 export async function handleGetServerInfo({

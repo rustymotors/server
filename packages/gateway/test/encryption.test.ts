@@ -3,7 +3,7 @@ import { Socket } from "node:net";
 import { beforeAll, beforeEach, describe, expect, it, test, vi } from "vitest";
 import {
 	McosEncryption,
-	State,
+	type State,
 	addEncryption,
 	createInitialState,
 	getEncryption,
