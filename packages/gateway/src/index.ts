@@ -38,7 +38,7 @@ import { getSessionRecorder } from './session/SessionRecorderIntegration.js';
  */
 export function onSocketConnection({
     incomingSocket,
-    log = getServerLogger('onSocketConnection'),
+    log = getServerLogger('gateway'),
 }: {
     incomingSocket: TcpSocket;
     log?: ServerLogger;
@@ -55,18 +55,19 @@ export function onSocketConnection({
         return;
     }
 
-    if (!['73.148.184.53', '10.10.5.1'].includes(remoteAddress)) {
-        return;
-    }
-
     let id = `${randomUUID()}`;
     id = id.substring(0, id.indexOf('-'));
     id = `${id}:${localPort}`;
 
-    // Attach error handler with logger and connectionId
+    // Attach error handler immediately to prevent unhandled error events from crashing the server
     incomingSocket.on("error", (error) => {
         socketErrorHandler({ connectionId: id, error, log });
     });
+
+    if (!['73.148.184.53', '10.10.5.1'].includes(remoteAddress)) {
+        incomingSocket.destroy();
+        return;
+    }
 
     const socketWithId = tagSocket(
         incomingSocket,
@@ -81,9 +82,8 @@ export function onSocketConnection({
         recorder.startSession(id, localPort, remoteAddress);
     }
 
-    /*
-     * At this point, we have a tagged socket with an ID.
-     */
+    const baseId = id.split(':')[0];
+    log.info(`[${baseId}] Connected from ${remoteAddress} on port ${localPort}`);
 
     const portRouter = getPortRouter(localPort);
 
@@ -100,7 +100,7 @@ export function onUdpMessage({
     incomingSocket,
     message,
     remoteInfo,
-    log = getServerLogger('onUdpMessage'),
+    log = getServerLogger('gateway'),
 }: {
     incomingSocket: UdpSocket;
     message: Buffer<ArrayBufferLike>;
