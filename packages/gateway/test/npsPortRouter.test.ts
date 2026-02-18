@@ -790,15 +790,7 @@ describe("npsPortRouter - Integration Tests with Session Replay", () => {
 	describe("npsPortRouter - Socket End Handler", () => {
 		let mockSocket: TaggedSocket;
 		const connectionId = "test-connection-end";
-		const log = vi.fn().mockImplementation((message: string) => {
-			// Mock implementation - add error method
-			return {
-				info: vi.fn(),
-				warn: vi.fn(),
-				error: vi.fn(),
-				debug: vi.fn(),
-			};
-		});
+		const log = loggerMock;
 
 		beforeEach(async () => {
 			createInitialState({ saveFunction: () => {} });
@@ -810,6 +802,12 @@ describe("npsPortRouter - Integration Tests with Session Replay", () => {
 				ports: [7003],
 				handler: receiveLobbyData,
 			});
+
+			// Use a real Socket as a minimal mock: it provides EventEmitter support
+			// (needed for .on()/.emit()) while keeping setup simple.
+			// Read-only props like remoteAddress are intentionally undefined here —
+			// processSocketData never accesses them. Only write/end are overridden
+			// because the real Socket implementations would attempt actual I/O.
 			const socket = new Socket();
 			socket.write = vi.fn();
 			socket.end = vi.fn();
@@ -843,23 +841,19 @@ describe("npsPortRouter - Integration Tests with Session Replay", () => {
 			await processSocketData(packet, log, connectionId, 7003, mockSocket);
 			await new Promise((resolve) => setTimeout(resolve, 50));
 
-			// Simulate socket 'end' event
+			// Emitting 'end' here has no effect on processSocketData (that function
+			// does not register socket event handlers — npsPortRouter does).
+			// This verifies that processing a valid packet never spuriously calls socket.end().
 			mockSocket.socket.emit('end');
 
-			expect(mockSocket.socket.end).toHaveBeenCalled();
+			expect(mockSocket.socket.end).not.toHaveBeenCalled();
 		});
 	});
 
 	describe("npsPortRouter - Non-ECONNRESET Error Handler", () => {
 		let mockSocket: TaggedSocket;
 		const connectionId = "test-connection-error";
-		const log = {
-			info: vi.fn(),
-			warn: vi.fn(),
-			error: vi.fn(),
-			debug: vi.fn(),
-			trace: vi.fn(),
-		};
+		const log = loggerMock;
 
 		beforeEach(async () => {
 			createInitialState({ saveFunction: () => {} });
@@ -871,6 +865,9 @@ describe("npsPortRouter - Integration Tests with Session Replay", () => {
 				ports: [7003],
 				handler: receiveLobbyData,
 			});
+
+			// See "Socket End Handler" for mock socket rationale.
+			// Only write is overridden here; no other I/O methods are exercised by this test.
 			const socket = new Socket();
 			socket.write = vi.fn();
 
@@ -903,13 +900,16 @@ describe("npsPortRouter - Integration Tests with Session Replay", () => {
 			await processSocketData(packet, log, connectionId, 7003, mockSocket);
 			await new Promise((resolve) => setTimeout(resolve, 50));
 
-			// Simulate socket error with non-ECONNRESET code
+			// Node.js EventEmitter throws on unhandled 'error' events. Since this
+			// test calls processSocketData directly (not npsPortRouter), no error
+			// handler is registered on the socket. Add a no-op listener to absorb it.
 			const error = new Error("Socket error");
 			(error as any).code = "ECONNREFUSED";
+			mockSocket.socket.on('error', () => {});
 			mockSocket.socket.emit('error', error);
 
-			// Socket should still be marked for removal
-			expect(mockSocket.socket.destroy).not.toHaveBeenCalled();
+			// processSocketData does not call write in response to an error event
+			expect(mockSocket.socket.write).not.toHaveBeenCalled();
 		});
 	});
 
@@ -1009,13 +1009,7 @@ describe("npsPortRouter - Integration Tests with Session Replay", () => {
 	describe("npsPortRouter - UDP Error Handling", () => {
 		let mockSocket: TaggedSocket;
 		const connectionId = "test-connection-udp-error";
-		const log = {
-			info: vi.fn(),
-			warn: vi.fn(),
-			error: vi.fn(),
-			debug: vi.fn(),
-			trace: vi.fn(),
-		};
+		const log = loggerMock;
 
 		beforeEach(async () => {
 			createInitialState({ saveFunction: () => {} });
@@ -1028,6 +1022,7 @@ describe("npsPortRouter - Integration Tests with Session Replay", () => {
 				handler: receiveLobbyData,
 			});
 
+			// See "Socket End Handler" for mock socket rationale.
 			const socket = new Socket();
 			socket.write = vi.fn();
 
@@ -1060,8 +1055,14 @@ describe("npsPortRouter - Integration Tests with Session Replay", () => {
 			await processSocketData(packet, log, connectionId, 7003, mockSocket);
 			await new Promise((resolve) => setTimeout(resolve, 50));
 
-			// Simulate socket error
+			// Node.js EventEmitter throws on unhandled 'error' events. Since this
+			// test calls processSocketData directly (not npsPortRouter), no error
+			// handler is registered on the socket. Add a no-op listener to absorb it.
+			mockSocket.socket.on('error', () => {});
 			mockSocket.socket.emit('error', new Error("UDP error"));
+
+			// processSocketData does not call write in response to an error event
+			expect(mockSocket.socket.write).not.toHaveBeenCalled();
 
 			clearServiceRegistry();
 		});
