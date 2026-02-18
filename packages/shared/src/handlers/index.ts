@@ -4,15 +4,15 @@
  * Exports types and utilities for implementing Clean Code
  * and SOLID-compliant message handlers.
  */
-
 export {
+    HandlerError
+} from './HandlerTypes.js';
+export type {
     HandlerContext,
     HandlerContextWithServices,
     HandlerResult,
-    MessageHandler,
-    HandlerError,
-    LegacyHandlerArgs,
-    LegacyHandlerResult,
+    MessageHandler, LegacyHandlerArgs,
+    LegacyHandlerResult
 } from './HandlerTypes.js';
 
 export {

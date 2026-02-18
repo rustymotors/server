@@ -8,6 +8,7 @@ import {
     UserJoinedChannelMessage,
     databaseProvider,
 } from 'rusty-motors-shared';
+import {UserStatusManager} from "rusty-motors-nps";
 
 export async function handleOpenCommChannel({
     connectionId,
@@ -78,11 +79,15 @@ export async function handleOpenCommChannel({
                     `Unable to locate user data for user ${userId}`,
                 );
             }
+            // Get user status to retrieve personaId
+            const userStatus = UserStatusManager.getUserStatus(userId);
+            const personaId = userStatus?.personaId ?? 0;
             const userJoined = new UserJoinedChannelMessage(
                 user.userName,
                 user.userId,
                 (requestedCommIdBuffer as Buffer).readInt32BE(),
                 user.userData,
+                personaId,
             );
 
             const userJoinedMessage = BytableMessage.FromRawMessage(

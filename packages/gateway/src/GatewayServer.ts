@@ -150,7 +150,7 @@ export class Gateway implements ShutdownHandler {
 
         await Promise.all([...tcpListeningServers, ...udpListeningSockets]);
 
-        this.log.debug(`All sockets listening`);
+        this.log.info(`Server listening on ${tcpListeningServers.length} TCP + ${udpListeningSockets.length} UDP ports`);
 
         // Start web server manager (marks server as ready)
         const webPort = this.gatewayConfig.getWebPort();

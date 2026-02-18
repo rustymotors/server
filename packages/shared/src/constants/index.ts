@@ -9,3 +9,4 @@
 export * from "./NPSMessageIds.js";
 export * from "./AuthMessageIds.js";
 export * from "./MCOTSMessageIds.js";
+export { resolveMessageId } from "./messageIdResolver.js";

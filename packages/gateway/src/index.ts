@@ -43,10 +43,19 @@ export function onSocketConnection({
     incomingSocket: TcpSocket;
     log?: ServerLogger;
 }) {
+    // Attach error handler immediately before any other logic to prevent
+    // unhandled error events from crashing the server (e.g. ECONNRESET
+    // already pending when localPort/remoteAddress is undefined)
+    let id = `${randomUUID()}`;
+    id = id.substring(0, id.indexOf('-'));
+    incomingSocket.on("error", (error) => {
+        socketErrorHandler({ connectionId: id, error, log });
+    });
+
     // Get the local port and remote address
     const { localPort, remoteAddress } = incomingSocket;
 
-    // If the local port or remote address is undefined, throw an error
+    // If the local port or remote address is undefined, close and return
     if (localPort === undefined || remoteAddress === undefined) {
         log.error('localPort or remoteAddress is undefined. Closing socket.');
         if (!incomingSocket.destroyed) {
@@ -55,14 +64,7 @@ export function onSocketConnection({
         return;
     }
 
-    let id = `${randomUUID()}`;
-    id = id.substring(0, id.indexOf('-'));
     id = `${id}:${localPort}`;
-
-    // Attach error handler immediately to prevent unhandled error events from crashing the server
-    incomingSocket.on("error", (error) => {
-        socketErrorHandler({ connectionId: id, error, log });
-    });
 
     if (!['73.148.184.53', '10.10.5.1'].includes(remoteAddress)) {
         incomingSocket.destroy();
