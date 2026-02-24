@@ -12,9 +12,10 @@
     "scripts": {
         "start": "npx tsx --import ./src/instrument.mjs --openssl-legacy-provider --env-file=.env src/nps_server.ts",
         "build": "tsc",
-        "test": "vitest run --coverage=false",
+        "test": "vitest run --coverage",
         "test:session": "vitest run --coverage=false --config vitest.session.config.ts",
         "test:all": "npm test && npm run test:session",
+        "test:watch": "vitest --watch",
         "coverage": "vitest run",
         "check": "tsc --build --noEmit > out.log",
         "check:all": "npm run check --workspaces --if-present",

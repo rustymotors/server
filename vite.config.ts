@@ -39,6 +39,7 @@ export default defineConfig({
         coverage: {
             enabled: true,
             all: true,
+            clean: true,
             exclude: [
                 "src/**/*.spec.ts",
                 "src/**/*.test.ts",
@@ -51,7 +52,7 @@ export default defineConfig({
                 "**/coverage/**",
                 ...coverageConfigDefaults.exclude,
             ],
-            reporter: ["lcov", "text-summary"],
+            reporter: ["lcov", "text"],
         },
         exclude: [
             "packages/pklib-ts",
@@ -61,7 +62,7 @@ export default defineConfig({
             ...configDefaults.exclude
 
         ],
-        reporters: ["junit", "dot", "hanging-process"],
+        reporters: ["junit", "tap", "hanging-process"],
 		outputFile: "mcos.junit.xml",
 		pool: "forks",
     },

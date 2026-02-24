@@ -29,17 +29,8 @@ export async function handleOpenCommChannel({
         );
 
         // l
-        const incomingRequest = new BytableMessage();
-        incomingRequest.setSerializeOrder([
-            { name: 'commId', field: 'Dword' },
-            { name: 'riffName', field: 'String' },
-            { name: 'slotNumber', field: 'Dword' },
-            { name: 'slotFlags', field: 'Dword' },
-            { name: 'portNumber', field: 'Dword' },
-            { name: 'userId', field: 'Dword' },
-        ]);
-        incomingRequest.deserialize(message.serialize());
-
+        const incomingRequest = parseOpenCommChannelMessage(message.serialize());
+        
         const requestedCommIdBuffer =
             incomingRequest.getFieldValueByName('commId') ?? -1;
         const requestedRiffName =
@@ -68,7 +59,7 @@ export async function handleOpenCommChannel({
         if (requestedCommId > 100) {
             // Create user joined channel message
             const sessionStore = databaseProvider.getSessionStore();
-            const userId: number = (incomingRequest.getFieldValueByName("userId") as number) ?? -1;
+            const userId: number = (incomingRequest.getFieldValueByName("userId") as Buffer).readInt32BE()
             const user = await sessionStore.getUser(userId);
             if (typeof user === 'undefined') {
                 throw new Error(
