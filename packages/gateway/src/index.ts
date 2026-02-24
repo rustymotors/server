@@ -14,19 +14,21 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import type { Socket as TcpSocket } from 'node:net';
-import type { RemoteInfo, Socket as UdpSocket } from 'node:dgram';
-import { randomUUID } from 'node:crypto';
-import { tagSocket } from './socketUtility.js';
-import { getPortRouter } from './portRouters.js';
-import * as Sentry from '@sentry/node';
+import type { Socket as TcpSocket } from "node:net";
+import type { RemoteInfo, Socket as UdpSocket } from "node:dgram";
+import { randomUUID } from "node:crypto";
+import { tagSocket } from "./socketUtility.js";
+import { getPortRouter } from "./portRouters.js";
+import * as Sentry from "@sentry/node";
 import {
     getServerLogger,
     type ServerLogger,
     type TaggedTcpSocket,
-} from 'rusty-motors-shared';
-import { socketErrorHandler } from './socketErrorHandler.js';
-import { getSessionRecorder } from './session/SessionRecorderIntegration.js';
+} from "rusty-motors-shared";
+import { socketErrorHandler } from "./socketErrorHandler.js";
+import { getSessionRecorder } from "./session/SessionRecorderIntegration.js";
+
+const ALLOWED_IPS = ["98.231.127.157", "10.10.5.1"];
 
 /**
  * Handle incoming TCP connections
@@ -38,7 +40,7 @@ import { getSessionRecorder } from './session/SessionRecorderIntegration.js';
  */
 export function onSocketConnection({
     incomingSocket,
-    log = getServerLogger('gateway'),
+    log = getServerLogger("gateway"),
 }: {
     incomingSocket: TcpSocket;
     log?: ServerLogger;
@@ -47,7 +49,7 @@ export function onSocketConnection({
     // unhandled error events from crashing the server (e.g. ECONNRESET
     // already pending when localPort/remoteAddress is undefined)
     let id = `${randomUUID()}`;
-    id = id.substring(0, id.indexOf('-'));
+    id = id.substring(0, id.indexOf("-"));
     incomingSocket.on("error", (error) => {
         socketErrorHandler({ connectionId: id, error, log });
     });
@@ -57,7 +59,7 @@ export function onSocketConnection({
 
     // If the local port or remote address is undefined, close and return
     if (localPort === undefined || remoteAddress === undefined) {
-        log.error('localPort or remoteAddress is undefined. Closing socket.');
+        log.error("localPort or remoteAddress is undefined. Closing socket.");
         if (!incomingSocket.destroyed) {
             incomingSocket.end();
         }
@@ -66,7 +68,7 @@ export function onSocketConnection({
 
     id = `${id}:${localPort}`;
 
-    if (!['73.148.184.53', '10.10.5.1'].includes(remoteAddress)) {
+    if (!ALLOWED_IPS.includes(remoteAddress)) {
         incomingSocket.destroy();
         return;
     }
@@ -84,8 +86,10 @@ export function onSocketConnection({
         recorder.startSession(id, localPort, remoteAddress);
     }
 
-    const baseId = id.split(':')[0];
-    log.info(`[${baseId}] Connected from ${remoteAddress} on port ${localPort}`);
+    const baseId = id.split(":")[0];
+    log.info(
+        `[${baseId}] Connected from ${remoteAddress} on port ${localPort}`,
+    );
 
     const portRouter = getPortRouter(localPort);
 
@@ -102,36 +106,37 @@ export function onUdpMessage({
     incomingSocket,
     message,
     remoteInfo,
-    log = getServerLogger('gateway'),
+    log = getServerLogger("gateway"),
 }: {
     incomingSocket: UdpSocket;
     message: Buffer<ArrayBufferLike>;
     remoteInfo: RemoteInfo;
     log?: ServerLogger;
 }) {
-    if (!['73.148.184.53'].includes(remoteInfo.address)) {
+    if (!ALLOWED_IPS.includes(remoteInfo.address)) {
         return;
     }
 
-    log.debug(
-        'New UDP Message',
-        {
-            namespace: 'onUdpMessage',
-            message: message.toString('hex'),
-            remoteInfo: JSON.stringify(remoteInfo),
-        },
-    );
+    log.debug("New UDP Message", {
+        namespace: "onUdpMessage",
+        message: message.toString("hex"),
+        remoteInfo: JSON.stringify(remoteInfo),
+    });
     // Get the local port and remote address
     const { address: remoteAddress, port: remotePort } = remoteInfo;
     const { port: localPort } = incomingSocket.address();
 
     // If the local port or remote address is undefined, throw an error
     if (localPort === undefined || remoteAddress === undefined) {
-        log.error('localPort or remoteAddress is undefined. Closing socket.');
+        log.error("localPort or remoteAddress is undefined. Closing socket.");
         incomingSocket.close();
         return;
     }
 
-    incomingSocket.send(Buffer.from([0x02, 0x07, 0x00, 0x04]), remotePort, remoteAddress)
-    return
+    incomingSocket.send(
+        Buffer.from([0x02, 0x07, 0x00, 0x04]),
+        remotePort,
+        remoteAddress,
+    );
+    return;
 }

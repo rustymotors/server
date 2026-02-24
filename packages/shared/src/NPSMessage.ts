@@ -47,7 +47,7 @@ export class NPSMessage extends BytableMessage {
 	/**
 	 * Deserialize from buffer
 	 */
-	override deserialize(buffer: Buffer): this {
+	override deserialize(buffer: Buffer): NPSMessage {
 		super.deserialize(buffer);
 		return this;
 	}
@@ -64,14 +64,14 @@ export class NPSMessage extends BytableMessage {
 	/**
 	 * @deprecated Use deserialize() instead
 	 */
-	_doDeserialize(buffer: Buffer): this {
+	override _doDeserialize(buffer: Buffer): NPSMessage {
 		return this.deserialize(buffer);
 	}
 
 	/**
 	 * @deprecated Use serialize() instead
 	 */
-	_doSerialize(): Buffer {
+	override _doSerialize(): Buffer {
 		return this.serialize();
 	}
 

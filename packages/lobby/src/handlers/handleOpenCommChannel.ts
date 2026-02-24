@@ -35,6 +35,8 @@ export async function handleOpenCommChannel({
             { name: 'riffName', field: 'String' },
             { name: 'slotNumber', field: 'Dword' },
             { name: 'slotFlags', field: 'Dword' },
+            { name: 'portNumber', field: 'Dword' },
+            { name: 'userId', field: 'Dword' },
         ]);
         incomingRequest.deserialize(message.serialize());
 
@@ -66,13 +68,7 @@ export async function handleOpenCommChannel({
         if (requestedCommId > 100) {
             // Create user joined channel message
             const sessionStore = databaseProvider.getSessionStore();
-            const userId =
-                await sessionStore.findUserByConnectionId(connectionId);
-            if (typeof userId === 'undefined') {
-                throw new Error(
-                    `Unable to locate user for connection ${connectionId}`,
-                );
-            }
+            const userId: number = (incomingRequest.getFieldValueByName("userId") as number) ?? -1;
             const user = await sessionStore.getUser(userId);
             if (typeof user === 'undefined') {
                 throw new Error(
@@ -81,7 +77,7 @@ export async function handleOpenCommChannel({
             }
             // Get user status to retrieve personaId
             const userStatus = UserStatusManager.getUserStatus(userId);
-            const personaId = userStatus?.personaId ?? 0;
+            const personaId = userStatus?.getPersonaId();
             const userJoined = new UserJoinedChannelMessage(
                 user.userName,
                 user.userId,
@@ -146,4 +142,19 @@ export function createNPSChannelGrantedPacket(
     packetResult.deserialize(outgoingGameMessage.serialize());
 
     return packetResult;
+}
+
+export function parseOpenCommChannelMessage(buffer: Buffer) {
+    const incomingRequest = new BytableMessage();
+    incomingRequest.setSerializeOrder([
+        { name: 'commId', field: 'Dword' },
+        { name: 'riffName', field: 'String' },
+        { name: 'slotNumber', field: 'Dword' },
+        { name: 'slotFlags', field: 'Dword' },
+        { name: 'portNumber', field: 'Dword' },
+        { name: 'protocol', field: 'Dword' },
+        { name: 'userId', field: 'Dword' },
+    ]);
+    incomingRequest.deserialize(buffer);
+    return incomingRequest;
 }

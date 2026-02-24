@@ -280,17 +280,15 @@ export class UserInfo implements Serializable {
     private _userId: Buffer;
     private _username: CString;
     private _userData: UserData;
-    private _personaId: Buffer;
 
     constructor() {
         this._userId = Buffer.alloc(4);
         this._username = new CString(32);
         this._userData = new UserData();
-        this._personaId = Buffer.alloc(4);
     }
 
     get sizeOf() {
-        return 4 + this._username.sizeOf + this._userData.sizeOf + 4;
+        return this._userId.byteLength + this._username.sizeOf + this._userData.sizeOf;
     }
 
     serialize() {
@@ -299,13 +297,12 @@ export class UserInfo implements Serializable {
                 this._userId,
                 this._username.serialize(),
                 this._userData.serialize(),
-                this._personaId,
             ]),
         );
     }
 
     deserialize(buf: Buffer) {
-        const minSize = 4 + 2 + this._userData.sizeOf + 4;
+        const minSize = 4 + 2 + this._userData.sizeOf;
         if (buf.byteLength < minSize) {
             throw new Error(
                 `buffer too small. need ${minSize} bytes, got ${buf.byteLength} bytes`,
@@ -316,9 +313,8 @@ export class UserInfo implements Serializable {
         offset += 4;
         this._username.deserialize(buf.subarray(offset));
         offset += this._username.sizeOf;
-        this._userData.deserialize(buf.subarray(offset));
+        this._userData.deserialize(sliceBuff(buf, offset, this._userData.sizeOf));
         offset += this._userData.sizeOf;
-        this._personaId = sliceBuff(buf, offset, 4);
     }
 
     get userId() {
@@ -347,12 +343,19 @@ export class UserInfo implements Serializable {
     }
 
     get personaId(): number {
-        return this._personaId.readInt32BE();
+        return this._userId.readInt32BE();
     }
 
     set personaId(val: number) {
         checkSize4(val);
-        this._personaId.writeInt32BE(val);
+        this._userId.writeInt32BE(val);
+    }
+
+    setUserName(username: string) {
+        this._username.set(username);
+    }
+    getUserName() {
+        return this._username.toString();
     }
 }
 
