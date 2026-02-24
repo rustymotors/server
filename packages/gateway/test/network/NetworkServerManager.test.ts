@@ -47,7 +47,7 @@ describe("NetworkServerManager", () => {
 			});
 
 			expect(server.listening).toBe(true);
-			expect(mockLogger.info).toHaveBeenCalledWith(`TCP server listening on port ${port}`);
+			expect(mockLogger.debug).toHaveBeenCalledWith(`TCP server listening on port ${port}`);
 
 			// Test that we can connect to it
 			const client = createConnection({ port, host: "127.0.0.1" });
@@ -136,7 +136,7 @@ describe("NetworkServerManager", () => {
 			expect(socket).not.toBeNull();
 			const address = socket.address();
 			expect(address.port).toBe(port);
-			expect(mockLogger.info).toHaveBeenCalledWith(`UDP socket bound to port ${port}`);
+			expect(mockLogger.debug).toHaveBeenCalledWith(`UDP socket bound to port ${port}`);
 		});
 
 		it("should handle UDP message handler", async () => {

@@ -5,7 +5,7 @@
 		"outDir": "./dist",
 		"rootDir": "./"
 	},
-	"include": ["src/**/*", "index.ts"],
+	"include": ["src/**/*", "index.ts", "test/**/*.test.ts"],
 	"references": [
 		{ "path": "../shared" },
 		{ "path": "../database" },

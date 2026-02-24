@@ -134,15 +134,15 @@ export class CString implements Serializable {
     }
 
     get sizeOf() {
-        return 4 + this._string.byteLength + 1;
+        return 4 + this._string.byteLength;
     }
 
     serialize() {
-        const len = this._string.byteLength + 1;
+        const len = this._string.byteLength;
         const lenBuf = Buffer.alloc(4);
         lenBuf.writeInt32BE(len);
         return Buffer.from(
-            Buffer.concat([lenBuf, this._string, Buffer.from('\0')]),
+            Buffer.concat([lenBuf, this._string]),
         );
     }
 
@@ -152,16 +152,16 @@ export class CString implements Serializable {
                 `need at least 4 bytes for length. got ${buf.byteLength}`,
             );
         }
-        const strEndOffset = buf.readInt32BE() + 4;
-        this._string = Buffer.from(buf.subarray(4, strEndOffset - 1));
+        const len = buf.readInt32BE();
+        this._string = Buffer.from(sliceBuff(buf, 4, len));
     }
 
     toString() {
-        return this._string.toString('utf8');
+        return sliceBuff(this._string, 0, this._string.byteLength - 1).toString('utf8');
     }
 
     get length() {
-        return this._string.byteLength + 1;
+        return this._string.byteLength;
     }
 
     set(val: string) {
@@ -170,8 +170,8 @@ export class CString implements Serializable {
                 `string can only be ${this._maxLen - 1} bytes long, got ${val.length}`,
             );
         }
-        this._string = Buffer.alloc(val.length);
-        this._string.write(val);
+        this._string = Buffer.alloc(val.length + 1);
+        this._string.write(`${val}\0`);
     }
 
     static compare(firstCString: CString, SecondCString: CString) {
@@ -255,7 +255,7 @@ export function sliceBuff(
 ): Buffer<ArrayBuffer> {
     const endIdx = offset + len;
     if (inbuff.byteLength < endIdx) {
-        throw new Error(`input buffer not log enough, need ${len} bytes`);
+        throw new Error(`input buffer not long enough, need ${endIdx} bytes, got ${inbuff.byteLength}`);
     }
     return Buffer.from(inbuff.subarray(offset, endIdx));
 }

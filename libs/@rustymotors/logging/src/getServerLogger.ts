@@ -1,31 +1,27 @@
-import { LogLevel, ServerLogger } from './types.js';
+import { type LogLevel, type ServerLogger } from './types.js';
 import * as winston from 'winston';
 import DailyRotateFile from "winston-daily-rotate-file"
 
 let loggerInstance: winston.Logger | undefined = undefined;
 
-export function getServerLogger(name?: string): ServerLogger {
-	if (typeof loggerInstance !== 'undefined') {
-		const loggerName = name || 'core';
-		return wrapLogger(loggerInstance.child({ defaultMeta: { name: loggerName } }));
+function getOrCreateLogger(): winston.Logger {
+	if (loggerInstance) {
+		return loggerInstance;
 	}
-	const loggerName = name || 'core';
+
 	const envLevel = (process.env['MCO_LOG_LEVEL'] || process.env['LOG_LEVEL']) as LogLevel;
 	const logLevel: LogLevel = envLevel ?? 'verbose';
-	const logFormat = process.env['LOG_FORMAT'] === 'json' ? 'json' : 'simple';
 
-	// Choose format based on environment variable
-	const consoleFormat = logFormat === 'json'
-		? winston.format.json()
-		: winston.format.combine(
-			  winston.format.colorize(),
-			  winston.format.simple(),
-		  );
+	const consoleFormat = winston.format.combine(
+		winston.format.timestamp({ format: 'HH:mm:ss.SSS' }),
+		winston.format.printf(({ timestamp, level, message, loggerName, ...rest }) => {
+			const name = loggerName ? ` [${loggerName}]` : '';
+			const extra = Object.keys(rest).length > 0 ? ` ${JSON.stringify(rest)}` : '';
+			return `${timestamp} ${level}${name} ${message}${extra}`;
+		}),
+	);
 
-	let logger = winston.createLogger({
-		defaultMeta: {
-			name: loggerName,
-		},
+	const logger = winston.createLogger({
 		level: logLevel,
 		transports: [
 			new winston.transports.Console({
@@ -39,28 +35,51 @@ export function getServerLogger(name?: string): ServerLogger {
 				zippedArchive: true,
 				maxSize: '20m',
 				maxFiles: '14d',
-				format: logFormat === 'json' ? winston.format.json() : winston.format.combine(
+				format: winston.format.combine(
 					winston.format.timestamp(),
-					winston.format.simple(),
+					winston.format.json(),
 				),
 			}),
 		],
 	});
 
 	loggerInstance = logger;
-
-	return wrapLogger(loggerInstance);
+	return logger;
 }
 
-function wrapLogger(logger: winston.Logger): ServerLogger {
+export function getServerLogger(name?: string): ServerLogger {
+	const logger = getOrCreateLogger();
+	const loggerName = name || 'core';
+	return wrapLogger(logger, loggerName);
+}
+
+function wrapLogger(logger: winston.Logger, name: string): ServerLogger {
+	const withName = (msgOrMeta: unknown, ...args: unknown[]) => {
+		if (typeof msgOrMeta === 'string') {
+			// log.info("message", { extra })
+			const meta = (args[0] && typeof args[0] === 'object') ? args[0] as Record<string, unknown> : {};
+			return { message: msgOrMeta, ...meta, loggerName: name };
+		}
+		// log.info({ message: "...", extra })
+		if (typeof msgOrMeta === 'object' && msgOrMeta !== null) {
+			return { ...(msgOrMeta as Record<string, unknown>), loggerName: name };
+		}
+		return { message: String(msgOrMeta), loggerName: name };
+	};
+
+	const makeLogFn = (level: string) => {
+		return (msgOrMeta: unknown, ...args: unknown[]) => {
+			const merged = withName(msgOrMeta, ...args);
+			logger.log(level, merged);
+		};
+	};
+
 	return {
-		error: logger.error.bind(logger),
-		info: logger.info.bind(logger),
-		warn: logger.warn.bind(logger),
-		verbose: logger.verbose.bind(logger),
-		/** @deprecated Use verbose instead */
-		debug: (logger as any).debug ? (logger as any).verbose.bind(logger) : logger.verbose.bind(logger),
-		/** @deprecated Use verbose instead */
-		trace: (logger as any).silly ? (logger as any).verbose.bind(logger) : logger.verbose.bind(logger),
+		error: makeLogFn('error') as winston.LeveledLogMethod,
+		warn: makeLogFn('warn') as winston.LeveledLogMethod,
+		info: makeLogFn('info') as winston.LeveledLogMethod,
+		verbose: makeLogFn('verbose') as winston.LeveledLogMethod,
+		debug: makeLogFn('verbose') as winston.LeveledLogMethod,
+		trace: makeLogFn('verbose') as winston.LeveledLogMethod,
 	};
 }

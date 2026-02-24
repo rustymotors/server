@@ -1,24 +1,55 @@
 {
-	"extends": "./tsconfig.base.json",
-	"compilerOptions": {
-		"incremental": true,
-		"composite": true
-	},
-	"files": [],
-	"references": [
-		{ "path": "packages/cli" },
-		{ "path": "packages/database" },
-		{ "path": "packages/gateway" },
-		{ "path": "packages/lobby" },
-		{ "path": "packages/nps" },
-		{ "path": "packages/shard" },
-		{ "path": "packages/shared" },
-		{ "path": "packages/protocol" },
-		{ "path": "packages/transactions" },
-		{ "path": "libs/@rustymotors/binary" },
-		{ "path": "libs/@rustymotors/network" },
-		{ "path": "libs/@rustymotors/parser" },
-		{ "path": "libs/@rustymotors/rooms" },
-		{ "path": "src/chat" }
-	]
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "incremental": true,
+        "composite": true
+    },
+    "files": [],
+    "references": [
+        {
+            "path": "packages/authentication"
+        },
+        {
+            "path": "packages/cli"
+        },
+        {
+            "path": "packages/database"
+        },
+        {
+            "path": "packages/gateway"
+        },
+        {
+            "path": "packages/lobby"
+        },
+        {
+            "path": "packages/nps"
+        },
+        {
+            "path": "packages/shard"
+        },
+        {
+            "path": "packages/shared"
+        },
+        {
+            "path": "packages/protocol"
+        },
+        {
+            "path": "packages/transactions"
+        },
+        {
+            "path": "libs/@rustymotors/binary"
+        },
+        {
+            "path": "libs/@rustymotors/network"
+        },
+        {
+            "path": "libs/@rustymotors/parser"
+        },
+        {
+            "path": "libs/@rustymotors/rooms"
+        },
+        {
+            "path": "src/chat"
+        },
+    ]
 }

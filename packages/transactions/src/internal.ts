@@ -137,7 +137,7 @@ export async function receiveTransactionsData({
 
 		// log the old buffer
 		log.debug(
-			`[${connectionId}] Inbound buffer: ${inboundMessage.getBody().toString("hex")}`,
+			`[${connectionId}] Inbound buffer: ${inboundMessage.getBody().toString()}`,
 		);
 
 		decryptedMessage = decryptMessage(

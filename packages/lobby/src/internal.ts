@@ -42,12 +42,6 @@ export async function receiveLobbyData({
     connectionId: string;
     messages: BytableBuffer[];
 }> {
-    const data = message.serialize();
-    log.debug('Received Lobby packet', {
-        connectionId,
-        data: data.toString('hex'),
-    });
-
     // Use the handler registry to find the appropriate handler
     const registry = getLobbyHandlerRegistry();
     const handlerEntry = registry.getHandler(message.header.id);
@@ -68,7 +62,6 @@ export async function receiveLobbyData({
             connectionId,
             message,
         });
-        log.debug('Leaving receiveLobbyData');
         const sendQueue = getSocketQueue(connectionId, 'send');
 
         result.messages.forEach((response) =>

@@ -9,6 +9,7 @@ import { BytableDword } from './BytableDword.js';
 import { BytableHeader } from './BytableHeader.js';
 import { BytableWord } from './BytableWord.js';
 import { BytableObject } from './types.js';
+import {RawMessage} from 'rusty-motors-shared'
 
 // Type for RawMessage-like objects to avoid circular dependency with rusty-motors-shared
 interface SerializableMessage {
@@ -281,7 +282,7 @@ export class BytableMessage extends Bytable {
         return buffer;
     }
 
-    override serialize() {
+    override serialize(): Buffer {
         const buffer = Buffer.alloc(this.serializeSize);
         this.header_.setMessageLength(this.serializeSize);
         buffer.set(this.header_.serialize(), 0);

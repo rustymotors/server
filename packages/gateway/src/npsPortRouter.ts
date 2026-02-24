@@ -9,10 +9,13 @@ import {
     MessageQueue,
     getSocketQueue,
     addSocketPair,
+    resolveMessageId,
 } from 'rusty-motors-shared';
 import { messageStats } from './GatewayServer.js';
 import { getSessionRecorder } from './session/SessionRecorderIntegration.js';
 import { getServiceRegistry, type Serializable } from './routing/ServiceRegistry.js';
+
+const suppressPing = process.env['MCO_LOG_SUPPRESS_PING'] === 'true';
 
 /**
  * Handles routing for the NPS (Network Play System) ports.
@@ -23,7 +26,7 @@ import { getServiceRegistry, type Serializable } from './routing/ServiceRegistry
  */
 export async function npsPortRouter({
     taggedSocket,
-    log = getServerLogger('gateway.npsPortRouter'),
+    log = getServerLogger('gateway'),
 }: {
     taggedSocket: TaggedSocket;
     log?: ServerLogger;
@@ -51,8 +54,6 @@ export async function npsPortRouter({
                     taggedSocket.socket.end();
                     return;
                 }
-
-                log.debug(`Receiving packet in queue`);
 
                 await processSocketData(
                     item.data,
@@ -107,7 +108,6 @@ export async function npsPortRouter({
 
     // Lobby handshake - client blocks until these are received
     if (port === 7003) {
-        // Send NPS_OK_TO_LOGIN (0x0230)
         log.debug(`Sending NPS_OK_TO_LOGIN packet`);
         sendQueue.put({
             sequenceNo: -1,
@@ -131,6 +131,8 @@ export async function npsPortRouter({
             // Auto-save session on disconnect
             recorder.saveSession(taggedSocket.connectionId, `Auto-saved on disconnect`);
         }
+        const baseId = taggedSocket.connectionId.split(':')[0];
+        log.info(`[${baseId}] Disconnected on port ${taggedSocket.localPort}`);
         receiveQueue.exit();
     });
 
@@ -144,10 +146,12 @@ export async function npsPortRouter({
                 recorder.saveSession(taggedSocket.connectionId, `Auto-saved on ECONNRESET`);
             }
             receiveQueue.exit();
+            sendQueue.exit();
             return;
         }
         log.error(`[${connectionId}] Socket error: ${error}`);
         receiveQueue.exit();
+        sendQueue.exit();
     });
 }
 
@@ -186,19 +190,6 @@ function isPacketValid(data: Buffer): boolean {
  * Processes incoming socket data, splits it into packets if necessary, and routes
  * the initial message for further handling. Sends the response back to the client
  * through the socket.
- *
- * @param log - The logger instance used for logging debug, warning, and error messages.
- * @param id - A unique identifier for the current connection or session.
- * @param port - The port number associated with the socket connection.
- * @param socket - The socket instance used for communication with the client.
- * @returns A function that processes incoming data buffers from the socket.
- *
- * The returned function:
- * - Logs the received data and its length.
- * - Splits the data into packets based on a predefined separator if multiple packets are detected.
- * - Parses the initial message from each packet.
- * - Routes the initial message and sends the response back to the client.
- * - Handles errors during parsing, routing, or response sending, logging them appropriately.
  */
 export async function processSocketData(
     data: Buffer<ArrayBufferLike>,
@@ -214,14 +205,12 @@ export async function processSocketData(
     }
 
     try {
-        log.debug(`[${id}] Received data: ${data.toString('hex')}`);
-        log.debug(`[${id}] Data length: ${data.length}`);
+        log.debug(`[${id}] Received data (${data.length}B): ${data.toString('hex')}`);
 
         const separator = Buffer.from([0x11, 0x01]);
         const packets = splitDataIntoPackets(data, separator, log, id);
 
         for (const packet of packets) {
-            log.debug(`raw packet: ${packet.toString('hex')}`);
             if (packet.byteLength === 0) {
                 log.warn(`BUG: We recieved an empty packet from the splitter`);
                 continue;
@@ -235,21 +224,7 @@ export async function processSocketData(
 }
 
 /**
- * The function `splitDataIntoPackets` takes a data buffer, separator buffer, server logger, and ID
- * string, splits the data into packets based on the separator, and returns an array of buffers
- * representing the packets.
- * @param {Buffer} data - The `data` parameter is a Buffer containing the data that needs to be split
- * into packets.
- * @param {Buffer} separator - The `separator` parameter is a Buffer that is used to split the `data`
- * Buffer into separate packets. It is used to identify the boundaries between packets in the data.
- * @param {ServerLogger} log - The `log` parameter in the `splitDataIntoPackets` function is a
- * `ServerLogger` object that is used for logging debug messages. It is used to log information about
- * the packets being processed and split during the execution of the function.
- * @param {string} id - The `id` parameter in the `splitDataIntoPackets` function is a string that
- * represents an identifier for the data packets being processed. It is used for logging purposes to
- * track and identify the packets as they are split and processed.
- * @returns The function `splitDataIntoPackets` returns an array of Buffers containing the split data
- * packets.
+ * Splits data into packets based on a separator.
  */
 function splitDataIntoPackets(
     data: Buffer,
@@ -260,9 +235,9 @@ function splitDataIntoPackets(
     const packetsArray = data.toString('hex').split(separator.toString('hex'));
     const packetCount = packetsArray.length;
     let packets: Buffer[];
-    log.debug(`[${id}] ${packetCount} packets detected`);
 
     if (packetCount > 1) {
+        log.debug(`[${id}] ${packetCount} packets detected, splitting`);
         packets = packetsArray.map((packet: string) => {
             if (packet.length > 0) {
                 return Buffer.concat([
@@ -273,9 +248,6 @@ function splitDataIntoPackets(
             return Buffer.alloc(0);
         });
         packets = removeEmptyEntries(packets);
-        log.debug(
-            `[${id}] Split packets: ${packets.map((p) => p.toString('hex'))}`,
-        );
     } else {
         packets = packetsArray.map((packet: string) => {
             return Buffer.from(packet, 'hex');
@@ -292,23 +264,14 @@ function splitDataIntoPackets(
 }
 
 /**
- * This TypeScript function handles packet routing by routing an initial message and sending a response
+ * Handles packet routing by routing an initial message and sending a response
  * through a socket while logging any errors.
- * @param {string} id - The `id` parameter is a string representing the unique identifier of the packet
- * being handled.
- * @param {number} port - The `port` parameter in the `handlePacketRouting` function is the port number
- * on which the initial packet is received. It is used to help route the initial message to the correct
- * destination based on the port number.
- * @param {BytableMessage} initialPacket - The `initialPacket` parameter in the `handlePacketRouting`
- * function is of type `BytableMessage`. It likely represents the initial packet of data that needs to
- * be routed based on the provided `id` and `port`.
- * @param {ServerLogger} log - Optional logger instance. Defaults to getServerLogger if not provided.
  */
 function handlePacketRouting(
     id: string,
     port: number,
     initialPacket: BytableMessage,
-    log: ServerLogger = getServerLogger('gateway.npsPortRouter/handlePacketRouting'),
+    log: ServerLogger = getServerLogger('gateway'),
 ): void {
     // routeInitialMessage is async but we don't await it (fire-and-forget)
     // Add catch handler to prevent unhandled promise rejections
@@ -333,18 +296,10 @@ function handleSocketError(
 
 /**
  * Parses a raw buffer into a `BytableMessage` representing the initial game packet.
- *
- * Sets the message version based on the packet ID, then deserializes the buffer into a message object.
- *
- * @param data - The buffer containing the raw initial message.
- * @param log - Optional logger instance. Defaults to getServerLogger if not provided.
- * @returns The parsed `BytableMessage` object.
- *
- * @throws {Error} If the buffer cannot be parsed into a valid message.
  */
 function parseInitialMessage(
     data: Buffer,
-    log: ServerLogger = getServerLogger('gateway.npsPortRouter/parseInitialMessage'),
+    log: ServerLogger = getServerLogger('gateway'),
 ): BytableMessage {
     try {
         const message = createRawMessage();
@@ -373,23 +328,28 @@ function parseInitialMessage(
  *
  * Uses the ServiceRegistry to look up handlers, following the Open/Closed Principle.
  * New services can be added by registering them in the registry without modifying this code.
- *
- * @param id - The connection ID of the client.
- * @param port - The port number to determine the type of packet.
- * @param initialPacket - The initial packet received from the client.
- * @param log - The logger to use for logging messages.
  */
 async function routeInitialMessage(
     id: string,
     port: number,
     initialPacket: BytableMessage,
-    log = getServerLogger('gateway.npsPortRouter/routeInitialMessage'),
+    log = getServerLogger('gateway'),
 ): Promise<void> {
-    try {
-        log.debug(
-            `Routing message for port ${port}: ${initialPacket.header.id}`,
-        );
+    const msgId = initialPacket.header.id;
+    const msgName = resolveMessageId(msgId);
 
+    // Suppress tracking ping logging if configured
+    if (suppressPing && msgId === 0x0217) {
+        // Still route the message, just don't log it
+        const registry = getServiceRegistry();
+        const handler = registry.getHandler(port);
+        if (handler) {
+            await handler({ connectionId: id, message: initialPacket, log });
+        }
+        return;
+    }
+
+    try {
         // Look up handler from the service registry
         const registry = getServiceRegistry();
         const handler = registry.getHandler(port);
@@ -408,10 +368,6 @@ async function routeInitialMessage(
         let responses: Serializable[] = [];
 
         try {
-            log.debug(
-                `[${id}] Passing packet to ${serviceName} handler: ${initialPacket.header.id}`,
-            );
-
             const result = await handler({
                 connectionId: id,
                 message: initialPacket,
@@ -419,9 +375,6 @@ async function routeInitialMessage(
             });
 
             responses = result.messages as Serializable[];
-            log.debug(
-                `[${id}] Received ${responses.length} ${serviceName} response packets`,
-            );
         } catch (error) {
             Sentry.captureException(error);
             log.error(`Error handling ${serviceName} packet`, {
@@ -432,9 +385,11 @@ async function routeInitialMessage(
             return;
         }
 
+        // Single summary line per packet at verbose level
+        log.verbose(`[${id}] ${msgName} --> ${serviceName} --> ${responses.length} response(s)`);
+
         // Send responses back to the client
         if (responses.length > 0) {
-            log.debug(`[${id}] Sending ${responses.length} responses`);
             const sendQueue = getSocketQueue(id, 'send');
 
             responses.forEach((response) =>

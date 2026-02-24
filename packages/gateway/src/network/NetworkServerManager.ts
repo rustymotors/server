@@ -95,7 +95,7 @@ export class NetworkServerManager implements INetworkServerManager {
 		return new Promise((resolve, reject) => {
 			server.listen(port, "0.0.0.0", this.backlogAllowedCount, () => {
 				this.tcpServers.set(port, server);
-				this.log.info(`TCP server listening on port ${port}`);
+				this.log.debug(`TCP server listening on port ${port}`);
 				resolve(server);
 			});
 
@@ -133,7 +133,7 @@ export class NetworkServerManager implements INetworkServerManager {
 		return new Promise((resolve, reject) => {
 			socket.on("listening", () => {
 				this.udpSockets.set(port, socket);
-				this.log.info(`UDP socket bound to port ${port}`);
+				this.log.debug(`UDP socket bound to port ${port}`);
 				resolve(socket);
 			});
 

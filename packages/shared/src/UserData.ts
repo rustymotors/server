@@ -288,7 +288,7 @@ export class UserInfo implements Serializable {
     }
 
     get sizeOf() {
-        return 4 + this._username.sizeOf + this._userData.sizeOf;
+        return this._userId.byteLength + this._username.sizeOf + this._userData.sizeOf;
     }
 
     serialize() {
@@ -313,7 +313,8 @@ export class UserInfo implements Serializable {
         offset += 4;
         this._username.deserialize(buf.subarray(offset));
         offset += this._username.sizeOf;
-        this._userData.deserialize(buf.subarray(offset));
+        this._userData.deserialize(sliceBuff(buf, offset, this._userData.sizeOf));
+        offset += this._userData.sizeOf;
     }
 
     get userId() {
@@ -339,6 +340,22 @@ export class UserInfo implements Serializable {
 
     set userData(val: UserData) {
         this._userData = val;
+    }
+
+    get personaId(): number {
+        return this._userId.readInt32BE();
+    }
+
+    set personaId(val: number) {
+        checkSize4(val);
+        this._userId.writeInt32BE(val);
+    }
+
+    setUserName(username: string) {
+        this._username.set(username);
+    }
+    getUserName() {
+        return this._username.toString();
     }
 }
 
@@ -412,17 +429,20 @@ export class UserJoinedChannelMessage implements Serializable {
     private _userId = new Long();
     private _commId = new Long();
     private _userData = new UserData();
+    private _personaId = new Long();
 
     constructor(
         userName: string,
         userId: number,
         commId: number,
         userData: UserData,
+        personaId = 0,
     ) {
         this._userName.set(userName);
         this._userId.value = userId;
         this._commId.value = commId;
         this._userData = userData;
+        this._personaId.value = personaId;
     }
 
     get sizeOf() {
@@ -430,7 +450,8 @@ export class UserJoinedChannelMessage implements Serializable {
             this._userName.sizeOf +
             this._userId.sizeOf +
             this._commId.sizeOf +
-            this._userData.sizeOf
+            this._userData.sizeOf +
+            this._personaId.sizeOf
         );
     }
 
@@ -440,6 +461,7 @@ export class UserJoinedChannelMessage implements Serializable {
             this._userName.serialize(),
             this._commId.serialize(),
             this._userData.serialize(),
+            this._personaId.serialize(),
         ]);
     }
 
@@ -454,6 +476,10 @@ export class UserJoinedChannelMessage implements Serializable {
         offset += this._commId.sizeOf;
         this._userData.deserialize(
             sliceBuff(buf, offset, this._userData.sizeOf),
+        );
+        offset += this._userData.sizeOf;
+        this._personaId.deserialize(
+            sliceBuff(buf, offset, this._personaId.sizeOf),
         );
     }
 }

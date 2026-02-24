@@ -34,6 +34,10 @@ export class MessageNodeBody implements Serializable {
         checkSize2(val);
         this.body_.writeInt16LE(val);
     }
+
+    toString() {
+        return this.body_.toString("hex")
+    }
 }
 
 export class MessageNode implements MCOTSMessage {
