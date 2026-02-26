@@ -14,6 +14,7 @@ import {
 import { messageStats } from './GatewayServer.js';
 import { getSessionRecorder } from './session/SessionRecorderIntegration.js';
 import { getServiceRegistry, type Serializable } from './routing/ServiceRegistry.js';
+import { popPacketFromBuffer } from './network/packetDetectionHelpers.js';
 
 const suppressPing = process.env['MCO_LOG_SUPPRESS_PING'] === 'true';
 
@@ -207,17 +208,31 @@ export async function processSocketData(
     try {
         log.debug(`[${id}] Received data (${data.length}B): ${data.toString('hex')}`);
 
-        const separator = Buffer.from([0x11, 0x01]);
-        const packets = splitDataIntoPackets(data, separator, log, id);
+        let packet: Buffer = Buffer.alloc(0);
+        let remainingData = data;
 
-        for (const packet of packets) {
-            if (packet.byteLength === 0) {
-                log.warn(`BUG: We recieved an empty packet from the splitter`);
-                continue;
-            }
+        while (remainingData.length > 0) {
+            const r = popPacketFromBuffer(remainingData);
+            packet = r.packet;
+            remainingData = r.remainingBuffer;
+
+            log.debug(`[${id}] Extracted packet (${packet.length}B): ${packet.toString('hex')}`);
+
             const initialPacket = parseInitialMessage(packet, log);
-            handlePacketRouting(id, port, initialPacket, log);
+            await routeInitialMessage(id, port, initialPacket, log);
         }
+        
+        // const separator = Buffer.from([0x11, 0x01]);
+        // const packets = splitDataIntoPackets(data, separator, log, id);
+
+        // for (const packet of packets) {
+        //     if (packet.byteLength === 0) {
+        //         log.warn(`BUG: We recieved an empty packet from the splitter`);
+        //         continue;
+        //     }
+        //     const initialPacket = parseInitialMessage(packet, log);
+        //     handlePacketRouting(id, port, initialPacket, log);
+        // }
     } catch (error) {
         handleSocketError(error, log, id);
     }

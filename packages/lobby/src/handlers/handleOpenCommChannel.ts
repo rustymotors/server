@@ -4,11 +4,9 @@ import {
     NPS_MESSAGE_IDS,
     RawMessage,
     type Serializable,
-    type ServerLogger,
-    UserJoinedChannelMessage,
-    databaseProvider,
 } from 'rusty-motors-shared';
-import {UserStatusManager} from "rusty-motors-nps";
+import { ServerLogger } from '@rustymotors/logging';
+import { createUserJoinedChannelMessage } from './createUserJoinedChannelMessage.js';
 
 export async function handleOpenCommChannel({
     connectionId,
@@ -57,36 +55,13 @@ export async function handleOpenCommChannel({
         responsePackets.push(packetResult);
 
         if (requestedCommId > 100) {
+            const userId: number = (
+                incomingRequest.getFieldValueByName("userId") as Buffer
+            ).readInt32BE();
+
+            
             // Create user joined channel message
-            const sessionStore = databaseProvider.getSessionStore();
-            const userId: number = (incomingRequest.getFieldValueByName("userId") as Buffer).readInt32BE()
-            const user = await sessionStore.getUser(userId);
-            if (typeof user === 'undefined') {
-                throw new Error(
-                    `Unable to locate user data for user ${userId}`,
-                );
-            }
-            // Get user status to retrieve personaId
-            const userStatus = UserStatusManager.getUserStatus(userId);
-            const personaId = userStatus?.getPersonaId();
-            const userJoined = new UserJoinedChannelMessage(
-                user.userName,
-                user.userId,
-                (requestedCommIdBuffer as Buffer).readInt32BE(),
-                user.userData,
-                personaId,
-            );
-
-            const userJoinedMessage = BytableMessage.FromRawMessage(
-                createRawMessage(NPS_MESSAGE_IDS.USER_JOINED_CHANNEL, userJoined),
-            );
-
-            log.debug('Outbound user join message', {
-                connectionId,
-                userId,
-                json: JSON.stringify(userJoinedMessage),
-                data: userJoinedMessage.serialize().toString('hex'),
-            });
+            const userJoinedMessage = await createUserJoinedChannelMessage(userId, requestedCommIdBuffer, log, connectionId);
 
             responsePackets.push(userJoinedMessage);
         }

@@ -7,6 +7,7 @@ import {
     type ServerLogger,
     databaseProvider,
 } from 'rusty-motors-shared';
+import { createUserJoinedChannelMessage } from './createUserJoinedChannelMessage.js';
 
 export async function handleStartGameServer({
     connectionId,
@@ -32,8 +33,15 @@ export async function handleStartGameServer({
 
         const { commId, bestHost } = startServerLaunchInfo;
 
-        log.debug(
-            `client requested game server launch with comm id ${commId} on IP ${bestHost}`,
+        const userId = await databaseProvider.getSessionStore().findUserByConnectionId(connectionId);
+
+        if (!userId) {
+            throw new Error(`Unable to find user for connection ${connectionId}`);
+        }
+
+
+        log.verbose(
+            `client requested game server launch with comm id ${commId} on IP ${bestHost} for user ${userId}`,
             { connectionId },
         );
 
@@ -66,9 +74,11 @@ export async function handleStartGameServer({
         const outgoingMessage2 = new BytableMessage();
         outgoingMessage2.deserialize(gameServerStartedMessage.serialize());
 
+        const joinedChannelMessage = await createUserJoinedChannelMessage(userId, startedServerComm, log, connectionId);
+
         return {
             connectionId,
-            messages: [outgoingMessage1, outgoingMessage2],
+            messages: [outgoingMessage1, outgoingMessage2, joinedChannelMessage],
         };
     } catch (error) {
         const err = Error(
