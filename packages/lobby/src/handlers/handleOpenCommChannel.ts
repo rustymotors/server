@@ -1,5 +1,6 @@
 import { BytableMessage } from '@rustymotors/binary';
 import {
+    databaseProvider,
     getServerLogger,
     NPS_MESSAGE_IDS,
     RawMessage,
@@ -39,14 +40,23 @@ export async function handleOpenCommChannel({
             `[${connectionId}] Requested we open a channel on ${requestedRiffName}(${requestedCommId})`,
         );
 
-        // TODO: Actually have servers
-        const port = Number.parseInt(connectionId.split(':')[1] ?? '7003');
+        const connectionPort = Number.parseInt(connectionId.split(':')[1] ?? '7003');
+        let grantedPort = connectionPort;
+
+        if (requestedCommId > 100) {
+            const sessionStore = databaseProvider.getSessionStore();
+            const gameServers = await sessionStore.getGameServers();
+            const gameServer = gameServers.find((s) => s.commId === requestedCommId);
+            if (gameServer) {
+                grantedPort = gameServer.port;
+            }
+        }
 
         const responsePackets = [];
 
         const packetResult = createNPSChannelGrantedPacket(
             (requestedCommIdBuffer as Buffer).readInt32BE(),
-            port,
+            grantedPort,
         );
         log.debug(
             `[${connectionId}]  Sending comm GRANTED: ${JSON.stringify(packetResult)}`,

@@ -6,7 +6,9 @@ import {
     checkSize2,
     checkSize4,
     CString,
+    Long,
     padBuffer,
+    Short,
     sliceBuff,
 } from './helpers.js';
 
@@ -92,34 +94,35 @@ export class ChannelCreated implements Serializable {
 }
 
 export class RiffInfo implements Serializable {
-    private _riffName: CString; // max 32, null term
-    private _protocol: Buffer; // ulong
-    private _commId: Buffer; // 4
-    private _password: CString; // max 17, null term
-    private _channelType: Buffer; // 2
-    private _connectedUsersCount: Buffer; // 2
-    private _openChannelsCount: Buffer; // 2
-    private _isUserConnected: Buffer; // 2 bool
-    private _channelData: CBlock; // 256
-    private _numReadyPlayers: Buffer; // 2
-    private _maxReadyPlayers: Buffer; // 2
-    private _channelOwnerId: Buffer; // 4
-    private _gameServerIsRunning: Buffer; // char
+    // pllpssssbsslc
+    private _riffName: CString; // max 32, null term (p)
+    private _protocol: Long; // ulong (l)
+    private _commId: Long; // 4 (l)
+    private _password: CString; // max 17, null term (p)
+    private _channelType: Short; // 2 (s)
+    private _connectedUsersCount: Short; // 2 (s)
+    private _openChannelsCount: Short; // 2 (s)
+    private _isUserConnected: Short; // 2 bool (s)
+    private _channelData: CBlock; // 256 (b)
+    private _numReadyPlayers: Short; // 2 (s)
+    private _maxReadyPlayers: Short; // 2 (s)
+    private _channelOwnerId: Long; // 4 (l)
+    private _gameServerIsRunning: Long; // char (c)
 
     constructor() {
         this._riffName = new CString(32);
-        this._protocol = Buffer.alloc(4);
-        this._commId = Buffer.alloc(4);
+        this._protocol = new Long();
+        this._commId = new Long();
         this._password = new CString(17);
-        this._channelType = Buffer.alloc(2);
-        this._connectedUsersCount = Buffer.alloc(2);
-        this._openChannelsCount = Buffer.alloc(2);
-        this._isUserConnected = Buffer.alloc(2);
+        this._channelType = new Short();
+        this._connectedUsersCount = new Short();
+        this._openChannelsCount = new Short();
+        this._isUserConnected = new Short();
         this._channelData = new CBlock(256);
-        this._numReadyPlayers = Buffer.alloc(2);
-        this._maxReadyPlayers = Buffer.alloc(2);
-        this._channelOwnerId = Buffer.alloc(4);
-        this._gameServerIsRunning = Buffer.alloc(1);
+        this._numReadyPlayers = new Short();
+        this._maxReadyPlayers = new Short();
+        this._channelOwnerId = new Long();
+        this._gameServerIsRunning = new Long();
     }
 
     get sizeOf() {
@@ -129,18 +132,18 @@ export class RiffInfo implements Serializable {
     serialize(): Buffer {
         return Buffer.concat([
             this._riffName.serialize(),
-            this._protocol,
-            this._commId,
-            padBuffer(this._password.serialize()),
-            this._channelType,
-            this._connectedUsersCount,
-            this._openChannelsCount,
-            this._isUserConnected,
+            this._protocol.serialize(),
+            this._commId.serialize(),
+            this._password.serialize(),
+            this._channelType.serialize(),
+            this._connectedUsersCount.serialize(),
+            this._openChannelsCount.serialize(),
+            this._isUserConnected.serialize(),
             this._channelData.serialize(),
-            this._numReadyPlayers,
-            this._maxReadyPlayers,
-            this._channelOwnerId,
-            padBuffer(this._gameServerIsRunning),
+            this._numReadyPlayers.serialize(),
+            this._maxReadyPlayers.serialize(),
+            this._channelOwnerId.serialize(),
+            this._gameServerIsRunning.serialize(),
         ]);
     }
 
@@ -149,110 +152,110 @@ export class RiffInfo implements Serializable {
         let offset = 0;
         this._riffName.deserialize(buf);
         offset = offset + this._riffName.sizeOf;
-        this._protocol = sliceBuff(buf, offset, 4);
+        this._protocol.deserialize(sliceBuff(buf, offset, 4));
         offset = offset + 4;
-        this._commId = sliceBuff(buf, offset, 4);
+        this._commId.deserialize(sliceBuff(buf, offset, 4));
         this._password.deserialize(buf.subarray(offset));
         offset = offset + this._password.sizeOf;
-        this._channelType = sliceBuff(buf, offset, 2);
+        this._channelType.deserialize(sliceBuff(buf, offset, 2));
         offset = offset + 2;
-        this._connectedUsersCount = sliceBuff(buf, offset, 2);
+        this._connectedUsersCount.deserialize(sliceBuff(buf, offset, 2));
         offset = offset + 2;
-        this._openChannelsCount = sliceBuff(buf, offset, 2);
+        this._openChannelsCount.deserialize(sliceBuff(buf, offset, 2));
         offset = offset + 2;
-        this._isUserConnected = sliceBuff(buf, offset, 2);
+        this._isUserConnected.deserialize(sliceBuff(buf, offset, 2));
         offset = offset + 2;
         this._channelData.deserialize(
             sliceBuff(buf, offset, this._channelData.sizeOf),
         );
         offset = offset + this._channelData.sizeOf;
-        this._numReadyPlayers = sliceBuff(buf, offset, 2);
+        this._numReadyPlayers.deserialize(sliceBuff(buf, offset, 2));
         offset = offset + 2;
-        this._maxReadyPlayers = sliceBuff(buf, offset, 2);
+        this._maxReadyPlayers.deserialize(sliceBuff(buf, offset, 2));
         offset = offset + 2;
-        this._channelOwnerId = sliceBuff(buf, offset, 4);
+        this._channelOwnerId.deserialize(sliceBuff(buf, offset, 4));
         offset = offset + 4;
-        this._gameServerIsRunning = sliceBuff(buf, offset, 1);
+        this._gameServerIsRunning.deserialize(sliceBuff(buf, offset, 1));
     }
 
     get riffName() {
         return this._riffName.toString();
     }
     get protocol() {
-        return this._protocol;
+        return this._protocol.value;
     }
     get commId() {
-        return this._commId;
+        return this._commId.value;
     }
     get password() {
         return this._password.toString();
     }
     get channelType() {
-        return this._channelType;
+        return this._channelType.value;
     }
     get connectedUsersCount() {
-        return this._connectedUsersCount;
+        return this._connectedUsersCount.value;
     }
     get openChannelsCount() {
-        return this._openChannelsCount;
+        return this._openChannelsCount.value;
     }
-    get isUserConnected() {
-        return this._isUserConnected;
+    get isUserConnected(): boolean {
+        return this._isUserConnected.value === 1 ? true : false;
     }
     get channelData() {
         return this._channelData.serialize();
     }
     get numReadyPlayers() {
-        return this._numReadyPlayers;
+        return this._numReadyPlayers.value;
     }
     get maxReadyPlayers() {
-        return this._maxReadyPlayers;
+        return this._maxReadyPlayers.value;
     }
     get channelOwnerId() {
-        return this.channelOwnerId;
+        return this._channelOwnerId.value;
     }
     get gameServerIsRunning() {
-        return this._gameServerIsRunning;
+        return this._gameServerIsRunning.value === 1 ? true : false;
     }
 
     set riffName(val: string) {
         this._riffName.set(val);
     }
-    set protocol(val: Buffer) {
-        this.protocol = val;
+    set protocol(val: number) {
+        this._protocol.value = val;
     }
-    set commId(val: Buffer) {
-        this._commId = val;
+    set commId(val: number) {
+        this._commId.value = val;
     }
     set password(val: string) {
         this._password.set(val);
     }
-    set channelType(val: Buffer) {
-        this._channelType = val;
+    set channelType(val: number) {
+        this._channelType.value = val;
     }
-    set connectedUsersCount(val: Buffer) {
-        this._connectedUsersCount = val;
+    set connectedUsersCount(val: number) {
+        this._connectedUsersCount.value = val;
     }
-    set openChannelsCount(val: Buffer) {
-        this._openChannelsCount = val;
+    set openChannelsCount(val: number) {
+        this._openChannelsCount.value = val;
     }
-    set isUserConnected(val: Buffer) {
-        this._isUserConnected = val;
+    set isUserConnected(val: boolean) {
+        this._isUserConnected.value = val ? 1 : 0;
     }
     set channelData(val: Buffer) {
         this._channelData.deserialize(val);
     }
-    set numReadyPlayers(val: Buffer) {
-        this._numReadyPlayers = val;
+    set numReadyPlayers(val: number) {
+        this._numReadyPlayers.value = val;
     }
-    set maxReadyPlayers(val: Buffer) {
-        this._maxReadyPlayers = val;
+    set maxReadyPlayers(val: number) {
+        this._maxReadyPlayers.value = val;
     }
-    set channelOwnerId(val: Buffer) {
-        this._channelOwnerId = val;
+    set channelOwnerId(val: number) {
+        this._channelOwnerId.value = val;
     }
-    set gameServerIsRunning(val: Buffer) {
-        this._gameServerIsRunning = val;
+    set gameServerIsRunning(val: boolean) {
+        this._gameServerIsRunning.value = val ? 1 : 0;
     }
 }
 
@@ -366,5 +369,9 @@ export class RiffInfoListMessage implements NPSMessage {
 
     get length() {
         return this._header.length;
+    }
+
+    addRiff(riff: RiffInfo) {
+        this._riffs.add(riff)
     }
 }
