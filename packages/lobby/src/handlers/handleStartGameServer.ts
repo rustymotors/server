@@ -81,7 +81,7 @@ export async function handleStartGameServer({
 
         const joinedChannelMessage = await createUserJoinedChannelMessage(
             userId,
-            startedServerComm,
+            startedServerComm.readUInt32BE(),
             log,
             connectionId,
         );
@@ -89,9 +89,9 @@ export async function handleStartGameServer({
         return {
             connectionId,
             messages: [
-                gameServerInfoMessage,
+                // gameServerInfoMessage,
+                joinedChannelMessage,
                 gameServerStartupAcknowledgment,
-                // joinedChannelMessage,
             ],
         };
     } catch (error) {

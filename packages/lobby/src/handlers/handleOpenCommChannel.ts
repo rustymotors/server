@@ -55,7 +55,7 @@ export async function handleOpenCommChannel({
         const responsePackets = [];
 
         const packetResult = createNPSChannelGrantedPacket(
-            (requestedCommIdBuffer as Buffer).readInt32BE(),
+            requestedCommId,
             grantedPort,
         );
         log.debug(
@@ -69,9 +69,7 @@ export async function handleOpenCommChannel({
                 incomingRequest.getFieldValueByName("userId") as Buffer
             ).readInt32BE();
 
-            
-            // Create user joined channel message
-            const userJoinedMessage = await createUserJoinedChannelMessage(userId, requestedCommIdBuffer, log, connectionId);
+            const userJoinedMessage = await createUserJoinedChannelMessage(userId, requestedCommId, log, connectionId);
 
             responsePackets.push(userJoinedMessage);
         }
@@ -121,15 +119,60 @@ export function createNPSChannelGrantedPacket(
 }
 
 export function parseOpenCommChannelMessage(buffer: Buffer) {
+//   uVar23 = param_3->Flags;
+//   uVar22 = 256;
+//   pcVar21 = param_3->ChannelData;
+//   lVar20 = param_3->SendRate;
+//   lVar19 = param_3->SKU;
+//   uVar9 = (uint)param_3->MaxReadyPlayers;
+//   iVar6 = (int)param_3->LaunchGameServer;
+//   iVar1 = (int)param_3->GameServerIsRunning;
+//   iVar10 = (int)param_3->DisableBacklog;
+//   sVar2 = _strlen(param_3->Password);
+//   iVar3 = sVar2 + 1;
+//   pcVar18 = param_3->Password;
+//   iVar4 = (int)param_3->ChannelType;
+//   iVar11 = (int)param_3->IsMaster;
+//   iVar7 = (int)param_3->GameReady;
+//   iVar5 = (int)param_3->CanReady;
+//   iVar12 = (int)param_3->OpenChannels;
+//   iVar8 = (int)param_3->ConnectedUsers;
+//   lVar17 = param_3->UserId;
+//   lVar16 = param_3->Protocol;
+//   lVar15 = param_3->Port;
+//   lVar14 = param_3->SlotFlags;
+//   lVar13 = param_3->SlotNumber;
+//   sVar2 = _strlen(param_3->Riff);
+//   iVar1 = NPS_Pack::pack((NPS_Pack *)param_2,(uchar *)this,(int)param_1,(char *)param_2,
+//                          "lplllllsssssspscssllbl",param_3->CommId,param_3->Riff,sVar2 + 1,lVar13,
+//                          lVar14,lVar15,lVar16,lVar17,iVar8,iVar12,iVar5,iVar7,iVar11,iVar4,pcVar18,
+//                          iVar3,iVar10,iVar1,iVar6,uVar9,lVar19,lVar20,pcVar21,uVar22,uVar23);
+
+    
     const incomingRequest = new BytableMessage();
     incomingRequest.setSerializeOrder([
-        { name: 'commId', field: 'Dword' },
-        { name: 'riffName', field: 'String' },
-        { name: 'slotNumber', field: 'Dword' },
-        { name: 'slotFlags', field: 'Dword' },
-        { name: 'portNumber', field: 'Dword' },
-        { name: 'protocol', field: 'Dword' },
-        { name: 'userId', field: 'Dword' },
+        { name: 'commId', field: 'Dword' },               // l
+        { name: 'riffName', field: 'String' },             // p
+        { name: 'slotNumber', field: 'Dword' },            // l
+        { name: 'slotFlags', field: 'Dword' },             // l
+        { name: 'portNumber', field: 'Dword' },            // l
+        { name: 'protocol', field: 'Dword' },              // l
+        { name: 'userId', field: 'Dword' },                // l
+        { name: 'connectedUsers', field: 'Short' },        // s
+        { name: 'openChannels', field: 'Short' },          // s
+        { name: 'canReady', field: 'Short' },              // s
+        { name: 'gameReady', field: 'Short' },             // s
+        { name: 'isMaster', field: 'Short' },              // s
+        { name: 'channelType', field: 'Short' },           // s
+        { name: 'password', field: 'String' },             // p
+        { name: 'disableBacklog', field: 'Short' },        // s
+        { name: 'gameServerIsRunning', field: 'Boolean' }, // c
+        { name: 'launchGameServer', field: 'Short' },      // s
+        { name: 'maxReadyPlayers', field: 'Short' },       // s
+        { name: 'sku', field: 'Dword' },                   // l
+        { name: 'sendRate', field: 'Dword' },              // l
+        { name: 'channelData', field: 'ChannelData' },          // b (256-byte block)
+        { name: 'flags', field: 'Dword' },                 // l
     ]);
     incomingRequest.deserialize(buffer);
     return incomingRequest;

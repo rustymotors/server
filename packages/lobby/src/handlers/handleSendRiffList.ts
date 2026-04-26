@@ -1,6 +1,6 @@
-import { RiffInfo, RiffInfoListMessage, type ServerLogger, } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
-import { BytableMessage } from "@rustymotors/binary";
+import type { ServerLogger } from "rusty-motors-shared";
+import { BytableMessage, NpsRiffInfo, NpsRiffListMessage } from "@rustymotors/binary";
 
 export async function handleSendRiffList({
     connectionId,
@@ -19,42 +19,27 @@ export async function handleSendRiffList({
         `[${connectionId}] Received command: ${message.header.id}`,
     );
 
-    const outgoingGameMessage = new RiffInfoListMessage();
-    outgoingGameMessage.id = 0x401; // NPS_RIFF_LIST
+    const riff = new NpsRiffInfo();
+    riff.riffName = "race";
+    riff.protocol = 33;
+    riff.commId = 2883705;
+    riff.password = "";
+    riff.channelType = 2;
+    riff.connectedUsers = 5;
+    riff.openChannels = 10;
+    riff.userIsConnected = false;
+    riff.channelData = Buffer.alloc(256, 0x00);
+    riff.numReadyPlayers = 3;
+    riff.maxReadyPlayers = 8;
+    riff.channelOwnerId = 21;
+    riff.gameServerIsRunning = 4;
 
-    const newRiff = new RiffInfo();
-    newRiff.riffName = "race";
-    newRiff.protocol = 33;
-    newRiff.commId = 2883705;
-    newRiff.password = "";
-    newRiff.channelType = 2;
-    newRiff.connectedUsersCount = 5;
-    newRiff.openChannelsCount = 10;
-    newRiff.isUserConnected = true;
-    newRiff.channelData = Buffer.alloc(256, 0x00);
-    newRiff.numReadyPlayers = 3;
-    newRiff.maxReadyPlayers = 8;
-    newRiff.channelOwnerId = 21;
-    newRiff.gameServerIsRunning = true;
+    const msg = new NpsRiffListMessage();
+    msg.id = 0x0401; // NPS_RIFF_LIST
+    msg.addRiff(riff);
 
-    outgoingGameMessage.addRiff(newRiff);
-    
-    // Build the packet
-    const packetResult = new BytableMessage();
-    packetResult.setSerializeOrder([{ name: 'data', field: 'Buffer' }]);
-    packetResult.deserialize(outgoingGameMessage.serialize());
-
-
-    try {
-        return {
-            connectionId,
-            messages: [packetResult],
-        };
-    } catch (error) {
-        const err = Error(
-            `Error handling NPS_SEND_RIFF_LIST: ${String(error)}`,
-        );
-        err.cause = error;
-        throw err;
-    }
+    return {
+        connectionId,
+        messages: [msg],
+    };
 }

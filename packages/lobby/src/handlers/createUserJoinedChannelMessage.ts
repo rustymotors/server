@@ -3,7 +3,7 @@ import { type ServerLogger, databaseProvider, UserJoinedChannelMessage, NPS_MESS
 import { UserStatusManager } from 'rusty-motors-nps';
 import { createRawMessage } from './handleOpenCommChannel.js';
 
-export async function createUserJoinedChannelMessage(userId: number, requestedCommIdBuffer: string | number | Buffer<ArrayBufferLike>, log: ServerLogger, connectionId: string) {
+export async function createUserJoinedChannelMessage(userId: number, commId: number, log: ServerLogger, connectionId: string) {
     const sessionStore = databaseProvider.getSessionStore();
     const user = await sessionStore.getUser(userId);
     if (typeof user === 'undefined') {
@@ -17,7 +17,7 @@ export async function createUserJoinedChannelMessage(userId: number, requestedCo
     const userJoined = new UserJoinedChannelMessage(
         user.userName,
         user.userId,
-        (requestedCommIdBuffer as Buffer).readInt32BE(),
+        commId,
         user.userData,
         personaId
     );

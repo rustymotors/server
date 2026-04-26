@@ -126,24 +126,27 @@ export class RiffInfo implements Serializable {
     }
 
     get sizeOf() {
-        return 336;
+        return 339;
     }
 
     serialize(): Buffer {
         return Buffer.concat([
-            this._riffName.serialize(),
-            this._protocol.serialize(),
-            this._commId.serialize(),
-            this._password.serialize(),
-            this._channelType.serialize(),
-            this._connectedUsersCount.serialize(),
-            this._openChannelsCount.serialize(),
-            this._isUserConnected.serialize(),
-            this._channelData.serialize(),
-            this._numReadyPlayers.serialize(),
-            this._maxReadyPlayers.serialize(),
-            this._channelOwnerId.serialize(),
-            this._gameServerIsRunning.serialize(),
+            this._riffName.serialize(),       // char[32]  @0
+            this._protocol.serialize(),        // ulong     @32
+            this._commId.serialize(),          // long      @36
+            this._password.serialize(),        // char[17]  @40
+            Buffer.alloc(1),                   // pad       @57
+            this._channelType.serialize(),     // short     @58
+            this._connectedUsersCount.serialize(), // short @60
+            this._openChannelsCount.serialize(),   // short @62
+            this._isUserConnected.serialize(), // short     @64
+            this._channelData.serialize(),     // char[256] @66
+            this._numReadyPlayers.serialize(), // ushort    @322
+            this._maxReadyPlayers.serialize(), // ushort    @324
+            Buffer.alloc(2),                   // pad       @326
+            this._channelOwnerId.serialize(),  // ulong     @328
+            this._gameServerIsRunning.serialize(), // int   @332
+            Buffer.alloc(3),                   // pad       @336
         ]);
     }
 
@@ -254,8 +257,8 @@ export class RiffInfo implements Serializable {
     set channelOwnerId(val: number) {
         this._channelOwnerId.value = val;
     }
-    set gameServerIsRunning(val: boolean) {
-        this._gameServerIsRunning.value = val ? 1 : 0;
+    set gameServerIsRunning(val: number) {
+        this._gameServerIsRunning.value = val;
     }
 }
 
@@ -267,7 +270,7 @@ export class RiffList implements Serializable {
     }
 
     get sizeOf() {
-        return 336 * this._riffs.length;
+        return 339 * this._riffs.length;
     }
 
     serialize() {
