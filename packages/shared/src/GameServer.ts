@@ -84,13 +84,25 @@ export class RunningServerInfo implements IRunningServerInfo, Serializable {
         this._riff.set(val);
     }
 
+    get commId() {
+        return this._commId.readInt32BE();
+    }
+
     set commId(val: number) {
         checkSize4(val);
         this._commId.writeInt32BE(val);
     }
 
+    get ipAddress() {
+        return this._ipAddress.toString();
+    }
+
     set ipAddress(val: string) {
         this._ipAddress.set(val);
+    }
+
+    get port() {
+        return this._port.readInt32BE();
     }
 
     set port(val: number) {
@@ -98,9 +110,17 @@ export class RunningServerInfo implements IRunningServerInfo, Serializable {
         this._port.writeInt32BE(val);
     }
 
+    get userId() {
+        return this._userId.readInt32BE();
+    }
+
     set userId(val: number) {
         checkSize4(val);
         this._userId.writeInt32BE(val);
+    }
+
+    get numberOfPlayers() {
+        return this._numberOfPlayers.readInt32BE();
     }
 
     set numberOfPlayers(val: number) {
@@ -212,6 +232,15 @@ export class GameServerListHeader implements Serializable {
         checkSize4(val);
         this._numGameServers.writeInt32BE(val);
     }
+
+    get structSize() {
+        return this._structSize.readInt32BE();
+    }
+
+    set structSize(val: number) {
+        checkSize4(val);
+        this._structSize.writeInt32BE(val);
+    }
 }
 
 export class GameServerListMessage implements NPSMessage {
@@ -235,6 +264,7 @@ export class GameServerListMessage implements NPSMessage {
 
     serialize() {
         this._gameServerListHeader.numGameServers = this._gameServers.length;
+        this._gameServerListHeader.structSize = this.sizeOf;
 
         return Buffer.concat([
             this._header.serialize(),

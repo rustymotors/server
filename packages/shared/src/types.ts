@@ -28,13 +28,6 @@ export type IRunningServerInfo = Serializable & {
     userId: number;
     numberOfPlayers: number;
     riff: string;
-
-    _commId: number;
-    _ipAddress: string;
-    _port: number;
-    _userId: number;
-    _numberOfPlayers: number;
-    _riff: number;
 };
 
 export interface DatabaseManager {
