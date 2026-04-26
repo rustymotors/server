@@ -28,7 +28,12 @@ import {
 import { socketErrorHandler } from "./socketErrorHandler.js";
 import { getSessionRecorder } from "./session/SessionRecorderIntegration.js";
 
-const ALLOWED_IPS = ["98.231.127.157", "10.10.5.1"];
+const ALLOWED_IPS = [
+    "98.231.127.157", // Mark's IP for testing
+    "10.10.5.1", // Local IP for testing
+    "181.169.157.11", // Ziimbiian's IP for testing
+    "79.242.19.80", // Lacnr's IP for testing
+];
 
 /**
  * Handle incoming TCP connections

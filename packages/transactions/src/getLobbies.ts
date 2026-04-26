@@ -46,7 +46,7 @@ async function _getLobbies({
     const lobby1 = new LobbyInfo();
     lobby1._lobbyId = 10001;
     lobby1._lobbyName = 'MC100';
-    lobby1._raceTypeId = 17; // TESTDRIVE
+    lobby1._raceTypeId = 17;
     lobby1._elementId = 25; // TrackId
     lobby1._turfName = 'Hillvally Zoom';
     lobby1._topDog = 'Drazi Crendraven';
