@@ -1,6 +1,7 @@
 import type { Serializable, NPSMessage } from './types.js';
 import { RawMessageHeader } from './RawMessage.js';
 import {
+    align4,
     checkMinLength,
     checkSize2,
     checkSize4,
@@ -288,33 +289,39 @@ export class UserInfo implements Serializable {
     }
 
     get sizeOf() {
-        return this._userId.byteLength + this._username.sizeOf + this._userData.sizeOf;
+        const nameLen = this._username.toString().length + 1; // strlen + null
+        return 4 + 4 + align4(nameLen) + this._userData.sizeOf;
     }
 
     serialize() {
+        const nameStr = this._username.toString();
+        const nameLen = nameStr.length + 1;
+        const nameLenBuf = Buffer.alloc(4);
+        nameLenBuf.writeUInt32BE(nameLen);
+        const nameBuf = Buffer.alloc(align4(nameLen));
+        nameBuf.write(nameStr, 0, 'utf8');
         return Buffer.from(
             Buffer.concat([
                 this._userId,
-                this._username.serialize(),
+                nameLenBuf,
+                nameBuf,
                 this._userData.serialize(),
             ]),
         );
     }
 
     deserialize(buf: Buffer) {
-        const minSize = 4 + 2 + this._userData.sizeOf;
-        if (buf.byteLength < minSize) {
-            throw new Error(
-                `buffer too small. need ${minSize} bytes, got ${buf.byteLength} bytes`,
-            );
-        }
+        // NPS wire format: userId (4) + nameLen (4) + name aligned to 4 + userData (64)
+        checkMinLength(buf, 4 + 4 + 4 + this._userData.sizeOf);
         let offset = 0;
         this._userId = sliceBuff(buf, offset, 4);
         offset += 4;
-        this._username.deserialize(buf.subarray(offset));
-        offset += this._username.sizeOf;
+        const nameLen = buf.readUInt32BE(offset);
+        offset += 4;
+        const nameStr = sliceBuff(buf, offset, nameLen - 1).toString('utf8');
+        this._username.set(nameStr);
+        offset += align4(nameLen);
         this._userData.deserialize(sliceBuff(buf, offset, this._userData.sizeOf));
-        offset += this._userData.sizeOf;
     }
 
     get userId() {

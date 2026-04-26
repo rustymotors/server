@@ -49,7 +49,7 @@ async function processInput({
 	log = getServerLogger("transactionServer.processInput"),
 }: {
 	connectionId: string;
-	inboundMessage: ServerPacket;
+	inboundMessage: MessageNode;
 	log?: ServerLogger;
 }): Promise<MessageHandlerResult> {
 	const currentMessageNo = inboundMessage.getMessageId();
@@ -122,7 +122,7 @@ export async function receiveTransactionsData({
         },
 	);
 
-	let decryptedMessage: ServerPacket;
+	let decryptedMessage: MessageNode;
 
 	// Is the message encrypted?
 	if (inboundMessage.isPayloadEncrypted()) {
@@ -150,7 +150,7 @@ export async function receiveTransactionsData({
 		decryptedMessage = inboundMessage;
 	}
 
-	let decompressedMessage: ServerPacket;
+	let decompressedMessage: MessageNode;
 
 	if (decryptedMessage.isPayloadCompressed()) {
 
@@ -309,16 +309,16 @@ function encryptOutboundMessage(
 }
 
 function decompressMessage(
-	compressedMessage: ServerPacket,
+	compressedMessage: MessageNode,
 	_connectionId: string,
 	log = getServerLogger("transactionServer.decompressInboundMessage"),
-): ServerPacket {
+): MessageNode {
 	log.debug(`Decompressing message with initial messageId of ${compressedMessage.getMessageId()}`)
 
 	const outputBuffer = new Uint8Array(64 * 1024); // 64KB buffer
 	let outputPos = 0;
 
-	const compressedPayload = compressedMessage.getDataBuffer().subarray(2)
+	const compressedPayload = compressedMessage.data.subarray(2)
 
 	const writeCallback = (data: Uint8Array, bytesToWrite: number): number => {
 		if (outputPos + bytesToWrite > outputBuffer.length) {
@@ -346,10 +346,9 @@ function decompressMessage(
 
 		log.debug(`DecompressedPayload: ${outputData.toString("hex")}`)
 
-		// Output raw binary data to stdout
-		const uncompressedMessage = ServerPacket.copy(compressedMessage, outputData);
-		uncompressedMessage.setPayloadCompression(false)
-		return uncompressedMessage
+		compressedMessage.setDataBuffer(outputData);
+		compressedMessage.setPayloadCompression(false);
+		return compressedMessage;
 	} else {
 		log.error(`returned data len: ${result.decompressedData?.length}`)
 
