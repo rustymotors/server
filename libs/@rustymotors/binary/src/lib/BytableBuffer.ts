@@ -52,3 +52,22 @@ export class BytableBuffer implements BytableObject {
 		return this.serialize().toString("hex");
 	}
 }
+
+export class BytableChannelData extends BytableBuffer {
+    constructor() {
+        super();
+        this.setName("channelData");
+    }
+
+    override deserialize(buffer: Buffer) {
+        this.value_ = buffer.subarray(0, this.serializeSize);
+    }
+
+    override get serializeSize() {
+        return 256;
+    }
+
+    override serialize() {
+        return this.value_;
+    }
+}

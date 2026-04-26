@@ -1,6 +1,6 @@
 import { Bytable } from './Bytable.js';
 import { BytableBase } from './BytableBase.js';
-import { BytableBuffer } from './BytableBuffer.js';
+import { BytableBuffer, BytableChannelData } from './BytableBuffer.js';
 import { BytableByte } from './BytableByte.js';
 import { BytableContainer, BytableShortContainer } from './BytableContainer.js';
 import { BytableCString } from './BytableCString.js';
@@ -161,6 +161,7 @@ export const BytableFieldTypes = {
     Short: BytableWord,
     Buffer: BytableBuffer,
     CString: BytableCString,
+    ChannelData: BytableChannelData,
 };
 export class BytableMessage extends Bytable {
     protected header_: BytableHeader = new BytableHeader();
