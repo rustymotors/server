@@ -1,5 +1,6 @@
 import { BytableMessage } from '@rustymotors/binary';
 import {
+    ChannelCreated,
     databaseProvider,
     getServerLogger,
     NPS_MESSAGE_IDS,
@@ -29,7 +30,7 @@ export async function handleOpenCommChannel({
 
         // l
         const incomingRequest = parseOpenCommChannelMessage(message.serialize());
-        
+
         const requestedCommIdBuffer =
             incomingRequest.getFieldValueByName('commId') ?? -1;
         const requestedRiffName =
@@ -71,7 +72,30 @@ export async function handleOpenCommChannel({
 
             const userJoinedMessage = await createUserJoinedChannelMessage(userId, requestedCommId, log, connectionId);
 
-            responsePackets.push(userJoinedMessage);
+
+            const channelCreatedMessage = new RawMessage();
+            channelCreatedMessage.id = 0x20e
+            const channelCreatedBody = new ChannelCreated();
+            channelCreatedBody.commId = requestedCommId;
+            channelCreatedBody.riff = requestedRiffName.toString();
+            channelCreatedBody.protocol = 33;
+            // channelCreatedBody.channelData = Buffer.alloc(256);
+            channelCreatedBody.channelType = 3;
+            channelCreatedBody.maxReadyPlayers = 8;
+
+
+            channelCreatedMessage.data = channelCreatedBody.serialize();
+            const channelCreatedBytable = new BytableMessage();
+            channelCreatedBytable.setSerializeOrder([
+                { name: 'data', field: 'Buffer' },
+            ]);
+            channelCreatedBytable.setVersion(0);
+            channelCreatedBytable.deserialize(channelCreatedMessage.serialize());
+
+            responsePackets.push(channelCreatedBytable)
+
+
+            // responsePackets.push(userJoinedMessage);
         }
         return {
             connectionId,
@@ -119,36 +143,36 @@ export function createNPSChannelGrantedPacket(
 }
 
 export function parseOpenCommChannelMessage(buffer: Buffer) {
-//   uVar23 = param_3->Flags;
-//   uVar22 = 256;
-//   pcVar21 = param_3->ChannelData;
-//   lVar20 = param_3->SendRate;
-//   lVar19 = param_3->SKU;
-//   uVar9 = (uint)param_3->MaxReadyPlayers;
-//   iVar6 = (int)param_3->LaunchGameServer;
-//   iVar1 = (int)param_3->GameServerIsRunning;
-//   iVar10 = (int)param_3->DisableBacklog;
-//   sVar2 = _strlen(param_3->Password);
-//   iVar3 = sVar2 + 1;
-//   pcVar18 = param_3->Password;
-//   iVar4 = (int)param_3->ChannelType;
-//   iVar11 = (int)param_3->IsMaster;
-//   iVar7 = (int)param_3->GameReady;
-//   iVar5 = (int)param_3->CanReady;
-//   iVar12 = (int)param_3->OpenChannels;
-//   iVar8 = (int)param_3->ConnectedUsers;
-//   lVar17 = param_3->UserId;
-//   lVar16 = param_3->Protocol;
-//   lVar15 = param_3->Port;
-//   lVar14 = param_3->SlotFlags;
-//   lVar13 = param_3->SlotNumber;
-//   sVar2 = _strlen(param_3->Riff);
-//   iVar1 = NPS_Pack::pack((NPS_Pack *)param_2,(uchar *)this,(int)param_1,(char *)param_2,
-//                          "lplllllsssssspscssllbl",param_3->CommId,param_3->Riff,sVar2 + 1,lVar13,
-//                          lVar14,lVar15,lVar16,lVar17,iVar8,iVar12,iVar5,iVar7,iVar11,iVar4,pcVar18,
-//                          iVar3,iVar10,iVar1,iVar6,uVar9,lVar19,lVar20,pcVar21,uVar22,uVar23);
+    //   uVar23 = param_3->Flags;
+    //   uVar22 = 256;
+    //   pcVar21 = param_3->ChannelData;
+    //   lVar20 = param_3->SendRate;
+    //   lVar19 = param_3->SKU;
+    //   uVar9 = (uint)param_3->MaxReadyPlayers;
+    //   iVar6 = (int)param_3->LaunchGameServer;
+    //   iVar1 = (int)param_3->GameServerIsRunning;
+    //   iVar10 = (int)param_3->DisableBacklog;
+    //   sVar2 = _strlen(param_3->Password);
+    //   iVar3 = sVar2 + 1;
+    //   pcVar18 = param_3->Password;
+    //   iVar4 = (int)param_3->ChannelType;
+    //   iVar11 = (int)param_3->IsMaster;
+    //   iVar7 = (int)param_3->GameReady;
+    //   iVar5 = (int)param_3->CanReady;
+    //   iVar12 = (int)param_3->OpenChannels;
+    //   iVar8 = (int)param_3->ConnectedUsers;
+    //   lVar17 = param_3->UserId;
+    //   lVar16 = param_3->Protocol;
+    //   lVar15 = param_3->Port;
+    //   lVar14 = param_3->SlotFlags;
+    //   lVar13 = param_3->SlotNumber;
+    //   sVar2 = _strlen(param_3->Riff);
+    //   iVar1 = NPS_Pack::pack((NPS_Pack *)param_2,(uchar *)this,(int)param_1,(char *)param_2,
+    //                          "lplllllsssssspscssllbl",param_3->CommId,param_3->Riff,sVar2 + 1,lVar13,
+    //                          lVar14,lVar15,lVar16,lVar17,iVar8,iVar12,iVar5,iVar7,iVar11,iVar4,pcVar18,
+    //                          iVar3,iVar10,iVar1,iVar6,uVar9,lVar19,lVar20,pcVar21,uVar22,uVar23);
 
-    
+
     const incomingRequest = new BytableMessage();
     incomingRequest.setSerializeOrder([
         { name: 'commId', field: 'Dword' },               // l

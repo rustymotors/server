@@ -8,7 +8,7 @@ export class Short implements Serializable {
     }
 
     serialize() {
-        const b = Buffer.alloc(2);
+        const b = Buffer.alloc(4);
         b.writeInt16BE(this._value);
         return b;
     }
@@ -89,32 +89,6 @@ export class NPS_LOGICAL implements Serializable {
     }
 }
 
-export class Char implements Serializable {
-    private _value = 0;
-
-    get sizeOf() {
-        return 1;
-    }
-
-    serialize() {
-        const b = Buffer.alloc(1);
-        b.writeInt8(this._value);
-        return b;
-    }
-
-    deserialize(buf: Buffer) {
-        this._value = buf.readInt8();
-    }
-
-    get value() {
-        return this._value;
-    }
-
-    set value(val: number) {
-        this._value = val;
-    }
-}
-
 export class Bool implements Serializable {
     private _value = false;
 
@@ -160,24 +134,26 @@ export class CString implements Serializable {
     }
 
     get sizeOf() {
-        return this._maxLen;
+        return 4 + this._string.byteLength;
     }
 
     serialize() {
-        const buf = Buffer.alloc(this._maxLen, 0);
-        this._string.copy(buf, 0, 0, Math.min(this._string.byteLength, this._maxLen));
-        return buf;
+        const len = this._string.byteLength;
+        const lenBuf = Buffer.alloc(4);
+        lenBuf.writeInt32BE(len);
+        return Buffer.from(
+            Buffer.concat([lenBuf, this._string]),
+        );
     }
 
     deserialize(buf: Buffer) {
-        if (buf.byteLength < this._maxLen) {
+        if (buf.byteLength < 4) {
             throw new Error(
-                `need at least ${this._maxLen} bytes. got ${buf.byteLength}`,
+                `need at least 4 bytes for length. got ${buf.byteLength}`,
             );
         }
-        const nullIdx = buf.indexOf(0, 0);
-        const end = nullIdx === -1 ? this._maxLen : Math.min(nullIdx, this._maxLen);
-        this._string = Buffer.from(buf.subarray(0, end + 1)); // include null terminator
+        const len = buf.readInt32BE();
+        this._string = Buffer.from(sliceBuff(buf, 4, len));
     }
 
     toString() {
