@@ -4,6 +4,8 @@ import { LobbyInfo, LobbyMessage } from './LobbyMessage.js';
 import type { MessageHandlerArgs, MessageHandlerResult } from './handlers.js';
 import { getServerLogger } from 'rusty-motors-shared';
 
+const RACES_SIM_TIMETRIAL = 19
+
 /**
  * @param {MessageHandlerArgs} args
  * @return {Promise<MessageHandlerResult>}
@@ -46,7 +48,7 @@ async function _getLobbies({
     const lobby1 = new LobbyInfo();
     lobby1._lobbyId = 10001;
     lobby1._lobbyName = 'MC100';
-    lobby1._raceTypeId = 17;
+    lobby1._raceTypeId = RACES_SIM_TIMETRIAL;
     lobby1._elementId = 25; // TrackId
     lobby1._turfName = 'Hillvally Zoom';
     lobby1._topDog = 'Drazi Crendraven';

@@ -78,16 +78,9 @@ export async function handleGetUserList({
         packetResult.setVersion(0);
         packetResult.deserialize(outgoingGameMessage.serialize());
 
-        let messages: BytableMessage[] = [];
-        
-        if (outgoingGameMessage.getFieldValueByName('commId') === '2883705') {
-        
-            messages = [];
-        }
-
         return {
             connectionId,
-            messages,
+            messages: [packetResult],
         };
     } catch (error) {
         const err = Error(

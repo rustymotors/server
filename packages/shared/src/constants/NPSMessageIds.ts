@@ -52,6 +52,9 @@ export const NPS_MESSAGE_IDS = {
 	/** Get ready list */
 	GET_READY_LIST: 0x10e, // 270
 
+	/** Set channel data (256-byte ChannelData blob for a comm channel) */
+	SET_CHANNEL_DATA: 0x113, // 275
+
 	/** Get mini user list */
 	GET_MINI_USER_LIST: 0x128, // 296
 

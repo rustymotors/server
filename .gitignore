@@ -44,3 +44,4 @@ Thumbs.db
 # Environment variations
 .env.*
 !.env.example
+.gitnexus

@@ -298,20 +298,19 @@ export class GameServerListMessage implements NPSMessage {
 }
 
 export class ReadyForGame implements Serializable {
-    private _commId = new Long(); // 4
-    private _userId = new Long(); // 4
-    private _isReady = new NPS_LOGICAL(); // 2 - NPS_LOGICAL1
-    private _isMaster = new NPS_LOGICAL(); // 2 - NPS_LOGICAL
+    // NPS_READY_LIST (0x210) wire format: count(4) + N×{ CommId(4), UserId(4), isReady(2), isMaster(2) }
+    // NPSDll stride=12 bytes/entry. Confirmed from 0x109 handler:
+    //   offset 0: commId (int32), offset 4: userId (int32),
+    //   offset 8: isReady (NPS_LOGICAL/int16), offset 10: isMaster (NPS_LOGICAL/int16)
+    private _commId = new Long();          // 4
+    private _userId = new Long();          // 4
+    private _isReady = new NPS_LOGICAL();  // 2
+    private _isMaster = new NPS_LOGICAL(); // 2
 
-    constructor(
-        commId: number,
-        userId: number,
-        isReady = false,
-        isMaster = false,
-    ) {
+    constructor(commId: number, userId: number, isReady = false, isMaster = false) {
         this._commId.value = commId;
         this._userId.value = userId;
-        this._isReady.value  = isReady;
+        this._isReady.value = isReady;
         this._isMaster.value = isMaster;
     }
 
@@ -328,8 +327,8 @@ export class ReadyForGame implements Serializable {
             this._commId.serialize(),
             this._userId.serialize(),
             this._isReady.serialize(),
-            this._isMaster.serialize()
-        ])
+            this._isMaster.serialize(),
+        ]);
     }
 }
 

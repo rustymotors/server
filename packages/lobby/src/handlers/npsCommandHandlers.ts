@@ -10,6 +10,7 @@ import { handleGetUserList } from "./handleGetUserList.js";
 import { handleOpenCommChannel } from "./handleOpenCommChannel.js";
 import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";
 import { handleSendRiffList } from "./handleSendRiffList.js";
+import { handleSetChannelData } from "./handleSetChannelData.js";
 import { handleStartGameServer } from "./handleStartGameServer.js";
 import { handleSetChannelFlags } from "./handlSetChannelFlags.js";
 import { handleUdpStatus } from "./handlUdpStatus.js";
@@ -54,6 +55,11 @@ export const npsCommandHandlers: NpsCommandHandler[] = [
 		opCode: NPS_MESSAGE_IDS.SET_COMM_FLAGS,
 		name: "NPS_SET_COMM_FLAGS",
 		handler: handleSetChannelFlags,
+	},
+	{
+		opCode: NPS_MESSAGE_IDS.SET_CHANNEL_DATA,
+		name: "NPS_SET_CHANNEL_DATA",
+		handler: handleSetChannelData,
 	},
 	{
 		opCode: NPS_MESSAGE_IDS.GET_READY_LIST,
