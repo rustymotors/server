@@ -1,22 +1,21 @@
 import type { Serializable, NPSMessage } from './types.js';
 import { RawMessageHeader } from './RawMessage.js';
 import {
-    CBlock,
     checkMinLength,
     checkSize2,
     checkSize4,
     CString,
     Long,
-    padBuffer,
     Short,
     sliceBuff,
 } from './helpers.js';
+import { BytableChannelData } from '@rustymotors/binary';
 
 export class ChannelCreated implements Serializable {
     private _commId // 4
     private _riff: CString // 32
     private _protocol // 4
-    private _channelData: CBlock // 256
+    private _channelData: BytableChannelData // 256
     private _channelType // 2
     private _maxReadyPlayers // 2
 
@@ -24,13 +23,13 @@ export class ChannelCreated implements Serializable {
         this._commId = Buffer.alloc(4)
         this._riff = new CString(32)
         this._protocol = Buffer.alloc(4)
-        this._channelData = new CBlock(256)
+        this._channelData = new BytableChannelData()
         this._channelType = Buffer.alloc(2)
         this._maxReadyPlayers = Buffer.alloc(2)
     }
 
     get sizeOf() {
-        return 4 + this._riff.sizeOf + 4 + this._channelData.sizeOf + 2 + 2
+        return 4 + this._riff.sizeOf + 4 + this._channelData.serializeSize + 2 + 2
     }
 
     serialize() {
@@ -54,7 +53,7 @@ export class ChannelCreated implements Serializable {
         this._protocol = sliceBuff(buf, offset, 4)
         offset +=4
         this._channelData.deserialize(buf.subarray(offset))
-        offset += this._channelData.sizeOf
+        offset += this._channelData.serializeSize
         this._channelType = sliceBuff(buf, offset, 2)
         offset += 2
         this._maxReadyPlayers = sliceBuff(buf, offset, 2)
@@ -78,9 +77,8 @@ export class ChannelCreated implements Serializable {
         this._protocol.writeInt32BE(val)
     }
 
-    set channelData(val: Buffer) {
-        sliceBuff(val, 0, this._channelData.sizeOf).copy(this.channelData)
-    }
+    get channelData(): BytableChannelData { return this._channelData; }
+    set channelData(val: BytableChannelData) { this._channelData = val; }
 
     set channelType(val: number) {
         checkSize2(val)
@@ -103,7 +101,7 @@ export class RiffInfo implements Serializable {
     private _connectedUsersCount: Short; // 2 (s)
     private _openChannelsCount: Short; // 2 (s)
     private _isUserConnected: Short; // 2 bool (s)
-    private _channelData: CBlock; // 256 (b)
+    private _channelData: BytableChannelData; // 256 (b)
     private _numReadyPlayers: Short; // 2 (s)
     private _maxReadyPlayers: Short; // 2 (s)
     private _channelOwnerId: Long; // 4 (l)
@@ -118,7 +116,7 @@ export class RiffInfo implements Serializable {
         this._connectedUsersCount = new Short();
         this._openChannelsCount = new Short();
         this._isUserConnected = new Short();
-        this._channelData = new CBlock(256);
+        this._channelData = new BytableChannelData();
         this._numReadyPlayers = new Short();
         this._maxReadyPlayers = new Short();
         this._channelOwnerId = new Long();
@@ -169,9 +167,9 @@ export class RiffInfo implements Serializable {
         this._isUserConnected.deserialize(sliceBuff(buf, offset, 2));
         offset = offset + 2;
         this._channelData.deserialize(
-            sliceBuff(buf, offset, this._channelData.sizeOf),
+            sliceBuff(buf, offset, this._channelData.serializeSize),
         );
-        offset = offset + this._channelData.sizeOf;
+        offset = offset + this._channelData.serializeSize;
         this._numReadyPlayers.deserialize(sliceBuff(buf, offset, 2));
         offset = offset + 2;
         this._maxReadyPlayers.deserialize(sliceBuff(buf, offset, 2));
@@ -205,8 +203,8 @@ export class RiffInfo implements Serializable {
     get isUserConnected(): boolean {
         return this._isUserConnected.value === 1 ? true : false;
     }
-    get channelData() {
-        return this._channelData.serialize();
+    get channelData(): BytableChannelData {
+        return this._channelData;
     }
     get numReadyPlayers() {
         return this._numReadyPlayers.value;
@@ -245,8 +243,8 @@ export class RiffInfo implements Serializable {
     set isUserConnected(val: boolean) {
         this._isUserConnected.value = val ? 1 : 0;
     }
-    set channelData(val: Buffer) {
-        this._channelData.deserialize(val);
+    set channelData(val: BytableChannelData) {
+        this._channelData = val;
     }
     set numReadyPlayers(val: number) {
         this._numReadyPlayers.value = val;

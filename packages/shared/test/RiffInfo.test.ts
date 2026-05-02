@@ -12,7 +12,7 @@ suite("RiffInfo", () => {
         expect(riffInfo.connectedUsersCount).toEqual(0);
         expect(riffInfo.openChannelsCount).toEqual(0);
         expect(riffInfo.isUserConnected).toEqual(false);
-        expect(riffInfo.channelData).toEqual(Buffer.alloc(256));
+        expect(riffInfo.channelData.serialize()).toEqual(Buffer.alloc(256));
         expect(riffInfo.numReadyPlayers).toEqual(0);
         expect(riffInfo.maxReadyPlayers).toEqual(0);
         expect(riffInfo.channelOwnerId).toEqual(0);

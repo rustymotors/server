@@ -458,36 +458,41 @@ room-specific message handling.
 | 0x80 | NPS_HIDE_CHANNEL | Hidden room |
 | 0x100 | NPS_EXPOSE_CHANNEL | Visible room |
 
-#### 4.6.4. Room Channel Data Structure (256 bytes max)
+#### 4.6.4. Room Channel Data Structure (256 bytes, MSVC default packing, little-endian)
 
 ```ebnf
 RoomChannelData =
-    raceID: DWORD ,                (* Database race ID *)
-    raceName: char[64] ,           (* Room/pit name, null-terminated *)
-    entryFee: DWORD ,
-    purseBonusPerPlayer: DWORD ,
-    purseBonusPerRace: DWORD ,
-    racerCounts: BYTE ,            (* maxNPSracers:4 | minNPSracers:4 *)
-    roundLaps: BYTE ,              (* numRounds:4 | numLaps:4 *)
-    flags: BYTE ,                  (* See flags bitfield below *)
-    mode: DWORD ,                  (* eRoomMode enum *)
-    sponsorBPT: DWORD ,
-    minlevel: BYTE ,
-    maxlevel: BYTE ,
-    requiredBodyClass: BYTE ,
-    maxPowerClass: BYTE ,
-    flags2: BYTE ,                 (* See flags2 bitfield below *)
-    hostID: NPS_USERID ,
-    hostName: char[32] ,           (* Persona name *)
-    userIDs: NPS_USERID[6] ,       (* Player user IDs *)
-    dbCarIDs: DWORD[6] ,           (* Car database IDs *)
-    dbBptIDs: DWORD[6] ,           (* BPT database IDs *)
-    majorVersionNum: DWORD ,
-    minorVersionNum: DWORD ,
-    revisionVersionNum: DWORD ;
+    raceID: int32 ,                (* +0   Database race ID *)
+    raceName: char[64] ,           (* +4   Room/pit name, null-padded *)
+    entryFee: int32 ,              (* +68  *)
+    purseBonusPerPlayer: int32 ,   (* +72  *)
+    purseBonusPerRace: int32 ,     (* +76  *)
+    racerCounts: BYTE ,            (* +80  maxNPSracers:4 | minNPSracers:4<<4 *)
+    roundLaps: BYTE ,              (* +81  numRounds:4    | numLaps:4<<4 *)
+    flags: BYTE ,                  (* +82  See flags bitfield below *)
+    _pad: BYTE ,                   (* +83  alignment padding *)
+    mode: int32 ,                  (* +84  eRoomMode enum *)
+    sponsorBPT: uint32 ,           (* +88  *)
+    minlevel: BYTE ,               (* +92  *)
+    maxlevel: BYTE ,               (* +93  *)
+    requiredBodyClass: BYTE ,      (* +94  *)
+    maxPowerClass: BYTE ,          (* +95  *)
+    bDisallowNOS: int32 ,          (* +96  BOOL stored as 4-byte int *)
+    statusFlags: BYTE ,            (* +100 raceInProgress:1 | connectedPlayers:4<<1 *)
+    _pad2: BYTE[3] ,               (* +101 alignment padding *)
+    hostID: uint32 ,               (* +104 NPS_USERID *)
+    hostName: char[30] ,           (* +108 Persona name, null-padded *)
+    _pad3: BYTE[2] ,               (* +138 alignment padding *)
+    userIDs: uint32[6] ,           (* +140 Player user IDs *)
+    dbCarIDs: int32[6] ,           (* +164 Car database IDs *)
+    dbBptIDs: int32[6] ,           (* +188 BPT database IDs *)
+    majorVersionNum: uint32 ,      (* +212 *)
+    minorVersionNum: uint32 ,      (* +216 *)
+    revisionVersionNum: uint32 ,   (* +220 *)
+    _pad4: BYTE[32] ;              (* +224 padding to 256 bytes *)
 ```
 
-**Flags Bitfield (offset 0x52):**
+**Flags Bitfield (+82):**
 - bit 0: backwardRace
 - bit 1: mirrored
 - bit 2: nightDriving
@@ -496,10 +501,11 @@ RoomChannelData =
 - bit 6: traffic
 - bit 7: handicapped
 
-**Flags2 Bitfield (offset 0x5F):**
-- bit 0: bDisallowNOS
-- bit 1: RaceInProgress
-- bits 2-5: connectedPlayers (0-6)
+**StatusFlags Bitfield (+100):**
+- bit 0: raceInProgress
+- bits 1-4: connectedPlayers (0-6)
+
+**bDisallowNOS (+96):** 4-byte int32 (C BOOL); non-zero = NOS disabled.
 
 **Room Modes (eRoomMode):**
 

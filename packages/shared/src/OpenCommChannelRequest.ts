@@ -1,4 +1,5 @@
-import { type Serializable, CString, CBlock, checkMinLength, sliceBuff } from 'rusty-motors-shared';
+import { type Serializable, CString, checkMinLength, sliceBuff } from 'rusty-motors-shared';
+import { BytableChannelData } from '@rustymotors/binary';
 
 
 export class OpenCommChannelRequest implements Serializable {
@@ -17,7 +18,7 @@ export class OpenCommChannelRequest implements Serializable {
         this._protocol = Buffer.alloc(4);
         this._riffName = new CString(32);
         this._password = new CString(17);
-        this._channelData = new CBlock(256);
+        this._channelData = new BytableChannelData();
         this._key = Buffer.alloc(4);
         this._flags = Buffer.alloc(4);
     }
@@ -52,8 +53,8 @@ export class OpenCommChannelRequest implements Serializable {
         offset = offset + this._riffName.sizeOf;
         this._password.deserialize(buf.subarray(offset));
         offset = offset + this._password.sizeOf;
-        this._channelData.deserialize(sliceBuff(buf, offset, 256));
-        offset = offset + this._channelData.sizeOf;
+        this._channelData.deserialize(sliceBuff(buf, offset, this._channelData.serializeSize));
+        offset = offset + this._channelData.serializeSize;
         this._key = sliceBuff(buf, offset, 4);
         offset = offset + 4;
         this._flags = sliceBuff(buf, offset, 4);

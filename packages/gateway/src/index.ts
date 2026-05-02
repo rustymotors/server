@@ -118,9 +118,9 @@ export function onUdpMessage({
     remoteInfo: RemoteInfo;
     log?: ServerLogger;
 }) {
-    if (!ALLOWED_IPS.includes(remoteInfo.address)) {
-        return;
-    }
+    // if (!ALLOWED_IPS.includes(remoteInfo.address)) {
+    //     return;
+    // }
 
     log.debug("New UDP Message", {
         namespace: "onUdpMessage",

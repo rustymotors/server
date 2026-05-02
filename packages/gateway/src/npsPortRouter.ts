@@ -36,6 +36,8 @@ export async function npsPortRouter({
 
     const port = localPort;
 
+    const connectionState = { validated: false };
+
     const receiveQueue = new MessageQueue(
         'npsIn',
         10,
@@ -62,6 +64,7 @@ export async function npsPortRouter({
                     taggedSocket.connectionId,
                     taggedSocket.localPort,
                     taggedSocket,
+                    connectionState,
                 );
             } catch (err) {
                 log.error(`Error receiving item: ${err}`);
@@ -198,6 +201,7 @@ export async function processSocketData(
     id: string,
     port: number,
     socket: TaggedSocket,
+    connectionState?: { validated: boolean },
 ): Promise<void> {
     // Early tossing of known bad packets
     if (!isPacketValid(data) && 'end' in socket.socket) {
@@ -220,21 +224,10 @@ export async function processSocketData(
 
             const initialPacket = parseInitialMessage(packet, log);
             await routeInitialMessage(id, port, initialPacket, log);
+            if (connectionState) connectionState.validated = true;
         }
-        
-        // const separator = Buffer.from([0x11, 0x01]);
-        // const packets = splitDataIntoPackets(data, separator, log, id);
-
-        // for (const packet of packets) {
-        //     if (packet.byteLength === 0) {
-        //         log.warn(`BUG: We recieved an empty packet from the splitter`);
-        //         continue;
-        //     }
-        //     const initialPacket = parseInitialMessage(packet, log);
-        //     handlePacketRouting(id, port, initialPacket, log);
-        // }
     } catch (error) {
-        handleSocketError(error, log, id);
+        handleSocketError(error, log, id, connectionState?.validated ?? false);
     }
 }
 
@@ -300,7 +293,12 @@ function handleSocketError(
     error: unknown,
     log: ServerLogger,
     id: string,
+    validated = false,
 ): void {
+    if (!validated) {
+        log.debug(`[${id}] Pre-handshake error (crawler?): ${error}`);
+        return;
+    }
     if (error instanceof RangeError) {
         log.warn(`[${id}] Error parsing initial nps message: ${error}`);
     } else {
@@ -330,11 +328,9 @@ function parseInitialMessage(
 
         return message;
     } catch (error) {
-        const err = new Error(`Error parsing initial message: ${error}`, {
+        throw new Error(`Error parsing initial message: ${error}`, {
             cause: error,
         });
-        log.error((err as Error).message);
-        throw err;
     }
 }
 

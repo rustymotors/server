@@ -32,7 +32,7 @@ export async function handleGetReadyList({
         requestedCommId,
     });
 
-    const player1 = new ReadyForGame(requestedCommId, 21, false, true);
+    const player1 = new ReadyForGame(requestedCommId, 21, true, true);
 
     const readyList = new ReadyForGameList(player1.sizeOf);
     readyList.add(player1)
