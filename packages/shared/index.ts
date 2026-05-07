@@ -60,12 +60,14 @@ export {
     ReadyForGame,
     ReadyForGameList,
 } from './src/GameServer.js';
-export { MessageNode } from './src/MessageNode.js';
+export { MessageNode, MessageNodeBody } from './src/MessageNode.js';
+export type { Serializable } from './src/types.js';
 export {
     Bool,
     CBlock,
     CString,
     checkMinLength,
+    checkSize4,
     sliceBuff,
     NPS_LOGICAL,
     Short,

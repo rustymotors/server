@@ -46,6 +46,7 @@ import { _buyNewPart } from '../_buyNewPart.js';
 import { _createStandardRace } from '../_createStandardRace.js';
 import { _joinRace } from '../_joinRace.js';
 import { _raceKeepAlive } from '../_raceKeepAlive.js';
+import { _startRace } from '../_startRace.js';
 
 /**
  * Creates and returns a configured transactions handler registry.
@@ -188,6 +189,12 @@ export function createTransactionsHandlerRegistry(): MessageHandlerRegistry<
         opCode: 230, // MC_CREATE_STANDARD_RACE
         name: 'MC_CREATE_STANDARD_RACE',
         handler: _createStandardRace,
+    });
+
+    registry.register({
+        opCode: 232, // MC_RACE_START
+        name: 'MC_RACE_START',
+        handler: _startRace,
     });
 
     return registry;
