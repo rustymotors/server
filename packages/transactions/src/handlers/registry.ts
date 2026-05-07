@@ -40,6 +40,8 @@ import { login } from '../login.js';
 import { trackingPing } from '../trackingPing.js';
 import { _buyCarFromDealer } from '../_buyCarFromDealer.js';
 import { _crcPreRaceData } from '../_crcPreRaceData.js';
+import { _crcPreRaceDataTestDrive } from '../_crcPreRaceDataTestDrive.js';
+import { _inRaceDamageUpdate } from '../_inRaceDamageUpdate.js';
 import { _updateCachedVehicle } from '../_updateCachedVehicle.js';
 import { _getCompleteVehicleInfo } from '../_getFullCarInfo.js';
 import { _buyNewPart } from '../_buyNewPart.js';
@@ -169,9 +171,21 @@ export function createTransactionsHandlerRegistry(): MessageHandlerRegistry<
     });
 
     registry.register({
-        opCode: 455, // MC_CRC_PRE_RACE_DATA
+        opCode: 240, // MC_IN_RACE_DAMAGE_UPDATE
+        name: 'MC_IN_RACE_DAMAGE_UPDATE',
+        handler: _inRaceDamageUpdate,
+    });
+
+    registry.register({
+        opCode: 434, // MC_CRC_PRE_RACE_DATA
         name: 'MC_CRC_PRE_RACE_DATA',
         handler: _crcPreRaceData,
+    });
+
+    registry.register({
+        opCode: 455, // MC_CRC_PRE_RACE_DATA_TEST_DRIVE
+        name: 'MC_CRC_PRE_RACE_DATA_TEST_DRIVE',
+        handler: _crcPreRaceDataTestDrive,
     });
 
     registry.register({

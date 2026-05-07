@@ -28,6 +28,7 @@ vite.config.*.timestamp*
 vitest.config.*.timestamp*
 data/*-audit.json
 data/*.log.gz
+data/captures/
 
 # Build artifacts
 out.log
