@@ -1,6 +1,7 @@
 import { receiveTransactionsData } from "rusty-motors-transactions";
 import * as Sentry from "@sentry/node";
 import { getServerLogger, MessageNode, type ServerLogger, type messageQueueItem, MessageQueue, type TaggedTcpSocket } from "rusty-motors-shared";
+import { bindLogContext } from "@rustymotors/logging";
 import { getSessionRecorder } from './session/SessionRecorderIntegration.js';
 
 /**
@@ -53,53 +54,70 @@ export async function mcotsPortRouter({
     })
 
 
-    // Handle the socket connection here
-    socket.on('data', async (data) => {
-        // Record incoming data if recording is enabled
-        const recorder = getSessionRecorder();
-        if (recorder?.isRecordingEnabled()) {
-            recorder.recordDataIn(connectionId, port, data);
-        }
+    // Handle the socket connection here. Each listener is wrapped with
+    // bindLogContext so the connection's ALS frame is re-entered when the
+    // event fires (libuv triggers emit() outside the registration frame).
+    socket.on(
+        'data',
+        bindLogContext(async (data) => {
+            // Record incoming data if recording is enabled
+            const recorder = getSessionRecorder();
+            if (recorder?.isRecordingEnabled()) {
+                recorder.recordDataIn(connectionId, port, data);
+            }
 
-        receiveQueue.put({
-            sequenceNo: -1,
-            data
-        })
-    });
-
-    socket.on('end', () => {
-        receiveQueue.exit();
-
-        // Record disconnect if recording is enabled
-        const recorder = getSessionRecorder();
-        if (recorder?.isRecordingEnabled()) {
-            recorder.recordDisconnect(connectionId, port);
-            recorder.saveSession(connectionId, `Auto-saved on disconnect (MCOTS port ${port})`);
-        }
-    });
-
-    socket.on('error', (error) => {
-        if (error.message.includes('ECONNRESET')) {
-            log.debug(`Connection reset by client`, {
-                connectionId,
-                port: socket.localPort
+            receiveQueue.put({
+                sequenceNo: -1,
+                data,
             });
-            // Still save the session on reset - client likes to RST instead of FIN
+        }),
+    );
+
+    socket.on(
+        'end',
+        bindLogContext(() => {
+            receiveQueue.exit();
+
+            // Record disconnect if recording is enabled
             const recorder = getSessionRecorder();
             if (recorder?.isRecordingEnabled()) {
                 recorder.recordDisconnect(connectionId, port);
-                recorder.saveSession(connectionId, `Auto-saved on ECONNRESET (MCOTS port ${port})`);
+                recorder.saveSession(
+                    connectionId,
+                    `Auto-saved on disconnect (MCOTS port ${port})`,
+                );
             }
-            receiveQueue.exit();
-            return;
-        }
-        log.error(`Socket error: ${error}`, {
-            connectionId,
-            port: socket.localPort,
-            error
-        });
-        Sentry.captureException(error)
-    });
+        }),
+    );
+
+    socket.on(
+        'error',
+        bindLogContext((error) => {
+            if (error.message.includes('ECONNRESET')) {
+                log.debug(`Connection reset by client`, {
+                    connectionId,
+                    port: socket.localPort,
+                });
+                // Still save the session on reset - client likes to RST instead of FIN
+                const recorder = getSessionRecorder();
+                if (recorder?.isRecordingEnabled()) {
+                    recorder.recordDisconnect(connectionId, port);
+                    recorder.saveSession(
+                        connectionId,
+                        `Auto-saved on ECONNRESET (MCOTS port ${port})`,
+                    );
+                }
+                receiveQueue.exit();
+                return;
+            }
+            log.error(`Socket error: ${error}`, {
+                connectionId,
+                port: socket.localPort,
+                error,
+            });
+            Sentry.captureException(error);
+        }),
+    );
 }
 
 function findPackageSignatureIndices(data: Buffer): number[] {

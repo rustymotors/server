@@ -1,5 +1,6 @@
 import type { PortRouter, PortRouterArgs } from "./types.js";
 import { getServerLogger } from "rusty-motors-shared";
+import { bindLogContext } from "@rustymotors/logging";
 import type { PortRouterRegistry } from "./routing/PortRouterRegistry.js";
 
 /**
@@ -82,9 +83,12 @@ async function notFoundRouter({
 	taggedSocket,
 	log = getServerLogger("gateway.notFoundRouter"),
 }: PortRouterArgs) {
-	taggedSocket.socket.on("error", (error) => {
-		log.error(`[${taggedSocket.connectionId}] Socket error: ${error}`);
-	});
+	taggedSocket.socket.on(
+		"error",
+		bindLogContext((error) => {
+			log.error(`[${taggedSocket.connectionId}] Socket error: ${error}`);
+		}),
+	);
 	taggedSocket.socket.end();
 	log.warn(
 		`[${taggedSocket.connectionId}] No router found for port ${taggedSocket.socket.localPort}`,

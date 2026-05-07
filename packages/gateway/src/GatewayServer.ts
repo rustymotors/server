@@ -2,6 +2,7 @@ import type { Server, Socket as TcpSocket } from "node:net";
 import type { RemoteInfo, Socket as UdpSocket } from "node:dgram";
 import { randomUUID } from "node:crypto";
 import { getServerConfiguration, getServerLogger, type ServerLogger, createInitialState } from "rusty-motors-shared";
+import { bindLogContext } from "@rustymotors/logging";
 import { onSocketConnection, onUdpMessage } from "./index.js";
 import { initializeRouteHandlers, processHttpRequest } from "./web.js";
 import type { GatewayOptions } from "./types.js";
@@ -170,13 +171,19 @@ export class Gateway implements ShutdownHandler {
                 const connectionId = `${randomUUID().substring(0, 8)}:${localPort}`;
                 recorder.startSession(connectionId, localPort, remoteAddress);
                 
-                // Record incoming data (raw TCP bytes)
-                incomingSocket.on('data', (data: Buffer) => {
-                    if (recorder?.isRecordingEnabled() && localPort) {
-                        recorder.recordDataIn(connectionId, localPort, data);
-                    }
-                });
-                
+                // Record incoming data (raw TCP bytes). bindLogContext is a
+                // no-op here today (no ALS frame is open at this point), but
+                // makes the listener inherit context if a frame is later
+                // opened upstream by the network/web layer.
+                incomingSocket.on(
+                    'data',
+                    bindLogContext((data: Buffer) => {
+                        if (recorder?.isRecordingEnabled() && localPort) {
+                            recorder.recordDataIn(connectionId, localPort, data);
+                        }
+                    }),
+                );
+
                 // Record outgoing data (raw TCP bytes)
                 const originalWrite = incomingSocket.write.bind(incomingSocket);
                 incomingSocket.write = (chunk: any, encoding?: any, cb?: any) => {
@@ -186,14 +193,17 @@ export class Gateway implements ShutdownHandler {
                     }
                     return originalWrite(chunk, encoding, cb);
                 };
-                
+
                 // Record disconnect
-                incomingSocket.once('end', () => {
-                    if (recorder?.isRecordingEnabled() && localPort) {
-                        recorder.recordDisconnect(connectionId, localPort);
-                        recorder.saveSession(connectionId, `Auto-saved on disconnect (port ${localPort})`);
-                    }
-                });
+                incomingSocket.once(
+                    'end',
+                    bindLogContext(() => {
+                        if (recorder?.isRecordingEnabled() && localPort) {
+                            recorder.recordDisconnect(connectionId, localPort);
+                            recorder.saveSession(connectionId, `Auto-saved on disconnect (port ${localPort})`);
+                        }
+                    }),
+                );
             }
             
             // Pass to HTTP server (after setting up recording)

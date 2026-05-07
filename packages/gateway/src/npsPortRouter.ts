@@ -11,6 +11,7 @@ import {
     addSocketPair,
     resolveMessageId,
 } from 'rusty-motors-shared';
+import { bindLogContext } from '@rustymotors/logging';
 import { messageStats } from './GatewayServer.js';
 import { getSessionRecorder } from './session/SessionRecorderIntegration.js';
 import { getServiceRegistry, type Serializable } from './routing/ServiceRegistry.js';
@@ -119,44 +120,68 @@ export async function npsPortRouter({
         });
     }
 
-    // Handle the socket connection here
-    socket.on('data', async (data) => {
-        receiveQueue.put({
-            sequenceNo: -1,
-            data,
-        });
-    });
+    // Handle the socket connection here. Each listener is wrapped with
+    // bindLogContext so that when the OS/libuv fires the event later (in an
+    // async context outside the connection's ALS frame), the listener still
+    // emits logs scoped to this connection.
+    socket.on(
+        'data',
+        bindLogContext(async (data) => {
+            receiveQueue.put({
+                sequenceNo: -1,
+                data,
+            });
+        }),
+    );
 
-    socket.on('end', () => {
-        // Record disconnect if recording is enabled
-        const recorder = getSessionRecorder();
-        if (recorder?.isRecordingEnabled()) {
-            recorder.recordDisconnect(taggedSocket.connectionId, taggedSocket.localPort);
-            // Auto-save session on disconnect
-            recorder.saveSession(taggedSocket.connectionId, `Auto-saved on disconnect`);
-        }
-        const baseId = taggedSocket.connectionId.split(':')[0];
-        log.info(`[${baseId}] Disconnected on port ${taggedSocket.localPort}`);
-        receiveQueue.exit();
-    });
-
-    socket.on('error', (error) => {
-        if (error.message.includes('ECONNRESET')) {
-            log.debug(`[${connectionId}] Connection reset by client`);
-            // Still save the session on reset - client likes to RST instead of FIN
+    socket.on(
+        'end',
+        bindLogContext(() => {
+            // Record disconnect if recording is enabled
             const recorder = getSessionRecorder();
             if (recorder?.isRecordingEnabled()) {
-                recorder.recordDisconnect(taggedSocket.connectionId, taggedSocket.localPort);
-                recorder.saveSession(taggedSocket.connectionId, `Auto-saved on ECONNRESET`);
+                recorder.recordDisconnect(
+                    taggedSocket.connectionId,
+                    taggedSocket.localPort,
+                );
+                // Auto-save session on disconnect
+                recorder.saveSession(
+                    taggedSocket.connectionId,
+                    `Auto-saved on disconnect`,
+                );
             }
+            const baseId = taggedSocket.connectionId.split(':')[0];
+            log.info(`[${baseId}] Disconnected on port ${taggedSocket.localPort}`);
+            receiveQueue.exit();
+        }),
+    );
+
+    socket.on(
+        'error',
+        bindLogContext((error) => {
+            if (error.message.includes('ECONNRESET')) {
+                log.debug(`[${connectionId}] Connection reset by client`);
+                // Still save the session on reset - client likes to RST instead of FIN
+                const recorder = getSessionRecorder();
+                if (recorder?.isRecordingEnabled()) {
+                    recorder.recordDisconnect(
+                        taggedSocket.connectionId,
+                        taggedSocket.localPort,
+                    );
+                    recorder.saveSession(
+                        taggedSocket.connectionId,
+                        `Auto-saved on ECONNRESET`,
+                    );
+                }
+                receiveQueue.exit();
+                sendQueue.exit();
+                return;
+            }
+            log.error(`[${connectionId}] Socket error: ${error}`);
             receiveQueue.exit();
             sendQueue.exit();
-            return;
-        }
-        log.error(`[${connectionId}] Socket error: ${error}`);
-        receiveQueue.exit();
-        sendQueue.exit();
-    });
+        }),
+    );
 }
 
 /**

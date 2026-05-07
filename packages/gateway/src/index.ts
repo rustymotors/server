@@ -25,7 +25,11 @@ import {
     type ServerLogger,
     type TaggedTcpSocket,
 } from "rusty-motors-shared";
-import { runWithLogContext } from "@rustymotors/logging";
+import {
+    bindLogContext,
+    runWithLogContext,
+    setLogContext,
+} from "@rustymotors/logging";
 import { socketErrorHandler } from "./socketErrorHandler.js";
 import { getSessionRecorder } from "./session/SessionRecorderIntegration.js";
 
@@ -51,72 +55,74 @@ export function onSocketConnection({
     incomingSocket: TcpSocket;
     log?: ServerLogger;
 }) {
-    // Attach error handler immediately before any other logic to prevent
-    // unhandled error events from crashing the server (e.g. ECONNRESET
-    // already pending when localPort/remoteAddress is undefined)
     let id = `${randomUUID()}`;
     id = id.substring(0, id.indexOf("-"));
-    incomingSocket.on("error", (error) => {
-        socketErrorHandler({ connectionId: id, error, log });
-    });
+    const baseId = id;
 
-    // Get the local port and remote address
-    const { localPort, remoteAddress } = incomingSocket;
+    // Open the connection's AsyncLocalStorage frame as early as possible so
+    // even the immediate error handler (registered before localPort is known)
+    // emits logs scoped to this connection. The store is mutable; we expand
+    // it with port/remoteAddress via setLogContext once those are known.
+    runWithLogContext({ connectionId: baseId }, () => {
+        // Attach error handler immediately before any other logic to prevent
+        // unhandled error events from crashing the server (e.g. ECONNRESET
+        // already pending when localPort/remoteAddress is undefined). Bound
+        // so the handler still sees the connection's ALS frame when libuv
+        // dispatches the event from outside the registration context.
+        incomingSocket.on(
+            "error",
+            bindLogContext((error) => {
+                socketErrorHandler({ connectionId: id, error, log });
+            }),
+        );
 
-    // If the local port or remote address is undefined, close and return
-    if (localPort === undefined || remoteAddress === undefined) {
-        log.error("localPort or remoteAddress is undefined. Closing socket.");
-        if (!incomingSocket.destroyed) {
-            incomingSocket.end();
+        // Get the local port and remote address
+        const { localPort, remoteAddress } = incomingSocket;
+
+        // If the local port or remote address is undefined, close and return
+        if (localPort === undefined || remoteAddress === undefined) {
+            log.error("localPort or remoteAddress is undefined. Closing socket.");
+            if (!incomingSocket.destroyed) {
+                incomingSocket.end();
+            }
+            return;
         }
-        return;
-    }
 
-    id = `${id}:${localPort}`;
+        id = `${id}:${localPort}`;
 
-    // if (!ALLOWED_IPS.includes(remoteAddress)) {
-    //     incomingSocket.destroy();
-    //     return;
-    // }
+        // if (!ALLOWED_IPS.includes(remoteAddress)) {
+        //     incomingSocket.destroy();
+        //     return;
+        // }
 
-    const socketWithId = tagSocket(
-        incomingSocket,
-        Date.now(),
-        id,
-        localPort,
-    ) as TaggedTcpSocket;
+        const socketWithId = tagSocket(
+            incomingSocket,
+            Date.now(),
+            id,
+            localPort,
+        ) as TaggedTcpSocket;
 
-    // Record session start if recording is enabled
-    const recorder = getSessionRecorder();
-    if (recorder?.isRecordingEnabled()) {
-        recorder.startSession(id, localPort, remoteAddress);
-    }
+        // Record session start if recording is enabled
+        const recorder = getSessionRecorder();
+        if (recorder?.isRecordingEnabled()) {
+            recorder.startSession(id, localPort, remoteAddress);
+        }
 
-    const baseId = id.split(":")[0] ?? id;
+        // Expand the ALS context now that we know the port/remoteAddress.
+        // Already-bound listeners and any descendants of this frame will
+        // see the new fields on subsequent log calls.
+        setLogContext({ port: localPort, remoteAddress });
 
-    // Open an AsyncLocalStorage frame for this connection. Every async resource
-    // created inside this callback (port router, message queues, socket event
-    // listeners, promise continuations) inherits the frame, so log calls from
-    // anywhere in the connection's call graph automatically carry connectionId
-    // / port / remoteAddress as structured fields without explicit threading.
-    runWithLogContext(
-        {
-            connectionId: baseId,
-            port: localPort,
-            remoteAddress,
-        },
-        () => {
-            log.info("Connection accepted");
+        log.info("Connection accepted");
 
-            const portRouter = getPortRouter(localPort);
-            portRouter({ taggedSocket: socketWithId, log }).catch(
-                function onSocketError(error) {
-                    Sentry.captureException(error);
-                    log.error("Error in port router", { err: error });
-                },
-            );
-        },
-    );
+        const portRouter = getPortRouter(localPort);
+        portRouter({ taggedSocket: socketWithId, log }).catch(
+            function onSocketError(error) {
+                Sentry.captureException(error);
+                log.error("Error in port router", { err: error });
+            },
+        );
+    });
 }
 
 export function onUdpMessage({
@@ -134,26 +140,35 @@ export function onUdpMessage({
     //     return;
     // }
 
-    log.debug("New UDP Message", {
-        namespace: "onUdpMessage",
-        message: message.toString("hex"),
-        remoteInfo: JSON.stringify(remoteInfo),
-    });
-    // Get the local port and remote address
+    // UDP has no connection, but datagrams from the same source endpoint
+    // are conceptually related (retries, multi-packet exchanges). Use
+    // `${remoteAddress}:${remotePort}` as the connectionId so logs from
+    // the same source share a tag.
     const { address: remoteAddress, port: remotePort } = remoteInfo;
     const { port: localPort } = incomingSocket.address();
 
-    // If the local port or remote address is undefined, throw an error
     if (localPort === undefined || remoteAddress === undefined) {
         log.error("localPort or remoteAddress is undefined. Closing socket.");
         incomingSocket.close();
         return;
     }
 
-    incomingSocket.send(
-        Buffer.from([0x02, 0x07, 0x00, 0x04]),
-        remotePort,
-        remoteAddress,
+    const connectionId = `${remoteAddress}:${remotePort}`;
+
+    runWithLogContext(
+        { connectionId, port: localPort, remoteAddress, remotePort },
+        () => {
+            log.debug("New UDP Message", {
+                namespace: "onUdpMessage",
+                message: message.toString("hex"),
+                remoteInfo: JSON.stringify(remoteInfo),
+            });
+
+            incomingSocket.send(
+                Buffer.from([0x02, 0x07, 0x00, 0x04]),
+                remotePort,
+                remoteAddress,
+            );
+        },
     );
-    return;
 }

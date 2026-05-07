@@ -17,6 +17,7 @@ export interface LogContext {
 	connectionId?: string;
 	port?: number;
 	remoteAddress?: string;
+	remotePort?: number;
 	personaId?: number | string;
 	[key: string]: unknown;
 }

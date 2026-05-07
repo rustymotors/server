@@ -30,13 +30,13 @@ export function setLogContext(partial: Partial<LogContext>): void {
  *
  * If there is no current context, the function is returned unchanged.
  */
-export function bindLogContext<F extends (...args: unknown[]) => unknown>(
-	fn: F,
-): F {
+export function bindLogContext<A extends unknown[], R>(
+	fn: (...args: A) => R,
+): (...args: A) => R {
 	const captured = logContextStorage.getStore();
 	if (!captured) return fn;
-	return ((...args: unknown[]) =>
-		logContextStorage.run(captured, () => fn(...args))) as F;
+	return (...args: A) =>
+		logContextStorage.run(captured, () => fn(...args));
 }
 
 function serializeError(err: Error): Record<string, unknown> {
