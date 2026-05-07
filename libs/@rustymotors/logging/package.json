@@ -5,8 +5,15 @@
 	"type": "module",
 	"main": "src/index.js",
 	"typings": "src/index.d.ts",
+	"scripts": {
+		"check": "tsc",
+		"test": "vitest run"
+	},
 	"dependencies": {
 		"winston": "^3.18.3",
 		"winston-daily-rotate-file": "^5.0.0"
+	},
+	"devDependencies": {
+		"vitest": "^3.2.4"
 	}
 }

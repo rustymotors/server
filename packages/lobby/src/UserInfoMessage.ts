@@ -6,7 +6,7 @@ export class MiniUserInfo extends BytableStructure {
 		super();
 		this.setSerializeOrder([
 			{ name: "userId", field: "Dword" },
-			{ name: "userName", field: "String" },
+			{ name: "userName", field: "PString" },
 		]);
 	}
 }

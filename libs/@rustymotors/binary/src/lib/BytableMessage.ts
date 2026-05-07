@@ -3,7 +3,7 @@ import { BytableBase } from './BytableBase.js';
 import { BytableBuffer } from './BytableBuffer.js';
 import { BytableChannelData } from './BytableChannelData.js';
 import { BytableByte } from './BytableByte.js';
-import { BytableContainer, BytableShortContainer } from './BytableContainer.js';
+import { BytableContainer, BytablePString, BytableShortContainer } from './BytableContainer.js';
 import { BytableCString } from './BytableCString.js';
 import { BareCString } from './BareCString.js';
 import { BytableBitField } from './BytableBitField.js';
@@ -153,8 +153,7 @@ export class BytableStructure extends BytableBase implements BytableObject {
 }
 
 export const BytableFieldTypes = {
-    ZeroTerminatedString: BytableContainer,
-    String: BytableContainer,
+    PString: BytablePString,
     Dword: BytableDword,
     Container: BytableContainer,
     PrefixedString2: BytableShortContainer,

@@ -30,8 +30,6 @@
 		"@sentry/profiling-node": "10.32.1",
 		"bunyan": "^1.8.15",
 		"fastify": "^5.7.3",
-		"pino": "^9.7.0",
-		"pino-pretty": "^13.0.0",
 		"rusty-motors-protocol": "",
 		"winston": "^3.18.3",
 		"winston-daily-rotate-file": "^5.0.0"

@@ -67,9 +67,9 @@ export async function handleGetServerInfo({
         // plplll
         const outgoingGameMessage = new BytableMessage();
         outgoingGameMessage.setSerializeOrder([
-            { name: 'riffName', field: 'String' },
+            { name: 'riffName', field: 'PString' },
             { name: 'commId', field: 'Dword' },
-            { name: 'ipAddress', field: 'String' },
+            { name: 'ipAddress', field: 'PString' },
             { name: 'port', field: 'Dword' },
             { name: 'userId', field: 'Dword' },
             { name: 'playerCount', field: 'Dword' },

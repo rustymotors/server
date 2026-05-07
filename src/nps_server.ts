@@ -59,7 +59,7 @@ function main() {
         initializeServiceRegistry();
         coreLogger.info('Service registry initialized');
     } catch (err) {
-        coreLogger.error(`Error in core server: ${String(err)}`);
+        coreLogger.error("Error in core server", { err });
         process.exitCode = 1;
         return;
     }
@@ -104,7 +104,7 @@ function main() {
 main();
 function captureAndLogErrorAndSetNotZeroExitCode(err: unknown, coreLogger: ServerLogger) {
     Sentry.captureException(err);
-    coreLogger.error(`Error in core server: ${String(err)}`);
+    coreLogger.error("Error in core server", { err });
     process.exitCode = 1;
     return;
 }

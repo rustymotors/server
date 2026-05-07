@@ -55,22 +55,14 @@ export async function handleOpenCommChannel({
 
         const responsePackets = [];
 
-        const packetResult = createNPSChannelGrantedPacket(
-            requestedCommId,
-            grantedPort,
-        );
-        log.debug(
-            `[${connectionId}]  Sending comm GRANTED: ${JSON.stringify(packetResult)}`,
-        );
+        const userId: number = (
+            incomingRequest.getFieldValueByName("userId") as Buffer
+        ).readInt32BE();
 
-        responsePackets.push(packetResult);
+        const userJoinedMessage = await createUserJoinedChannelMessage(userId, requestedCommId, log, connectionId);
+
 
         if (requestedCommId > 100) {
-            const userId: number = (
-                incomingRequest.getFieldValueByName("userId") as Buffer
-            ).readInt32BE();
-
-            const userJoinedMessage = await createUserJoinedChannelMessage(userId, requestedCommId, log, connectionId);
 
 
             const channelCreatedMessage = new RawMessage();
@@ -79,10 +71,11 @@ export async function handleOpenCommChannel({
             channelCreatedBody.commId = requestedCommId;
             channelCreatedBody.riff = requestedRiffName.toString();
             channelCreatedBody.protocol = 33;
-            // channelCreatedBody.channelData = Buffer.alloc(256);
+            channelCreatedBody.channelData.hostID = userId
+            channelCreatedBody.channelData.hostName = "Dr Brown"
             channelCreatedBody.channelType = 3;
-            channelCreatedBody.maxReadyPlayers = 8;
-
+            channelCreatedBody.maxReadyPlayers = 1;
+            channelCreatedBody.channelData.minNPSracers = 0
 
             channelCreatedMessage.data = channelCreatedBody.serialize();
             const channelCreatedBytable = new BytableMessage();
@@ -95,8 +88,24 @@ export async function handleOpenCommChannel({
             responsePackets.push(channelCreatedBytable)
 
 
-            // responsePackets.push(userJoinedMessage);
         }
+        const packetResult = createNPSChannelGrantedPacket(
+            requestedCommId,
+            grantedPort,
+        );
+
+
+
+        log.debug(
+            `[${connectionId}]  Sending comm GRANTED: ${JSON.stringify(packetResult)}`,
+        );
+
+
+        responsePackets.push(packetResult);
+
+        responsePackets.push(userJoinedMessage);
+
+
         return {
             connectionId,
             messages: responsePackets,
@@ -176,7 +185,7 @@ export function parseOpenCommChannelMessage(buffer: Buffer) {
     const incomingRequest = new BytableMessage();
     incomingRequest.setSerializeOrder([
         { name: 'commId', field: 'Dword' },               // l
-        { name: 'riffName', field: 'String' },             // p
+        { name: 'riffName', field: 'PString' },             // p
         { name: 'slotNumber', field: 'Dword' },            // l
         { name: 'slotFlags', field: 'Dword' },             // l
         { name: 'portNumber', field: 'Dword' },            // l
@@ -188,7 +197,7 @@ export function parseOpenCommChannelMessage(buffer: Buffer) {
         { name: 'gameReady', field: 'Short' },             // s
         { name: 'isMaster', field: 'Short' },              // s
         { name: 'channelType', field: 'Short' },           // s
-        { name: 'password', field: 'String' },             // p
+        { name: 'password', field: 'PString' },             // p
         { name: 'disableBacklog', field: 'Short' },        // s
         { name: 'gameServerIsRunning', field: 'Boolean' }, // c
         { name: 'launchGameServer', field: 'Short' },      // s

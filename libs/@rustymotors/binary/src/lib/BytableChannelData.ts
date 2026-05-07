@@ -52,34 +52,34 @@ interface SimpleField {
 export class BytableChannelData implements BytableObject {
     protected name_: string = "channelData";
 
-    private _raceID              = BytableChannelData._si32();
-    private _raceName            = new BareCString(NPS_GAMENAME_LEN);
-    private _entryFee            = BytableChannelData._si32();
+    private _raceID = BytableChannelData._si32();
+    private _raceName = new BareCString(NPS_GAMENAME_LEN);
+    private _entryFee = BytableChannelData._si32();
     private _purseBonusPerPlayer = BytableChannelData._si32();
-    private _purseBonusPerRace   = BytableChannelData._si32();
-    private _byte80              = new BytableBitField(); // maxNPSracers:4 | minNPSracers:4<<4
-    private _byte81              = new BytableBitField(); // numRounds:4    | numLaps:4<<4
-    private _byte82              = new BytableBitField(); // race flags
-    private _pad83               = new BytablePad(1);
-    private _mode                = BytableChannelData._si32();
-    private _sponsorBPT          = BytableChannelData._ui32();
-    private _minlevel            = new BytableByte();
-    private _maxlevel            = new BytableByte();
-    private _requiredBodyClass   = new BytableByte();
-    private _maxPowerClass       = new BytableByte();
-    private _bDisallowNOS        = BytableChannelData._si32(); // BOOL as int32
-    private _byte100             = new BytableBitField(); // raceInProgress:1 | connectedPlayers:4<<1
-    private _pad101              = new BytablePad(3);
-    private _hostID              = BytableChannelData._ui32();
-    private _hostName            = new BareCString(K_MAX_PLAYER_NAME);
-    private _pad138              = new BytablePad(2);
-    private _userID              = Array.from({ length: 6 }, () => BytableChannelData._ui32());
-    private _dbCarID             = Array.from({ length: 6 }, () => BytableChannelData._si32());
-    private _dbBptID             = Array.from({ length: 6 }, () => BytableChannelData._si32());
-    private _majorVersionNum     = BytableChannelData._ui32();
-    private _minorVersionNum     = BytableChannelData._ui32();
-    private _revisionVersionNum  = BytableChannelData._ui32();
-    private _pad224              = new BytablePad(32);
+    private _purseBonusPerRace = BytableChannelData._si32();
+    private _byte80 = new BytableBitField(); // maxNPSracers:4 | minNPSracers:4<<4
+    private _byte81 = new BytableBitField(); // numRounds:4    | numLaps:4<<4
+    private _byte82 = new BytableBitField(); // race flags
+    private _pad83 = new BytablePad(1);
+    private _mode = BytableChannelData._si32();
+    private _sponsorBPT = BytableChannelData._ui32();
+    private _minlevel = new BytableByte();
+    private _maxlevel = new BytableByte();
+    private _requiredBodyClass = new BytableByte();
+    private _maxPowerClass = new BytableByte();
+    private _bDisallowNOS = BytableChannelData._si32(); // BOOL as int32
+    private _byte100 = new BytableBitField(); // raceInProgress:1 | connectedPlayers:4<<1
+    private _pad101 = new BytablePad(3);
+    private _hostID = BytableChannelData._ui32();
+    private _hostName = new BareCString(K_MAX_PLAYER_NAME);
+    private _pad138 = new BytablePad(2);
+    private _userID = Array.from({ length: 6 }, () => BytableChannelData._ui32());
+    private _dbCarID = Array.from({ length: 6 }, () => BytableChannelData._si32());
+    private _dbBptID = Array.from({ length: 6 }, () => BytableChannelData._si32());
+    private _majorVersionNum = BytableChannelData._ui32();
+    private _minorVersionNum = BytableChannelData._ui32();
+    private _revisionVersionNum = BytableChannelData._ui32();
+    private _pad224 = new BytablePad(32);
 
     private static _si32(val = 0): BytableDword {
         const d = new BytableDword();
@@ -128,6 +128,12 @@ export class BytableChannelData implements BytableObject {
             this._revisionVersionNum,
             this._pad224,
         ];
+    }
+
+    constructor() {
+        this.hostID = 21
+        this.connectedPlayers = 1
+        this.setUserID(0, 21)
     }
 
     get serializeSize(): number { return NPS_CHANNEL_DATA_SIZE; }

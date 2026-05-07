@@ -1,4 +1,4 @@
-import type { Logger } from "pino";
+import type { ServerLogger } from "@rustymotors/logging";
 import { getServerLogger } from "../getServerLogger.js";
 
 /**
@@ -38,7 +38,7 @@ export class Configuration {
 		privateKeyFile: string;
 		publicKeyFile: string;
 		logLevel: string;
-		logger: Logger;
+		logger: ServerLogger;
 	}) {
 		try {
 			this.certificateFile = certificateFile;
@@ -52,7 +52,7 @@ export class Configuration {
 			this.logLevel = logLevel.toLowerCase();
 			Configuration.instance = this;
 		} catch (error) {
-			logger.fatal(`Error in core server: ${String(error)}`);
+			logger.error("Error in core server", { err: error });
 		}
 	}
 
@@ -80,7 +80,7 @@ export class Configuration {
 		privateKeyFile: string;
 		publicKeyFile: string;
 		logLevel: string;
-		logger: Logger;
+		logger: ServerLogger;
 	}): Configuration {
 		return new Configuration({
 			host,

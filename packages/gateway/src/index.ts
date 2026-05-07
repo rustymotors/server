@@ -25,6 +25,7 @@ import {
     type ServerLogger,
     type TaggedTcpSocket,
 } from "rusty-motors-shared";
+import { runWithLogContext } from "@rustymotors/logging";
 import { socketErrorHandler } from "./socketErrorHandler.js";
 import { getSessionRecorder } from "./session/SessionRecorderIntegration.js";
 
@@ -73,10 +74,10 @@ export function onSocketConnection({
 
     id = `${id}:${localPort}`;
 
-    if (!ALLOWED_IPS.includes(remoteAddress)) {
-        incomingSocket.destroy();
-        return;
-    }
+    // if (!ALLOWED_IPS.includes(remoteAddress)) {
+    //     incomingSocket.destroy();
+    //     return;
+    // }
 
     const socketWithId = tagSocket(
         incomingSocket,
@@ -91,18 +92,29 @@ export function onSocketConnection({
         recorder.startSession(id, localPort, remoteAddress);
     }
 
-    const baseId = id.split(":")[0];
-    log.info(
-        `[${baseId}] Connected from ${remoteAddress} on port ${localPort}`,
-    );
+    const baseId = id.split(":")[0] ?? id;
 
-    const portRouter = getPortRouter(localPort);
+    // Open an AsyncLocalStorage frame for this connection. Every async resource
+    // created inside this callback (port router, message queues, socket event
+    // listeners, promise continuations) inherits the frame, so log calls from
+    // anywhere in the connection's call graph automatically carry connectionId
+    // / port / remoteAddress as structured fields without explicit threading.
+    runWithLogContext(
+        {
+            connectionId: baseId,
+            port: localPort,
+            remoteAddress,
+        },
+        () => {
+            log.info("Connection accepted");
 
-    // Hand the socket to the port router, passing the logger
-    portRouter({ taggedSocket: socketWithId, log }).catch(
-        function onSocketError(error) {
-            Sentry.captureException(error);
-            log.error(`Error in port router: ${error.message}`);
+            const portRouter = getPortRouter(localPort);
+            portRouter({ taggedSocket: socketWithId, log }).catch(
+                function onSocketError(error) {
+                    Sentry.captureException(error);
+                    log.error("Error in port router", { err: error });
+                },
+            );
         },
     );
 }

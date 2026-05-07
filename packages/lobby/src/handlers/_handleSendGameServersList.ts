@@ -28,7 +28,7 @@ export async function handleSendGameServersList({
         });
 
         // l
-        log.debug(`User requested sendGameServerList`,{
+        log.debug(`User requested sendGameServerList`, {
             connectionId,
         })
 
@@ -41,9 +41,9 @@ export async function handleSendGameServersList({
         channelCreatedBody.commId = 2;
         channelCreatedBody.riff = 'RACE';
         channelCreatedBody.protocol = 33;
-        // channelCreatedBody.channelData = Buffer.alloc(256);
+        channelCreatedBody.channelData.hostID = 21
         channelCreatedBody.channelType = 3;
-        channelCreatedBody.maxReadyPlayers = 8;
+        channelCreatedBody.maxReadyPlayers = 1;
 
 
         channelCreatedMessage.data = channelCreatedBody.serialize();

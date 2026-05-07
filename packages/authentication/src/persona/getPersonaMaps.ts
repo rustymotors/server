@@ -19,8 +19,8 @@ import { BytableBuffer } from '@rustymotors/binary';
 import {
     PersonaList,
     PersonaMapsMessage,
-    PersonaRecord,
 } from './PersonaMapsMessage.js';
+import { PersonaRecord } from "./PersonaRecord.js";
 import { getServerLogger } from 'rusty-motors-shared';
 import { personaRecords } from '../shared/personaRecords.js';
 

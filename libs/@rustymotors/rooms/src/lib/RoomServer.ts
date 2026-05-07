@@ -23,6 +23,13 @@ export class RoomServer {
         return Array.from(this._roomList.keys());
     }
 
+    getRoomByCommId(commId: number): Room | undefined {
+        for (const room of this._roomList.values()) {
+            if (room.commId === commId) return room;
+        }
+        return undefined;
+    }
+
     addUser(personaId: number) {
         const user = new User(personaId);
         const room = this._roomList.get(this._defaultRoomName);

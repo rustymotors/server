@@ -19,14 +19,15 @@ import { BytableBuffer } from '@rustymotors/binary';
 import {
     PersonaList,
     PersonaMapsMessage,
-    PersonaRecord,
 } from './PersonaMapsMessage.js';
+import { PersonaRecord } from "./PersonaRecord.js";
 import { _gameLogout } from './_gameLogout.js';
 import { _getFirstBuddy } from './_getFirstBuddy.js';
 import { _selectGamePersona } from './_selectGamePersona.js';
 import { validatePersonaName } from './handlers/validatePersonaName.js';
 import { getPersonaInfo } from './handlers/getPersonaInfo.js';
 import { getServerLogger } from 'rusty-motors-shared';
+import { personaRecords } from './personaRecords.js';
 
 /**
  * Array of supported message handlers
@@ -55,37 +56,37 @@ export const messageHandlers: {
         messages: BytableBuffer[];
     }>;
 }[] = [
-    {
-        opCode: 1283, // 0x503
-        name: 'Game login',
-        handler: _selectGamePersona,
-    },
-    {
-        opCode: 1295, // 0x50F
-        name: 'Game logout',
-        handler: _gameLogout,
-    },
-    {
-        opCode: 1305, // 0x519
-        name: 'Get persona info',
-        handler: getPersonaInfo,
-    },
-    {
-        opCode: 1330, // 0x532
-        name: 'Get persona maps',
-        handler: getPersonaMaps,
-    },
-    {
-        opCode: 1331, // 0x533
-        name: 'Validate persona name',
-        handler: validatePersonaName,
-    },
-    {
-        opCode: 1291, // 0x50B
-        name: 'Get first buddy',
-        handler: _getFirstBuddy,
-    },
-];
+        {
+            opCode: 1283, // 0x503
+            name: 'Game login',
+            handler: _selectGamePersona,
+        },
+        {
+            opCode: 1295, // 0x50F
+            name: 'Game logout',
+            handler: _gameLogout,
+        },
+        {
+            opCode: 1305, // 0x519
+            name: 'Get persona info',
+            handler: getPersonaInfo,
+        },
+        {
+            opCode: 1330, // 0x532
+            name: 'Get persona maps',
+            handler: getPersonaMaps,
+        },
+        {
+            opCode: 1331, // 0x533
+            name: 'Validate persona name',
+            handler: validatePersonaName,
+        },
+        {
+            opCode: 1291, // 0x50B
+            name: 'Get first buddy',
+            handler: _getFirstBuddy,
+        },
+    ];
 
 /**
  * Return string as buffer
@@ -95,41 +96,6 @@ export function generateNameBuffer(name: string, size: number): Buffer {
     Buffer.from(name, 'utf8').copy(nameBuffer);
     return nameBuffer;
 }
-
-/**
- * All personas
- * NOTE: Currently we only support one persona per customer
- * @type {PersonaRecord[]}
- */
-export const personaRecords: Pick<
-    PersonaRecord,
-    'customerId' | 'personaId' | 'personaName' | 'shardId'
->[] = [
-    {
-        customerId: 2868969472,
-        personaId: 20,
-        personaName: 'Molly',
-        shardId: 44,
-    },
-    {
-        customerId: 5551212, // 0x54 0xB4 0x6C
-        personaId: 21,
-        personaName: 'Dr Brown',
-        shardId: 44,
-    },
-    {
-        customerId: 0,
-        personaId: 22,
-        personaName: 'Admin',
-        shardId: 44,
-    },
-    {
-        customerId: 6,
-        personaId: 1,
-        personaName: 'Enistein',
-        shardId: 44,
-    },
-];
 
 /**
  *

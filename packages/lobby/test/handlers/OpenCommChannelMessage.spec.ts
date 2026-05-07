@@ -14,7 +14,7 @@ suite("OpenCommChannelMessage", () => {
                  incomingRequest.getFieldValueByName("commId") as Buffer
              ).readInt32BE(),
          ).toBe(2);
-         expect((incomingRequest.getFieldValueByName("riffName") as string).replace(/\x00/g, "")).toBe("LOBBY");
+         expect((incomingRequest.getFieldValueByName("riffName") as Buffer).toString()).toBe("LOBBY");
          expect((incomingRequest.getFieldValueByName("userId") as Buffer).readInt32BE()).toBe(21);
         });
 });

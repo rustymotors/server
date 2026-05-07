@@ -234,3 +234,38 @@ export class BytableContainer extends BytableContainerBase {
         };
     }
 }
+
+/**
+ * NPS_Pack 'p'-format string: 4-byte BE prefix (strlen+1, null-inclusive),
+ * then the string bytes, then a null terminator.
+ *
+ * Stores the value as a clean Buffer (no null). The null is added on serialize
+ * and stripped on deserialize, matching NPS_Pack::pack / NPS_Pack::unpack.
+ */
+export class BytablePString extends BytableContainer {
+    override get serializeSize() {
+        return this.toBuffer(this.value_).length + 1 + 4;
+    }
+
+    override serialize() {
+        const value = this.toBuffer(this.value_);
+        const wireLength = value.length + 1;
+        const lengthPrefix = Buffer.alloc(4);
+        lengthPrefix.writeUInt32BE(wireLength, 0);
+        const content = Buffer.alloc(wireLength); // pre-zeroed: null terminator is implicit
+        value.copy(content, 0);
+        return Buffer.concat([lengthPrefix, content]);
+    }
+
+    override deserialize(buffer: Buffer) {
+        const length = buffer.readUInt32BE(0);
+        const strLength = Math.max(0, length - 1); // exclude null terminator
+        if (strLength === 0) {
+            this.value_ = '';
+            this.length = length;
+        } else {
+            this.setValue(buffer.subarray(4, 4 + strLength));
+            this.length = length;
+        }
+    }
+}
