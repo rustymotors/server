@@ -21,6 +21,7 @@
 	"author": "",
 	"license": "AGPL-3.0",
 	"dependencies": {
+		"@rustymotors/binary": "file:libs/@rustymotors/binary",
 		"@sentry/cli": "^3.4.1",
 		"@sentry/node": "^10.52.0",
 		"@sentry/profiling-node": "^10.52.0",
