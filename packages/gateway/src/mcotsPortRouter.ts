@@ -1,4 +1,7 @@
-import { receiveTransactionsData } from "rusty-motors-transactions";
+import {
+    receiveTransactionsData,
+    UnsupportedMessageCodeError,
+} from "rusty-motors-transactions";
 import * as Sentry from "@sentry/node";
 import { getServerLogger, MessageNode, type ServerLogger, type messageQueueItem, MessageQueue, type TaggedTcpSocket } from "rusty-motors-shared";
 import { bindLogContext } from "@rustymotors/logging";
@@ -204,9 +207,14 @@ async function processIncomingPackets(
                     },
 
                 )
-                Sentry.captureException(error)
-                
-            
+                // UnsupportedMessageCodeError is reported (or filtered out
+                // for non-positive codes) by processInput itself — don't
+                // double-capture here.
+                if (!(error instanceof UnsupportedMessageCodeError)) {
+                    Sentry.captureException(error)
+                }
+
+
             });
         })
     } catch (error) {

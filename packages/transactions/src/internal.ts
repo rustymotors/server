@@ -39,6 +39,30 @@ import { explode } from "pklib-ts"
 
 
 /**
+ * Thrown by {@link processInput} when an MCOTS message passes the header
+ * check and decryption but no handler is registered for its opcode.
+ *
+ * Carries the numeric `messageCode` so upstream catch sites can recognize
+ * the case (e.g. to avoid double-reporting to Sentry — `processInput` already
+ * captures positive codes itself).
+ */
+export class UnsupportedMessageCodeError extends Error {
+	readonly messageCode: number;
+	readonly messageName: string;
+	readonly connectionId: string;
+
+	constructor(connectionId: string, messageCode: number, messageName: string) {
+		super(
+			`[${connectionId}] UNSUPPORTED_MESSAGECODE:: ${messageCode} (${messageName})`,
+		);
+		this.name = "UnsupportedMessageCodeError";
+		this.messageCode = messageCode;
+		this.messageName = messageName;
+		this.connectionId = connectionId;
+	}
+}
+
+/**
  * Route or process MCOTS commands
  * @param {MessageHandlerArgs} args
  * @returns {Promise<MessageHandlerResult>}
@@ -82,9 +106,35 @@ async function processInput({
 		}
 	}
 
-	throw Error(
-		`[${connectionId}] UNSUPPORTED_MESSAGECODE:: ${currentMessageNo} (${currentMessageString})`,
+	const err = new UnsupportedMessageCodeError(
+		connectionId,
+		currentMessageNo,
+		currentMessageString,
 	);
+
+	// Surface real-looking unknown opcodes to Sentry so we can prioritize the
+	// ones clients are actually sending. Filter out non-positive codes — those
+	// almost always come from corrupt/garbage buffer reads (signed int16
+	// returning a negative or zero value), not real protocol traffic.
+	if (currentMessageNo > 0) {
+		const body = inboundMessage.getBody().serialize();
+		const decryptedHex = body.toString("hex");
+		Sentry.captureException(err, {
+			tags: {
+				messageCode: String(currentMessageNo),
+				messageName: currentMessageString,
+				errorType: "UnsupportedMessageCode",
+			},
+			extra: {
+				connectionId,
+				sequence: inboundMessage.getSequence(),
+				bodyByteLength: body.byteLength,
+				decryptedHex,
+			},
+		});
+	}
+
+	throw err;
 }
 
 /**
