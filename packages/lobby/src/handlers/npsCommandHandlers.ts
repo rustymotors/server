@@ -8,8 +8,11 @@ import { handleGetReadyList } from "./handleGetReadyList.js";
 import { handleGetServerInfo } from "./handleGetServerInfo.js";
 import { handleGetUserList } from "./handleGetUserList.js";
 import { handleOpenCommChannel } from "./handleOpenCommChannel.js";
+import { handleSendBuddyLong } from "./handleSendBuddyLong.js";
 import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";
+import { handleSendNotSingleLong } from "./handleSendNotSingleLong.js";
 import { handleSendRiffList } from "./handleSendRiffList.js";
+import { handleSendSingleLong } from "./handleSendSingleLong.js";
 import { handleSetChannelData } from "./handleSetChannelData.js";
 import { handleStartGameServer } from "./handleStartGameServer.js";
 import { handleSetChannelFlags } from "./handlSetChannelFlags.js";
@@ -85,5 +88,20 @@ export const npsCommandHandlers: NpsCommandHandler[] = [
 		opCode: NPS_MESSAGE_IDS.SEND_GAME_SERVERS_LIST,
 		name: "NPS_SEND_GAME_SERVERS_LIST",
 		handler: handleSendGameServersList,
+	},
+	{
+		opCode: NPS_MESSAGE_IDS.SEND_BUDDY_LONG,
+		name: "NPS_SEND_BUDDY_LONG",
+		handler: handleSendBuddyLong,
+	},
+	{
+		opCode: NPS_MESSAGE_IDS.SEND_SINGLE_LONG,
+		name: "NPS_SEND_SINGLE_LONG",
+		handler: handleSendSingleLong,
+	},
+	{
+		opCode: NPS_MESSAGE_IDS.SEND_NOT_SINGLE_LONG,
+		name: "NPS_SEND_NOT_SINGLE_LONG",
+		handler: handleSendNotSingleLong,
 	},
 ];

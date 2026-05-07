@@ -46,6 +46,7 @@ import { _buyNewPart } from '../_buyNewPart.js';
 import { _createStandardRace } from '../_createStandardRace.js';
 import { _joinRace } from '../_joinRace.js';
 import { _raceKeepAlive } from '../_raceKeepAlive.js';
+import { _raceResults } from '../_raceResults.js';
 import { _startRace } from '../_startRace.js';
 
 /**
@@ -195,6 +196,12 @@ export function createTransactionsHandlerRegistry(): MessageHandlerRegistry<
         opCode: 232, // MC_RACE_START
         name: 'MC_RACE_START',
         handler: _startRace,
+    });
+
+    registry.register({
+        opCode: 221, // MC_RACE_RESULTS
+        name: 'MC_RACE_RESULTS',
+        handler: _raceResults,
     });
 
     return registry;

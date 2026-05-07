@@ -68,6 +68,37 @@ export const NPS_MESSAGE_IDS = {
 	SEND_MINI_RIFF_LIST: 0x30c, // 780
 
 	// ============================================
+	// Channel-relay opcodes (server-side routing primitives)
+	// ============================================
+
+	/**
+	 * Send blob to one specified buddy user.
+	 *
+	 * Wire layout (verified, see NpsRelaySingleMessage):
+	 *   [u16 BE opcode][u16 BE totalLength]
+	 *   [u32 BE commId][u32 BE senderUserId][u32 BE recipientUserId]
+	 *   [opaque blob]
+	 */
+	SEND_BUDDY_LONG: 0x93, // 147
+
+	/**
+	 * Send blob to one specified user (direct message).
+	 *
+	 * Wire layout: same SINGLE-family envelope as SEND_BUDDY_LONG above.
+	 */
+	SEND_SINGLE_LONG: 0x95, // 149
+
+	/**
+	 * Send blob to every channel member EXCEPT one specified user.
+	 * Typically used by the client to broadcast race/game state to all
+	 * other racers in the channel (excluding self).
+	 *
+	 * Wire layout: same SINGLE-family envelope as SEND_BUDDY_LONG above,
+	 * but the filter user is *excluded* rather than the sole recipient.
+	 */
+	SEND_NOT_SINGLE_LONG: 0x97, // 151
+
+	// ============================================
 	// Response messages
 	// ============================================
 
