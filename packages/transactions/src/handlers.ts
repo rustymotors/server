@@ -207,7 +207,12 @@ export function _MSG_STRING(messageID: number): string {
 		{ id: 438, name: "MC_CLIENT_CONNECT_MSG" }, // 0x1b6
 		{ id: 440, name: "MC_TRACKING_MSG" },
 		{ id: 448, name: "MC_KEEP_RACE_ALIVE" }, // 0x1C0
+		{ id: 177, name: "MC_REPAIR_SINGLE_PART" }, // 0xB1
+		{ id: 178, name: "MC_REPAIR_MULTIPLE_PARTS" }, // 0xB2
+		{ id: 179, name: "MC_REPAIRED_PARTS_LIST" }, // 0xB3 (server→client response shape)
+		{ id: 182, name: "MC_REMOVE_PART" }, // 0xB6
 		{ id: 202, name: "MC_UPDATE_BODY_DAMAGE" }, // 0xCA
+		{ id: 214, name: "MC_DESTROY_PART" }, // 0xD6
 		{ id: 234, name: "MC_RACER_COMPLETED_RACE" }, // 0xEA
 		{ id: 235, name: "MC_RACER_LEFT_RACE" }, // 0xEB
 		{ id: 240, name: "MC_IN_RACE_DAMAGE_UPDATE" }, // 0xF0
