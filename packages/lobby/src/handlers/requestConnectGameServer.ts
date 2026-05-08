@@ -1,10 +1,10 @@
-import { getPersonaByPersonaId } from 'rusty-motors-authentication';
-import { LoginInfoMessage } from '../LoginInfoMessage.js';
+import { getPersonaByPersonaId } from "rusty-motors-authentication";
+import { LoginInfoMessage } from "../LoginInfoMessage.js";
 
 import {
     createCommandEncryptionPair,
     createDataEncryptionPair,
-} from 'rusty-motors-gateway';
+} from "rusty-motors-gateway";
 import {
     type ConnectionRecord,
     McosEncryption,
@@ -17,9 +17,9 @@ import {
     getEncryption,
     databaseProvider,
     type ISessionStore,
-} from 'rusty-motors-shared';
-import { getServerLogger } from 'rusty-motors-shared';
-import { BytableMessage, BytableBuffer } from '@rustymotors/binary';
+} from "rusty-motors-shared";
+import { getServerLogger } from "rusty-motors-shared";
+import { BytableMessage, BytableBuffer } from "@rustymotors/binary";
 
 const NPS_INVALID_KEY = 0x22a;
 
@@ -34,27 +34,27 @@ export function toHex(data: Buffer): string {
     /** @type {string[]} */
     const bytes: string[] = [];
     data.forEach((b: number) => {
-        bytes.push(b.toString(16).toUpperCase().padStart(2, '0'));
+        bytes.push(b.toString(16).toUpperCase().padStart(2, "0"));
     });
-    return bytes.join('');
+    return bytes.join("");
 }
 
 class PacketProcessor {
     private connectionId: string;
     private message: BytableBuffer;
     private log: ServerLogger;
-    private sessionStore: ISessionStore
+    private sessionStore: ISessionStore;
 
     constructor({
         connectionId,
         message,
-        log = getServerLogger('PacketProcessor'),
+        log = getServerLogger("PacketProcessor"),
         sessionStore = databaseProvider.getSessionStore(),
     }: ServiceArgs & { sessionStore?: ISessionStore }) {
         this.connectionId = connectionId;
         this.message = message;
         this.log = log;
-        this.sessionStore = sessionStore
+        this.sessionStore = sessionStore;
     }
 
     async invoke() {
@@ -63,8 +63,8 @@ class PacketProcessor {
         // of a 4 byte header, followed by a 4 byte length, followed
         // by the data payload.
 
-	const inboundMessage = new LoginInfoMessage();
-	inboundMessage.deserialize(this.message.serialize());
+        const inboundMessage = new LoginInfoMessage();
+        inboundMessage.deserialize(this.message.serialize());
 
         this.log.debug(
             `LoginInfoMessage: ${new LoginInfoMessage().toString()}`,
@@ -72,13 +72,13 @@ class PacketProcessor {
 
         let userPersona;
 
-    try {
-        userPersona = await getPersonaByPersonaId({
-            personaId: inboundMessage._userId,
-        });
-    } catch (error) {
-        // TODO: parse error and return approprate code
-		const outboundMessage = createLegacyErrorPacket(NPS_INVALID_KEY);
+        try {
+            userPersona = await getPersonaByPersonaId({
+                personaId: inboundMessage._userId,
+            });
+        } catch (error) {
+            // TODO: parse error and return approprate code
+            const outboundMessage = createLegacyErrorPacket(NPS_INVALID_KEY);
 
             return {
                 connectionId: this.connectionId,
@@ -109,15 +109,16 @@ class PacketProcessor {
                 });
                 // TODO: parse error and return approprate code
 
-            const outboundMessage = createLegacyErrorPacket(NPS_INVALID_KEY);
+                const outboundMessage =
+                    createLegacyErrorPacket(NPS_INVALID_KEY);
                 return {
-                connectionId: this.connectionId,
-                messages: [outboundMessage],
+                    connectionId: this.connectionId,
+                    messages: [outboundMessage],
                 };
             }
 
             if (keys === undefined) {
-                throw Error('Error fetching session keys!');
+                throw Error("Error fetching session keys!");
             }
 
             // We have the session keys, set them on the connection
@@ -145,7 +146,13 @@ class PacketProcessor {
 
         const responsePackets = [];
 
-    const responsePacket = createGameServerResponsePacket(inboundMessage);
+        const responsePacket = createGameServerResponsePacket(inboundMessage);
+
+        const port = this.connectionId.split(":")[1];
+
+        if (port === "10001") {
+            responsePacket.header.setId(0x308);
+        }
 
         // log the packet
         this.log.verbose(
@@ -180,10 +187,15 @@ class PacketProcessor {
 export async function _npsRequestGameConnectServer({
     connectionId,
     message,
-    log = getServerLogger('handlers/_npsRequestGameConnectServer'),
-    sessionStore = databaseProvider.getSessionStore()
-}: ServiceArgs & { sessionStore?: ISessionStore}): Promise<ServiceResponse> {
-    const packetProcessor = new PacketProcessor({ connectionId, message, log, sessionStore });
+    log = getServerLogger("handlers/_npsRequestGameConnectServer"),
+    sessionStore = databaseProvider.getSessionStore(),
+}: ServiceArgs & { sessionStore?: ISessionStore }): Promise<ServiceResponse> {
+    const packetProcessor = new PacketProcessor({
+        connectionId,
+        message,
+        log,
+        sessionStore,
+    });
     return await packetProcessor.invoke();
 }
 
@@ -215,14 +227,14 @@ function createGameServerResponsePacket(inboundMessage: LoginInfoMessage) {
     responsePacket.header.setId(0x120);
 
     responsePacket.setSerializeOrder([
-        { name: 'userId', field: 'Dword' },
-        { name: 'userName', field: 'Container' },
-        { name: 'userData', field: 'Buffer' },
+        { name: "userId", field: "Dword" },
+        { name: "userName", field: "Container" },
+        { name: "userData", field: "Buffer" },
     ]);
 
-    responsePacket.setFieldValueByName('userId', inboundMessage._userId);
-    responsePacket.setFieldValueByName('userName', inboundMessage._userName);
-    responsePacket.setFieldValueByName('userData', inboundMessage._userData);
+    responsePacket.setFieldValueByName("userId", inboundMessage._userId);
+    responsePacket.setFieldValueByName("userName", inboundMessage._userName);
+    responsePacket.setFieldValueByName("userData", inboundMessage._userData);
     return responsePacket;
 }
 

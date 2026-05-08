@@ -20,10 +20,12 @@
 	"license": "AGPL-3.0",
 	"dependencies": {
 		"@fastify/sensible": "^6.0.3",
-		"@rustymotors/binary": "",
-		"@sentry/cli": "3.0.1",
-		"@sentry/node": "10.32.1",
-		"@sentry/profiling-node": "10.32.1",
+		"@rustymotors/binary": "file:libs/@rustymotors/binary",
+		"@rustymotors/logging": "",
+		"@sentry/cli": "^3.4.1",
+		"@sentry/node": "^10.52.0",
+		"@sentry/profiling-node": "^10.52.0",
+		"@vitest/ui": "^4.1.5",
 		"fastify": "^5.7.3",
 		"rusty-motors-authentication": "",
 		"rusty-motors-chat": "^1.0.0-next.0",
@@ -36,7 +38,7 @@
 	},
 	"description": "",
 	"devDependencies": {
-		"@vitest/coverage-v8": "3.2.4",
-		"vitest": "^3.2.4"
+		"@vitest/coverage-v8": "^4.1.5",
+		"vitest": "^4.1.5"
 	}
 }

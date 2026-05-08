@@ -32,9 +32,11 @@ export class PrimaryRoomServer extends RoomServer {
             '20',
         ];
 
-        for (const roomId of roomServerIds) {
-            const roomName = `MCC${roomId}`;
-            this._roomList.set(roomName, new Room(roomName));
+        for (let i = 0; i < roomServerIds.length; i++) {
+            const roomId = roomServerIds[i]!;
+            const riff = `MCC${roomId}`;
+            const commId = i + 1;
+            this._roomList.set(riff, new Room(commId, riff));
         }
     }
 }

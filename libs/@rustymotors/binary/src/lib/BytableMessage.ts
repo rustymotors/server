@@ -1,9 +1,12 @@
 import { Bytable } from './Bytable.js';
 import { BytableBase } from './BytableBase.js';
 import { BytableBuffer } from './BytableBuffer.js';
+import { BytableChannelData } from './BytableChannelData.js';
 import { BytableByte } from './BytableByte.js';
-import { BytableContainer, BytableShortContainer } from './BytableContainer.js';
+import { BytableContainer, BytablePString, BytableShortContainer } from './BytableContainer.js';
 import { BytableCString } from './BytableCString.js';
+import { BareCString } from './BareCString.js';
+import { BytableBitField } from './BytableBitField.js';
 import { BytableData } from './BytableData.js';
 import { BytableDword } from './BytableDword.js';
 import { BytableHeader } from './BytableHeader.js';
@@ -150,8 +153,7 @@ export class BytableStructure extends BytableBase implements BytableObject {
 }
 
 export const BytableFieldTypes = {
-    ZeroTerminatedString: BytableContainer,
-    String: BytableContainer,
+    PString: BytablePString,
     Dword: BytableDword,
     Container: BytableContainer,
     PrefixedString2: BytableShortContainer,
@@ -161,6 +163,9 @@ export const BytableFieldTypes = {
     Short: BytableWord,
     Buffer: BytableBuffer,
     CString: BytableCString,
+    BareCString: BareCString,
+    BitField: BytableBitField,
+    ChannelData: BytableChannelData,
 };
 export class BytableMessage extends Bytable {
     protected header_: BytableHeader = new BytableHeader();

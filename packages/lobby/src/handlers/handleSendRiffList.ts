@@ -1,6 +1,6 @@
-import { RiffInfoListMessage, type ServerLogger, } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
-import { BytableMessage } from "@rustymotors/binary";
+import type { ServerLogger } from "rusty-motors-shared";
+import { BytableMessage, NpsRiffListMessage } from "@rustymotors/binary";
 
 export async function handleSendRiffList({
     connectionId,
@@ -14,29 +14,16 @@ export async function handleSendRiffList({
     connectionId: string;
     messages: BytableMessage[];
 }> {
-    log.debug('[${connectionId}] Handling NPS_SEND_RIFF_LIST');
+    log.debug(`[${connectionId}] Handling NPS_SEND_RIFF_LIST`);
     log.debug(
         `[${connectionId}] Received command: ${message.header.id}`,
     );
 
-    const outgoingGameMessage = new RiffInfoListMessage();
-    outgoingGameMessage.id = 0x401; // NPS_RIFF_LIST
+    const msg = new NpsRiffListMessage();
+    msg.id = 0x0401; // NPS_RIFF_LIST
 
-    // Build the packet
-    const packetResult = new BytableMessage();
-    packetResult.setSerializeOrder([{ name: 'data', field: 'Buffer' }]);
-    packetResult.deserialize(outgoingGameMessage.serialize());
-
-    try {
-        return {
-            connectionId,
-            messages: [packetResult],
-        };
-    } catch (error) {
-        const err = Error(
-            `Error handling NPS_SEND_RIFF_LIST: ${String(error)}`,
-        );
-        err.cause = error;
-        throw err;
-    }
+    return {
+        connectionId,
+        messages: [msg],
+    };
 }

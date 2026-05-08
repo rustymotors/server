@@ -29,11 +29,17 @@ describe("getLobMiniUserList", () => {
 			serialize: vi.fn().mockReturnValue(Buffer.from([0x05, 0x06, 0x07, 0x08])),
 		};
 
+		// Use regular function expressions (not arrows) so the mocked
+		// classes are constructable via `new` in production code.
 		(MiniUserList as unknown as Mock).mockImplementation(
-			() => mockMiniUserList,
+			function () {
+				return mockMiniUserList;
+			},
 		);
 		(GameMessage as unknown as Mock).mockImplementation(
-			() => mockResponseMessage,
+			function () {
+				return mockResponseMessage;
+			},
 		);
 
 		const result = await getLobMiniUserList(commandId, data, loggerMock);

@@ -1,13 +1,12 @@
 import { BytableMessage } from '@rustymotors/binary';
+import { ServerLogger } from '@rustymotors/logging';
 import * as Sentry from "@sentry/node"
 import {
     getServerLogger,
-    type ServerLogger,
-    GameServerListMessage,
-    GameServerInfo,
     RawMessage,
     ChannelCreated,
 } from 'rusty-motors-shared';
+import { createGameServersListMessage } from './createGameServersListMessage.js';
 export async function handleSendGameServersList({
     connectionId,
     message,
@@ -29,7 +28,7 @@ export async function handleSendGameServersList({
         });
 
         // l
-        log.debug(`User requested sendGameServerList`,{
+        log.debug(`User requested sendGameServerList`, {
             connectionId,
         })
 
@@ -42,9 +41,9 @@ export async function handleSendGameServersList({
         channelCreatedBody.commId = 2;
         channelCreatedBody.riff = 'RACE';
         channelCreatedBody.protocol = 33;
-        // channelCreatedBody.channelData = Buffer.alloc(256);
+        channelCreatedBody.channelData.hostID = 21
         channelCreatedBody.channelType = 3;
-        channelCreatedBody.maxReadyPlayers = 8;
+        channelCreatedBody.maxReadyPlayers = 1;
 
 
         channelCreatedMessage.data = channelCreatedBody.serialize();
@@ -56,29 +55,7 @@ export async function handleSendGameServersList({
         channelCreatedBytable.deserialize(channelCreatedMessage.serialize());
 
         // ppp
-        const outgoingGameMessage = new GameServerListMessage();
-
-        outgoingGameMessage.id = 0x402;
-
-        const gameServer1 = new GameServerInfo('RACE', '71.186.155.248');
-
-        outgoingGameMessage.add(gameServer1);
-
-        log.debug(
-            `Sending gameserver response[serialize]: ${JSON.stringify(gameServer1)}`,
-            { connectionId },
-        );
-
-        // Build the packet
-        const gameServerListMessage = new BytableMessage();
-        gameServerListMessage.setSerializeOrder([{ name: 'data', field: 'Buffer' }]);
-        gameServerListMessage.setVersion(0);
-        gameServerListMessage.deserialize(outgoingGameMessage.serialize());
-
-        log.debug(
-            `Sending gameserver response[serialize2]: ${gameServerListMessage.serialize().toString('hex')}`,
-            { connectionId },
-        );
+        const gameServerListMessage = createGameServersListMessage(log, connectionId);
 
         responsePackets.push(gameServerListMessage)
 
@@ -95,3 +72,5 @@ export async function handleSendGameServersList({
         throw err;
     }
 }
+
+

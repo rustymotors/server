@@ -1,1 +1,4 @@
-export { receiveTransactionsData } from "./src/internal.js";
+export {
+	receiveTransactionsData,
+	UnsupportedMessageCodeError,
+} from "./src/internal.js";

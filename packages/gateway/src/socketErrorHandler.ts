@@ -20,12 +20,9 @@ export function socketErrorHandler({
 }) {
 	// Handle socket errors - all errors are logged, never thrown
 	if (error.code === "ECONNRESET") {
-		log.debug(`Connection ${connectionId} reset by peer`);
+		log.debug("Connection reset by peer", { connectionId });
 		return;
 	}
 	// Log other socket errors without throwing - throwing from event handlers crashes the process
-	log.error(`Socket error on connection ${connectionId}: ${error.message}`, {
-		code: error.code,
-		errno: error.errno,
-	});
+	log.error("Socket error", { connectionId, err: error });
 }

@@ -39,6 +39,30 @@ import { explode } from "pklib-ts"
 
 
 /**
+ * Thrown by {@link processInput} when an MCOTS message passes the header
+ * check and decryption but no handler is registered for its opcode.
+ *
+ * Carries the numeric `messageCode` so upstream catch sites can recognize
+ * the case (e.g. to avoid double-reporting to Sentry — `processInput` already
+ * captures positive codes itself).
+ */
+export class UnsupportedMessageCodeError extends Error {
+	readonly messageCode: number;
+	readonly messageName: string;
+	readonly connectionId: string;
+
+	constructor(connectionId: string, messageCode: number, messageName: string) {
+		super(
+			`[${connectionId}] UNSUPPORTED_MESSAGECODE:: ${messageCode} (${messageName})`,
+		);
+		this.name = "UnsupportedMessageCodeError";
+		this.messageCode = messageCode;
+		this.messageName = messageName;
+		this.connectionId = connectionId;
+	}
+}
+
+/**
  * Route or process MCOTS commands
  * @param {MessageHandlerArgs} args
  * @returns {Promise<MessageHandlerResult>}
@@ -49,7 +73,7 @@ async function processInput({
 	log = getServerLogger("transactionServer.processInput"),
 }: {
 	connectionId: string;
-	inboundMessage: ServerPacket;
+	inboundMessage: MessageNode;
 	log?: ServerLogger;
 }): Promise<MessageHandlerResult> {
 	const currentMessageNo = inboundMessage.getMessageId();
@@ -82,9 +106,35 @@ async function processInput({
 		}
 	}
 
-	throw Error(
-		`[${connectionId}] UNSUPPORTED_MESSAGECODE:: ${currentMessageNo} (${currentMessageString})`,
+	const err = new UnsupportedMessageCodeError(
+		connectionId,
+		currentMessageNo,
+		currentMessageString,
 	);
+
+	// Surface real-looking unknown opcodes to Sentry so we can prioritize the
+	// ones clients are actually sending. Filter out non-positive codes — those
+	// almost always come from corrupt/garbage buffer reads (signed int16
+	// returning a negative or zero value), not real protocol traffic.
+	if (currentMessageNo > 0) {
+		const body = inboundMessage.getBody().serialize();
+		const decryptedHex = body.toString("hex");
+		Sentry.captureException(err, {
+			tags: {
+				messageCode: String(currentMessageNo),
+				messageName: currentMessageString,
+				errorType: "UnsupportedMessageCode",
+			},
+			extra: {
+				connectionId,
+				sequence: inboundMessage.getSequence(),
+				bodyByteLength: body.byteLength,
+				decryptedHex,
+			},
+		});
+	}
+
+	throw err;
 }
 
 /**
@@ -122,7 +172,7 @@ export async function receiveTransactionsData({
         },
 	);
 
-	let decryptedMessage: ServerPacket;
+	let decryptedMessage: MessageNode;
 
 	// Is the message encrypted?
 	if (inboundMessage.isPayloadEncrypted()) {
@@ -150,7 +200,7 @@ export async function receiveTransactionsData({
 		decryptedMessage = inboundMessage;
 	}
 
-	let decompressedMessage: ServerPacket;
+	let decompressedMessage: MessageNode;
 
 	if (decryptedMessage.isPayloadCompressed()) {
 
@@ -309,16 +359,16 @@ function encryptOutboundMessage(
 }
 
 function decompressMessage(
-	compressedMessage: ServerPacket,
+	compressedMessage: MessageNode,
 	_connectionId: string,
 	log = getServerLogger("transactionServer.decompressInboundMessage"),
-): ServerPacket {
+): MessageNode {
 	log.debug(`Decompressing message with initial messageId of ${compressedMessage.getMessageId()}`)
 
 	const outputBuffer = new Uint8Array(64 * 1024); // 64KB buffer
 	let outputPos = 0;
 
-	const compressedPayload = compressedMessage.getDataBuffer().subarray(2)
+	const compressedPayload = compressedMessage.data.subarray(2)
 
 	const writeCallback = (data: Uint8Array, bytesToWrite: number): number => {
 		if (outputPos + bytesToWrite > outputBuffer.length) {
@@ -346,10 +396,9 @@ function decompressMessage(
 
 		log.debug(`DecompressedPayload: ${outputData.toString("hex")}`)
 
-		// Output raw binary data to stdout
-		const uncompressedMessage = ServerPacket.copy(compressedMessage, outputData);
-		uncompressedMessage.setPayloadCompression(false)
-		return uncompressedMessage
+		compressedMessage.setDataBuffer(outputData);
+		compressedMessage.setPayloadCompression(false);
+		return compressedMessage;
 	} else {
 		log.error(`returned data len: ${result.decompressedData?.length}`)
 

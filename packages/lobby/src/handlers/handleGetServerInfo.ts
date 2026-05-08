@@ -1,5 +1,5 @@
 import { BytableMessage } from '@rustymotors/binary';
-import { getServerLogger, type ServerLogger } from 'rusty-motors-shared';
+import { getServerLogger, type ServerLogger, databaseProvider } from 'rusty-motors-shared';
 import { chatChannelIds } from './channels.js';
 
 export async function handleGetServerInfo({
@@ -34,9 +34,9 @@ export async function handleGetServerInfo({
             connectionId,
         });
 
-        // TODO: Actually have servers
         let commPort;
         let commName;
+        let commIp = '71.186.155.248';
 
         if (cID > 0 && cID < 21) {
             const port = chatChannelIds[cID - 1];
@@ -52,15 +52,24 @@ export async function handleGetServerInfo({
             commPort = parseInt('10001');
             commName = 'MC100';
         } else {
-            throw new Error(`Can't find entry for commId ${requestedCommId}`);
+            // Look up game server from session store
+            const sessionStore = databaseProvider.getSessionStore();
+            const gameServers = await sessionStore.getGameServers();
+            const gameServer = gameServers.find((s) => s.commId === cID);
+            if (!gameServer) {
+                throw new Error(`Can't find entry for commId ${cID}`);
+            }
+            commPort = gameServer.port;
+            commIp = gameServer.ipAddress;
+            commName = 'RACE\n';
         }
 
         // plplll
         const outgoingGameMessage = new BytableMessage();
         outgoingGameMessage.setSerializeOrder([
-            { name: 'riffName', field: 'String' },
+            { name: 'riffName', field: 'PString' },
             { name: 'commId', field: 'Dword' },
-            { name: 'ipAddress', field: 'String' },
+            { name: 'ipAddress', field: 'PString' },
             { name: 'port', field: 'Dword' },
             { name: 'userId', field: 'Dword' },
             { name: 'playerCount', field: 'Dword' },
@@ -72,7 +81,7 @@ export async function handleGetServerInfo({
         outgoingGameMessage.setFieldValueByName('commId', requestedCommId);
         outgoingGameMessage.setFieldValueByName(
             'ipAddress',
-            '71.186.155.248\n',
+            `${commIp}\n`,
         );
         outgoingGameMessage.setFieldValueByName('port', commPort);
         outgoingGameMessage.setFieldValueByName('userId', 21);

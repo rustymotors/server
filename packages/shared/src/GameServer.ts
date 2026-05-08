@@ -84,13 +84,25 @@ export class RunningServerInfo implements IRunningServerInfo, Serializable {
         this._riff.set(val);
     }
 
+    get commId() {
+        return this._commId.readInt32BE();
+    }
+
     set commId(val: number) {
         checkSize4(val);
         this._commId.writeInt32BE(val);
     }
 
+    get ipAddress() {
+        return this._ipAddress.toString();
+    }
+
     set ipAddress(val: string) {
         this._ipAddress.set(val);
+    }
+
+    get port() {
+        return this._port.readInt32BE();
     }
 
     set port(val: number) {
@@ -98,9 +110,17 @@ export class RunningServerInfo implements IRunningServerInfo, Serializable {
         this._port.writeInt32BE(val);
     }
 
+    get userId() {
+        return this._userId.readInt32BE();
+    }
+
     set userId(val: number) {
         checkSize4(val);
         this._userId.writeInt32BE(val);
+    }
+
+    get numberOfPlayers() {
+        return this._numberOfPlayers.readInt32BE();
     }
 
     set numberOfPlayers(val: number) {
@@ -212,6 +232,15 @@ export class GameServerListHeader implements Serializable {
         checkSize4(val);
         this._numGameServers.writeInt32BE(val);
     }
+
+    get structSize() {
+        return this._structSize.readInt32BE();
+    }
+
+    set structSize(val: number) {
+        checkSize4(val);
+        this._structSize.writeInt32BE(val);
+    }
 }
 
 export class GameServerListMessage implements NPSMessage {
@@ -235,6 +264,7 @@ export class GameServerListMessage implements NPSMessage {
 
     serialize() {
         this._gameServerListHeader.numGameServers = this._gameServers.length;
+        this._gameServerListHeader.structSize = this.sizeOf;
 
         return Buffer.concat([
             this._header.serialize(),
@@ -268,20 +298,19 @@ export class GameServerListMessage implements NPSMessage {
 }
 
 export class ReadyForGame implements Serializable {
-    private _commId = new Long(); // 4
-    private _userId = new Long(); // 4
-    private _isReady = new NPS_LOGICAL(); // 2 - NPS_LOGICAL1
-    private _isMaster = new NPS_LOGICAL(); // 2 - NPS_LOGICAL
+    // NPS_READY_LIST (0x210) wire format: count(4) + N×{ CommId(4), UserId(4), isReady(2), isMaster(2) }
+    // NPSDll stride=12 bytes/entry. Confirmed from 0x109 handler:
+    //   offset 0: commId (int32), offset 4: userId (int32),
+    //   offset 8: isReady (NPS_LOGICAL/int16), offset 10: isMaster (NPS_LOGICAL/int16)
+    private _commId = new Long();          // 4
+    private _userId = new Long();          // 4
+    private _isReady = new NPS_LOGICAL();  // 2
+    private _isMaster = new NPS_LOGICAL(); // 2
 
-    constructor(
-        commId: number,
-        userId: number,
-        isReady = false,
-        isMaster = false,
-    ) {
+    constructor(commId: number, userId: number, isReady = false, isMaster = false) {
         this._commId.value = commId;
         this._userId.value = userId;
-        this._isReady.value  = isReady;
+        this._isReady.value = isReady;
         this._isMaster.value = isMaster;
     }
 
@@ -298,8 +327,8 @@ export class ReadyForGame implements Serializable {
             this._commId.serialize(),
             this._userId.serialize(),
             this._isReady.serialize(),
-            this._isMaster.serialize()
-        ])
+            this._isMaster.serialize(),
+        ]);
     }
 }
 

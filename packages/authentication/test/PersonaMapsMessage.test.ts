@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { PersonaRecord } from "../src/persona/PersonaMapsMessage.js";
+import { PersonaRecord } from "../src/persona/PersonaRecord.js";
 
 describe('PersonaRecord', () => {
     it("has a gameSerialNumber", () => {

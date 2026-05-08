@@ -32,14 +32,17 @@ export async function handleGetReadyList({
         requestedCommId,
     });
 
-    const player1 = new ReadyForGame(requestedCommId, 21, false, true);
+    const player1 = new ReadyForGame(requestedCommId, 21, true, true);
 
     const readyList = new ReadyForGameList(player1.sizeOf);
-    readyList.add(player1)
+    readyList.add(player1);
+
+    const body = readyList.serialize();
 
     const response = new RawMessage();
     response.id = 0x210;
-    response.data = readyList.serialize();
+    response.length = 4 + body.length; // total length: header(4) + body
+    response.data = body;
 
     const responsePacket = new BytableMessage();
     responsePacket.deserialize(response.serialize());

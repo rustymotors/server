@@ -39,13 +39,21 @@ import { getLobbies } from '../getLobbies.js';
 import { login } from '../login.js';
 import { trackingPing } from '../trackingPing.js';
 import { _buyCarFromDealer } from '../_buyCarFromDealer.js';
+import { _crcPostRaceData } from '../_crcPostRaceData.js';
 import { _crcPreRaceData } from '../_crcPreRaceData.js';
+import { _crcPreRaceDataTestDrive } from '../_crcPreRaceDataTestDrive.js';
+import { _inRaceDamageUpdate } from '../_inRaceDamageUpdate.js';
+import { _racerLeftRace } from '../_racerLeftRace.js';
+import { _reportPostRaceDamage } from '../_reportPostRaceDamage.js';
+import { _updateBodyDamage } from '../_updateBodyDamage.js';
 import { _updateCachedVehicle } from '../_updateCachedVehicle.js';
 import { _getCompleteVehicleInfo } from '../_getFullCarInfo.js';
 import { _buyNewPart } from '../_buyNewPart.js';
 import { _createStandardRace } from '../_createStandardRace.js';
 import { _joinRace } from '../_joinRace.js';
 import { _raceKeepAlive } from '../_raceKeepAlive.js';
+import { _racerCompletedRace } from '../_racerCompletedRace.js';
+import { _startRace } from '../_startRace.js';
 
 /**
  * Creates and returns a configured transactions handler registry.
@@ -167,9 +175,45 @@ export function createTransactionsHandlerRegistry(): MessageHandlerRegistry<
     });
 
     registry.register({
-        opCode: 455, // MC_CRC_PRE_RACE_DATA
+        opCode: 202, // MC_UPDATE_BODY_DAMAGE
+        name: 'MC_UPDATE_BODY_DAMAGE',
+        handler: _updateBodyDamage,
+    });
+
+    registry.register({
+        opCode: 235, // MC_RACER_LEFT_RACE
+        name: 'MC_RACER_LEFT_RACE',
+        handler: _racerLeftRace,
+    });
+
+    registry.register({
+        opCode: 240, // MC_IN_RACE_DAMAGE_UPDATE
+        name: 'MC_IN_RACE_DAMAGE_UPDATE',
+        handler: _inRaceDamageUpdate,
+    });
+
+    registry.register({
+        opCode: 241, // MC_REPORT_POST_RACE_DAMAGE
+        name: 'MC_REPORT_POST_RACE_DAMAGE',
+        handler: _reportPostRaceDamage,
+    });
+
+    registry.register({
+        opCode: 434, // MC_CRC_PRE_RACE_DATA
         name: 'MC_CRC_PRE_RACE_DATA',
         handler: _crcPreRaceData,
+    });
+
+    registry.register({
+        opCode: 435, // MC_CRC_POST_RACE_DATA
+        name: 'MC_CRC_POST_RACE_DATA',
+        handler: _crcPostRaceData,
+    });
+
+    registry.register({
+        opCode: 455, // MC_CRC_PRE_RACE_DATA_TEST_DRIVE
+        name: 'MC_CRC_PRE_RACE_DATA_TEST_DRIVE',
+        handler: _crcPreRaceDataTestDrive,
     });
 
     registry.register({
@@ -188,6 +232,18 @@ export function createTransactionsHandlerRegistry(): MessageHandlerRegistry<
         opCode: 230, // MC_CREATE_STANDARD_RACE
         name: 'MC_CREATE_STANDARD_RACE',
         handler: _createStandardRace,
+    });
+
+    registry.register({
+        opCode: 232, // MC_RACE_START
+        name: 'MC_RACE_START',
+        handler: _startRace,
+    });
+
+    registry.register({
+        opCode: 234, // MC_RACER_COMPLETED_RACE
+        name: 'MC_RACER_COMPLETED_RACE',
+        handler: _racerCompletedRace,
     });
 
     return registry;

@@ -62,6 +62,8 @@ export async function _setMyUserData({
             userInfo: incomingMessage.userInfo,
         });
 
+        await sessionStore.updateConnection(connectionId, userId);
+
         const userInfo = await sessionStore.getUser(userId);
 
         if (typeof userInfo === 'undefined') {

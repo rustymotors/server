@@ -1,12 +1,12 @@
 import { NoResultsError, type ServerLogger } from "rusty-motors-shared";
-import { personaRecords } from "./internal.js";
+import { personaRecords } from './personaRecords.js';
 import type { PersonaRecord } from "./PersonaMapsMessage.js";
 
 export async function getPersonaByPersonaId({
 	personaId,
 }: {
-	personaId: number;
-	logger?: ServerLogger
+        personaId: number;
+        logger?: ServerLogger
 }): Promise<Pick<
 	PersonaRecord,
 	"customerId" | "personaId" | "personaName" | "shardId"

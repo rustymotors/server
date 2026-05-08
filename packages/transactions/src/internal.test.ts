@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { receiveTransactionsData } from "./internal.js";
+import { explode } from "pklib-ts";
+
+vi.mock("pklib-ts", () => ({
+    explode: vi.fn(),
+}));
 
 // Mocks for external modules used by internal.ts
 vi.mock("rusty-motors-shared", () => {
@@ -165,5 +170,95 @@ describe("decryptedMessage (via receiveTransactionsData)", () => {
         // Ensure deserialize was called on the body and payload encryption flag cleared
         expect(body.deserialize).toHaveBeenCalled();
         expect(packet._payloadEncrypted).toBe(false);
+    });
+});
+
+// Helper: build a duck-typed MessageNode-like object with controllable flags and body
+function makeCompressedMessage(opcode: number, compressedBytes: Buffer) {
+    let flags_ = 0x02; // compressed, not encrypted
+    let bodyData_ = Buffer.concat([
+        Buffer.from([opcode & 0xff, (opcode >> 8) & 0xff]), // opcode LE
+        compressedBytes,
+    ]);
+    return {
+        serialize: () => Buffer.alloc(1),
+        isPayloadEncrypted: () => false,
+        isPayloadCompressed: () => !!(flags_ & 0x02),
+        setPayloadEncryption: (v: boolean) => { flags_ = v ? flags_ | 0x08 : flags_ & ~0x08; },
+        setPayloadCompression: (v: boolean) => { flags_ = v ? flags_ | 0x02 : flags_ & ~0x02; },
+        get data() { return bodyData_; },
+        setDataBuffer: (buf: Buffer) => { bodyData_ = Buffer.from(buf); },
+        getMessageId: () => bodyData_.readInt16LE(0),
+        getSequence: () => 1,
+        getFlags: () => flags_,
+    };
+}
+
+describe("decompressMessage path (via receiveTransactionsData)", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it("does not throw 'subarray is not a function' for a compressed MessageNode", async () => {
+        // Regression: MessageNode.getDataBuffer() returns MessageNodeBody (not Buffer),
+        // so calling .subarray on it would throw. The fix uses .data instead.
+        (explode as Mock).mockImplementation((_readCb: any, writeCb: any) => {
+            writeCb(new Uint8Array([0x01, 0x00]), 2);
+            return { success: true };
+        });
+
+        const message = makeCompressedMessage(1, Buffer.from([0xab, 0xcd]));
+
+        await expect(
+            receiveTransactionsData({ connectionId: "conn-decomp-1", message: message as any }),
+        ).resolves.toBeDefined();
+    });
+
+    it("clears the compression flag after successful decompression", async () => {
+        (explode as Mock).mockImplementation((_readCb: any, writeCb: any) => {
+            writeCb(new Uint8Array([0x01, 0x00]), 2);
+            return { success: true };
+        });
+
+        const message = makeCompressedMessage(1, Buffer.from([0xab, 0xcd]));
+        expect(message.isPayloadCompressed()).toBe(true);
+
+        await receiveTransactionsData({ connectionId: "conn-decomp-2", message: message as any });
+
+        expect(message.getFlags() & 0x02).toBe(0);
+    });
+
+    it("passes bytes after the 2-byte opcode to explode, not the full body", async () => {
+        const compressedPayload = Buffer.from([0xde, 0xad, 0xbe, 0xef]);
+        let capturedReadCb: any;
+
+        (explode as Mock).mockImplementation((readCb: any, writeCb: any) => {
+            capturedReadCb = readCb;
+            writeCb(new Uint8Array([0x01, 0x00]), 2);
+            return { success: true };
+        });
+
+        const message = makeCompressedMessage(1, compressedPayload);
+        await receiveTransactionsData({ connectionId: "conn-decomp-3", message: message as any });
+
+        // Drain the read callback to verify it reads from offset 2 (past the opcode)
+        const readBuf = new Uint8Array(4);
+        const n = capturedReadCb(readBuf, 4);
+        expect(n).toBe(4);
+        expect(Buffer.from(readBuf.subarray(0, n))).toEqual(compressedPayload);
+    });
+
+    it("replaces body with decompressed data", async () => {
+        const decompressedPayload = new Uint8Array([0x01, 0x00, 0x42, 0x43, 0x44]);
+
+        (explode as Mock).mockImplementation((_readCb: any, writeCb: any) => {
+            writeCb(decompressedPayload, decompressedPayload.length);
+            return { success: true };
+        });
+
+        const message = makeCompressedMessage(1, Buffer.from([0xab, 0xcd]));
+        await receiveTransactionsData({ connectionId: "conn-decomp-4", message: message as any });
+
+        expect(message.data).toEqual(Buffer.from(decompressedPayload));
     });
 });

@@ -11,9 +11,11 @@ import {
     addSocketPair,
     resolveMessageId,
 } from 'rusty-motors-shared';
+import { bindLogContext } from '@rustymotors/logging';
 import { messageStats } from './GatewayServer.js';
 import { getSessionRecorder } from './session/SessionRecorderIntegration.js';
 import { getServiceRegistry, type Serializable } from './routing/ServiceRegistry.js';
+import { popPacketFromBuffer } from './network/packetDetectionHelpers.js';
 
 const suppressPing = process.env['MCO_LOG_SUPPRESS_PING'] === 'true';
 
@@ -34,6 +36,8 @@ export async function npsPortRouter({
     const { socket, connectionId, localPort } = taggedSocket;
 
     const port = localPort;
+
+    const connectionState = { validated: false };
 
     const receiveQueue = new MessageQueue(
         'npsIn',
@@ -61,6 +65,7 @@ export async function npsPortRouter({
                     taggedSocket.connectionId,
                     taggedSocket.localPort,
                     taggedSocket,
+                    connectionState,
                 );
             } catch (err) {
                 log.error(`Error receiving item: ${err}`);
@@ -115,44 +120,68 @@ export async function npsPortRouter({
         });
     }
 
-    // Handle the socket connection here
-    socket.on('data', async (data) => {
-        receiveQueue.put({
-            sequenceNo: -1,
-            data,
-        });
-    });
+    // Handle the socket connection here. Each listener is wrapped with
+    // bindLogContext so that when the OS/libuv fires the event later (in an
+    // async context outside the connection's ALS frame), the listener still
+    // emits logs scoped to this connection.
+    socket.on(
+        'data',
+        bindLogContext(async (data) => {
+            receiveQueue.put({
+                sequenceNo: -1,
+                data,
+            });
+        }),
+    );
 
-    socket.on('end', () => {
-        // Record disconnect if recording is enabled
-        const recorder = getSessionRecorder();
-        if (recorder?.isRecordingEnabled()) {
-            recorder.recordDisconnect(taggedSocket.connectionId, taggedSocket.localPort);
-            // Auto-save session on disconnect
-            recorder.saveSession(taggedSocket.connectionId, `Auto-saved on disconnect`);
-        }
-        const baseId = taggedSocket.connectionId.split(':')[0];
-        log.info(`[${baseId}] Disconnected on port ${taggedSocket.localPort}`);
-        receiveQueue.exit();
-    });
-
-    socket.on('error', (error) => {
-        if (error.message.includes('ECONNRESET')) {
-            log.debug(`[${connectionId}] Connection reset by client`);
-            // Still save the session on reset - client likes to RST instead of FIN
+    socket.on(
+        'end',
+        bindLogContext(() => {
+            // Record disconnect if recording is enabled
             const recorder = getSessionRecorder();
             if (recorder?.isRecordingEnabled()) {
-                recorder.recordDisconnect(taggedSocket.connectionId, taggedSocket.localPort);
-                recorder.saveSession(taggedSocket.connectionId, `Auto-saved on ECONNRESET`);
+                recorder.recordDisconnect(
+                    taggedSocket.connectionId,
+                    taggedSocket.localPort,
+                );
+                // Auto-save session on disconnect
+                recorder.saveSession(
+                    taggedSocket.connectionId,
+                    `Auto-saved on disconnect`,
+                );
             }
+            const baseId = taggedSocket.connectionId.split(':')[0];
+            log.info(`[${baseId}] Disconnected on port ${taggedSocket.localPort}`);
+            receiveQueue.exit();
+        }),
+    );
+
+    socket.on(
+        'error',
+        bindLogContext((error) => {
+            if (error.message.includes('ECONNRESET')) {
+                log.debug(`[${connectionId}] Connection reset by client`);
+                // Still save the session on reset - client likes to RST instead of FIN
+                const recorder = getSessionRecorder();
+                if (recorder?.isRecordingEnabled()) {
+                    recorder.recordDisconnect(
+                        taggedSocket.connectionId,
+                        taggedSocket.localPort,
+                    );
+                    recorder.saveSession(
+                        taggedSocket.connectionId,
+                        `Auto-saved on ECONNRESET`,
+                    );
+                }
+                receiveQueue.exit();
+                sendQueue.exit();
+                return;
+            }
+            log.error(`[${connectionId}] Socket error: ${error}`);
             receiveQueue.exit();
             sendQueue.exit();
-            return;
-        }
-        log.error(`[${connectionId}] Socket error: ${error}`);
-        receiveQueue.exit();
-        sendQueue.exit();
-    });
+        }),
+    );
 }
 
 /**
@@ -197,6 +226,7 @@ export async function processSocketData(
     id: string,
     port: number,
     socket: TaggedSocket,
+    connectionState?: { validated: boolean },
 ): Promise<void> {
     // Early tossing of known bad packets
     if (!isPacketValid(data) && 'end' in socket.socket) {
@@ -207,19 +237,22 @@ export async function processSocketData(
     try {
         log.debug(`[${id}] Received data (${data.length}B): ${data.toString('hex')}`);
 
-        const separator = Buffer.from([0x11, 0x01]);
-        const packets = splitDataIntoPackets(data, separator, log, id);
+        let packet: Buffer = Buffer.alloc(0);
+        let remainingData = data;
 
-        for (const packet of packets) {
-            if (packet.byteLength === 0) {
-                log.warn(`BUG: We recieved an empty packet from the splitter`);
-                continue;
-            }
+        while (remainingData.length > 0) {
+            const r = popPacketFromBuffer(remainingData);
+            packet = r.packet;
+            remainingData = r.remainingBuffer;
+
+            log.debug(`[${id}] Extracted packet (${packet.length}B): ${packet.toString('hex')}`);
+
             const initialPacket = parseInitialMessage(packet, log);
-            handlePacketRouting(id, port, initialPacket, log);
+            await routeInitialMessage(id, port, initialPacket, log);
+            if (connectionState) connectionState.validated = true;
         }
     } catch (error) {
-        handleSocketError(error, log, id);
+        handleSocketError(error, log, id, connectionState?.validated ?? false);
     }
 }
 
@@ -285,7 +318,12 @@ function handleSocketError(
     error: unknown,
     log: ServerLogger,
     id: string,
+    validated = false,
 ): void {
+    if (!validated) {
+        log.debug(`[${id}] Pre-handshake error (crawler?): ${error}`);
+        return;
+    }
     if (error instanceof RangeError) {
         log.warn(`[${id}] Error parsing initial nps message: ${error}`);
     } else {
@@ -315,11 +353,9 @@ function parseInitialMessage(
 
         return message;
     } catch (error) {
-        const err = new Error(`Error parsing initial message: ${error}`, {
+        throw new Error(`Error parsing initial message: ${error}`, {
             cause: error,
         });
-        log.error((err as Error).message);
-        throw err;
     }
 }
 

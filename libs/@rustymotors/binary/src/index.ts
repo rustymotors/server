@@ -12,3 +12,8 @@ export * from "./lib/BytableWord.js";
 export {deserialize, serialize, createEmptyField, serializeSize } from "./lib/Serializer.js";
 export * from "./lib/types.js";
 export * from "./lib/BinaryMember.js";
+export * from "./lib/NpsRiffInfo.js";
+export * from "./lib/BareCString.js";
+export * from "./lib/BytableBitField.js";
+export * from "./lib/BytablePad.js";
+export * from "./lib/BytableChannelData.js";

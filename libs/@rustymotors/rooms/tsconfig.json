@@ -3,7 +3,13 @@
 	"compilerOptions": {
 		"incremental": true,
 		"composite": true,
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"paths": {
+			"@rustymotors/binary": ["../binary/src/index.js"]
+		}
 	},
+	"references": [
+		{ "path": "../binary" }
+	],
 	"include": ["src/**/*.ts"]
 }

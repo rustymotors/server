@@ -1,5 +1,7 @@
 import { BytableObject } from "./types.js";
 
+export { BytableChannelData } from "./BytableChannelData.js";
+
 export class BytableBuffer implements BytableObject {
 	protected name_: string = "";
 	protected value_: Buffer = Buffer.alloc(0);
