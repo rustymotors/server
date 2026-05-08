@@ -207,8 +207,12 @@ export function _MSG_STRING(messageID: number): string {
 		{ id: 438, name: "MC_CLIENT_CONNECT_MSG" }, // 0x1b6
 		{ id: 440, name: "MC_TRACKING_MSG" },
 		{ id: 448, name: "MC_KEEP_RACE_ALIVE" }, // 0x1C0
+		{ id: 202, name: "MC_UPDATE_BODY_DAMAGE" }, // 0xCA
+		{ id: 235, name: "MC_RACER_LEFT_RACE" }, // 0xEB
 		{ id: 240, name: "MC_IN_RACE_DAMAGE_UPDATE" }, // 0xF0
+		{ id: 241, name: "MC_REPORT_POST_RACE_DAMAGE" }, // 0xF1
 		{ id: 434, name: "MC_CRC_PRE_RACE_DATA" }, // 0x1B2
+		{ id: 435, name: "MC_CRC_POST_RACE_DATA" }, // 0x1B3
 		{ id: 455, name: "MC_CRC_PRE_RACE_DATA_TEST_DRIVE" }, // 0x1C7
 	];
 	const result = messageIds.find((id) => id.id === messageID);
