@@ -13,7 +13,8 @@ describe("socketErrorHandler", () => {
 		socketErrorHandler({ connectionId, error, log: mockLogger });
 
 		expect(mockLogger.debug).toHaveBeenCalledWith(
-			`Connection ${connectionId} reset by peer`,
+			"Connection reset by peer",
+			{ connectionId },
 		);
 	});
 
@@ -31,11 +32,8 @@ describe("socketErrorHandler", () => {
 		socketErrorHandler({ connectionId, error, log: mockLogger });
 
 		expect(mockLogger.error).toHaveBeenCalledWith(
-			`Socket error on connection ${connectionId}: ${error.message}`,
-			expect.objectContaining({
-				code: error.code,
-				errno: error.errno,
-			}),
+			"Socket error",
+			{ connectionId, err: error },
 		);
 	});
 });
