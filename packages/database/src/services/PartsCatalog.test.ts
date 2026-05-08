@@ -85,7 +85,7 @@ describe("TsvPartsCatalog", () => {
 
         expect(await catalog.getRows(0)).toHaveLength(1);
         expect(await catalog.getRows(-5)).toHaveLength(1);
-        expect(await catalog.getRows(NaN)).toHaveLength(1);
+        expect(await catalog.getRows(Number.NaN)).toHaveLength(1);
     });
 
     it("skips malformed lines without throwing", async () => {

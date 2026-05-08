@@ -114,9 +114,9 @@ export class TsvPartsCatalog implements PartsCatalog {
             const abstractPartTypeId = Number(fields[1]);
             // model/grade/name default to safe values when missing — the
             // legacy TSV is well-formed but defensive parsing is cheap.
-            const modelId = fields[2] !== undefined ? Number(fields[2]) : 0;
+            const modelId = fields[2] === undefined ? 0 : Number(fields[2]);
             const partGradeId =
-                fields[3] !== undefined ? Number(fields[3]) : 0;
+                fields[3] === undefined ? 0 : Number(fields[3]);
             const partTypeName = fields[4] ?? "";
 
             if (
