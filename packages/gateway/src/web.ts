@@ -3555,11 +3555,20 @@ export async function processHttpRequest(
 	if (routeHandlers.has(url.pathname)) {
 		const handler = routeHandlers.get(url.pathname);
 		if (handler) {
-			const { headers, body } = await handler(request, response);
-			Object.entries(headers).forEach(([key, value]) => {
-				response.setHeader(key, value);
-			});
-			response.end(body);
+			try {
+				const { headers, body } = await handler(request, response);
+				Object.entries(headers).forEach(([key, value]) => {
+					response.setHeader(key, value);
+				});
+				response.end(body);
+			} catch (err) {
+				getServerLogger("gateway.web").error(
+					"HTTP handler threw unexpectedly",
+					{ path: url.pathname, err },
+				);
+				response.statusCode = 500;
+				response.end("Internal server error");
+			}
 			return;
 		}
 	}
