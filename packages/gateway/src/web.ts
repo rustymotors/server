@@ -23,6 +23,7 @@ import {
 	handleGetRegistry,
 } from "rusty-motors-shard";
 import { getServerConfiguration, getServerLogger, type ServerLogger, databaseProvider } from "rusty-motors-shared";
+import { createPartsCatalog } from "rusty-motors-database";
 import type { GatewayConfiguration } from "./configuration/GatewayConfiguration.js";
 
 type WebHandlerResponse = {
@@ -107,6 +108,56 @@ export function initializeRouteHandlers(config?: GatewayConfiguration) {
 			body: handleGetRegistry(getServerConfiguration()),
 		};
 	});
+	// Legacy parts catalog endpoint. The MCO client fetches the catalog
+	// over HTTP at /mco/local/58 (modern form, with ?apt=N query
+	// parameter) — the response body is the original tab-separated rows
+	// the client parses directly.
+	//
+	// TODO(parts-catalog): support the legacy path-segment form
+	//   /mco/local/58/<apt> too if any production client uses it (Recons
+	//   tolerates both). Modern clients only use the query-parameter form.
+	routeHandlers.set("/mco/local/58", handlePartsCatalog);
+}
+
+/**
+ * Handles the legacy MCO parts catalog HTTP request.
+ *
+ * Wire format (response body): newline-joined original tab-separated rows.
+ * The legacy client parses tab-separated text directly, so we echo the
+ * stored `rawLine` for each row verbatim.
+ *
+ * Query parameters (parsed in this order; first hit wins):
+ *   apt | APT | param1 | Param1   — abstract part type id to filter by
+ *   p1  | P1                       — legacy alias for apt
+ *
+ * When no apt is specified, all rows are returned.
+ */
+async function handlePartsCatalog(
+	request: http.IncomingMessage,
+): Promise<WebHandlerResponse> {
+	const url = new URL(
+		`http://${process.env["HOST"] ?? "localhost"}${request.url ?? "/mco/local/58"}`,
+	);
+	const params = url.searchParams;
+	const aptRaw =
+		params.get("apt") ??
+		params.get("APT") ??
+		params.get("param1") ??
+		params.get("Param1") ??
+		params.get("p1") ??
+		params.get("P1");
+	const apt = aptRaw === null ? undefined : Number(aptRaw);
+
+	const catalog = createPartsCatalog();
+	const rows = await catalog.getRows(
+		apt !== undefined && Number.isInteger(apt) && apt > 0 ? apt : undefined,
+	);
+	const body = rows.length > 0 ? `${rows.map((r) => r.rawLine).join("\n")}\n` : "";
+
+	return {
+		headers: { "Content-Type": "text/plain" },
+		body,
+	};
 }
 
 /**

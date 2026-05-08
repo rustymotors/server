@@ -42,8 +42,12 @@ import { _buyCarFromDealer } from '../_buyCarFromDealer.js';
 import { _crcPostRaceData } from '../_crcPostRaceData.js';
 import { _crcPreRaceData } from '../_crcPreRaceData.js';
 import { _crcPreRaceDataTestDrive } from '../_crcPreRaceDataTestDrive.js';
+import { _destroyPart } from '../_destroyPart.js';
 import { _inRaceDamageUpdate } from '../_inRaceDamageUpdate.js';
 import { _racerLeftRace } from '../_racerLeftRace.js';
+import { _removePart } from '../_removePart.js';
+import { _repairMultipleParts } from '../_repairMultipleParts.js';
+import { _repairSinglePart } from '../_repairSinglePart.js';
 import { _reportPostRaceDamage } from '../_reportPostRaceDamage.js';
 import { _updateBodyDamage } from '../_updateBodyDamage.js';
 import { _updateCachedVehicle } from '../_updateCachedVehicle.js';
@@ -175,9 +179,33 @@ export function createTransactionsHandlerRegistry(): MessageHandlerRegistry<
     });
 
     registry.register({
+        opCode: 177, // MC_REPAIR_SINGLE_PART
+        name: 'MC_REPAIR_SINGLE_PART',
+        handler: _repairSinglePart,
+    });
+
+    registry.register({
+        opCode: 178, // MC_REPAIR_MULTIPLE_PARTS
+        name: 'MC_REPAIR_MULTIPLE_PARTS',
+        handler: _repairMultipleParts,
+    });
+
+    registry.register({
+        opCode: 182, // MC_REMOVE_PART
+        name: 'MC_REMOVE_PART',
+        handler: _removePart,
+    });
+
+    registry.register({
         opCode: 202, // MC_UPDATE_BODY_DAMAGE
         name: 'MC_UPDATE_BODY_DAMAGE',
         handler: _updateBodyDamage,
+    });
+
+    registry.register({
+        opCode: 214, // MC_DESTROY_PART
+        name: 'MC_DESTROY_PART',
+        handler: _destroyPart,
     });
 
     registry.register({
