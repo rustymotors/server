@@ -16,7 +16,7 @@
         "test:session": "vitest run --coverage=false --config vitest.session.config.ts",
         "test:all": "npm test && npm run test:session",
         "test:watch": "vitest --watch",
-        "coverage": "vitest run",
+        "coverage": "vitest run --coverage",
         "check": "tsc --build --noEmit > out.log",
         "check:all": "npm run check --workspaces --if-present",
         "lint:all": "npm run lint --workspaces --if-present",

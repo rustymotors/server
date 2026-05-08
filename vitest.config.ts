@@ -36,6 +36,12 @@ export default defineConfig({
 				inline: ["rusty-motors-protocol", "@rustymotors/binary"],
 			},
 		},
+		// CI uploads ./coverage/lcov.info to Coveralls; lcov reporter must
+		// be explicit since Vitest's default set is text + html only.
+		coverage: {
+			provider: "v8",
+			reporter: ["text", "lcov", "json"],
+		},
 	},
 	// Vitest 4: poolOptions moved out from under `test`.
 	poolOptions: {
