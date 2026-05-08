@@ -80,6 +80,7 @@ export async function mcotsPortRouter({
         'end',
         bindLogContext(() => {
             receiveQueue.exit();
+            clearPartialBuffer(connectionId);
 
             // Record disconnect if recording is enabled
             const recorder = getSessionRecorder();
@@ -111,6 +112,7 @@ export async function mcotsPortRouter({
                     );
                 }
                 receiveQueue.exit();
+                clearPartialBuffer(connectionId);
                 return;
             }
             log.error(`Socket error: ${error}`, {
@@ -119,25 +121,123 @@ export async function mcotsPortRouter({
                 error,
             });
             Sentry.captureException(error);
+            clearPartialBuffer(connectionId);
         }),
     );
 }
 
-function findPackageSignatureIndices(data: Buffer): number[] {
-    const packageSignature = Buffer.from('544f4d43', 'hex');
-    const packageSignatureIndices: number[] = [];
-    let index = 0;
-    let currentIndex = 0;
+/**
+ * Per-connection accumulator for partial inbound MCOTS framing.
+ *
+ * TCP can split a single MCOTS-framed packet across multiple `data` events,
+ * or coalesce multiple packets into one. The router has to buffer until at
+ * least one complete framed packet is available, otherwise the decryptor
+ * gets called on a truncated body and the cipher stream desynchronizes for
+ * the rest of the connection (every subsequent decrypt produces garbage).
+ *
+ * Cleared by {@link clearPartialBuffer} on disconnect.
+ *
+ * @internal exported for tests only.
+ */
+export const _mcotsPartialBuffers = new Map<string, Buffer>();
 
-    while (index !== -1) {
-        index = data.indexOf(packageSignature, currentIndex);
-        if (index !== -1) {
-            packageSignatureIndices.push(index);
-            currentIndex = index + 1;
+const TOMC_BYTES = Buffer.from('544f4d43', 'hex');
+
+/**
+ * Minimum size of a framed MCOTS packet on the wire:
+ *   2 bytes msgLength + 4 bytes "TOMC" + 4 bytes sequence + 1 byte flags +
+ *   2 bytes msgNo (smallest valid body).
+ */
+const MIN_FRAMED_PACKET_SIZE = 13;
+
+/**
+ * Extract any complete MCOTS-framed packets from the head of the per-connection
+ * accumulator. Incomplete trailing bytes are retained for the next call.
+ *
+ * Each emitted packet is a fresh slice of the accumulator and is safe to hand
+ * to {@link parseInitialMessage} / decrypt as a whole — never a truncated body.
+ *
+ * @internal exported for tests only.
+ */
+export function _extractCompletePackets(
+    connectionId: string,
+    chunk: Buffer,
+): { packets: Buffer[]; resyncedBytes: number } {
+    const existing = _mcotsPartialBuffers.get(connectionId);
+    let buf = existing ? Buffer.concat([existing, chunk]) : chunk;
+
+    const packets: Buffer[] = [];
+    let resyncedBytes = 0;
+
+    for (;;) {
+        if (buf.length < MIN_FRAMED_PACKET_SIZE) {
+            break;
         }
+
+        const tomcIdx = buf.indexOf(TOMC_BYTES);
+        if (tomcIdx === -1) {
+            // No anchor anywhere in the buffer. All bytes are unrecoverable
+            // junk except for the last 3 (which could be the start of a
+            // partial "TOMC" split across reads — keep them).
+            const tail = Math.min(3, buf.length);
+            resyncedBytes += buf.length - tail;
+            buf = buf.subarray(buf.length - tail);
+            break;
+        }
+
+        if (tomcIdx < 2) {
+            // Found TOMC but with no room for the 2-byte length prefix in
+            // front of it — these bytes can't be the start of a real packet.
+            // Drop one byte and retry; the next iteration will look for the
+            // following TOMC if any.
+            resyncedBytes += 1;
+            buf = buf.subarray(1);
+            continue;
+        }
+
+        if (tomcIdx > 2) {
+            // Bytes before the candidate packet's length prefix are junk.
+            const drop = tomcIdx - 2;
+            resyncedBytes += drop;
+            buf = buf.subarray(drop);
+            continue;
+        }
+
+        // tomcIdx === 2: the buffer is aligned at a candidate packet.
+        const msgLength = buf.readUInt16LE(0);
+        const totalSize = msgLength + 2;
+
+        if (msgLength < 9) {
+            // msgLength = 9 + body.sizeOf, so anything < 9 is malformed.
+            // Drop the bogus length prefix + TOMC and resync to next TOMC.
+            resyncedBytes += 1;
+            buf = buf.subarray(1);
+            continue;
+        }
+
+        if (buf.length < totalSize) {
+            // Partial packet — wait for the rest.
+            break;
+        }
+
+        packets.push(buf.subarray(0, totalSize));
+        buf = buf.subarray(totalSize);
     }
 
-    return packageSignatureIndices;
+    if (buf.length === 0) {
+        _mcotsPartialBuffers.delete(connectionId);
+    } else {
+        _mcotsPartialBuffers.set(connectionId, buf);
+    }
+
+    return { packets, resyncedBytes };
+}
+
+/**
+ * Drop any retained partial buffer for a connection. Call on disconnect.
+ */
+export function clearPartialBuffer(connectionId: string): void {
+    _mcotsPartialBuffers.delete(connectionId);
 }
 
 async function processIncomingPackets(
@@ -148,8 +248,6 @@ async function processIncomingPackets(
     socket: TaggedTcpSocket,
 ) {
     try {
-        const inPackets: Buffer[] = [];
-
         log.debug(
             `Received data`, {
                 namespace: "processIncommingPacket",
@@ -159,20 +257,22 @@ async function processIncomingPackets(
             },
         );
 
-        /* Search for the package signature in the hex string
-         * If found, split the data into packets
-         * Each packet starts with the 2 bytes (16 bits) length of the packet
-         * followed by the 4 bytes package signature
-         */
-        const indices = findPackageSignatureIndices(data);
+        // Append the chunk to this connection's accumulator and pull out any
+        // complete MCOTS-framed packets. Trailing partial bytes stay in the
+        // accumulator until the next data event. Without this, a packet that
+        // arrives split across two TCP reads would be decrypted twice (once
+        // truncated, then on the orphaned tail) and desynchronize the cipher
+        // stream for every subsequent message on this connection.
+        const { packets: inPackets, resyncedBytes } = _extractCompletePackets(
+            connectionId,
+            data,
+        );
 
-        for (const indexOfPackageSignature of indices) {
-            const length = data.readUInt16LE(indexOfPackageSignature - 2);
-            const packet = data.subarray(
-                indexOfPackageSignature - 2,
-                indexOfPackageSignature + length,
+        if (resyncedBytes > 0) {
+            log.warn(
+                `Skipped ${resyncedBytes} byte(s) of unframed mcots data while resyncing`,
+                { connectionId, port },
             );
-            inPackets.push(packet);
         }
 
         log.debug(`Received ${inPackets.length} packets`, {
