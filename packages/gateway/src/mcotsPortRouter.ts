@@ -186,6 +186,23 @@ async function processIncomingPackets(
                 data: packet.toString("hex")
             });
             const initialPacket: MessageNode = parseInitialMessage(packet);
+            if (!initialPacket.isValidSignature()) {
+                // Drop the packet entirely. Don't decrypt, don't dispatch,
+                // don't capture to Sentry — invalid framing is not actionable
+                // and would just spam noise. Header context is already in
+                // the "Processing packet" debug log above.
+                log.warn(
+                    `Dropping mcots packet with invalid signature`,
+                    {
+                        connectionId,
+                        port,
+                        signature: initialPacket.signature,
+                        msgLength: initialPacket.length,
+                        flags: initialPacket.flags,
+                    },
+                );
+                return;
+            }
             await routeInitialMessage(connectionId, port, initialPacket)
             .then((response) => {
                 // Record outgoing data if recording is enabled
