@@ -6,8 +6,14 @@ import {
 } from "rusty-motors-shared";
 
 /**
- * Inbound MC_RACE_RESULTS (msgNo 221 / 0xDD). Sent by the client when the
- * local racer crosses the finish line, reporting the result of the race.
+ * Inbound MC_RACER_COMPLETED_RACE (msgNo 234 / 0xEA). Sent by the client
+ * when the local racer crosses the finish line, reporting the result of
+ * the race.
+ *
+ * Note: the MCO header also defines MC_RACE_RESULTS = 221, but the legacy
+ * server has no dispatch for that opcode anywhere. 234 is the only race-
+ * completion opcode actually wired through MCServer.cpp:3486 to
+ * MCRaces_RacerCompletedRace.
  *
  * The original server (MCRaces.cpp:4913 `MCRaces_RacerCompletedRace`):
  *   - validates raceID and persona-in-race
@@ -18,7 +24,7 @@ import {
  *   - notifies other racers when all racers have reported
  *
  * Wire layout (variable, pack(1)):
- *   [0..1]    WORD             msgNo            (= 221)
+ *   [0..1]    WORD             msgNo            (= 234)
  *   [2..3]    WORD             topSpeed         m/s, this race
  *   [4..7]    MCOTS_INTRAID    raceID           (DWORD)
  *   [8..11]   DWORD            id               persona id (or AI id)
@@ -48,7 +54,7 @@ export class CompletedRaceMessage extends MessageNodeBody {
 
     constructor() {
         super();
-        this._msgNo = 221; // MC_RACE_RESULTS
+        this._msgNo = 234; // MC_RACER_COMPLETED_RACE
         this._topSpeed = Buffer.alloc(2);
         this._raceId = Buffer.alloc(4);
         this._id = Buffer.alloc(4);

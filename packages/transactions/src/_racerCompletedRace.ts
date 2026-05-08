@@ -2,10 +2,10 @@ import { CompletedRaceMessage } from "./CompletedRaceMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 import { getServerLogger } from "rusty-motors-shared";
 
-const defaultLogger = getServerLogger("handlers/_raceResults");
+const defaultLogger = getServerLogger("handlers/_racerCompletedRace");
 
 /**
- * Handle MC_RACE_RESULTS (msgNo 221 / 0xDD).
+ * Handle MC_RACER_COMPLETED_RACE (msgNo 234 / 0xEA).
  *
  * Sent by the client when the local racer crosses the finish line. Carries
  * the racer's reported result (time, top speed, best lap, security flags,
@@ -40,7 +40,7 @@ const defaultLogger = getServerLogger("handlers/_raceResults");
  *   FinalResultsMsg (MCDefs.h:1479) or RacerPlacement update — when the
  *   race is fully resolved.
  */
-export async function _raceResults({
+export async function _racerCompletedRace({
     connectionId,
     packet,
     log = defaultLogger,
@@ -48,7 +48,7 @@ export async function _raceResults({
     const completedRace = new CompletedRaceMessage();
     completedRace.deserialize(packet.data);
 
-    log.info("MC_RACE_RESULTS received (stub — no validation/persistence)", {
+    log.info("MC_RACER_COMPLETED_RACE received (stub — no validation/persistence)", {
         connectionId,
         raceId: completedRace.raceId,
         racerId: completedRace.id,
@@ -62,7 +62,7 @@ export async function _raceResults({
 
     if (completedRace.securityFlags !== 0) {
         log.warn(
-            "MC_RACE_RESULTS reports non-zero securityFlags (client-detected potential cheat)",
+            "MC_RACER_COMPLETED_RACE reports non-zero securityFlags (client-detected potential cheat)",
             {
                 connectionId,
                 raceId: completedRace.raceId,

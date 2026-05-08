@@ -28,7 +28,7 @@ describe('CompletedRaceMessage', () => {
         expect(buf.length).toBe(34); // 30 + 4
 
         // msgNo at offset 0
-        expect(buf.readInt16LE(0)).toBe(221);
+        expect(buf.readInt16LE(0)).toBe(234);
         // topSpeed at offset 2
         expect(buf.readUInt16LE(2)).toBe(87);
         // raceId at offset 4

@@ -52,7 +52,7 @@ import { _buyNewPart } from '../_buyNewPart.js';
 import { _createStandardRace } from '../_createStandardRace.js';
 import { _joinRace } from '../_joinRace.js';
 import { _raceKeepAlive } from '../_raceKeepAlive.js';
-import { _raceResults } from '../_raceResults.js';
+import { _racerCompletedRace } from '../_racerCompletedRace.js';
 import { _startRace } from '../_startRace.js';
 
 /**
@@ -241,9 +241,9 @@ export function createTransactionsHandlerRegistry(): MessageHandlerRegistry<
     });
 
     registry.register({
-        opCode: 221, // MC_RACE_RESULTS
-        name: 'MC_RACE_RESULTS',
-        handler: _raceResults,
+        opCode: 234, // MC_RACER_COMPLETED_RACE
+        name: 'MC_RACER_COMPLETED_RACE',
+        handler: _racerCompletedRace,
     });
 
     return registry;
