@@ -130,12 +130,6 @@ export class BytableChannelData implements BytableObject {
         ];
     }
 
-    constructor() {
-        this.hostID = 21
-        this.connectedPlayers = 1
-        this.setUserID(0, 21)
-    }
-
     get serializeSize(): number { return NPS_CHANNEL_DATA_SIZE; }
 
     serialize(): Buffer {
