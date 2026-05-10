@@ -683,3 +683,174 @@ export async function dbBuyNewPart(personiaId: number, brandedPartId: number, _d
 
     return savePart(newPart).then(() => newPartId)
 }
+
+export function invalidateVehiclePartTree(vehicleId: number): void {
+    vehiclePartTreeCache.delete(vehicleId);
+}
+
+async function getVehicleRootId(partId: number): Promise<number | null> {
+    const { slonik, sql } = await getSlonik();
+    const part = await slonik.maybeOne(sql.typeAlias('part')`
+        SELECT part_id, parent_part_id FROM part WHERE part_id = ${partId}
+    `) as TPart | null;
+    if (!part) return null;
+    if (!part.parent_part_id) return part.part_id;
+    const parent = await slonik.maybeOne(sql.typeAlias('part')`
+        SELECT part_id, parent_part_id FROM part WHERE part_id = ${part.parent_part_id}
+    `) as TPart | null;
+    if (!parent) return null;
+    return parent.parent_part_id ?? parent.part_id;
+}
+
+export async function dbInstallPart(
+    partId: number,
+    parentPartId: number,
+    attachmentPointId: number,
+    ownerId: number,
+): Promise<void> {
+    await Sentry.startSpan(
+        {
+            name: 'Install part',
+            op: 'db.query',
+            attributes: {
+                sql: 'UPDATE part SET parent_part_id = $1, attachment_point_id = $2 WHERE part_id = $3 AND owner_id = $4',
+                db: 'postgres',
+            },
+        },
+        async () => {
+            const { slonik, sql } = await getSlonik();
+            return slonik.query(sql.typeAlias('dbPart')`
+                UPDATE part
+                SET parent_part_id = ${parentPartId},
+                    attachment_point_id = ${attachmentPointId}
+                WHERE part_id = ${partId}
+                AND owner_id = ${ownerId}
+            `);
+        },
+    );
+    const vehicleId = await getVehicleRootId(parentPartId);
+    if (vehicleId !== null) {
+        vehiclePartTreeCache.delete(vehicleId);
+    }
+}
+
+export async function dbRepairPart(
+    partId: number,
+    ownerId: number,
+): Promise<void> {
+    // TODO (bank pass): price = RetailPrice if PercentDamage >= 70, else (PercentDamage/100)*RetailPrice
+    const vehicleId = await getVehicleRootId(partId);
+    await Sentry.startSpan(
+        {
+            name: 'Repair part',
+            op: 'db.query',
+            attributes: {
+                sql: 'UPDATE part SET percent_damage = 0 WHERE part_id = $1 AND owner_id = $2',
+                db: 'postgres',
+            },
+        },
+        async () => {
+            const { slonik, sql } = await getSlonik();
+            return slonik.query(sql.typeAlias('dbPart')`
+                UPDATE part
+                SET percent_damage = 0
+                WHERE part_id = ${partId}
+                AND owner_id = ${ownerId}
+            `);
+        },
+    );
+    if (vehicleId !== null) {
+        vehiclePartTreeCache.delete(vehicleId);
+    }
+}
+
+export async function dbRepairVehicleParts(
+    vehicleId: number,
+    ownerId: number,
+): Promise<void> {
+    // TODO (bank pass): sum repair prices across all parts (same per-part formula as dbRepairPart)
+    await Sentry.startSpan(
+        {
+            name: 'Repair vehicle parts',
+            op: 'db.query',
+            attributes: {
+                sql: 'UPDATE part SET percent_damage = 0 WHERE owner_id = $1 AND (part_id = $2 OR parent_part_id = $2 OR parent_part_id IN (SELECT part_id FROM part WHERE parent_part_id = $2))',
+                db: 'postgres',
+            },
+        },
+        async () => {
+            const { slonik, sql } = await getSlonik();
+            return slonik.query(sql.typeAlias('dbPart')`
+                UPDATE part
+                SET percent_damage = 0
+                WHERE owner_id = ${ownerId}
+                AND (
+                    part_id = ${vehicleId}
+                    OR parent_part_id = ${vehicleId}
+                    OR parent_part_id IN (
+                        SELECT part_id FROM part WHERE parent_part_id = ${vehicleId}
+                    )
+                )
+            `);
+        },
+    );
+    vehiclePartTreeCache.delete(vehicleId);
+}
+
+export async function dbRemovePart(
+    partId: number,
+    ownerId: number,
+): Promise<void> {
+    const vehicleId = await getVehicleRootId(partId);
+    await Sentry.startSpan(
+        {
+            name: 'Remove part',
+            op: 'db.query',
+            attributes: {
+                sql: 'UPDATE part SET parent_part_id = NULL, attachment_point_id = NULL WHERE part_id = $1 AND owner_id = $2',
+                db: 'postgres',
+            },
+        },
+        async () => {
+            const { slonik, sql } = await getSlonik();
+            return slonik.query(sql.typeAlias('dbPart')`
+                UPDATE part
+                SET parent_part_id = NULL,
+                    attachment_point_id = NULL
+                WHERE part_id = ${partId}
+                AND owner_id = ${ownerId}
+            `);
+        },
+    );
+    if (vehicleId !== null) {
+        vehiclePartTreeCache.delete(vehicleId);
+    }
+}
+
+export async function dbDestroyPart(
+    partId: number,
+    ownerId: number,
+): Promise<void> {
+    const vehicleId = await getVehicleRootId(partId);
+    await Sentry.startSpan(
+        {
+            name: 'Destroy part',
+            op: 'db.query',
+            attributes: {
+                sql: 'DELETE FROM part WHERE part_id = $1 AND owner_id = $2',
+                db: 'postgres',
+            },
+        },
+        async () => {
+            const { slonik, sql } = await getSlonik();
+            return slonik.query(sql.typeAlias('dbPart')`
+                DELETE FROM part
+                WHERE part_id = ${partId}
+                AND owner_id = ${ownerId}
+            `);
+        },
+    );
+    if (vehicleId !== null) {
+        vehiclePartTreeCache.delete(vehicleId);
+    }
+}

@@ -35,6 +35,12 @@ import { _crcPreRaceData } from "./_crcPreRaceData.js";
 import { _updateCachedVehicle } from "./_updateCachedVehicle.js";
 import { _getCompleteVehicleInfo } from "./_getFullCarInfo.js";
 import { _buyNewPart } from "./_buyNewPart.js";
+import { _installPart } from "./_installPart.js";
+import { _removePart } from "./_removePart.js";
+import { _destroyPart } from "./_destroyPart.js";
+import { _getAssemblyParts } from "./_getAssemblyParts.js";
+import { _repairPart } from "./_repairPart.js";
+import { _repairMultipleParts } from "./_repairMultipleParts.js";
 import { _createStandardRace } from "./_createStandardRace.js";
 import { _joinRace } from "./_joinRace.js";
 import { _raceKeepAlive } from "./_raceKeepAlive.js";
@@ -62,6 +68,36 @@ export const messageHandlers: MessageHandler[] = [
         id: 176,
         name: 'MC_BUY_NEW_PART',
         handler: _buyNewPart,
+    },
+    {
+        id: 177,
+        name: 'MC_REPAIR_SINGLE_PART',
+        handler: _repairPart,
+    },
+    {
+        id: 178,
+        name: 'MC_REPAIR_MULTIPLE_PARTS',
+        handler: _repairMultipleParts,
+    },
+    {
+        id: 182,
+        name: 'MC_REMOVE_PART',
+        handler: _removePart,
+    },
+    {
+        id: 181,
+        name: 'MC_INSTALL_PART',
+        handler: _installPart,
+    },
+    {
+        id: 183,
+        name: 'MC_GET_ASSEMBLY_PARTS',
+        handler: _getAssemblyParts,
+    },
+    {
+        id: 214,
+        name: 'MC_DESTROY_PART',
+        handler: _destroyPart,
     },
     {
         id: 440,
@@ -190,7 +226,14 @@ export function _MSG_STRING(messageID: number): string {
 		{ id: 173, name: "MC_OWNED_VEHICLES_LIST" }, // 0xad"}
 		{ id: 174, name: "MC_GET_OWNED_PARTS" }, // 0xae"}
 		{ id: 176, name: "MC_BUY_NEW_PART" },
+		{ id: 177, name: "MC_REPAIR_SINGLE_PART" },
+		{ id: 178, name: "MC_REPAIR_MULTIPLE_PARTS" },
+		{ id: 181, name: "MC_INSTALL_PART" },
+		{ id: 182, name: "MC_REMOVE_PART" },
+		{ id: 183, name: "MC_GET_ASSEMBLY_PARTS" },
+		{ id: 184, name: "MC_ASSEMBLY_PARTS" },
 		{ id: 213, name: "MC_LOGIN_COMPLETE" }, // 0xd5
+		{ id: 214, name: "MC_DESTROY_PART" },
 		{ id: 218, name: "MC_RACE_JOIN"},
 		{ id: 230, name: "MC_CREATE_STANDARD_RACE" },
 		{ id: 264, name: "MC_GET_PLAYER_PHYSICAL" }, // 0x108
