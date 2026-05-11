@@ -10,10 +10,12 @@ import {
 import { handleCloseCommChannel } from './handleCloseCommChannel.js';
 import { handleGetReadyList } from './handleGetReadyList.js';
 import { handleGetUserList } from './handleGetUserList.js';
+import { handleSendGameServersList } from './handleSendGameServersList.js';
 import { handleSendMiniRiffList } from './handleSendMiniRiffList.js';
 import { handleSendRiffList } from './handleSendRiffList.js';
 import { handleSetChannelData } from './handleSetChannelData.js';
 import { handleSetChannelFlags } from './handleSetChannelFlags.js';
+import { handleStartGameServer } from './handleStartGameServer.js';
 
 type InnerHandler = (args: {
     connectionId: string;
@@ -29,6 +31,8 @@ const innerHandlers: { opCode: number; handler: InnerHandler }[] = [
     { opCode: NPS_MESSAGE_IDS.SET_COMM_FLAGS, handler: handleSetChannelFlags },
     { opCode: NPS_MESSAGE_IDS.SEND_RIFF_LIST, handler: handleSendRiffList },
     { opCode: NPS_MESSAGE_IDS.SEND_MINI_RIFF_LIST, handler: handleSendMiniRiffList },
+    { opCode: NPS_MESSAGE_IDS.START_GAME_SERVER, handler: handleStartGameServer },
+    { opCode: NPS_MESSAGE_IDS.SEND_GAME_SERVERS_LIST, handler: handleSendGameServersList },
 ];
 
 function decryptBody(connectionId: string, message: BytableMessage): BytableMessage {
