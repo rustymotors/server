@@ -4,6 +4,7 @@ import type { ServerLogger } from 'rusty-motors-shared';
 import { handleEncryptedCommand } from './handleEncryptedCommand.js';
 import { handleOpenCommChannel } from './handleOpenCommChannel.js';
 import { handleTrackingPing } from './handleTrackingPing.js';
+import { handleUdpStatus } from './handleUdpStatus.js';
 
 export interface RoomHandlerArgs {
     connectionId: string;
@@ -55,6 +56,12 @@ export function createRoomHandlerRegistry(): RoomsRegistry {
         opCode: NPS_MESSAGE_IDS.ENCRYPTED_COMMAND,
         name: 'NPS_ENCRYPTED_COMMAND',
         handler: handleEncryptedCommand,
+    });
+
+    registry.register({
+        opCode: NPS_MESSAGE_IDS.UDP_STATUS,
+        name: 'NPS_UDP_STATUS',
+        handler: handleUdpStatus,
     });
 
     return registry;

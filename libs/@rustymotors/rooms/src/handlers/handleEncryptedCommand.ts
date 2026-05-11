@@ -9,19 +9,25 @@ import {
 } from 'rusty-motors-shared';
 import { handleCloseCommChannel } from './handleCloseCommChannel.js';
 import { handleGetReadyList } from './handleGetReadyList.js';
+import { handleGetMiniUserList } from './handleGetMiniUserList.js';
+import { handleGetServerInfo } from './handleGetServerInfo.js';
 import { handleGetUserList } from './handleGetUserList.js';
+import { handleSendBuddyLong } from './handleSendBuddyLong.js';
 import { handleSendGameServersList } from './handleSendGameServersList.js';
 import { handleSendMiniRiffList } from './handleSendMiniRiffList.js';
+import { handleSendNotSingleLong } from './handleSendNotSingleLong.js';
 import { handleSendRiffList } from './handleSendRiffList.js';
+import { handleSendSingleLong } from './handleSendSingleLong.js';
 import { handleSetChannelData } from './handleSetChannelData.js';
 import { handleSetChannelFlags } from './handleSetChannelFlags.js';
+import { handleSetMyUserData } from './handleSetMyUserData.js';
 import { handleStartGameServer } from './handleStartGameServer.js';
 
 type InnerHandler = (args: {
     connectionId: string;
     message: BytableMessage;
     log?: ServerLogger;
-}) => Promise<{ connectionId: string; messages: BytableMessage[] }>;
+}) => Promise<{ connectionId: string; messages: { serialize(): Buffer }[] }>;
 
 const innerHandlers: { opCode: number; handler: InnerHandler }[] = [
     { opCode: NPS_MESSAGE_IDS.GET_USER_LIST, handler: handleGetUserList },
@@ -33,6 +39,12 @@ const innerHandlers: { opCode: number; handler: InnerHandler }[] = [
     { opCode: NPS_MESSAGE_IDS.SEND_MINI_RIFF_LIST, handler: handleSendMiniRiffList },
     { opCode: NPS_MESSAGE_IDS.START_GAME_SERVER, handler: handleStartGameServer },
     { opCode: NPS_MESSAGE_IDS.SEND_GAME_SERVERS_LIST, handler: handleSendGameServersList },
+    { opCode: NPS_MESSAGE_IDS.GET_SERVER_INFO, handler: handleGetServerInfo },
+    { opCode: NPS_MESSAGE_IDS.GET_MINI_USER_LIST, handler: handleGetMiniUserList },
+    { opCode: NPS_MESSAGE_IDS.SET_MY_USER_DATA, handler: handleSetMyUserData },
+    { opCode: NPS_MESSAGE_IDS.SEND_BUDDY_LONG, handler: handleSendBuddyLong },
+    { opCode: NPS_MESSAGE_IDS.SEND_SINGLE_LONG, handler: handleSendSingleLong },
+    { opCode: NPS_MESSAGE_IDS.SEND_NOT_SINGLE_LONG, handler: handleSendNotSingleLong },
 ];
 
 function decryptBody(connectionId: string, message: BytableMessage): BytableMessage {
@@ -46,7 +58,7 @@ function decryptBody(connectionId: string, message: BytableMessage): BytableMess
     return createRawMessage(result);
 }
 
-function encryptMessage(connectionId: string, message: BytableMessage): BytableBuffer {
+function encryptMessage(connectionId: string, message: { serialize(): Buffer }): BytableBuffer {
     const state = fetchStateFromDatabase();
     const encryption = getEncryption(state, connectionId);
     if (!encryption) {
