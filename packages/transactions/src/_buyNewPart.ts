@@ -40,6 +40,7 @@ export async function _buyNewPart({
 
     const newPartMessage = new GenericReplyMessage()
     newPartMessage.msgNo = 101;
+    newPartMessage.msgReply = 176
     newPartMessage.result.writeInt32LE(newPartId)
 
     const responsePacket = new OldServerMessage();
