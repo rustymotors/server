@@ -80,41 +80,39 @@ export async function handleOpenCommChannel({
     const server = getPrimaryRoomServer();
     const room = server.getRoomByCommId(commId);
 
+    let roomUser: User | undefined;
+
     if (room) {
-        // Add or refresh user in room
-        let user = room.userList.get(userId);
-        if (!user) {
-            user = new User(userId, userId);
+        roomUser = room.userList.get(userId);
+        if (!roomUser) {
             const sessionStore = databaseProvider.getSessionStore();
             const userInfo = await sessionStore.getUser(userId);
+            const personaId = userInfo?.personaId ?? userId;
+            roomUser = new User(personaId, userId);
             if (userInfo) {
-                user.setFromUserInfo(userInfo);
+                roomUser.setFromUserInfo(userInfo);
             }
-            room.addUser(userId, user);
+            room.addUser(personaId, roomUser);
         }
-        user.isInLobby = commId === 0;
-        user.lobbyId = commId === 0 ? 0 : commId;
+        roomUser.isInLobby = commId === 0;
+        roomUser.lobbyId = commId === 0 ? 0 : commId;
     }
 
     const responses: BytableMessage[] = [];
 
     // Broadcast UserJoinedChannel to the connection
-    if (room) {
-        const user = room.userList.get(userId);
-        if (user?.userData) {
-            const joined = new UserJoinedChannelMessage(
-                user.userName,
-                user.userId,
-                commId,
-                user.userData,
-                user.personaId,
-            );
-            const raw = new RawMessage();
-            raw.id = NPS_MESSAGE_IDS.USER_JOINED_CHANNEL;
-            raw.data = joined.serialize();
-            const joinedPacket = BytableMessage.FromRawMessage(raw);
-            responses.push(joinedPacket);
-        }
+    if (roomUser?.userData) {
+        const joined = new UserJoinedChannelMessage(
+            roomUser.userName,
+            roomUser.userId,
+            commId,
+            roomUser.userData,
+            roomUser.personaId,
+        );
+        const raw = new RawMessage();
+        raw.id = NPS_MESSAGE_IDS.USER_JOINED_CHANNEL;
+        raw.data = joined.serialize();
+        responses.push(BytableMessage.FromRawMessage(raw));
     }
 
     responses.push(createChannelGrantedPacket(commId, connectionPort));
