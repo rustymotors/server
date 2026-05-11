@@ -23,6 +23,10 @@ export class RoomServer {
         return Array.from(this._roomList.keys());
     }
 
+    get rooms(): Room[] {
+        return Array.from(this._roomList.values());
+    }
+
     getRoomByCommId(commId: number): Room | undefined {
         for (const room of this._roomList.values()) {
             if (room.commId === commId) return room;

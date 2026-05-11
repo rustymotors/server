@@ -5,37 +5,20 @@ export class PrimaryRoomServer extends RoomServer {
 
     constructor(hostname: string, port: number) {
         super(0, 'RootServer', hostname, port);
+        this.initializeRoomServerList();
     }
 
-
     initializeRoomServerList() {
-        const roomServerIds = [
-            '01',
-            '02',
-            '03',
-            '04',
-            '05',
-            '06',
-            '07',
-            '08',
-            '09',
-            '10',
-            '11',
-            '12',
-            '13',
-            '14',
-            '15',
-            '16',
-            '17',
-            '18',
-            '19',
-            '20',
-        ];
+        this._roomList.clear();
 
-        for (let i = 0; i < roomServerIds.length; i++) {
-            const roomId = roomServerIds[i]!;
-            const riff = `MCC${roomId}`;
-            const commId = i + 1;
+        this._roomList.set('CTRL', new Room(0, 'CTRL'));
+        this._roomList.set('LOBBY', new Room(2, 'LOBBY'));
+        this._roomList.set('MCCHAT', new Room(191, 'MCCHAT'));
+
+        for (let i = 1; i <= 20; i++) {
+            const padded = String(i).padStart(2, '0');
+            const riff = `MCC${padded}`;
+            const commId = 220 + i; // MCC01=221 ... MCC20=240
             this._roomList.set(riff, new Room(commId, riff));
         }
     }

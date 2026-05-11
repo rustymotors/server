@@ -86,8 +86,14 @@ describe('PrimaryRoomServer', () => {
         primary.initializeRoomServerList();
     });
 
-    it('creates 20 rooms', () => {
-        expect(primary.roomList).toHaveLength(20);
+    it('creates 23 rooms (CTRL, LOBBY, MCCHAT + MCC01-MCC20)', () => {
+        expect(primary.roomList).toHaveLength(23);
+    });
+
+    it('has static channels at correct commIds', () => {
+        expect(primary.getRoomByCommId(0)?.riff).toBe('CTRL');
+        expect(primary.getRoomByCommId(2)?.riff).toBe('LOBBY');
+        expect(primary.getRoomByCommId(191)?.riff).toBe('MCCHAT');
     });
 
     it('rooms are named MCC01 through MCC20', () => {
@@ -96,16 +102,17 @@ describe('PrimaryRoomServer', () => {
         expect(primary.roomList).toContain('MCC20');
     });
 
-    it('room commIds are 1 through 20', () => {
+    it('MCC room commIds are 221 through 240', () => {
         for (let i = 1; i <= 20; i++) {
-            const room = primary.getRoomByCommId(i);
+            const padded = String(i).padStart(2, '0');
+            const room = primary.getRoomByCommId(220 + i);
             expect(room).toBeDefined();
-            expect(room!.commId).toBe(i);
+            expect(room!.riff).toBe(`MCC${padded}`);
         }
     });
 
     it('each room has a BytableChannelData', () => {
-        const room = primary.getRoomByCommId(1);
+        const room = primary.getRoomByCommId(221);
         expect(room!.channelData).toBeInstanceOf(BytableChannelData);
     });
 

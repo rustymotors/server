@@ -1,5 +1,6 @@
 import { BytableChannelData } from "@rustymotors/binary";
 import { PrimaryRoomServer } from "./lib/PrimaryRoomServer.js";
+export { receiveRoomData } from "./receiveRoomData.js";
 export * from "./types.js";
 
 let _instance: PrimaryRoomServer | undefined;
