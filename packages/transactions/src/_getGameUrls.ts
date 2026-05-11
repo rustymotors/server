@@ -1,7 +1,7 @@
 import { OldServerMessage } from "rusty-motors-shared";
 import { GameUrl, GameUrlsMessage } from "./GameUrlsMessage.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
-import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 import { getServerLogger } from "rusty-motors-shared";
 
 const defaultLogger = getServerLogger("handlers/_getGameUrls");

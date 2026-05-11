@@ -1,5 +1,5 @@
 import { fetchStateFromDatabase, findSessionByConnectionId, OldServerMessage, databaseProvider } from "rusty-motors-shared";
-import type { MessageHandlerArgs, MessageHandlerResult } from './handlers.js';
+import type { MessageHandlerArgs, MessageHandlerResult } from './types.js';
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { addVehicle } from "./_getOwnedVehicles.js";
 

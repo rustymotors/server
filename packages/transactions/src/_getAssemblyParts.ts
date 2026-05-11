@@ -5,7 +5,7 @@ import {
 import { OldServerMessage } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { PartsAssemblyMessage, Part } from "./PartsAssemblyMessage.js";
-import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 import { getServerLogger } from "rusty-motors-shared";
 import { buildVehiclePartTreeFromDB } from "../../database/src/cache.js";
 import type { TPart } from "../../database/src/models/Part.js";

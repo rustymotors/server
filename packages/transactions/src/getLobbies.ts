@@ -1,7 +1,7 @@
 import { MessageNode, OldServerMessage } from 'rusty-motors-shared';
 import { EntryFeePurseMessage, PurseEntry } from './EntryFeePurseMessage.js';
 import { LobbyInfo, LobbyMessage } from './LobbyMessage.js';
-import type { MessageHandlerArgs, MessageHandlerResult } from './handlers.js';
+import type { MessageHandlerArgs, MessageHandlerResult } from './types.js';
 import { getServerLogger } from 'rusty-motors-shared';
 
 const RACES_SIM_TIMETRIAL = 19

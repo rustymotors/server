@@ -3,7 +3,7 @@ import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import {
 	PlayerRacingHistoryMessage,
 } from "./PlayerRacingHistoryMessage.js";
-import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 import { getRacingHistoryRecords } from "./database/racingHistoryRecords.js";
 import { GenericReplyPayload } from "rusty-motors-protocol";
 import { getServerLogger } from "rusty-motors-shared";

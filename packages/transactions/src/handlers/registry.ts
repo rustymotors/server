@@ -22,7 +22,7 @@
  */
 
 import { MessageHandlerRegistry } from 'rusty-motors-shared';
-import type { MessageHandlerArgs, MessageHandlerResult } from '../handlers.js';
+import type { MessageHandlerArgs, MessageHandlerResult } from '../types.js';
 
 import { _getArcadeCarInfo } from '../_getArcadeCarInfo.js';
 import { _getGameUrls } from '../_getGameUrls.js';

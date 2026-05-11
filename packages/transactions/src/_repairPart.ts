@@ -5,7 +5,7 @@ import {
 import { OldServerMessage } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
-import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 import { getServerLogger } from "rusty-motors-shared";
 import { dbRepairPart } from "../../database/src/cache.js";
 

@@ -28,7 +28,7 @@ import {
 	updateEncryption,
 } from "rusty-motors-shared";
 import { OldServerMessage } from "rusty-motors-shared";
-import { type MessageHandlerResult, _MSG_STRING } from "./handlers.js";
+import { type MessageHandlerResult, _MSG_STRING } from "./types.js";
 import { getTransactionsHandlerRegistry } from "./handlers/registry.js";
 import {
 	ServerPacket,
