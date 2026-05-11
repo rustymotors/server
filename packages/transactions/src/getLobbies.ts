@@ -54,6 +54,11 @@ async function _getLobbies({
     lobby1._topDog = 'Drazi Crendraven';
     lobby1._maxNumberPlayers = 8;
     lobby1._defaultNight = 1;
+    lobby1._defaultWeather = 1
+    lobby1._defaultNumberOfLaps = 3
+    lobby1._defaultNumberRounds = 1
+    lobby1._defaultTraffic =true
+    lobby1._defaultDamage = true
 
     log.debug(`[${connectionId}] Sending lobby: ${lobby1.toString()}`);
 

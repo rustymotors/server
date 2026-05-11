@@ -3,7 +3,8 @@
     "version": "0.0.1",
     "private": true,
     "dependencies": {
-        "@rustymotors/binary": "*"
+        "@rustymotors/binary": "*",
+        "rusty-motors-shared": "*"
     },
     "type": "module",
     "main": "src/index.js",

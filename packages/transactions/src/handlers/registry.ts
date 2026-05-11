@@ -54,6 +54,12 @@ import { _joinRace } from '../_joinRace.js';
 import { _raceKeepAlive } from '../_raceKeepAlive.js';
 import { _racerCompletedRace } from '../_racerCompletedRace.js';
 import { _startRace } from '../_startRace.js';
+import { _repairPart } from '../_repairPart.js';
+import { _repairMultipleParts } from '../_repairMultipleParts.js';
+import { _removePart } from '../_removePart.js';
+import { _installPart } from '../_installPart.js';
+import { _getAssemblyParts } from '../_getAssemblyParts.js';
+import { _destroyPart } from '../_destroyPart.js';
 
 /**
  * Creates and returns a configured transactions handler registry.
@@ -70,6 +76,42 @@ export function createTransactionsHandlerRegistry(): MessageHandlerRegistry<
         opCode: 176, // MC_BUY_NEW_PART
         name: 'MC_BUY_NEW_PART',
         handler: _buyNewPart,
+    });
+
+    registry.register({
+        opCode: 177, // MC_REPAIR_SINGLE_PART
+        name: 'MC_REPAIR_SINGLE_PART',
+        handler: _repairPart,
+    });
+
+    registry.register({
+        opCode: 178, // MC_REPAIR_MULTIPLE_PARTS
+        name: 'MC_REPAIR_MULTIPLE_PARTS',
+        handler: _repairMultipleParts,
+    });
+
+    registry.register({
+        opCode: 181, // MC_INSTALL_PART
+        name: 'MC_INSTALL_PART',
+        handler: _installPart,
+    });
+
+    registry.register({
+        opCode: 182, // MC_REMOVE_PART
+        name: 'MC_REMOVE_PART',
+        handler: _removePart,
+    });
+
+    registry.register({
+        opCode: 183, // MC_GET_ASSEMBLY_PARTS
+        name: 'MC_GET_ASSEMBLY_PARTS',
+        handler: _getAssemblyParts,
+    });
+
+    registry.register({
+        opCode: 214, // MC_DESTROY_PART
+        name: 'MC_DESTROY_PART',
+        handler: _destroyPart,
     });
 
     registry.register({
