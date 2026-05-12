@@ -31,7 +31,8 @@ function byteField(name: string, value: number): BytableByte {
     return field;
 }
 
-// Matches C++ struct Part (MCDefs.h:1038) — 26 bytes on the wire.
+// Matches C++ struct Part (MCDefs.h:1038) — 28 bytes on the wire.
+// 6×DWORD + 2×BYTE = 26 data bytes, padded to 28 by MSVC struct alignment.
 // retailPrice and maxItemWear are MCOTS-only aliases; they are not sent to the client.
 export class Part extends BytableBuffer {
     _partId = 0;        // DWORD
@@ -42,22 +43,24 @@ export class Part extends BytableBuffer {
     _wear = 0;          // DWORD
     _attachmentPoint = 0; // BYTE
     _damage = 0;          // BYTE
+    // 2 bytes MSVC padding to align to DWORD boundary
 
     override get serializeSize() {
-        return 26;
+        return 28;
     }
 
     override serialize() {
-        return serializeFields([
-            dwordLE("partId", this._partId),
-            dwordLE("parentPartId", this._parentPartId),
-            dwordLE("brandedPartId", this._brandedPartId),
-            dwordLE("repairPrice", this._repairPrice),
-            dwordLE("junkPrice", this._junkPrice),
-            dwordLE("wear", this._wear),
-            byteField("attachmentPoint", this._attachmentPoint),
-            byteField("damage", this._damage),
-        ]);
+        const buf = Buffer.alloc(28);
+        buf.writeUInt32LE(this._partId, 0);
+        buf.writeUInt32LE(this._parentPartId, 4);
+        buf.writeUInt32LE(this._brandedPartId, 8);
+        buf.writeUInt32LE(this._repairPrice, 12);
+        buf.writeUInt32LE(this._junkPrice, 16);
+        buf.writeUInt32LE(this._wear, 20);
+        buf.writeUInt8(this._attachmentPoint, 24);
+        buf.writeUInt8(this._damage, 25);
+        // bytes 26-27: padding (zeroed by Buffer.alloc)
+        return buf;
     }
 
     override toString() {
@@ -80,7 +83,7 @@ export class PartsAssemblyMessage extends BytableBuffer {
     }
 
     override get serializeSize() {
-        return 8 + this._partList.length * 26;
+        return 8 + this._partList.length * 28;
     }
 
     override serialize() {
