@@ -25,7 +25,6 @@
 import { receiveLobbyData } from 'rusty-motors-lobby';
 import { receiveLoginData, receivePersonaData } from 'rusty-motors-authentication';
 import { receiveChatData } from 'rusty-motors-chat';
-import { receiveRoomData } from '@rustymotors/rooms';
 import type { IServiceRegistry } from './ServiceRegistry.js';
 
 /**
@@ -42,18 +41,14 @@ import type { IServiceRegistry } from './ServiceRegistry.js';
 export function createDefaultServiceConfiguration(
     registry: IServiceRegistry
 ): void {
-    // Lobby service: main lobby and race services
+    // Lobby service handles multiple ports
+    // Port 7003: Main lobby
+    // Ports 9000-9020: Room services
+    // Port 10001: Race services
     registry.register({
         name: 'lobby',
-        ports: [7003, 10001],
+        ports: [7003, ...Array.from({ length: 21 }, (_, i) => 9000 + i), 10001],
         handler: receiveLobbyData,
-    });
-
-    // Rooms service: game room channels (MCC01-MCC20)
-    registry.register({
-        name: 'rooms',
-        ports: Array.from({ length: 21 }, (_, i) => 9000 + i),
-        handler: receiveRoomData,
     });
 
     // Login service

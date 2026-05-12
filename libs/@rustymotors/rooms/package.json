@@ -2,19 +2,8 @@
     "name": "@rustymotors/rooms",
     "version": "0.0.1",
     "private": true,
-    "dependencies": {
-        "@rustymotors/binary": "*",
-        "rusty-motors-shared": "*"
-    },
+    "dependencies": {},
     "type": "module",
     "main": "src/index.js",
-    "typings": "src/index.d.ts",
-    "scripts": {
-        "check": "tsc",
-        "test": "vitest run --coverage"
-    },
-    "devDependencies": {
-        "@vitest/coverage-v8": "3.2.4",
-        "vitest": "^3.2.4"
-    }
+    "typings": "src/index.d.ts"
 }

@@ -1,5 +1,6 @@
 import { BytableMessage } from '@rustymotors/binary';
 import {
+    ChannelCreated,
     databaseProvider,
     getServerLogger,
     NPS_MESSAGE_IDS,
@@ -100,6 +101,25 @@ export async function handleOpenCommChannel({
 
     const responses: BytableMessage[] = [];
 
+    if (commId > 100) {
+        const riffName = String(request.getFieldValueByName('riffName') ?? '');
+        const channelCreated = new ChannelCreated();
+        channelCreated.commId = commId;
+        channelCreated.riff = riffName;
+        channelCreated.protocol = 33;
+        channelCreated.channelData.hostID = userId;
+        channelCreated.channelData.hostName = 'Dr Brown';
+        channelCreated.channelType = 3;
+        channelCreated.maxReadyPlayers = 1;
+        channelCreated.channelData.minNPSracers = 0;
+        const createdRaw = new RawMessage();
+        createdRaw.id = 0x20e;
+        createdRaw.data = channelCreated.serialize();
+        responses.push(BytableMessage.FromRawMessage(createdRaw));
+    }
+
+    responses.push(createChannelGrantedPacket(commId, connectionPort));
+
     // Broadcast UserJoinedChannel to the connection
     if (roomUser?.userData) {
         const joined = new UserJoinedChannelMessage(
@@ -114,8 +134,6 @@ export async function handleOpenCommChannel({
         raw.data = joined.serialize();
         responses.push(BytableMessage.FromRawMessage(raw));
     }
-
-    responses.push(createChannelGrantedPacket(commId, connectionPort));
 
     return { connectionId, messages: responses };
 }
