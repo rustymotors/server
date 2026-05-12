@@ -65,9 +65,9 @@ services:
             - "53303:53303/udp"
             - "3000:3000"
         volumes:
-            - ../data:/app/data
+            - /data/Code/server:/app
         env_file:
-            - ../.env
+            - /data/Code/server/.env
         environment:
             - DATABASE_URL=postgres://postgres:password@db:5432/mcos?sslmode=disable
             - GOOSE_DBSTRING=postgres://postgres:password@db:5432/mcos?sslmode=disable
