@@ -47,7 +47,7 @@ export async function handleGetServerInfo({
             }
 
             commPort = parseInt(`90${port}`);
-            commName = `MCC${commPort}\n`;
+            commName = `MCC${port}\n`;
         } else if (cID === 10001) {
             commPort = parseInt('10001');
             commName = 'MC100';

@@ -5,6 +5,7 @@ import { handleEncryptedCommand } from './handleEncryptedCommand.js';
 import { handleOpenCommChannel } from './handleOpenCommChannel.js';
 import { handleTrackingPing } from './handleTrackingPing.js';
 import { handleUdpStatus } from './handleUdpStatus.js';
+import { handleUserLogin } from './handleUserLogin.js';
 
 export interface RoomHandlerArgs {
     connectionId: string;
@@ -62,6 +63,12 @@ export function createRoomHandlerRegistry(): RoomsRegistry {
         opCode: NPS_MESSAGE_IDS.UDP_STATUS,
         name: 'NPS_UDP_STATUS',
         handler: handleUdpStatus,
+    });
+
+    registry.register({
+        opCode: NPS_MESSAGE_IDS.USER_LOGIN,
+        name: 'NPS_USER_LOGIN',
+        handler: handleUserLogin,
     });
 
     return registry;
