@@ -233,6 +233,8 @@ export async function _getCompleteVehicleInfo({
         responsePacket._header.flags = 8;
         responsePacket.setBuffer(carInfo.serialize());
 
+        log.debug(`Serialized CarInfoStruct: ${carInfo.serialize().toString("hex")}`);
+
         return { connectionId, messages: [responsePacket] };
     } catch (error) {
         log.error(`Error in Fetching car: ${error}`);

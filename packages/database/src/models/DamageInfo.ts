@@ -13,7 +13,7 @@ export class DamageInfo {
     private _numberVertices: number = 0; // 4 bytes
     private _decalFlags: number = 0; // 4 bytes
 
-    private _compressedData: Buffer = Buffer.alloc(0); // buffer, max DAMAGE_INFO_SIZE
+    private _compressedData: Buffer = Buffer.alloc(DAMAGE_INFO_SIZE - 24); // buffer, max DAMAGE_INFO_SIZE
 
     compress() {
         this._compressed = true;

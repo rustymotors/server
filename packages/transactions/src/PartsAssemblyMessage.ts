@@ -31,7 +31,7 @@ function byteField(name: string, value: number): BytableByte {
     return field;
 }
 
-// Matches C++ struct Part (MCDefs.h:1038) — 28 bytes on the wire.
+// Matches C++ struct Part — 28 bytes on the wire.
 // 6×DWORD + 2×BYTE = 26 data bytes, padded to 28 by MSVC struct alignment.
 // retailPrice and maxItemWear are MCOTS-only aliases; they are not sent to the client.
 export class Part extends BytableBuffer {

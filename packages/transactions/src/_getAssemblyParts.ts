@@ -7,8 +7,8 @@ import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { PartsAssemblyMessage, Part } from "./PartsAssemblyMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 import { getServerLogger } from "rusty-motors-shared";
-import { buildVehiclePartTreeFromDB } from "../../database/src/cache.js";
-import type { TPart } from "../../database/src/models/Part.js";
+import { buildAssemblyPartTreeFromDB } from "rusty-motors-database";
+import type { TPart } from "rusty-motors-database";
 
 const defaultLogger = getServerLogger("handlers/_getAssemblyParts");
 
@@ -44,13 +44,13 @@ export async function _getAssemblyParts({
         throw Error("Session not found");
     }
 
-    const vehiclePartTree = await buildVehiclePartTreeFromDB(vehicleId);
+    const vehiclePartTree = await buildAssemblyPartTreeFromDB(vehicleId);
 
     const assemblyMessage = new PartsAssemblyMessage(session.gameId);
     assemblyMessage._msgNo = 184;
 
     const rootPart = new Part();
-    rootPart._partId = vehiclePartTree.vehicleId;
+    rootPart._partId = vehiclePartTree.partId;
     rootPart._parentPartId = 0;
     rootPart._brandedPartId = vehiclePartTree.brandedPartId;
 
@@ -63,7 +63,7 @@ export async function _getAssemblyParts({
     assemblyMessage._partList = parts;
     assemblyMessage._numberOfParts = parts.length;
 
-    log.debug(`Returning ${parts.length} assembly parts for vehicle ${vehicleId}`);
+    log.debug(`Returning ${parts.length} assembly parts for part ${vehicleId}`);
 
     const responsePacket = new OldServerMessage();
     responsePacket._header.sequence = packet.sequenceNumber;

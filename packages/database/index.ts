@@ -5,6 +5,12 @@ export { GameDataStore } from "./src/stores/GameDataStore.js";
 export { AuthStore } from "./src/stores/AuthStore.js";
 
 // Vehicle part cache utilities (used by transactions package)
-export { getVehiclePartTree, setVehiclePartTree, buildVehiclePartTreeFromDB, vehiclePartTreeToJSON } from "./src/cache.js";
+export {
+    getVehiclePartTree,
+    setVehiclePartTree,
+    buildVehiclePartTreeFromDB,
+    vehiclePartTreeToJSON,
+    buildAssemblyPartTreeFromDB,
+} from "./src/cache.js";
 export type { TPart } from "./src/models/Part.js";
 

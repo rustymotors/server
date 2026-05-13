@@ -27,7 +27,7 @@ describe("PartsAssemblyMessage wire format", () => {
 		const message = new PartsAssemblyMessage(0);
 		message._partList = [new Part(), new Part(), new Part()];
 		message._numberOfParts = 3;
-		expect(message.serialize().length).toBe(8 + 3 * 26);
+		expect(message.serialize().length).toBe(8 + 3 * 28);
 	});
 
 	it("part bytes follow immediately after the 8-byte header", () => {
@@ -61,14 +61,14 @@ describe("Part", () => {
 		// Act
 		const buffer = message.serialize();
 
-		// Assert — 26 bytes exactly: 6 DWORDs + 2 BYTEs per MCDefs.h struct Part.
+		// Assert — 28 bytes exactly: 6 DWORDs + 2 BYTEs per MCDefs.h struct Part.
 		// retailPrice and maxItemWear are MCOTS-only aliases; they are NOT on the wire.
-		expect(buffer.length).toBe(26);
+		expect(buffer.length).toBe(28);
 		expect(buffer).toEqual(
 			Buffer.from([
 				0x64, 0x00, 0x00, 0x00, 0xc8, 0x00, 0x00, 0x00, 0x2c, 0x01, 0x00, 0x00,
 				0x90, 0x01, 0x00, 0x00, 0xf4, 0x01, 0x00, 0x00, 0x58, 0x02, 0x00, 0x00,
-				0x07, 0x08,
+				0x07, 0x08, 0x00, 0x00,
 			]),
 		);
 	});

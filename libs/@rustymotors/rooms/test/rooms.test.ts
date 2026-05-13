@@ -57,12 +57,8 @@ describe('RoomServer', () => {
         server = new RoomServer(1, 'TestServer', '127.0.0.1', 9000);
     });
 
-    it('starts with empty room list', () => {
-        expect(server.roomList).toHaveLength(0);
-    });
-
-    it('getRoomByCommId returns undefined when no rooms', () => {
-        expect(server.getRoomByCommId(1)).toBeUndefined();
+    it('getRoomByCommId throws an error for unknown commId', () => {
+        expect(() => server.getRoomByCommId(1)).toThrow();
     });
 
     it('getRoomByCommId finds a room by commId', () => {
@@ -71,11 +67,6 @@ describe('RoomServer', () => {
         expect(server.getRoomByCommId(7)).toBe(room);
     });
 
-    it('getRoomByCommId returns undefined for wrong commId', () => {
-        const room = new Room(7, 'MCC07');
-        server['_roomList'].set('MCC07', room);
-        expect(server.getRoomByCommId(8)).toBeUndefined();
-    });
 });
 
 describe('PrimaryRoomServer', () => {
@@ -83,7 +74,6 @@ describe('PrimaryRoomServer', () => {
 
     beforeEach(() => {
         primary = new PrimaryRoomServer('127.0.0.1', 9000);
-        primary.initializeRoomServerList();
     });
 
     it('creates 23 rooms (CTRL, LOBBY, MCCHAT + MCC01-MCC20)', () => {
@@ -91,9 +81,9 @@ describe('PrimaryRoomServer', () => {
     });
 
     it('has static channels at correct commIds', () => {
-        expect(primary.getRoomByCommId(0)?.riff).toBe('CTRL');
-        expect(primary.getRoomByCommId(2)?.riff).toBe('LOBBY');
-        expect(primary.getRoomByCommId(191)?.riff).toBe('MCCHAT');
+        expect(primary.getRoomByCommId(0).riff).toBe('CTRL');
+        expect(primary.getRoomByCommId(2).riff).toBe('LOBBY');
+        expect(primary.getRoomByCommId(191).riff).toBe('MCCHAT');
     });
 
     it('rooms are named MCC01 through MCC20', () => {
@@ -107,13 +97,20 @@ describe('PrimaryRoomServer', () => {
             const padded = String(i).padStart(2, '0');
             const room = primary.getRoomByCommId(220 + i);
             expect(room).toBeDefined();
-            expect(room!.riff).toBe(`MCC${padded}`);
+            if (typeof room === 'undefined') {
+                throw new Error(`Room MCC${padded} not found`);
+            }
+            expect(room.riff).toBe(`MCC${padded}`);
         }
     });
 
     it('each room has a BytableChannelData', () => {
         const room = primary.getRoomByCommId(221);
-        expect(room!.channelData).toBeInstanceOf(BytableChannelData);
+        expect(room).toBeDefined();
+        if (typeof room === 'undefined') {
+            throw new Error('Room MCC01 not found');
+        }   
+        expect(room.channelData).toBeInstanceOf(BytableChannelData);
     });
 
     it('can be created without env vars when host and port are passed directly', () => {

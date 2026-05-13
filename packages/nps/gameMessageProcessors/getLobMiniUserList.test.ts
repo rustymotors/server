@@ -29,6 +29,24 @@ describe("getLobMiniUserList", () => {
 			serialize: vi.fn().mockReturnValue(Buffer.from([0x05, 0x06, 0x07, 0x08])),
 		};
 
+		vi.mocked(MiniUserInfo).mockImplementation(
+			function (userId: number, username: string) {
+				return { userId, username };
+			},
+		);
+
+		vi.mocked(MiniUserList).mockImplementation(
+            function () {
+                return mockMiniUserList;
+            },
+        );
+
+        vi.mocked(GameMessage).mockImplementation(
+            function () {
+                return mockResponseMessage;
+            },
+        );
+
 		// Use regular function expressions (not arrows) so the mocked
 		// classes are constructable via `new` in production code.
 		(MiniUserList as unknown as Mock).mockImplementation(

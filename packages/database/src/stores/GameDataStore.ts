@@ -275,7 +275,7 @@ export class GameDataStore implements IGameDataStore {
             },
             async (): Promise<PartEntry[]> => {
                 const partList: PartEntry[] = [];
-                const rawParts = (await pool.many(sql.typeAlias("part")`
+                const rawParts = (await pool.any(sql.typeAlias("part")`
                     SELECT *
                     FROM part p1
                     INNER JOIN part p2 ON p1.part_id = p2.parent_part_id
