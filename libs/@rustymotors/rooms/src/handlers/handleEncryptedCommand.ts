@@ -8,6 +8,7 @@ import {
     updateEncryption,
 } from 'rusty-motors-shared';
 import { handleCloseCommChannel } from './handleCloseCommChannel.js';
+import { handleOpenCommChannel } from './handleOpenCommChannel.js';
 import { handleGetReadyList } from './handleGetReadyList.js';
 import { handleGetMiniUserList } from './handleGetMiniUserList.js';
 import { handleGetServerInfo } from './handleGetServerInfo.js';
@@ -31,6 +32,7 @@ type InnerHandler = (args: {
 
 const innerHandlers: { opCode: number; handler: InnerHandler }[] = [
     { opCode: NPS_MESSAGE_IDS.GET_USER_LIST, handler: handleGetUserList },
+    { opCode: NPS_MESSAGE_IDS.OPEN_COMM_CHANNEL, handler: handleOpenCommChannel },
     { opCode: NPS_MESSAGE_IDS.CLOSE_COMM_CHANNEL, handler: handleCloseCommChannel },
     { opCode: NPS_MESSAGE_IDS.GET_READY_LIST, handler: handleGetReadyList },
     { opCode: NPS_MESSAGE_IDS.SET_CHANNEL_DATA, handler: handleSetChannelData },

@@ -95,6 +95,7 @@ export async function handleOpenCommChannel({
             }
             room.addUser(personaId, roomUser);
         }
+        roomUser.connectionId = connectionId;
         roomUser.isInLobby = commId === 0;
         roomUser.lobbyId = commId === 0 ? 0 : commId;
     }

@@ -37,25 +37,17 @@ export class RoomServer {
         return Array.from(this._roomList.keys());
     }
 
-    getRoomByCommId(commId: number): Room {
+    get rooms(): Room[] {
+        return Array.from(this._roomList.values());
+    }
+
+    getRoomByCommId(commId: number): Room | undefined {
         for (const room of this._roomList.values()) {
             if (room.commId === commId) {
                 return room;
             }
         }
-
-        console.dir({
-            error: `Unable to locate room with commId: ${commId}!`,
-            serverId: this._serverId,
-            serverName: this._serverName,
-            commId,
-            availableRooms: Array.from(this._roomList.values()).map((room) => ({
-                name: room.name,
-                commId: room.commId,
-            })),
-        });
-
-        throw new Error(`Error in RoomServer(${this._serverId})->getRoomByCommId: Unable to locate room with commId: ${commId}!`);
+        return undefined;
     }
 
     addUser(personaId: number) {

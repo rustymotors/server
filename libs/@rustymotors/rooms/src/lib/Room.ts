@@ -68,6 +68,7 @@ export function generateChatRooms() {
 export function generateStaticRooms() {
     return [
         new Room(0, 'CTRL'),
+        new Room(1, 'ROOM_LOBBY'),
         new Room(2, 'LOBBY'),
         new Room(191, 'MCCHAT'),
     ];

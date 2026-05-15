@@ -10,7 +10,7 @@ export const personaRecords: Pick<
     PersonaRecord, 'customerId' | 'personaId' | 'personaName' | 'shardId'
 >[] = [
         {
-            customerId: 2868969472,
+            customerId: 21188,
             personaId: 20,
             personaName: 'Molly',
             shardId: 44,

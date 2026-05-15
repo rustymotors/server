@@ -44,21 +44,36 @@ export async function _getAssemblyParts({
         throw Error("Session not found");
     }
 
-    const vehiclePartTree = await buildAssemblyPartTreeFromDB(vehicleId);
+    let partTree;
+    try {
+        partTree = await buildAssemblyPartTreeFromDB(vehicleId);
+    } catch (err) {
+        log.warn(`Part ${vehicleId} not found in DB, sending bare root: ${err}`);
+        partTree = null;
+    }
 
     const assemblyMessage = new PartsAssemblyMessage(session.gameId);
     assemblyMessage._msgNo = 184;
 
     const rootPart = new Part();
-    rootPart._partId = vehiclePartTree.partId;
+    rootPart._partId = vehicleId;
     rootPart._parentPartId = 0;
-    rootPart._brandedPartId = vehiclePartTree.brandedPartId;
+    rootPart._brandedPartId = partTree?.brandedPartId ?? 0;
+    rootPart._repairPrice = partTree?.rootRepairPrice ?? 0;
+    rootPart._junkPrice = partTree?.rootJunkPrice ?? 0;
+    rootPart._wear = partTree?.rootWear ?? 0;
+    rootPart._attachmentPoint = partTree?.rootAttachmentPoint ?? 0;
+    rootPart._damage = partTree?.rootDamage ?? 0;
 
-    const parts: Part[] = [
-        rootPart,
-        ...vehiclePartTree.partTree.level1.parts.map(tPartToPart),
-        ...vehiclePartTree.partTree.level2.parts.map(tPartToPart),
-    ];
+    const parts: Part[] = [rootPart];
+    if (partTree !== null) {
+        for (const p of partTree.partTree.level1.parts) {
+            parts.push(tPartToPart(p));
+        }
+        for (const p of partTree.partTree.level2.parts) {
+            parts.push(tPartToPart(p));
+        }
+    }
 
     assemblyMessage._partList = parts;
     assemblyMessage._numberOfParts = parts.length;
@@ -73,3 +88,5 @@ export async function _getAssemblyParts({
 
     return { connectionId, messages: [responsePacket] };
 }
+
+

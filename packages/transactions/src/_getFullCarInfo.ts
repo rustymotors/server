@@ -206,9 +206,23 @@ export async function _getCompleteVehicleInfo({
 
         const parts: PartStruct[] = [];
 
-        const tmpParts: TPart[] = vehicleFromCache.partTree.level1.parts.concat(
-            vehicleFromCache.partTree.level2.parts,
-        );
+        const rootTPart: TPart = {
+            part_id: vehicleFromCache.partId,
+            parent_part_id: null,
+            branded_part_id: vehicleFromCache.brandedPartId,
+            percent_damage: 0,
+            item_wear: 0,
+            attachment_point_id: null,
+            owner_id: vehicleFromCache.ownerID,
+            part_name: null,
+            repair_cost: 0,
+            scrap_value: 0,
+        };
+
+        const tmpParts: TPart[] = [rootTPart,
+            ...vehicleFromCache.partTree.level1.parts,
+            ...vehicleFromCache.partTree.level2.parts,
+        ];
 
         carInfo.noOfParts = tmpParts.length;
 

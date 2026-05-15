@@ -2,7 +2,6 @@ import {
     BytableBuffer,
     BytableDword,
     BytableWord,
-    BytableByte,
     serialize as serializeFields,
 } from "@rustymotors/binary";
 
@@ -24,16 +23,8 @@ function wordLE(name: string, value: number): BytableWord {
     return field;
 }
 
-function byteField(name: string, value: number): BytableByte {
-    const field = new BytableByte();
-    field.setName(name);
-    field.setValue(value);
-    return field;
-}
-
-// Matches C++ struct Part — 28 bytes on the wire.
-// 6×DWORD + 2×BYTE = 26 data bytes, padded to 28 by MSVC struct alignment.
-// retailPrice and maxItemWear are MCOTS-only aliases; they are not sent to the client.
+// Matches C++ struct Part — 26 bytes on the wire.
+// 6×DWORD (24 bytes) + 2×BYTE (2 bytes) = 26 bytes. No padding sent.
 export class Part extends BytableBuffer {
     _partId = 0;        // DWORD
     _parentPartId = 0;  // DWORD
@@ -43,14 +34,13 @@ export class Part extends BytableBuffer {
     _wear = 0;          // DWORD
     _attachmentPoint = 0; // BYTE
     _damage = 0;          // BYTE
-    // 2 bytes MSVC padding to align to DWORD boundary
 
     override get serializeSize() {
-        return 28;
+        return 26;
     }
 
     override serialize() {
-        const buf = Buffer.alloc(28);
+        const buf = Buffer.alloc(26);
         buf.writeUInt32LE(this._partId, 0);
         buf.writeUInt32LE(this._parentPartId, 4);
         buf.writeUInt32LE(this._brandedPartId, 8);
@@ -59,7 +49,6 @@ export class Part extends BytableBuffer {
         buf.writeUInt32LE(this._wear, 20);
         buf.writeUInt8(this._attachmentPoint, 24);
         buf.writeUInt8(this._damage, 25);
-        // bytes 26-27: padding (zeroed by Buffer.alloc)
         return buf;
     }
 
@@ -83,7 +72,7 @@ export class PartsAssemblyMessage extends BytableBuffer {
     }
 
     override get serializeSize() {
-        return 8 + this._partList.length * 28;
+        return 8 + this._partList.length * 26;
     }
 
     override serialize() {

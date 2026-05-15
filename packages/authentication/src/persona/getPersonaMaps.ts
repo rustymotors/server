@@ -62,6 +62,8 @@ async function getPersonaMapsByCustomerId(
     switch (customerId) {
         case 5551212:
             return getPersonasByCustomerId(customerId);
+        case 21188:
+            return getPersonasByCustomerId(customerId);
         default:
             return [];
     }

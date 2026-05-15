@@ -1,5 +1,6 @@
 import { PrimaryRoomServer } from "./lib/PrimaryRoomServer.js"
 export * from "./types.js"
+export { receiveRoomData } from "./receiveRoomData.js"
 
 const PLS_HOST = process.env["PLS_HOST"]
 const PLS_PORT = process.env['PLS_PORT']
