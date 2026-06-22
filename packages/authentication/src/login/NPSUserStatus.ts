@@ -40,7 +40,7 @@ export class NPSUserStatus extends LegacyMessage {
 	sessionKey: string;
 	opCode: number;
 	contextId: string;
-	buffer: Buffer;
+	packetBuffer: Buffer;
 	/**
 	 *
 	 * @param {Buffer} packet
@@ -62,7 +62,7 @@ export class NPSUserStatus extends LegacyMessage {
 		this.contextId = packet.subarray(14, 48).toString();
 
 		// Save the raw packet
-		this.buffer = packet;
+		this.packetBuffer = packet;
 	}
 
 
@@ -128,7 +128,7 @@ export class NPSUserStatus extends LegacyMessage {
 			content: this.data.toString("hex"),
 			contextId: this.contextId,
 			sessionKey: this.sessionKey,
-			rawBuffer: this.buffer.toString("hex"),
+			rawBuffer: this.packetBuffer.toString("hex"),
 		};
 	}
 

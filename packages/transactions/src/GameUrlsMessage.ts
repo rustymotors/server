@@ -34,7 +34,7 @@ export class GameUrlsMessage extends BytableBuffer {
 		this._urlList = []; // 563 bytes each
 	}
 
-	override size() {
+	size() {
 		return 5 + this._urlList.length * 563;
 	}
 
@@ -79,7 +79,7 @@ export class GameUrl extends BytableBuffer {
 		this.urlRef = ""; // 4 + this.urlRef.length bytes
 	}
 
-	override size() {
+	size() {
 		return 4 + 512;
 	}
 

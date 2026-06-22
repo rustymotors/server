@@ -70,7 +70,7 @@ async function getAbstractPartTypeIDForBrandedPartID(
             },
         },
         async () => {
-            return connection.one(sql.typeAlias('abstractPartType')`
+            return connection.one(sql!.typeAlias('abstractPartType')`
         SELECT pt.abstract_part_type_id 
         FROM branded_part bp
         inner join part_type pt on bp.part_type_id = pt.part_type_id
@@ -83,7 +83,7 @@ async function getAbstractPartTypeIDForBrandedPartID(
         log.error(`branded part with id ${brandedPartId} does not exist`);
         throw new Error(`branded part with id ${brandedPartId} does not exist`);
     }
-    return abstractPartTypeId.abstract_part_type_id;
+    return (abstractPartTypeId as any).abstract_part_type_id;
 }
 
 // async function isAbstractPartTypeAVehicle(
@@ -470,12 +470,12 @@ export async function getVehicleAndParts(
             },
         },
         async (): Promise<VehicleRecord> => {
-            const vehicle = await slonik.one(sql.typeAlias('vehicleWithOwner')`
-        SELECT v.*, p.owner_id 
+            const vehicle = await slonik.one(sql!.typeAlias('vehicleWithOwner')`
+        SELECT v.*, p.owner_id
 from public.vehicle v
-inner join public.part p on p.part_id = v.vehicle_id 
+inner join public.part p on p.part_id = v.vehicle_id
 where v.vehicle_id = ${vehicleId}
-    `);
+    `) as any;
 
             if (!vehicle) {
                 log.error(`Vehicle with id ${vehicleId} not found`);
@@ -520,16 +520,16 @@ where v.vehicle_id = ${vehicleId}
         },
         async (): Promise<PartEntry[]> => {
             const parts = [];
-            const rawParts = await slonik.many(sql.typeAlias('part')`
+            const rawParts = await slonik.many(sql!.typeAlias('part')`
         SELECT * 
         FROM part p1 
         inner join part p2 on p1.part_id = p2.parent_part_id
         WHERE p1.part_id = ${vehicleId} OR p1.parent_part_id = ${vehicleId}
     `);
 
-    log.debug({ rawParts }, 'rawParts');
+    log.debug('rawParts', { rawParts });
 
-            for (const rawPart of rawParts) {
+            for (const rawPart of rawParts as any[]) {
                 parts.push({
                     partId: rawPart.part_id,
                     parentPartId: rawPart.parent_part_id,
@@ -552,7 +552,7 @@ where v.vehicle_id = ${vehicleId}
         throw new Error(`No parts found for vehicle with id ${vehicleId}`);
     }
 
-    log.debug({ parts }, 'parts');
+    log.debug('parts', { parts });
 
     vehicle.parts = parts;
 
@@ -587,13 +587,13 @@ export async function getOwnedVehiclesForPerson(
         },
         async () => {
             const cars = [];
-            const parts = await slonik.any(sql.typeAlias('part')`
+            const parts = await slonik.any(sql!.typeAlias('part')`
         SELECT p.part_id, p.branded_part_id, p.attachment_point_id, p.owner_id, p.part_name, p.repair_cost, p.scrap_value 
 from public.part p 
 inner join public.vehicle v on v.vehicle_id = p.part_id 
 where p.owner_id = ${personId};
     `);
-            for (const part of parts) {
+            for (const part of parts as any[]) {
                 cars.push({
                     partId: part.part_id,
                     parentPartId: null,

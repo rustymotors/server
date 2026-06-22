@@ -4,8 +4,8 @@ import {
 	LegacyMessage,
 } from "rusty-motors-shared";
 import type { BufferSerializer } from "rusty-motors-protocol";
-import type { BytableBuffer } from "@rustymotors/binary";
 import { getAuthHandlerRegistry } from "../internal.js";
+import type { AuthHandlerResult } from "../handlers/registry.js";
 
 /**
  * Receives and processes persona data messages.
@@ -24,10 +24,7 @@ export async function receivePersonaData({
 	connectionId: string;
 	message: BufferSerializer;
 	log?: ServerLogger;
-}): Promise<{
-	connectionId: string;
-	messages: BytableBuffer[];
-}> {
+}): Promise<AuthHandlerResult> {
 	// The packet needs to be an NPSMessage
 	const inboundMessage = new LegacyMessage();
 	inboundMessage._doDeserialize(message.serialize());

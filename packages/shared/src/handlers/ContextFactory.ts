@@ -127,28 +127,29 @@ export function createTestContext(
     const mockSessionStore: ISessionStore = {
         findUserByConnectionId: async () => undefined,
         getUser: async () => undefined,
-        addUser: async () => {},
         updateUser: async () => {},
-        deleteUser: async () => {},
-        findUserByUsername: async () => undefined,
+        updateSessionKey: async () => {},
+        fetchSessionKeyByCustomerId: async () => { throw new Error('not implemented in test'); },
+        fetchSessionKeyByConnectionId: async () => { throw new Error('not implemented in test'); },
+        updateConnection: async () => {},
+        updateGameServer: async () => {},
+        getGameServers: async () => [],
     };
 
     const mockGameDataStore: IGameDataStore = {
-        getPlayer: async () => undefined,
-        updatePlayer: async () => {},
+        getPlayer: async () => { throw new Error('not implemented in test'); },
         getOwnedVehiclesForPerson: async () => [],
-        getParts: async () => [],
-        getBrands: async () => [],
+        getVehicleAndParts: async () => null,
+        createNewCar: async () => 0,
+        purchaseCar: async () => 0,
     };
 
     const mockAuthStore: IAuthStore = {
         isDatabaseConnected: true,
-        verifyCredentials: async () => undefined,
-        updateSessionKey: async () => {},
-        fetchSessionKeyByCustomerId: async () => undefined,
-        fetchSessionKeyByConnectionId: async () => undefined,
-        getCustomerIdFromConnectionId: async () => undefined,
-        updateConnection: async () => {},
+        findUser: async () => { throw new Error('not implemented in test'); },
+        findCustomerByContext: () => undefined,
+        updateSession: () => {},
+        registerNewUser: () => {},
     };
 
     const mockState = {

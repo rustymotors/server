@@ -18,7 +18,7 @@ export class PlayerRacingHistoryMessage extends BytableBuffer {
 		// total: 39 bytes + 32 bytes * numRaces
 	}
 
-	override size(): number {
+	size(): number {
 		return 39 + this._numRaces * 32;
 	}
 
@@ -108,7 +108,7 @@ export class RacingHistoryRecordEntry extends BytableBuffer {
 		// total: 32 bytes
 	}
 
-	override size(): number {
+	size(): number {
 		return 32;
 	}
 

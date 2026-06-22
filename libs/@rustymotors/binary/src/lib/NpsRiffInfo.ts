@@ -61,7 +61,7 @@ export class NpsRiffInfo extends BytableStructure {
         );
     }
 
-    override serialize(): Buffer {
+    override serialize(): Buffer<ArrayBuffer> {
         const parts: Buffer[] = [];
 
         parts.push(this.packString(this.riffName_));

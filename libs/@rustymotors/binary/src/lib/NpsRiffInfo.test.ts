@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { NpsRiffInfo, NpsRiffListMessage } from "./NpsRiffInfo.js";
 
 // Captured from live serialization of the values used in handleSendRiffList.

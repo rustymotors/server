@@ -363,7 +363,7 @@ async function routeInitialMessage(
     // Messages may be encrypted, this will be handled by the handler
 
     log.debug(`Routing message for port ${port}: ${initialPacket.msgNo}`);
-    let responses: MessageNode[] = [];
+    let responses: { serialize(): Buffer }[] = [];
 
     switch (port) {
         case 43300:

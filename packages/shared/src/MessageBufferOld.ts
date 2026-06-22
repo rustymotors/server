@@ -30,11 +30,11 @@ export class MessageBufferOld extends BytableBuffer {
 		return this._header.messageLength;
 	}
 
-	override get data() {
+	get data() {
 		return this._buffer;
 	}
 
-	override set data(buffer) {
+	set data(buffer) {
 		this.buffer = buffer;
 	}
 

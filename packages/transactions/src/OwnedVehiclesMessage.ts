@@ -32,7 +32,7 @@ export class OwnedVehiclesMessage extends BytableBuffer {
 		this._vehicleList = []; // 8 bytes each
 	}
 
-	override size() {
+	size() {
 		return 5 + this._vehicleList.length * 8;
 	}
 
@@ -76,7 +76,7 @@ export class OwnedVehicle extends BytableBuffer {
 		this._brandedPartId = 0; // 4 bytes
 	}
 
-	override size() {
+	size() {
 		return 8;
 	}
 

@@ -1,5 +1,6 @@
 import { NPSMessage } from "rusty-motors-shared";
 import { PersonaRecord } from "./PersonaRecord.js";
+export { PersonaRecord } from "./PersonaRecord.js";
 
 export class PersonaList {
     _personaRecords: PersonaRecord[];

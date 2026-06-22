@@ -31,7 +31,7 @@ vi.mock("rusty-motors-shared", () => {
                 decrypt: (buf: Buffer) => {
                     // simple transformation for tests: flip bytes
                     const out = Buffer.from(buf);
-                    for (let i = 0; i < out.length; i++) out[i] = out[i] ^ 0xff;
+                    for (let i = 0; i < out.length; i++) out[i] = out[i]! ^ 0xff;
                     return out;
                 },
             },
@@ -81,9 +81,9 @@ describe("decryptedMessage (via receiveTransactionsData)", () => {
         // Prepare a body with a known serialized value
         const body = {
             serialize: () => Buffer.from([0xaa, 0x55]),
-            deserialize: vi.fn(function (buf: Buffer) {
+            deserialize: vi.fn(function (this: any, buf: Buffer) {
                 // store deserialized data for assertions
-                (this as any).last = Buffer.from(buf);
+                this.last = Buffer.from(buf);
             }),
         };
 
@@ -112,7 +112,7 @@ describe("decryptedMessage (via receiveTransactionsData)", () => {
 
         // body.deserialize should have been called with decrypted data (xor 0xff transformation)
         expect(body.deserialize).toHaveBeenCalled();
-        const calledWith = (body.deserialize as unknown as Mock).mock.calls[0][0] as Buffer;
+        const calledWith = (body.deserialize as unknown as Mock).mock.calls[0]![0]! as Buffer;
         expect(calledWith).toBeInstanceOf(Buffer);
         expect(calledWith.length).toEqual(2);
         // ensure payload encryption flag was cleared on the object
@@ -152,8 +152,8 @@ describe("decryptedMessage (via receiveTransactionsData)", () => {
 
         const body = {
             serialize: () => Buffer.from([0x10, 0x20, 0x30]),
-            deserialize: vi.fn(function (buf: Buffer) {
-                (this as any).last = Buffer.from(buf);
+            deserialize: vi.fn(function (this: any, buf: Buffer) {
+                this.last = Buffer.from(buf);
             }),
         };
 

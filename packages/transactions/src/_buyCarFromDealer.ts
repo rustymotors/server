@@ -71,7 +71,7 @@ export async function _buyCarFromDealer({
     replyPacket.msgNo = 103; // GenericReplyMessage
     replyPacket.msgReply = 142; // PurchaseStockCarMessage
     replyPacket.result.writeUInt32LE(101, 0); // MC_SUCCESS
-    replyPacket.data.writeUInt32LE(newCarId, 0);
+    replyPacket.data2.writeUInt32LE(newCarId, 0);
 
     log.debug(
         `[${connectionId}] Sending GenericReplyMessage: ${replyPacket.toString()}`,

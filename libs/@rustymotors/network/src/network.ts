@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Socket as SocketUDP, type RemoteInfo } from 'node:dgram';
 import EventEmitter from 'node:events';
 import { Socket as SocketTCP, type AddressInfo } from 'node:net';

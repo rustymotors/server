@@ -103,7 +103,7 @@ export class PlayerInfoMessage extends BytableBuffer {
 		// total byes: 128 + 256 + 1 = 385
 	}
 
-	override size() {
+	size() {
 		return 385;
 	}
 

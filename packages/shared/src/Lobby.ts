@@ -255,8 +255,8 @@ export class RiffInfo implements Serializable {
     set channelOwnerId(val: number) {
         this._channelOwnerId.value = val;
     }
-    set gameServerIsRunning(val: number) {
-        this._gameServerIsRunning.value = val;
+    set gameServerIsRunning(val: boolean) {
+        this._gameServerIsRunning.value = val ? 1 : 0;
     }
 }
 

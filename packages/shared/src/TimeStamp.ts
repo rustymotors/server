@@ -20,7 +20,7 @@ export class Timestamp extends BytableBuffer {
 		// total: 14 bytes
 	}
 
-	override size() {
+	size() {
 		return 14;
 	}
 

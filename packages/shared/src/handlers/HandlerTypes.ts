@@ -67,7 +67,7 @@ export interface MessageHandler<TMessage, TResult = BytableBuffer> {
  * Provides structured error information for logging and monitoring.
  */
 export class HandlerError extends Error {
-    public readonly name = 'HandlerError';
+    public override readonly name = 'HandlerError';
 
     constructor(
         message: string,
@@ -76,7 +76,7 @@ export class HandlerError extends Error {
         /** Connection ID where the error occurred */
         public readonly connectionId: string,
         /** Original error that caused this error */
-        public readonly cause?: Error
+        public override readonly cause?: Error
     ) {
         super(message);
         // Maintains proper stack trace for where error was thrown (V8 engines)

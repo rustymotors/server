@@ -32,7 +32,6 @@ import { type MessageHandlerResult, _MSG_STRING } from "./handlers.js";
 import { getTransactionsHandlerRegistry } from "./handlers/registry.js";
 import {
 	ServerPacket,
-	type BufferSerializer,
 } from "rusty-motors-protocol";
 import { explode } from "pklib-ts"
 
@@ -93,7 +92,7 @@ async function processInput({
 		packet._doDeserialize(inboundMessage.serialize());
 
 		try {
-			const responsePackets = await handlerEntry.handler({
+			const responsePackets: MessageHandlerResult = await handlerEntry.handler({
 				connectionId,
 				packet,
 			});

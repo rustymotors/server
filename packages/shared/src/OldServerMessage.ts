@@ -82,7 +82,7 @@ export class OldServerMessage extends MessageNode implements IServerMessage {
 		this.setDataBuffer(Buffer.alloc(10));
 	}
 
-	override size(): number {
+	size(): number {
 		// 11 is the header size
 		// Return header (11) + body size
 		const bodySize = this.getBody().sizeOf;
@@ -94,9 +94,8 @@ export class OldServerMessage extends MessageNode implements IServerMessage {
 	 * @param {Buffer} buffer
 	 * @returns {OldServerMessage}
 	 */
-	_doDeserialize(buffer: Buffer): OldServerMessage {
-		this.deserialize(buffer);
-		return this;
+	override _doDeserialize(buffer?: Buffer): void {
+		if (buffer) this.deserialize(buffer);
 	}
 
 	/**
@@ -130,7 +129,7 @@ export class OldServerMessage extends MessageNode implements IServerMessage {
 		return this.serialize().toString("hex");
 	}
 
-	get sequenceNumber(): number {
+	override get sequenceNumber(): number {
 		return this.sequence;
 	}
 }

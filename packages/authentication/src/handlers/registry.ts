@@ -21,7 +21,7 @@
  * Includes both login handlers (port 8226) and persona handlers (port 8228).
  */
 
-import { MessageHandlerRegistry, AUTH_MESSAGE_IDS } from 'rusty-motors-shared';
+import { AUTH_MESSAGE_IDS } from 'rusty-motors-shared';
 import type { ServerLogger, LegacyMessage } from 'rusty-motors-shared';
 import type { GamePacket } from 'rusty-motors-protocol';
 import type { BytableMessage, BytableBuffer } from '@rustymotors/binary';
@@ -54,16 +54,34 @@ export interface AuthHandlerResult {
     messages: GamePacket[] | BytableBuffer[];
 }
 
+// Handlers have varied message parameter subtypes that can't be unified statically.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AuthHandlerFn = (args: any) => Promise<AuthHandlerResult>;
+
+interface AuthHandlerEntry {
+    opCode: number;
+    name: string;
+    handler: AuthHandlerFn;
+}
+
+class AuthRegistry {
+    private readonly handlers = new Map<number, AuthHandlerEntry>();
+
+    register(entry: AuthHandlerEntry): this {
+        this.handlers.set(entry.opCode, entry);
+        return this;
+    }
+
+    getHandler(opCode: number): AuthHandlerEntry | undefined {
+        return this.handlers.get(opCode);
+    }
+}
+
 /**
  * Creates and returns a configured authentication handler registry.
- *
- * @returns A MessageHandlerRegistry configured with all authentication handlers
  */
-export function createAuthHandlerRegistry(): MessageHandlerRegistry<
-    AuthHandlerArgs,
-    AuthHandlerResult
-> {
-    const registry = new MessageHandlerRegistry<AuthHandlerArgs, AuthHandlerResult>('authentication');
+export function createAuthHandlerRegistry(): AuthRegistry {
+    const registry = new AuthRegistry();
 
     // Login handlers (port 8226)
     registry.register({
@@ -115,15 +133,12 @@ export function createAuthHandlerRegistry(): MessageHandlerRegistry<
 /**
  * Singleton instance of the authentication handler registry.
  */
-let authRegistryInstance: MessageHandlerRegistry<AuthHandlerArgs, AuthHandlerResult> | null = null;
+let authRegistryInstance: AuthRegistry | null = null;
 
 /**
  * Gets the singleton authentication handler registry instance.
  */
-export function getAuthHandlerRegistry(): MessageHandlerRegistry<
-    AuthHandlerArgs,
-    AuthHandlerResult
-> {
+export function getAuthHandlerRegistry(): AuthRegistry {
     if (!authRegistryInstance) {
         authRegistryInstance = createAuthHandlerRegistry();
     }

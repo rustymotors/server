@@ -1,7 +1,6 @@
 import { getServerLogger } from "rusty-motors-shared";
 
 const DAMAGE_VERSION_DEBUG = 3;
-const DAMAGE_INFO_SIZE = 24;
 
 export class DamageInfo { 
     // The MrC version number used. This is 3 in the debug version of the game.

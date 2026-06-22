@@ -256,63 +256,6 @@ export async function processSocketData(
     }
 }
 
-/**
- * Splits data into packets based on a separator.
- */
-function splitDataIntoPackets(
-    data: Buffer,
-    separator: Buffer,
-    log: ServerLogger,
-    id: string,
-): Buffer[] {
-    const packetsArray = data.toString('hex').split(separator.toString('hex'));
-    const packetCount = packetsArray.length;
-    let packets: Buffer[];
-
-    if (packetCount > 1) {
-        log.debug(`[${id}] ${packetCount} packets detected, splitting`);
-        packets = packetsArray.map((packet: string) => {
-            if (packet.length > 0) {
-                return Buffer.concat([
-                    Buffer.from([0x11, 0x01]),
-                    Buffer.from(packet, 'hex'),
-                ]);
-            }
-            return Buffer.alloc(0);
-        });
-        packets = removeEmptyEntries(packets);
-    } else {
-        packets = packetsArray.map((packet: string) => {
-            return Buffer.from(packet, 'hex');
-        });
-    }
-    return packets;
-
-    function removeEmptyEntries(packets: Buffer<ArrayBufferLike>[]) {
-        packets = packets.filter((packet: Buffer | undefined) => {
-            return packet && packet.byteLength > 2;
-        });
-        return packets;
-    }
-}
-
-/**
- * Handles packet routing by routing an initial message and sending a response
- * through a socket while logging any errors.
- */
-function handlePacketRouting(
-    id: string,
-    port: number,
-    initialPacket: BytableMessage,
-    log: ServerLogger = getServerLogger('gateway'),
-): void {
-    // routeInitialMessage is async but we don't await it (fire-and-forget)
-    // Add catch handler to prevent unhandled promise rejections
-    // Errors are already caught and logged inside routeInitialMessage
-    routeInitialMessage(id, port, initialPacket, log).catch((error) => {
-        log.error(`[${id}] Unhandled error in routeInitialMessage promise: ${String(error)}`);
-    });
-}
 
 function handleSocketError(
     error: unknown,
@@ -337,7 +280,7 @@ function handleSocketError(
  */
 function parseInitialMessage(
     data: Buffer,
-    log: ServerLogger = getServerLogger('gateway'),
+    _log: ServerLogger = getServerLogger('gateway'),
 ): BytableMessage {
     try {
         const message = createRawMessage();

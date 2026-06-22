@@ -3,8 +3,8 @@ import {
 	type ServerLogger,
 } from "rusty-motors-shared";
 import { getAuthHandlerRegistry } from "../internal.js";
+import type { AuthHandlerResult } from "../handlers/registry.js";
 import { getServerLogger } from "rusty-motors-shared";
-import type { GamePacket } from "rusty-motors-protocol";
 import type { BytableMessage } from "@rustymotors/binary";
 
 /**
@@ -28,10 +28,7 @@ export async function handleLoginData({
 	connectionId: string;
 	message: BytableMessage;
 	log?: ServerLogger;
-}): Promise<{
-	connectionId: string;
-	messages: GamePacket[];
-}> {
+}): Promise<AuthHandlerResult> {
 	// The packet needs to be an NPSMessage
 	const inboundMessage = new NPSMessage();
 	inboundMessage._doDeserialize(message.serialize());

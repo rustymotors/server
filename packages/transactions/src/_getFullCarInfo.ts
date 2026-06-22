@@ -1,4 +1,4 @@
-import { buildVehiclePartTreeFromDB, type TPart, getVehiclePartTree, vehiclePartTreeToJSON } from "rusty-motors-database";
+import { buildVehiclePartTreeFromDB, type TPart, getVehiclePartTree } from "rusty-motors-database";
 import { getServerLogger, OldServerMessage } from "rusty-motors-shared";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";

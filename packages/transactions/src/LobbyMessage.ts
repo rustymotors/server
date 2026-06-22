@@ -34,7 +34,7 @@ export class LobbyMessage extends BytableBuffer {
 		this._lobbyList = []; // 569 bytes each
 	}
 
-	override size() {
+	size() {
 		return 5 + this._lobbyList.length * 569; // LobbyInfo is 569 bytes
 	}
 
@@ -263,7 +263,7 @@ export class LobbyInfo extends BytableBuffer {
 		return buf;
 	}
 
-	override size() {
+	size() {
 		return 569;
 	}
 

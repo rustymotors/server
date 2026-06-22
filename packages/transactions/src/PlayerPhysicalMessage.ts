@@ -20,7 +20,7 @@ export class PlayerPhysicalMessage extends BytableBuffer {
 		// total: 26 bytes
 	}
 
-	override size() {
+	size() {
 		return 26;
 	}
 

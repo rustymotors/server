@@ -237,43 +237,43 @@ describe("BytableChannelData", () => {
         it("backwardRace is bit 0", () => {
             const cd = make();
             cd.backwardRace = true;
-            expect(cd.serialize()[82] & 0x01).toBe(1);
+            expect(cd.serialize()[82]! & 0x01).toBe(1);
         });
 
         it("mirrored is bit 1", () => {
             const cd = make();
             cd.mirrored = true;
-            expect(cd.serialize()[82] & 0x02).toBe(2);
+            expect(cd.serialize()[82]! & 0x02).toBe(2);
         });
 
         it("nightDriving is bit 2", () => {
             const cd = make();
             cd.nightDriving = true;
-            expect(cd.serialize()[82] & 0x04).toBe(4);
+            expect(cd.serialize()[82]! & 0x04).toBe(4);
         });
 
         it("weatherDriving is bit 3", () => {
             const cd = make();
             cd.weatherDriving = true;
-            expect(cd.serialize()[82] & 0x08).toBe(8);
+            expect(cd.serialize()[82]! & 0x08).toBe(8);
         });
 
         it("damageMode occupies bits 4-5", () => {
             const cd = make();
             cd.damageMode = 2;
-            expect((cd.serialize()[82] >> 4) & 0x03).toBe(2);
+            expect((cd.serialize()[82]! >> 4) & 0x03).toBe(2);
         });
 
         it("traffic is bit 6", () => {
             const cd = make();
             cd.traffic = true;
-            expect(cd.serialize()[82] & 0x40).toBe(0x40);
+            expect(cd.serialize()[82]! & 0x40).toBe(0x40);
         });
 
         it("handicapped is bit 7", () => {
             const cd = make();
             cd.handicapped = true;
-            expect(cd.serialize()[82] & 0x80).toBe(0x80);
+            expect(cd.serialize()[82]! & 0x80).toBe(0x80);
         });
 
         it("all flags set produces 0xff (damageMode=3)", () => {
@@ -285,7 +285,7 @@ describe("BytableChannelData", () => {
             cd.damageMode = 3;
             cd.traffic = true;
             cd.handicapped = true;
-            expect(cd.serialize()[82]).toBe(0xff);
+            expect(cd.serialize()[82]!).toBe(0xff);
         });
 
         it("damageMode is masked to 2 bits", () => {

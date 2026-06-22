@@ -14,7 +14,7 @@ export class PartsAssemblyMessage extends BytableBuffer {
 		this._partList = []; // 34 bytes each
 	}
 
-	override size() {
+	size() {
 		return 7 + this._partList.length * 34;
 	}
 
@@ -64,7 +64,7 @@ export class Part extends BytableBuffer {
 		// 33 bytes total
 	}
 
-	override size() {
+	size() {
 		return 34;
 	}
 

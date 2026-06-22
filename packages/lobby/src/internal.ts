@@ -64,7 +64,7 @@ export async function receiveLobbyData({
         });
         const sendQueue = getSocketQueue(connectionId, 'send');
 
-        result.messages.forEach((response) =>
+        result.messages.forEach((response: { serialize(): Buffer }) =>
             sendQueue.put({
                 sequenceNo: -1,
                 data: response.serialize(),

@@ -21,8 +21,30 @@
  * Handles port 43300 (MCOTS protocol).
  */
 
-import { MessageHandlerRegistry } from 'rusty-motors-shared';
-import type { MessageHandlerArgs, MessageHandlerResult } from '../handlers.js';
+import type { MessageHandlerResult } from '../handlers.js';
+
+// Handlers use the old single-arg style; typed as any to avoid the new two-arg registry constraint.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TransactionsHandlerFn = (args: any) => Promise<MessageHandlerResult>;
+
+interface TransactionsHandlerEntry {
+    opCode: number;
+    name: string;
+    handler: TransactionsHandlerFn;
+}
+
+class TransactionsRegistry {
+    private readonly handlers = new Map<number, TransactionsHandlerEntry>();
+
+    register(entry: TransactionsHandlerEntry): this {
+        this.handlers.set(entry.opCode, entry);
+        return this;
+    }
+
+    getHandler(opCode: number): TransactionsHandlerEntry | undefined {
+        return this.handlers.get(opCode);
+    }
+}
 
 import { _getArcadeCarInfo } from '../_getArcadeCarInfo.js';
 import { _getGameUrls } from '../_getGameUrls.js';
@@ -62,13 +84,10 @@ import { _startRace } from '../_startRace.js';
 /**
  * Creates and returns a configured transactions handler registry.
  *
- * @returns A MessageHandlerRegistry configured with all MCOTS transaction handlers
+ * @returns A TransactionsRegistry configured with all MCOTS transaction handlers
  */
-export function createTransactionsHandlerRegistry(): MessageHandlerRegistry<
-    MessageHandlerArgs,
-    MessageHandlerResult
-> {
-    const registry = new MessageHandlerRegistry<MessageHandlerArgs, MessageHandlerResult>('transactions');
+export function createTransactionsHandlerRegistry(): TransactionsRegistry {
+    const registry = new TransactionsRegistry();
 
     registry.register({
         opCode: 176, // MC_BUY_NEW_PART
@@ -280,15 +299,12 @@ export function createTransactionsHandlerRegistry(): MessageHandlerRegistry<
 /**
  * Singleton instance of the transactions handler registry.
  */
-let transactionsRegistryInstance: MessageHandlerRegistry<MessageHandlerArgs, MessageHandlerResult> | null = null;
+let transactionsRegistryInstance: TransactionsRegistry | null = null;
 
 /**
  * Gets the singleton transactions handler registry instance.
  */
-export function getTransactionsHandlerRegistry(): MessageHandlerRegistry<
-    MessageHandlerArgs,
-    MessageHandlerResult
-> {
+export function getTransactionsHandlerRegistry(): TransactionsRegistry {
     if (!transactionsRegistryInstance) {
         transactionsRegistryInstance = createTransactionsHandlerRegistry();
     }
