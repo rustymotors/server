@@ -1,4 +1,13 @@
 import type { MessageQueue } from './src/MessageQueue.js';
+export {
+    joinChannel,
+    leaveChannel,
+    leaveAllChannels,
+    getChannelMembers,
+    getConnectionChannels,
+    setConnectionUserId,
+    getConnectionIdByUserId,
+} from './src/ChannelMembership.js';
 export { SubThread } from './src/SubThread.js';
 export { NetworkMessage } from './src/NetworkMessage.js';
 export { Configuration, getServerConfiguration } from './src/Configuration.js';
