@@ -1,7 +1,9 @@
 import { BytableMessage } from "@rustymotors/binary";
 import {
     GameServerLaunchInfo,
+    getChannelMembers,
     getServerLogger,
+    getSocketQueue,
     RunningServerInfo,
     type ServerLogger,
     databaseProvider,
@@ -45,7 +47,6 @@ export async function handleStartGameServer({
             { connectionId },
         );
 
-        // TODO: Actually have servers
         // 0x20d NPS_SERVER_INFO - _NPS_RunningServerInfo
         const newServerInfo = new RunningServerInfo();
         newServerInfo.riff = "RACE";
@@ -81,13 +82,34 @@ export async function handleStartGameServer({
             connectionId,
         );
 
+        const responsePackets: BytableMessage[] = [
+            gameServerInfoMessage,
+            joinedChannelMessage,
+            gameServerStartupAcknowledgment,
+        ];
+
+        // Broadcast the full start signal to all other members of the race channel.
+        // Without this, only the host receives the server-info and game-started
+        // packets and the second player's client never transitions into the sim.
+        const otherMembers = getChannelMembers(commId).filter(id => id !== connectionId);
+        log.verbose(
+            `[${connectionId}] Broadcasting start to ${otherMembers.length} other channel member(s)`,
+            { connectionId, commId, otherMembers },
+        );
+        for (const memberId of otherMembers) {
+            try {
+                const sendQueue = getSocketQueue(memberId, 'send');
+                for (const pkt of responsePackets) {
+                    sendQueue.put({ sequenceNo: -1, data: pkt.serialize() });
+                }
+            } catch {
+                // Member queue already gone; skip silently.
+            }
+        }
+
         return {
             connectionId,
-            messages: [
-                // gameServerInfoMessage,
-                joinedChannelMessage,
-                gameServerStartupAcknowledgment,
-            ],
+            messages: responsePackets,
         };
     } catch (error) {
         const err = Error(
