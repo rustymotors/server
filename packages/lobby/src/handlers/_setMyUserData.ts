@@ -1,6 +1,7 @@
 import {
     type ServerLogger,
     getServerLogger,
+    setConnectionUserId,
     UserInfoMessage,
     diffObj,
     databaseProvider,
@@ -28,6 +29,7 @@ export async function _setMyUserData({
         incomingMessage.deserialize(message.serialize());
 
         const userId = incomingMessage.userInfo.userId;
+        setConnectionUserId(connectionId, userId);
 
         log.debug(`User ID: ${userId}`, {
             connectionId,

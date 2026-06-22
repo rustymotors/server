@@ -1,18 +1,24 @@
 import { BytableMessage } from "@rustymotors/binary";
-import { getServerLogger, type ServerLogger } from "rusty-motors-shared";
-import { logRelayStub } from "./NpsRelaySingleMessage.js";
+import {
+    getChannelMembers,
+    getConnectionIdByUserId,
+    getServerLogger,
+    getSocketQueue,
+    type ServerLogger,
+} from "rusty-motors-shared";
+import { NpsRelaySingleMessage, rewriteSingleEnvelope } from "./NpsRelaySingleMessage.js";
 
 const defaultLogger = getServerLogger("lobby.handleSendNotSingleLong");
 
 /**
  * Handle NPS_SEND_NOT_SINGLE_LONG (opcode 0x97 / 151).
  *
- * Channel-relay primitive: forward the blob to every channel member EXCEPT
- * the user identified by filterUserId (typically the sender themselves).
- * Used during race for position updates, score sync, and end-of-race stats.
+ * Delivers the relay blob to every channel member EXCEPT filterUserId
+ * (typically the sender). Used for position updates, score sync, and
+ * end-of-race stats during a live race.
  *
- * TODO(send-not-single-long): real relay — push blob to every other member's
- *   send queue, keyed by commId. Needs a channel-membership map.
+ * The 16-byte SEND envelope is rewritten to the 12-byte RECEIVE envelope
+ * npslib expects before forwarding.
  */
 export async function handleSendNotSingleLong({
     connectionId,
@@ -26,11 +32,37 @@ export async function handleSendNotSingleLong({
     connectionId: string;
     messages: BytableMessage[];
 }> {
-    logRelayStub({
-        opcodeName: "NPS_SEND_NOT_SINGLE_LONG",
+    const frame = message.serialize();
+    let relay: NpsRelaySingleMessage;
+    try {
+        relay = NpsRelaySingleMessage.deserialize(frame);
+    } catch (err) {
+        log.warn(`NPS_SEND_NOT_SINGLE_LONG: bad envelope`, { connectionId, err, body: frame.toString('hex') });
+        return { connectionId, messages: [] };
+    }
+
+    log.debug(`NPS_SEND_NOT_SINGLE_LONG`, {
         connectionId,
-        messageBytes: message.serialize(),
-        log,
+        commId: relay.commId,
+        senderUserId: relay.senderUserId,
+        filterUserId: relay.filterUserId,
+        appType: relay.applicationPacketType,
     });
+
+    const excludedId = getConnectionIdByUserId(relay.filterUserId);
+    const members = getChannelMembers(relay.commId);
+    const delivery = rewriteSingleEnvelope(frame);
+
+    for (const memberId of members) {
+        if (memberId === connectionId || memberId === excludedId) {
+            continue;
+        }
+        try {
+            getSocketQueue(memberId, 'send').put({ sequenceNo: -1, data: delivery });
+        } catch {
+            // Member queue gone; skip.
+        }
+    }
+
     return { connectionId, messages: [] };
 }

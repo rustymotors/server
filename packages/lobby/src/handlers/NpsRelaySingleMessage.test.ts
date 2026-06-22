@@ -3,6 +3,7 @@ import {
     describeApplicationPacketType,
     NpsRelayApplicationPacketType,
     NpsRelaySingleMessage,
+    rewriteSingleEnvelope,
 } from './NpsRelaySingleMessage.js';
 
 // Two real on-the-wire MC client captures of NPS_SEND_NOT_SINGLE_LONG (0x97).
@@ -90,6 +91,40 @@ describe('NpsRelaySingleMessage', () => {
         expect(() => NpsRelaySingleMessage.deserialize(wrongOpcode)).toThrow(
             /not in the SINGLE family/,
         );
+    });
+});
+
+describe('rewriteSingleEnvelope', () => {
+    it('drops the filterUserId field and fixes the length', () => {
+        // Build a minimal 20-byte SEND packet: header(4) + commId(4) + sender(4) + filter(4) + blob(4)
+        const send = Buffer.alloc(20);
+        send.writeUInt16BE(0x0097, 0);  // opcode
+        send.writeUInt16BE(20, 2);      // totalLength
+        send.writeUInt32BE(5, 4);       // commId
+        send.writeUInt32BE(42, 8);      // senderUserId
+        send.writeUInt32BE(99, 12);     // filterUserId (to be dropped)
+        send.writeUInt32BE(0xdeadbeef, 16); // blob
+
+        const recv = rewriteSingleEnvelope(send);
+
+        expect(recv.byteLength).toBe(16); // 20 - 4
+        expect(recv.readUInt16BE(0)).toBe(0x0097); // opcode preserved
+        expect(recv.readUInt16BE(2)).toBe(16);     // length corrected
+        expect(recv.readUInt32BE(4)).toBe(5);      // commId preserved
+        expect(recv.readUInt32BE(8)).toBe(42);     // senderUserId preserved
+        expect(recv.readUInt32BE(12)).toBe(0xdeadbeef); // blob at correct offset
+    });
+
+    it('passes through buffers shorter than the 16-byte header unchanged', () => {
+        const short = Buffer.alloc(10);
+        expect(rewriteSingleEnvelope(short)).toBe(short);
+    });
+
+    it('rewrites capture B correctly', () => {
+        const recv = rewriteSingleEnvelope(CAPTURE_B);
+        expect(recv.byteLength).toBe(CAPTURE_B.byteLength - 4);
+        expect(recv.readUInt16BE(0)).toBe(0x0097);
+        expect(recv.readUInt16BE(2)).toBe(recv.byteLength);
     });
 });
 

@@ -213,6 +213,29 @@ export class NpsRelaySingleMessage {
 }
 
 /**
+ * Rewrite a 16-byte SEND envelope to a 12-byte RECEIVE envelope.
+ *
+ * The client sends:  [opcode:2][len:2][commId:4][sender:4][filterUserId:4][blob]
+ * npslib expects:    [opcode:2][len:2][commId:4][sender:4][blob]
+ *
+ * Dropping the 4-byte filterUserId field and fixing the length field is
+ * required — without it the recipient's npslib mis-parses the envelope and
+ * silently drops the application packet (FIRST_CONTACT etc. never fire).
+ */
+export function rewriteSingleEnvelope(frame: Buffer): Buffer {
+    if (frame.byteLength < NpsRelaySingleMessage.HEADER_SIZE) {
+        return frame;
+    }
+    const newLen = frame.byteLength - 4;
+    const out = Buffer.alloc(newLen);
+    frame.copy(out, 0, 0, 2);   // opcode unchanged
+    out.writeUInt16BE(newLen, 2); // corrected total length
+    frame.copy(out, 4, 4, 12);  // commId + senderUserId
+    frame.copy(out, 12, 16);    // blob (skip the 4-byte filterUserId)
+    return out;
+}
+
+/**
  * Shared stub-handler body for the SINGLE-family relay opcodes
  * (SEND_BUDDY_LONG, SEND_SINGLE_LONG, SEND_NOT_SINGLE_LONG plus their
  * _LOGGED siblings). Parses the envelope, emits a structured debug log, and

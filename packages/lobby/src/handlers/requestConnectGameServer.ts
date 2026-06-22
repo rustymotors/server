@@ -15,6 +15,7 @@ import {
     addEncryption,
     fetchStateFromDatabase,
     getEncryption,
+    setConnectionUserId,
     databaseProvider,
     type ISessionStore,
 } from "rusty-motors-shared";
@@ -137,6 +138,7 @@ class PacketProcessor {
         }
 
         // We have a session, we are good to go!
+        setConnectionUserId(this.connectionId, inboundMessage._userId);
         await this.sessionStore.updateConnection(
             this.connectionId,
             new LoginInfoMessage()._userId,

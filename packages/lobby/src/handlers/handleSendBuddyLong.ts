@@ -1,19 +1,23 @@
 import { BytableMessage } from "@rustymotors/binary";
-import { getServerLogger, type ServerLogger } from "rusty-motors-shared";
-import { logRelayStub } from "./NpsRelaySingleMessage.js";
+import {
+    getConnectionIdByUserId,
+    getServerLogger,
+    getSocketQueue,
+    type ServerLogger,
+} from "rusty-motors-shared";
+import { NpsRelaySingleMessage, rewriteSingleEnvelope } from "./NpsRelaySingleMessage.js";
 
 const defaultLogger = getServerLogger("lobby.handleSendBuddyLong");
 
 /**
  * Handle NPS_SEND_BUDDY_LONG (opcode 0x93 / 147).
  *
- * Channel-relay primitive: forward the blob to one specific buddy user
- * identified by filterUserId. Wire layout matches the SINGLE-family
- * envelope — see NpsRelaySingleMessage.
+ * Delivers the relay blob to one specific user (filterUserId), same routing
+ * as SEND_SINGLE_LONG. The distinction is semantic to the client (buddy
+ * relationship context) — the server delivers identically.
  *
- * TODO(send-buddy-long): real relay — look up the buddy connection by
- *   userId (validating the buddy relationship if you want to enforce it)
- *   and push the blob to its send queue.
+ * The 16-byte SEND envelope is rewritten to the 12-byte RECEIVE envelope
+ * npslib expects before forwarding.
  */
 export async function handleSendBuddyLong({
     connectionId,
@@ -27,11 +31,32 @@ export async function handleSendBuddyLong({
     connectionId: string;
     messages: BytableMessage[];
 }> {
-    logRelayStub({
-        opcodeName: "NPS_SEND_BUDDY_LONG",
+    const frame = message.serialize();
+    let relay: NpsRelaySingleMessage;
+    try {
+        relay = NpsRelaySingleMessage.deserialize(frame);
+    } catch (err) {
+        log.warn(`NPS_SEND_BUDDY_LONG: bad envelope`, { connectionId, err, body: frame.toString('hex') });
+        return { connectionId, messages: [] };
+    }
+
+    log.debug(`NPS_SEND_BUDDY_LONG`, {
         connectionId,
-        messageBytes: message.serialize(),
-        log,
+        commId: relay.commId,
+        senderUserId: relay.senderUserId,
+        filterUserId: relay.filterUserId,
+        appType: relay.applicationPacketType,
     });
+
+    const targetId = getConnectionIdByUserId(relay.filterUserId);
+    if (targetId && targetId !== connectionId) {
+        try {
+            const delivery = rewriteSingleEnvelope(frame);
+            getSocketQueue(targetId, 'send').put({ sequenceNo: -1, data: delivery });
+        } catch {
+            // Target queue gone; drop silently.
+        }
+    }
+
     return { connectionId, messages: [] };
 }
