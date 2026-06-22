@@ -13,19 +13,17 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import { NPSMessage, type ServerLogger } from "rusty-motors-shared";
+import { type ServerLogger } from "rusty-motors-shared";
+import { BytableMessage } from "@rustymotors/binary";
 
 /**
  * Selects a game persona and marks it as in use
- * @param {NPSMessage} requestPacket
- * @param {ServerLogger} log
- * @returns {Promise<NPSMessage>}
  */
 
 export async function handleSelectGamePersona(
-	requestPacket: NPSMessage,
+	requestPacket: BytableMessage,
 	log: ServerLogger,
-): Promise<NPSMessage> {
+): Promise<BytableMessage> {
 	log.debug("_npsSelectGamePersona...");
 
 	log.debug(
@@ -38,9 +36,9 @@ export async function handleSelectGamePersona(
 	// Build the packet
 	// Response Code
 	// 207 = success
-	const responsePacket = new NPSMessage();
-	responsePacket._header.id = 0x207;
-	responsePacket.setBuffer(packetContent);
+	const responsePacket = new BytableMessage(1);
+	responsePacket.header.setId(0x207);
+	responsePacket.data = packetContent;
 
 	log.debug(
 		`[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.toString()}`,

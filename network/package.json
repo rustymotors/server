@@ -1,0 +1,22 @@
+{
+  "name": "network",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "node --watch src/server.ts",
+    "test": "vitest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@types/node": "26.0.0",
+    "@vitest/ui": "4.1.9",
+    "typescript": "6.0.3",
+    "vitest": "4.1.9"
+  }
+}

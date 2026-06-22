@@ -1,4 +1,4 @@
-import { NPSMessage } from "rusty-motors-shared";
+import { BytableMessage } from "@rustymotors/binary";
 import { PersonaRecord } from "./PersonaRecord.js";
 export { PersonaRecord } from "./PersonaRecord.js";
 
@@ -76,11 +76,11 @@ export class PersonaList {
         return `PersonaList: ${JSON.stringify(this._personaRecords)}`;
     }
 }
-export class PersonaMapsMessage extends NPSMessage {
+export class PersonaMapsMessage extends BytableMessage {
     _personaRecords: PersonaList | undefined;
     raw: Buffer | undefined;
     constructor() {
-        super();
+        super(1);
         /** @type {PersonaList | undefined} */
         this._personaRecords = undefined;
     }
@@ -91,8 +91,8 @@ export class PersonaMapsMessage extends NPSMessage {
      */
     override deserialize(buffer: Buffer): PersonaMapsMessage {
         try {
-            this._header._doDeserialize(buffer);
-            this.setBuffer(buffer.subarray(12)); // 12 = NPSHeader size (version 1 header)
+            this.header.deserialize(buffer);
+            this.data = buffer.subarray(12); // 12 = NPSHeader size (version 1 header)
             this.raw = buffer;
             return this;
         } catch (error) {
@@ -112,9 +112,10 @@ export class PersonaMapsMessage extends NPSMessage {
             if (!this._personaRecords) {
                 throw Error("PersonaRecords is undefined");
             }
-            this._header.length = 12 + 2 + this._personaRecords.size(); // 12 = header size, 2 = persona count
-            const buffer = Buffer.alloc(this._header.length);
-            this._header._doSerialize().copy(buffer);
+            const totalLength = 12 + 2 + this._personaRecords.size(); // 12 = header size, 2 = persona count
+            this.header.setMessageLength(totalLength);
+            const buffer = Buffer.alloc(totalLength);
+            this.header.serialize().copy(buffer);
 
             // Write the persona count. This is known to be correct at offset 12
             buffer.writeUInt16BE(this._personaRecords.personaCount(), 12);
@@ -132,14 +133,14 @@ export class PersonaMapsMessage extends NPSMessage {
 
     asJSON() {
         return {
-            header: this._header,
+            header: { id: this.header.id, length: this.header.messageLength },
             personaRecords: this._personaRecords,
         };
     }
 
     override toString() {
         return `PersonaMapsMessage: ${JSON.stringify({
-            header: this._header,
+            header: { id: this.header.id, length: this.header.messageLength },
             personaRecords: this._personaRecords,
         })}`;
     }

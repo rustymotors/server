@@ -136,9 +136,9 @@ export async function getPersonaMaps({
             );
         });
 
-        personaMapsMessage._header.id = 0x607;
+        personaMapsMessage.header.setId(0x607);
         personaMapsMessage._personaRecords = personaList;
-        personaMapsMessage.setBuffer(personaList.serialize());
+        personaMapsMessage.data = personaList.serialize();
         log.debug(
             `PersonaMapsMessage object from _npsGetPersonaMaps',
             ${JSON.stringify({

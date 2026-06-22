@@ -1,11 +1,10 @@
 import {
-	NPSMessage,
 	type ServerLogger,
 } from "rusty-motors-shared";
 import { getAuthHandlerRegistry } from "../internal.js";
 import type { AuthHandlerResult } from "../handlers/registry.js";
 import { getServerLogger } from "rusty-motors-shared";
-import type { BytableMessage } from "@rustymotors/binary";
+import { BytableMessage } from "@rustymotors/binary";
 
 /**
  * Handles the reception of login data, deserializes the incoming message, and processes it.
@@ -29,18 +28,17 @@ export async function handleLoginData({
 	message: BytableMessage;
 	log?: ServerLogger;
 }): Promise<AuthHandlerResult> {
-	// The packet needs to be an NPSMessage
-	const inboundMessage = new NPSMessage();
-	inboundMessage._doDeserialize(message.serialize());
+	const inboundMessage = new BytableMessage(1);
+	inboundMessage.deserialize(message.serialize());
 
 	// Use the handler registry to find the appropriate handler
 	const registry = getAuthHandlerRegistry();
-	const handlerEntry = registry.getHandler(inboundMessage._header.id);
+	const handlerEntry = registry.getHandler(inboundMessage.header.id);
 
 	if (!handlerEntry) {
 		// We do not yet support this message code
 		throw Error(
-			`[${connectionId}] UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
+			`[${connectionId}] UNSUPPORTED_MESSAGECODE: ${inboundMessage.header.id}`,
 		);
 	}
 

@@ -1,8 +1,8 @@
 import {
     LegacyMessage,
-    NPSMessage,
     type ServerLogger,
 } from 'rusty-motors-shared';
+import { BytableMessage } from '@rustymotors/binary';
 import { BytableBuffer } from '@rustymotors/binary';
 import { createGameProfile } from 'rusty-motors-nps';
 import { getPersonaByPersonaId } from '../getPersonasByPersonaId.js';
@@ -26,8 +26,8 @@ export async function getPersonaInfo({
     messages: BytableBuffer[];
 }> {
     log.debug('getPersonaInfo...');
-    const requestPacket = new NPSMessage();
-    requestPacket._doDeserialize(message.serialize());
+    const requestPacket = new BytableMessage(1);
+    requestPacket.deserialize(message.serialize());
 
     log.debug(
         `LegacyMsg request object from getPersonaInfo ${requestPacket.toString()}`,
