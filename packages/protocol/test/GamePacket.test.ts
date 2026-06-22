@@ -127,3 +127,57 @@ describe("GamePacket", () => {
 		expect(packet.getVersion()).toBe(0);
 	});
 });
+
+// Wire-format snapshots for GamePacket.
+// v0 = 4-byte header [id:2 BE][length:2 BE]
+// v257 = 12-byte header [id:2][length:2][0x0101:2][padding:2][checksum:4], checksum === length
+describe("GamePacket wire snapshots", () => {
+	it("v0: id=0x0201 length=6 payload=[aa bb] produces fixed hex", () => {
+		const input = Buffer.from("020100 06aabb".replace(" ", ""), "hex");
+		const packet = new GamePacket();
+		packet.deserialize(input);
+		// Wire layout (6 bytes):
+		//   [02 01]   id=0x0201 as UInt16BE
+		//   [00 06]   length=6 as UInt16BE
+		//   [aa bb]   payload
+		expect(packet.serialize().toString("hex")).toBe("020100 06aabb".replace(" ", ""));
+	});
+
+	it("v0: round-trips unchanged", () => {
+		const original = "020100 06aabb".replace(" ", "");
+		const packet = new GamePacket();
+		packet.deserialize(Buffer.from(original, "hex"));
+		expect(packet.serialize().toString("hex")).toBe(original);
+	});
+
+	it("v257: id=0x0201 length=14 payload=[aa bb] produces fixed hex", () => {
+		// Build a valid v257 buffer: checksum (at offset 8) must equal length (at offset 2)
+		const input = Buffer.alloc(14);
+		input.writeUInt16BE(0x0201, 0); // id
+		input.writeUInt16BE(14, 2);     // length=14 (12 header + 2 payload)
+		input.writeUInt16BE(0x0101, 4); // version=257
+		input.writeUInt16BE(0, 6);      // padding=0
+		input.writeUInt32BE(14, 8);     // checksum=length
+		input[12] = 0xaa;
+		input[13] = 0xbb;
+
+		const packet = new GamePacket();
+		packet.deserialize(input);
+
+		// Wire layout (14 bytes):
+		//   [02 01]         id
+		//   [00 0e]         length=14
+		//   [01 01]         version=257
+		//   [00 00]         padding=0
+		//   [00 00 00 0e]   checksum=14
+		//   [aa bb]         payload
+		expect(packet.serialize().toString("hex")).toBe("0201000e010100000000000eaabb");
+	});
+
+	it("v257: round-trips unchanged", () => {
+		const original = "0201000e010100000000000eaabb";
+		const packet = new GamePacket();
+		packet.deserialize(Buffer.from(original, "hex"));
+		expect(packet.serialize().toString("hex")).toBe(original);
+	});
+});

@@ -49,3 +49,36 @@ describe("RawMessage", () => {
         expect(() => msg.deserialize(Buffer.alloc(3))).toThrow();
     });
 });
+
+// Wire-format snapshot: lock in exact on-the-wire bytes for RawMessage.
+// id and length are big-endian (NPS convention); payload follows immediately.
+describe("RawMessage wire snapshots", () => {
+    it("id=0x020e length=8 data=[de ad be ef] produces fixed hex", () => {
+        const msg = new RawMessage();
+        msg.id = 0x020e;
+        msg.length = 8;
+        msg.data = Buffer.from([0xde, 0xad, 0xbe, 0xef]);
+        // Wire layout (8 bytes):
+        //   [02 0e]         id=0x020e as Int16BE
+        //   [00 08]         length=8 as Int16BE
+        //   [de ad be ef]   payload
+        expect(msg.serialize().toString("hex")).toBe("020e0008deadbeef");
+    });
+
+    it("id=0x0100 with empty data produces 4-byte header-only wire", () => {
+        const msg = new RawMessage();
+        msg.id = 0x0100;
+        msg.length = 4;
+        // Wire layout (4 bytes):
+        //   [01 00]   id
+        //   [00 04]   length=4
+        expect(msg.serialize().toString("hex")).toBe("01000004");
+    });
+
+    it("round-trips through deserialize with no data loss", () => {
+        const original = "020e0008deadbeef";
+        const msg = new RawMessage();
+        msg.deserialize(Buffer.from(original, "hex"));
+        expect(msg.serialize().toString("hex")).toBe(original);
+    });
+});

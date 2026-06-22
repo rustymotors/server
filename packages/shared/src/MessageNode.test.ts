@@ -104,3 +104,42 @@ describe("MessageNode", () => {
         expect(m.toString().startsWith("MessageNode:")).toBe(true);
     });
 });
+
+// Wire-format snapshot: these hex strings lock in the exact on-the-wire bytes.
+// If serialization format changes, these tests will fail and must be updated intentionally.
+describe("MessageNode wire snapshots", () => {
+    it("sequence=1 msgNo=0x0106 flags=0 produces fixed hex", () => {
+        const m = new MessageNode();
+        m.sequence = 1;
+        m.msgNo = 0x0106;
+        // Wire layout (15 bytes):
+        //   [0d 00]         msgLength=13 (9+4) as UInt16LE
+        //   [54 4f 4d 43]   "TOMC"
+        //   [01 00 00 00]   sequence=1 as Int32LE
+        //   [00]            flags=0
+        //   [06 01 00 00]   body: msgNumber=0x0106 as Int16LE + 2 padding bytes
+        expect(m.serialize().toString("hex")).toBe("0d00544f4d43010000000006010000");
+    });
+
+    it("sequence=0xff msgNo=0x0217 flags=0x0a produces fixed hex", () => {
+        const m = new MessageNode();
+        m.sequence = 0xff;
+        m.msgNo = 0x0217;
+        m.setPayloadEncryption(true);  // 0x08
+        m.setPayloadCompression(true); // 0x02 → flags = 0x0a
+        // Wire layout (15 bytes):
+        //   [0d 00]         msgLength=13
+        //   [54 4f 4d 43]   "TOMC"
+        //   [ff 00 00 00]   sequence=255 as Int32LE
+        //   [0a]            flags=0x0a
+        //   [17 02 00 00]   body: msgNumber=0x0217 as Int16LE + 2 padding bytes
+        expect(m.serialize().toString("hex")).toBe("0d00544f4d43ff0000000a17020000");
+    });
+
+    it("round-trips through deserialize with no data loss", () => {
+        const original = "0d00544f4d43010000000006010000";
+        const m = new MessageNode();
+        m.deserialize(Buffer.from(original, "hex"));
+        expect(m.serialize().toString("hex")).toBe(original);
+    });
+});
