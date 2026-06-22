@@ -30,9 +30,6 @@ import {
 } from "rusty-motors-shared";
 import { type MessageHandlerResult, _MSG_STRING } from "./handlers.js";
 import { getTransactionsHandlerRegistry } from "./handlers/registry.js";
-import {
-	ServerPacket,
-} from "rusty-motors-protocol";
 import { explode } from "pklib-ts"
 
 
@@ -221,10 +218,10 @@ export async function receiveTransactionsData({
 	});
 
 	// Loop through the outbound messages and encrypt them
-	const outboundMessages: ServerPacket[] = [];
+	const outboundMessages: MessageNode[] = [];
 
 	response.messages.forEach((message) => {
-		const outboundMessage = new ServerPacket();
+		const outboundMessage = new MessageNode();
 		outboundMessage.deserialize(message.serialize());
 
 		if (outboundMessage.isPayloadEncrypted()) {
@@ -276,7 +273,7 @@ export async function receiveTransactionsData({
  * @param state - The current state of the server.
  * @param log - The logger to use for logging. Defaults to a logger named "transactionServer.decryptMessage".
  * @param connectionId - The ID of the connection associated with the message.
- * @returns The decrypted message as a `ServerPacket`.
+ * @returns The decrypted message as a `MessageNode`.
  * @throws Will throw an error if the message cannot be decrypted.
  */
 function decryptMessage(
@@ -320,19 +317,19 @@ function decryptMessage(
 
 function encryptOutboundMessage(
 	encryptionSettings: McosEncryption,
-	unencryptedMessage: ServerPacket,
+	unencryptedMessage: MessageNode,
 	state: State,
 	connectionId: string,
 	log = getServerLogger("transactionServer.encryptOutboundMessage"),
-): ServerPacket {
+): MessageNode {
 	try {
 		const encryptedMessage = encryptionSettings.dataEncryption.encrypt(
-			unencryptedMessage.data.serialize(),
+			unencryptedMessage.data,
 		);
 		updateEncryption(state, encryptionSettings).save();
 
 		// Verify the length of the message
-		verifyLength(unencryptedMessage.data.serialize(), encryptedMessage);
+		verifyLength(unencryptedMessage.data, encryptedMessage);
 
 		// Assuming the message was decrypted successfully, update the buffer
 		log.debug(
