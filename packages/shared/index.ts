@@ -23,7 +23,6 @@ export { MessageBufferOld } from './src/MessageBufferOld.js';
 export { serializeString } from './src/serializeString.js';
 export { deserializeString } from './src/deserializeString.js';
 export { serializeStringRaw } from './src/serializeStringRaw.js';
-export { MessageNodeOld } from './src/MessageNodeOld.js';
 export { Timestamp } from './src/TimeStamp.js';
 export {
     McosEncryptionPair,

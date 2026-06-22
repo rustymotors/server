@@ -2,71 +2,40 @@
  * Object for providing information on stock cars
  */
 // WORD     msgNo;
-// DWORD    starterCash; // when called from the create persona screen,
-//                      //  this indicates how much cash a persona starts out with
-// DWORD    dealerID;   // for easy match up
+// DWORD    starterCash;
+// DWORD    dealerID;
 // DWORD    brand;
 // WORD     noCars;
-// BYTE     moreToCome;     // if 1, expect another msg, otherwise don't
+// BYTE     moreToCome;
 // StockCar carInfo[1];
-/**
- * @class
- * @property {number} msgNo
- * @property {number} starterCash
- * @property {number} dealerId
- * @property {number} brand
- * @property {number} noCars
- * @property {number} moreToCome
- * @property {StockCar[]} StockCarList
- */
-
-import { MessageNodeOld } from "rusty-motors-shared";
 
 type StockCar = import("./StockCar.js").StockCar;
 
-export class StockCarInfoMessage extends MessageNodeOld {
+export class StockCarInfoMessage {
+	msgNo: number;
 	starterCash: number;
 	dealerId: number;
 	brand: number;
 	noCars: number;
 	moreToCome: boolean;
 	StockCarList: StockCar[];
-	/**
-	 * Creates an instance of StockCarInfoMsg.
-	 * @class
-	 * @param {number} starterCash
-	 * @param {number} dealerId
-	 * @param {number} brand
-	 * @memberof StockCarInfoMsg
-	 */
+
 	constructor(starterCash: number, dealerId: number, brand: number) {
-		super();
 		this.msgNo = 141;
 		this.starterCash = starterCash;
 		this.dealerId = dealerId;
 		this.brand = brand;
-		/** Number of cars */
 		this.noCars = 0;
 		this.moreToCome = false;
-		/** @type {StockCar[]} */
 		this.StockCarList = [];
 	}
 
-	/**
-	 *
-	 * @param {StockCar} car
-	 */
 	addStockCar(car: StockCar) {
 		this.StockCarList.push(car);
 		this.noCars = this.StockCarList.length;
 	}
 
-	/**
-	 * @override
-	 * @return {Buffer}
-	 */
-	override serialize(): Buffer {
-		// This does not count the StockCar array
+	serialize(): Buffer {
 		const packet = Buffer.alloc((17 + 9) * this.StockCarList.length);
 		packet.writeUInt16LE(this.msgNo, 0);
 		packet.writeInt32LE(this.starterCash, 2);
@@ -83,14 +52,10 @@ export class StockCarInfoMessage extends MessageNodeOld {
 				}
 			}
 		}
-
 		return packet;
 	}
 
-	/**
-	 * @override
-	 */
-	override toString() {
+	toString() {
 		return `${JSON.stringify({
 			msgNo: this.msgNo,
 			starterCash: this.starterCash,
