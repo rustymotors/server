@@ -11,12 +11,9 @@ import { BytableMessage } from "@rustymotors/binary";
  *
  * @param {Object} params - The parameters for the function.
  * @param {string} params.connectionId - The ID of the connection.
- * @param {GamePacket} params.message - The serialized message buffer.
+ * @param {BytableMessage} params.message - The serialized message buffer.
  * @param {ServerLogger} [params.log=defaultLogger] - Optional logger instance.
- * @returns {Promise<{
- *  connectionId: string,
- *  messages: GamePacket[],
- * }>} - The response from the login data handler.
+ * @returns {Promise<AuthHandlerResult>} - The response from the login data handler.
  * @throws {Error} - Throws an error if there is an issue processing the login data.
  */
 export async function handleLoginData({

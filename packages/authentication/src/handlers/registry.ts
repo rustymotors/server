@@ -23,7 +23,6 @@
 
 import { AUTH_MESSAGE_IDS } from 'rusty-motors-shared';
 import type { ServerLogger, LegacyMessage } from 'rusty-motors-shared';
-import type { GamePacket } from 'rusty-motors-protocol';
 import type { BytableMessage, BytableBuffer } from '@rustymotors/binary';
 
 // Login handlers
@@ -42,7 +41,7 @@ import { getPersonaMaps } from '../persona/getPersonaMaps.js';
  */
 export interface AuthHandlerArgs {
     connectionId: string;
-    message: BytableMessage | LegacyMessage | GamePacket;
+    message: BytableMessage | LegacyMessage;
     log?: ServerLogger;
 }
 
@@ -51,7 +50,7 @@ export interface AuthHandlerArgs {
  */
 export interface AuthHandlerResult {
     connectionId: string;
-    messages: GamePacket[] | BytableBuffer[];
+    messages: BytableMessage[] | BytableBuffer[];
 }
 
 // Handlers have varied message parameter subtypes that can't be unified statically.

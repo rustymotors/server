@@ -1,8 +1,7 @@
 import { NetworkMessage, configurationProvider, databaseProvider } from "rusty-motors-shared";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { type ServerLogger, getServerLogger } from "rusty-motors-shared";
-import { GamePacket } from "rusty-motors-protocol";
-import type { BytableMessage } from "@rustymotors/binary";
+import { BytableMessage } from "@rustymotors/binary";
 
 
 /**
@@ -27,7 +26,7 @@ export async function login({
 	log?: ServerLogger;
 }): Promise<{
 	connectionId: string;
-	messages: GamePacket[];
+	messages: BytableMessage[];
 }> {
 	const data = message.serialize();
 
@@ -89,7 +88,7 @@ export async function login({
 	// Set the packet content in the outbound message
 	outboundMessage.data = packetContent;
 
-	const outboundMessage2 = new GamePacket();
+	const outboundMessage2 = new BytableMessage(1);
 	outboundMessage2.deserialize(outboundMessage.serialize());
 
 

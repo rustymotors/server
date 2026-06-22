@@ -1,4 +1,3 @@
-import { GamePacket } from 'rusty-motors-protocol';
 import { type BytableMessage, createRawMessage } from '@rustymotors/binary';
 import * as Sentry from '@sentry/node';
 import {
@@ -335,10 +334,8 @@ async function routeInitialMessage(
         const serviceName = registry.getServiceName(port) ?? 'unknown';
 
         if (!handler) {
-            const packet = new GamePacket();
-            packet.deserialize(initialPacket.serialize());
             log.warn(
-                `[${id}] No handler found for port ${port}: ${packet.serialize().toString('hex')}`,
+                `[${id}] No handler found for port ${port}: ${initialPacket.serialize().toString('hex')}`,
             );
             return;
         }
