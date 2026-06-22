@@ -1,6 +1,5 @@
 import { serializeStringRaw } from "rusty-motors-shared";
 import { NetworkMessage } from "rusty-motors-shared";
-import { RawMessage } from "rusty-motors-shared";
 
 /**
  * BuddyInfoMessage
@@ -14,28 +13,21 @@ import { RawMessage } from "rusty-motors-shared";
  * buddy list itself. It has a response code of 1544 (0x608).
  */
 
-export class BuddyInfoMessage extends RawMessage {
-	_buddyCount: number; // 2 bytes
+export class BuddyInfoMessage {
+	readonly id = 0x614;
+	_buddyCount = 0;
 	_buddyList: BuddyList[] = [];
 	_longOne = 0x00000000; // 4 bytes
 	_longTwo = 0x00000000; // 4 bytes
-	constructor() {
-		super();
-		this.id = 0x614
-		this._buddyCount = 0;
+
+	get length(): number {
+		return 2 + this._buddyCount * 115;
 	}
 
-	override get length(): number {
-		return super.length + 2 + this._buddyCount * 115;
-	}
-
-	override serialize() {
+	serialize(): Buffer {
 		const buffer = Buffer.alloc(this.length);
-		let offset = 0;
-		super.serialize().copy(buffer, offset);
-		offset += super.length;
-		buffer.writeUInt16BE(this._buddyCount, offset);
-		offset += 2;
+		buffer.writeUInt16BE(this._buddyCount, 0);
+		let offset = 2;
 		for (const buddy of this._buddyList) {
 			buddy.serialize().copy(buffer, offset);
 			offset += buddy.length;
@@ -82,7 +74,7 @@ export class BuddyCount extends NetworkMessage {
 	}
 }
 
-export class BuddyList extends RawMessage {
+export class BuddyList {
 	// These are BuddyMap fields
 	// These are BuddyInfo fields
 	buddyName = ""; // 33 bytes - 32 + null terminator
@@ -94,43 +86,34 @@ export class BuddyList extends RawMessage {
 	noEntry = false; // 1 byte
 	muteWhispers = false; // 1 byte
 	muteChat = false; // 1 byte
+	readonly id = 0x608;
 
-	constructor() {
-		super();
-		this.id = 0x608
-	}
-
-	override get length(): number {
+	get length(): number {
 		return 115;
 	}
 
-	override serialize() {
+	serialize(): Buffer {
 		const buffer = Buffer.alloc(this.length);
-		let offset = 0;
-		super.serialize().copy(buffer, offset);
-		offset += super.length;
+		// Wire format: [id:2BE][0:2BE][id:2BE][buddyName:33][gameName:65][flags:7][zeros:4]
+		buffer.writeUInt16BE(this.id, 0);
+		// bytes 2-3 remain 0x0000 from alloc
+		let offset = 2;
 		buffer.writeUInt16BE(this.id, offset);
 		offset += 2;
 		offset = serializeStringRaw(this.buddyName, buffer, offset, 33);
 		offset = serializeStringRaw(this.gameName, buffer, offset, 65);
-		buffer.writeUInt8(this.isBuddy ? 1 : 0, offset);
-		offset += 1;
-		buffer.writeUInt8(this.isOnline ? 1 : 0, offset);
-		offset += 1;
-		buffer.writeUInt8(this.dnd ? 1 : 0, offset);
-		offset += 1;
-		buffer.writeUInt8(this.dnb ? 1 : 0, offset);
-		offset += 1;
-		buffer.writeUInt8(this.noEntry ? 1 : 0, offset);
-		offset += 1;
-		buffer.writeUInt8(this.muteWhispers ? 1 : 0, offset);
-		offset += 1;
-		buffer.writeUInt8(this.muteChat ? 1 : 0, offset);
+		buffer.writeUInt8(this.isBuddy ? 1 : 0, offset++);
+		buffer.writeUInt8(this.isOnline ? 1 : 0, offset++);
+		buffer.writeUInt8(this.dnd ? 1 : 0, offset++);
+		buffer.writeUInt8(this.dnb ? 1 : 0, offset++);
+		buffer.writeUInt8(this.noEntry ? 1 : 0, offset++);
+		buffer.writeUInt8(this.muteWhispers ? 1 : 0, offset++);
+		buffer.writeUInt8(this.muteChat ? 1 : 0, offset++);
 
 		return buffer;
 	}
 
-	override toString(): string {
+	toString(): string {
 		return this.serialize().toString("hex");
 	}
 }

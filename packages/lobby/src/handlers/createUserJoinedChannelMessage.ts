@@ -1,7 +1,6 @@
-import { BytableMessage } from '@rustymotors/binary';
 import { type ServerLogger, databaseProvider, UserJoinedChannelMessage, NPS_MESSAGE_IDS } from 'rusty-motors-shared';
 import { UserStatusManager } from 'rusty-motors-nps';
-import { createRawMessage } from './handleOpenCommChannel.js';
+import { createBytableMessage } from './handleOpenCommChannel.js';
 
 export async function createUserJoinedChannelMessage(userId: number, commId: number, log: ServerLogger, connectionId: string) {
     const sessionStore = databaseProvider.getSessionStore();
@@ -22,9 +21,7 @@ export async function createUserJoinedChannelMessage(userId: number, commId: num
         personaId
     );
 
-    const userJoinedMessage = BytableMessage.FromRawMessage(
-        createRawMessage(NPS_MESSAGE_IDS.USER_JOINED_CHANNEL, userJoined)
-    );
+    const userJoinedMessage = createBytableMessage(NPS_MESSAGE_IDS.USER_JOINED_CHANNEL, userJoined);
 
     log.debug('Outbound user join message', {
         connectionId,

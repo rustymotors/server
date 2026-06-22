@@ -1,5 +1,4 @@
 import type { Serializable, NPSMessage } from './types.js';
-import { RawMessageHeader } from './RawMessage.js';
 import {
     checkMinLength,
     checkSize2,
@@ -325,19 +324,18 @@ export class RiffListHeader implements Serializable {
 }
 
 export class RiffInfoListMessage implements NPSMessage {
-    private _header: RawMessageHeader;
+    private _id = 0;
     private _riffListHeader: RiffListHeader;
     private _riffs: RiffList;
 
     constructor() {
-        this._header = new RawMessageHeader();
         this._riffListHeader = new RiffListHeader();
         this._riffs = new RiffList();
     }
 
     get sizeOf() {
         return (
-            this._header.sizeOf +
+            4 +
             this._riffListHeader.sizeOf +
             336 * this._riffListHeader.numRiffs
         );
@@ -345,9 +343,12 @@ export class RiffInfoListMessage implements NPSMessage {
 
     serialize() {
         this._riffListHeader.numRiffs = this._riffs.length;
+        const header = Buffer.alloc(4);
+        header.writeUInt16BE(this._id, 0);
+        // length field left as 0 (was never set in original)
 
         return Buffer.concat([
-            this._header.serialize(),
+            header,
             this._riffListHeader.serialize(),
             this._riffs.serialize(),
         ]);
@@ -360,16 +361,16 @@ export class RiffInfoListMessage implements NPSMessage {
     }
 
     get id() {
-        return this._header.id;
+        return this._id;
     }
 
     set id(val: number) {
         checkSize2(val);
-        this._header.id = val;
+        this._id = val;
     }
 
     get length() {
-        return this._header.length;
+        return 0; // matches original: RawMessageHeader.length was never set
     }
 
     addRiff(riff: RiffInfo) {

@@ -4,7 +4,6 @@ import {
     databaseProvider,
     getServerLogger,
     NPS_MESSAGE_IDS,
-    RawMessage,
     type Serializable,
 } from 'rusty-motors-shared';
 import { ServerLogger } from '@rustymotors/logging';
@@ -65,8 +64,6 @@ export async function handleOpenCommChannel({
         if (requestedCommId > 100) {
 
 
-            const channelCreatedMessage = new RawMessage();
-            channelCreatedMessage.id = 0x20e
             const channelCreatedBody = new ChannelCreated();
             channelCreatedBody.commId = requestedCommId;
             channelCreatedBody.riff = requestedRiffName.toString();
@@ -77,13 +74,7 @@ export async function handleOpenCommChannel({
             channelCreatedBody.maxReadyPlayers = 1;
             channelCreatedBody.channelData.minNPSracers = 0
 
-            channelCreatedMessage.data = channelCreatedBody.serialize();
-            const channelCreatedBytable = new BytableMessage();
-            channelCreatedBytable.setSerializeOrder([
-                { name: 'data', field: 'Buffer' },
-            ]);
-            channelCreatedBytable.setVersion(0);
-            channelCreatedBytable.deserialize(channelCreatedMessage.serialize());
+            const channelCreatedBytable = createBytableMessage(0x20e, channelCreatedBody);
 
             responsePackets.push(channelCreatedBytable)
 
@@ -119,10 +110,12 @@ export async function handleOpenCommChannel({
     }
 }
 
-export function createRawMessage(msgCode: number, body: Serializable) {
-    const message = new RawMessage();
-    message.id = msgCode;
-    message.data = body.serialize();
+export function createBytableMessage(msgCode: number, body: Serializable): BytableMessage {
+    const message = new BytableMessage();
+    message.setSerializeOrder([{ name: 'data', field: 'Buffer' }]);
+    message.setVersion(0);
+    message.header.setId(msgCode);
+    message.setFieldValueByName('data', body.serialize());
     return message;
 }
 

@@ -7,7 +7,7 @@ import {
     checkSize4,
     sliceBuff,
 } from './helpers.js';
-import { RawMessageHeader } from './RawMessage.js';
+import { RawMessageHeader } from './RawMessageHeader.js';
 import { SerializedList } from './SerializedList.js';
 import type { IRunningServerInfo, NPSMessage, Serializable } from './types.js';
 

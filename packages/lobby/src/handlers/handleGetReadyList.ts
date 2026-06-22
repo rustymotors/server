@@ -1,7 +1,6 @@
 import { BytableMessage } from '@rustymotors/binary';
 import {
     getServerLogger,
-    RawMessage,
     type ServerLogger,
     ReadyForGame,
     ReadyForGameList,
@@ -39,13 +38,11 @@ export async function handleGetReadyList({
 
     const body = readyList.serialize();
 
-    const response = new RawMessage();
-    response.id = 0x210;
-    response.length = 4 + body.length; // total length: header(4) + body
-    response.data = body;
-
     const responsePacket = new BytableMessage();
-    responsePacket.deserialize(response.serialize());
+    responsePacket.setSerializeOrder([{ name: 'data', field: 'Buffer' }]);
+    responsePacket.setVersion(0);
+    responsePacket.header.setId(0x210);
+    responsePacket.setFieldValueByName('data', body);
 
     return {
         connectionId,

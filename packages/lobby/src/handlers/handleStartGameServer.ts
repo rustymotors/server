@@ -2,7 +2,6 @@ import { BytableMessage } from "@rustymotors/binary";
 import {
     GameServerLaunchInfo,
     getServerLogger,
-    RawMessage,
     RunningServerInfo,
     type ServerLogger,
     databaseProvider,
@@ -60,24 +59,20 @@ export async function handleStartGameServer({
             .getSessionStore()
             .updateGameServer(commId, newServerInfo);
 
-        const newServerInfoMessage = new RawMessage();
-        newServerInfoMessage.id = 0x20d;
-        newServerInfoMessage.data = newServerInfo.serialize();
-
         const startedServerComm = Buffer.alloc(4);
         startedServerComm.writeInt32BE(commId);
 
-        const gameServerStartedMessage = new RawMessage();
-        gameServerStartedMessage.id = 0x21c; // NPS_GAME_SERVER_STARTED
-        gameServerStartedMessage.data = startedServerComm;
-
         const gameServerInfoMessage = new BytableMessage();
-        gameServerInfoMessage.deserialize(newServerInfoMessage.serialize());
+        gameServerInfoMessage.setSerializeOrder([{ name: 'data', field: 'Buffer' }]);
+        gameServerInfoMessage.setVersion(0);
+        gameServerInfoMessage.header.setId(0x20d);
+        gameServerInfoMessage.setFieldValueByName('data', newServerInfo.serialize());
 
         const gameServerStartupAcknowledgment = new BytableMessage();
-        gameServerStartupAcknowledgment.deserialize(
-            gameServerStartedMessage.serialize(),
-        );
+        gameServerStartupAcknowledgment.setSerializeOrder([{ name: 'data', field: 'Buffer' }]);
+        gameServerStartupAcknowledgment.setVersion(0);
+        gameServerStartupAcknowledgment.header.setId(0x21c); // NPS_GAME_SERVER_STARTED
+        gameServerStartupAcknowledgment.setFieldValueByName('data', startedServerComm);
 
         const joinedChannelMessage = await createUserJoinedChannelMessage(
             userId,

@@ -1,7 +1,6 @@
 import type { ServerLogger, LegacyMessage } from "rusty-motors-shared";
-import { RawMessage } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
-import { BytableBuffer } from "@rustymotors/binary";
+import { BytableBuffer, BytableMessage } from "@rustymotors/binary";
 
 const defaultLogger = getServerLogger("PersonaServer");
 
@@ -32,13 +31,15 @@ export async function validatePersonaName({
 		NPS_USER_VALID = 0x601,
 	}
 
-	// Build the packet
-	const responsePacket = new RawMessage();
-	responsePacket.id = responseCodes.NPS_DUP_USER
+	const responsePacket = new BytableMessage();
+	responsePacket.setSerializeOrder([{ name: 'data', field: 'Buffer' }]);
+	responsePacket.setVersion(0);
+	responsePacket.header.setId(responseCodes.NPS_DUP_USER);
+
 	log.debug(
 		`NPSMsg response object from validatePersonaName
       ${JSON.stringify({
-				NPSMsg: responsePacket.toString(),
+				NPSMsg: responsePacket.serialize().toString('hex'),
 			})}`,
 	);
 
