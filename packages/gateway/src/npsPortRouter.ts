@@ -9,6 +9,7 @@ import {
     getSocketQueue,
     addSocketPair,
     resolveMessageId,
+    leaveAllChannels,
 } from 'rusty-motors-shared';
 import { bindLogContext } from '@rustymotors/logging';
 import { messageStats } from './GatewayServer.js';
@@ -149,6 +150,7 @@ export async function npsPortRouter({
                     `Auto-saved on disconnect`,
                 );
             }
+            leaveAllChannels(taggedSocket.connectionId);
             const baseId = taggedSocket.connectionId.split(':')[0];
             log.info(`[${baseId}] Disconnected on port ${taggedSocket.localPort}`);
             receiveQueue.exit();
@@ -160,6 +162,7 @@ export async function npsPortRouter({
         bindLogContext((error) => {
             if (error.message.includes('ECONNRESET')) {
                 log.debug(`[${connectionId}] Connection reset by client`);
+                leaveAllChannels(taggedSocket.connectionId);
                 // Still save the session on reset - client likes to RST instead of FIN
                 const recorder = getSessionRecorder();
                 if (recorder?.isRecordingEnabled()) {

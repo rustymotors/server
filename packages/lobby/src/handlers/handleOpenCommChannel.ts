@@ -3,6 +3,9 @@ import {
     ChannelCreated,
     databaseProvider,
     getServerLogger,
+    joinChannel,
+    getChannelMembers,
+    getSocketQueue,
     NPS_MESSAGE_IDS,
     type Serializable,
 } from 'rusty-motors-shared';
@@ -58,7 +61,23 @@ export async function handleOpenCommChannel({
             incomingRequest.getFieldValueByName("userId") as Buffer
         ).readInt32BE();
 
+        // Record this connection as a member of the channel.
+        // Push USER_JOINED_CHANNEL to everyone already in the channel before
+        // adding the joiner, so they don't receive their own join event.
+        const existingMembers = getChannelMembers(requestedCommId);
+        joinChannel(connectionId, requestedCommId);
+
         const userJoinedMessage = await createUserJoinedChannelMessage(userId, requestedCommId, log, connectionId);
+
+        // Notify existing members of the new arrival.
+        for (const memberId of existingMembers) {
+            try {
+                const sendQueue = getSocketQueue(memberId, 'send');
+                sendQueue.put({ sequenceNo: -1, data: userJoinedMessage.serialize() });
+            } catch {
+                // Member's queue may already be gone; skip silently.
+            }
+        }
 
 
         if (requestedCommId > 100) {
