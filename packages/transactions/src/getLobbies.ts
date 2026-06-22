@@ -1,4 +1,4 @@
-import { MessageNode, OldServerMessage } from 'rusty-motors-shared';
+import { MessageNode } from 'rusty-motors-shared';
 import { EntryFeePurseMessage, PurseEntry } from './EntryFeePurseMessage.js';
 import { LobbyInfo, LobbyMessage } from './LobbyMessage.js';
 import type { MessageHandlerArgs, MessageHandlerResult } from './handlers.js';
@@ -79,11 +79,11 @@ async function _getLobbies({
         `[${connectionId}] Sending purseEntryResponse: ${purseEntryResponse.toString()}`,
     );
 
-    const perseEntriesResponsePacket = new OldServerMessage();
-    perseEntriesResponsePacket._header.sequence = packet.sequenceNumber;
-    perseEntriesResponsePacket._header.flags = 8;
+    const perseEntriesResponsePacket = new MessageNode();
+    perseEntriesResponsePacket.sequence = packet.sequenceNumber;
+    perseEntriesResponsePacket.setPayloadEncryption(true);
 
-    perseEntriesResponsePacket.setBuffer(purseEntryResponse.serialize());
+    perseEntriesResponsePacket.setDataBuffer(purseEntryResponse.serialize());
 
     return {
         connectionId,

@@ -1,4 +1,4 @@
-import { OldServerMessage } from "rusty-motors-shared";
+import { MessageNode } from "rusty-motors-shared";
 import { GameUrl, GameUrlsMessage } from "./GameUrlsMessage.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
@@ -34,11 +34,11 @@ export async function _getGameUrls({
 	log.debug(gameUrlsMessage.toString())
 	
 
-	const responsePacket = new OldServerMessage();
-	responsePacket._header.sequence = packet.sequenceNumber;
-	responsePacket._header.flags = 8;
+	const responsePacket = new MessageNode();
+	responsePacket.sequence = packet.sequenceNumber;
+	responsePacket.setPayloadEncryption(true);
 
-	responsePacket.setBuffer(gameUrlsMessage.serialize());
+	responsePacket.setDataBuffer(gameUrlsMessage.serialize());
 
 	return { connectionId, messages: [responsePacket] };
 }

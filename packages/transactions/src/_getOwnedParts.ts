@@ -2,7 +2,7 @@ import {
 	fetchStateFromDatabase,
 	findSessionByConnectionId,
 } from "rusty-motors-shared";
-import { OldServerMessage } from "rusty-motors-shared";
+import { MessageNode } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { PartsAssemblyMessage } from "./PartsAssemblyMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
@@ -31,11 +31,11 @@ export async function _getOwnedParts({
 	const ownedPartsMessage = new PartsAssemblyMessage(session.gameId);
 	ownedPartsMessage._msgNo = 175;
 
-	const responsePacket = new OldServerMessage();
-	responsePacket._header.sequence = packet.sequenceNumber;
-	responsePacket._header.flags = 8;
+	const responsePacket = new MessageNode();
+	responsePacket.sequence = packet.sequenceNumber;
+	responsePacket.setPayloadEncryption(true);
 
-	responsePacket.setBuffer(ownedPartsMessage.serialize());
+	responsePacket.setDataBuffer(ownedPartsMessage.serialize());
 
 	return { connectionId, messages: [responsePacket] };
 }

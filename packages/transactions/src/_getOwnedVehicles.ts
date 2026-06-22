@@ -1,4 +1,4 @@
-import { OldServerMessage, databaseProvider } from "rusty-motors-shared";
+import { MessageNode, databaseProvider } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { OwnedVehicle, OwnedVehiclesMessage } from "./OwnedVehiclesMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
@@ -44,11 +44,11 @@ export async function _getOwnedVehicles({
 
     ownedVehiclesMessage._msgNo = 173;
 
-    const responsePacket = new OldServerMessage();
-    responsePacket._header.sequence = packet.sequenceNumber;
-    responsePacket._header.flags = 8;
+    const responsePacket = new MessageNode();
+    responsePacket.sequence = packet.sequenceNumber;
+    responsePacket.setPayloadEncryption(true);
 
-    responsePacket.setBuffer(ownedVehiclesMessage.serialize());
+    responsePacket.setDataBuffer(ownedVehiclesMessage.serialize());
 
     return { connectionId, messages: [responsePacket] };
 }

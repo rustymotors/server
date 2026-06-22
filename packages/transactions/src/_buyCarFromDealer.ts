@@ -1,4 +1,4 @@
-import { fetchStateFromDatabase, findSessionByConnectionId, OldServerMessage, databaseProvider } from "rusty-motors-shared";
+import { fetchStateFromDatabase, findSessionByConnectionId, MessageNode, databaseProvider } from "rusty-motors-shared";
 import type { MessageHandlerArgs, MessageHandlerResult } from './handlers.js';
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { addVehicle } from "./_getOwnedVehicles.js";
@@ -77,11 +77,11 @@ export async function _buyCarFromDealer({
         `[${connectionId}] Sending GenericReplyMessage: ${replyPacket.toString()}`,
     );
 
-    const responsePacket = new OldServerMessage();
-    responsePacket._header.sequence = packet.sequenceNumber;
-    responsePacket._header.flags = 8;
+    const responsePacket = new MessageNode();
+    responsePacket.sequence = packet.sequenceNumber;
+    responsePacket.setPayloadEncryption(true);
 
-    responsePacket.setBuffer(replyPacket.serialize());
+    responsePacket.setDataBuffer(replyPacket.serialize());
 
     log.debug(
         `[${connectionId}] Sending response packet: ${responsePacket.toHexString()}`,

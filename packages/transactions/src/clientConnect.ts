@@ -11,7 +11,7 @@ import {
 	getEncryption,
 	databaseProvider,
 } from "rusty-motors-shared";
-import { OldServerMessage, getServerLogger } from "rusty-motors-shared";
+import { MessageNode, getServerLogger } from "rusty-motors-shared";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { TClientConnectMessage } from "./TClientConnectMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
@@ -97,9 +97,9 @@ export async function clientConnect({
 	pReply.msgNo = 101;
 	pReply.msgReply = newMessage._msgNo;
 
-	const responsePacket = new OldServerMessage();
-	responsePacket.setBuffer(pReply.serialize());
-	responsePacket._header.sequence = packet.sequenceNumber;
+	const responsePacket = new MessageNode();
+	responsePacket.setDataBuffer(pReply.serialize());
+	responsePacket.sequence = packet.sequenceNumber;
 
 	log.debug(`Response: ${responsePacket.serialize().toString("hex")}`);
 

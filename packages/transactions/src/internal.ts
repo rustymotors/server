@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getServerLogger, type MessageNode, type ServerLogger } from "rusty-motors-shared";
+import { getServerLogger, type ServerLogger } from "rusty-motors-shared";
 import * as Sentry from "@sentry/node"
 
 import type {
@@ -25,9 +25,9 @@ import { BytableBuffer } from "@rustymotors/binary";
 import {
 	fetchStateFromDatabase,
 	getEncryption,
+	MessageNode,
 	updateEncryption,
 } from "rusty-motors-shared";
-import { OldServerMessage } from "rusty-motors-shared";
 import { type MessageHandlerResult, _MSG_STRING } from "./handlers.js";
 import { getTransactionsHandlerRegistry } from "./handlers/registry.js";
 import {
@@ -88,8 +88,8 @@ async function processInput({
 
 	if (handlerEntry) {
 		// Turn this into an OldServerMessage for compatibility
-		const packet = new OldServerMessage();
-		packet._doDeserialize(inboundMessage.serialize());
+		const packet = new MessageNode();
+		packet.deserialize(inboundMessage.serialize());
 
 		try {
 			const responsePackets: MessageHandlerResult = await handlerEntry.handler({

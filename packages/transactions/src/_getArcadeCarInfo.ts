@@ -1,4 +1,4 @@
-import { OldServerMessage } from "rusty-motors-shared";
+import { MessageNode } from "rusty-motors-shared";
 import { ArcadeCarInfo, ArcadeCarMessage } from "./ArcadeCarMessage.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
@@ -28,11 +28,11 @@ export async function _getArcadeCarInfo({
 	car1._lobbyId = 0;
 	arcadeCarInfoMessage.addCar(car1);
 
-	const responsePacket = new OldServerMessage();
-	responsePacket._header.sequence = packet.sequenceNumber;
-	responsePacket._header.flags = 8;
+	const responsePacket = new MessageNode();
+	responsePacket.sequence = packet.sequenceNumber;
+	responsePacket.setPayloadEncryption(true);
 
-	responsePacket.setBuffer(arcadeCarInfoMessage.serialize());
+	responsePacket.setDataBuffer(arcadeCarInfoMessage.serialize());
 
 	return { connectionId, messages: [responsePacket] };
 }

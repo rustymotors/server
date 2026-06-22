@@ -1,4 +1,4 @@
-import { OldServerMessage, getServerLogger } from "rusty-motors-shared";
+import { MessageNode, getServerLogger } from "rusty-motors-shared";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
@@ -48,10 +48,10 @@ export async function _removePart({
     pReply.msgNo = 101; // MC_SUCCESS
     pReply.msgReply = 182; // MC_REMOVE_PART
 
-    const rPacket = new OldServerMessage();
-    rPacket._header.sequence = packet.sequenceNumber;
-    rPacket._header.flags = 8;
-    rPacket.setBuffer(pReply.serialize());
+    const rPacket = new MessageNode();
+    rPacket.sequence = packet.sequenceNumber;
+    rPacket.setPayloadEncryption(true);
+    rPacket.setDataBuffer(pReply.serialize());
 
     return { connectionId, messages: [rPacket] };
 }

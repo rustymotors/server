@@ -1,4 +1,4 @@
-import { OldServerMessage } from "rusty-motors-shared";
+import { MessageNode } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { StockCar } from "./StockCar.js";
 import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
@@ -32,11 +32,11 @@ export async function _getStockCarInfo({
 
 	log.debug(`Sending Message: ${stockCarInfoMessage.toString()}`);
 
-	const responsePacket = new OldServerMessage();
-	responsePacket._header.sequence = packet.sequenceNumber;
-	responsePacket._header.flags = 8;
+	const responsePacket = new MessageNode();
+	responsePacket.sequence = packet.sequenceNumber;
+	responsePacket.setPayloadEncryption(true);
 
-	responsePacket.setBuffer(stockCarInfoMessage.serialize());
+	responsePacket.setDataBuffer(stockCarInfoMessage.serialize());
 
 	return { connectionId, messages: [responsePacket] };
 }

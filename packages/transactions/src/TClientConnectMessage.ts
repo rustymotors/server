@@ -14,9 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { OldServerMessage } from "rusty-motors-shared";
+import { MessageNode } from "rusty-motors-shared";
 
-export class TClientConnectMessage extends OldServerMessage {
+const HEADER_SIZE = 11;
+
+export class TClientConnectMessage extends MessageNode {
+	_msgNo: number;
 	_customerId: number;
 	_personaId: number;
 	_customerName: string;
@@ -24,25 +27,22 @@ export class TClientConnectMessage extends OldServerMessage {
 	_mcVersion: string;
 	constructor() {
 		super();
-		this._msgNo = 0; // 8 bytes
-		this._customerId = 0; // 4 bytes
-		this._personaId = 0; // 4 bytes
-		this._customerName = ""; // 13 bytes
-		this._personaName = ""; // 13 bytes
-		this._mcVersion = ""; // 4 bytes
+		this._msgNo = 0;
+		this._customerId = 0;
+		this._personaId = 0;
+		this._customerName = "";
+		this._personaName = "";
+		this._mcVersion = "";
 	}
 
-	override size() {
+	size() {
 		return 51;
 	}
 
-	/**
-	 * @param {Buffer} buffer
-	 */
 	override deserialize(buffer: Buffer): this {
 		let offset = 0;
-		this._header._doDeserialize(buffer);
-		offset += this._header._size;
+		super.deserialize(buffer);
+		offset += HEADER_SIZE;
 		this._msgNo = buffer.readUInt16LE(offset);
 		offset += 2;
 		this._customerId = buffer.readUInt32LE(offset);
@@ -55,14 +55,14 @@ export class TClientConnectMessage extends OldServerMessage {
 		offset += 13;
 		this._mcVersion = buffer.toString("utf8", offset, offset + 4);
 		// 51 bytes
-		return this
+		return this;
 	}
 
 	override serialize() {
 		const buffer = Buffer.alloc(this.size());
 		let offset = 0;
-		buffer.copy(this._header._doSerialize(), offset);
-		offset += this._header._size;
+		super.serialize().copy(buffer, 0, 0, HEADER_SIZE);
+		offset += HEADER_SIZE;
 		buffer.writeUInt16LE(this._msgNo, offset);
 		offset += 2;
 		buffer.writeUInt32LE(this._customerId, offset);
@@ -78,15 +78,12 @@ export class TClientConnectMessage extends OldServerMessage {
 		return buffer;
 	}
 
-	/**
-	 * @override
-	 */
 	override toString() {
 		return `TClientConnectMessage: ${JSON.stringify({
-			length: this._header.length,
-			mcoSig: this._header.mcoSig,
-			seq: this._header.sequence,
-			flags: this._header.flags,
+			length: this.length,
+			mcoSig: this.signature,
+			seq: this.sequence,
+			flags: this.flags,
 			msgNo: this._msgNo,
 			customerId: this._customerId,
 			personaId: this._personaId,

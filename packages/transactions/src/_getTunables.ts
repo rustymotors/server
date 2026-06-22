@@ -1,4 +1,4 @@
-import { OldServerMessage } from "rusty-motors-shared";
+import { MessageNode } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { TunablesMessage } from "./TunablesMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
@@ -23,11 +23,11 @@ export async function _getTunables({
 	const tunablesMessage = new TunablesMessage();
 	tunablesMessage._msgNo = 390;
 
-	const responsePacket = new OldServerMessage();
-	responsePacket._header.sequence = packet.sequenceNumber;
-	responsePacket._header.flags = 8;
+	const responsePacket = new MessageNode();
+	responsePacket.sequence = packet.sequenceNumber;
+	responsePacket.setPayloadEncryption(true);
 
-	responsePacket.setBuffer(tunablesMessage.serialize());
+	responsePacket.setDataBuffer(tunablesMessage.serialize());
 
 	return { connectionId, messages: [responsePacket] };
 }

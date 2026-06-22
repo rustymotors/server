@@ -2,7 +2,7 @@ import {
 	cloth_white,
 	cloth_yellow,
 	hair_red,
-	OldServerMessage,
+	MessageNode,
 	skin_pale,
 } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
@@ -40,11 +40,11 @@ export async function _getPlayerPhysical({
 		`[${connectionId}] Sending PlayerPhysicalMessage: ${playerPhysicalMessage.toString()}`,
 	);
 
-	const responsePacket = new OldServerMessage();
-	responsePacket._header.sequence = packet.sequenceNumber;
-	responsePacket._header.flags = 8;
+	const responsePacket = new MessageNode();
+	responsePacket.sequence = packet.sequenceNumber;
+	responsePacket.setPayloadEncryption(true);
 
-	responsePacket.setBuffer(playerPhysicalMessage.serialize());
+	responsePacket.setDataBuffer(playerPhysicalMessage.serialize());
 
 	log.debug(`[${connectionId}] Sending response: ${responsePacket.toString()}`);
 

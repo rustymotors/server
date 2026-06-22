@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { OldServerMessage } from "rusty-motors-shared";
+import { MessageNode } from "rusty-motors-shared";
+
+const HEADER_SIZE = 11;
 import { BytableBuffer } from "@rustymotors/binary";
 
 export class ListEntry extends BytableBuffer {
@@ -54,8 +56,9 @@ export class LoginCompleteMessage extends BytableBuffer {
 	}
 }
 
-export class TLoginMessage extends OldServerMessage {
+export class TLoginMessage extends MessageNode {
 	_size: number;
+	_msgNo: number;
 	_customerId: number;
 	_personaId: number;
 	_lotOwnerId: number;
@@ -81,8 +84,8 @@ export class TLoginMessage extends OldServerMessage {
 	 */
 	override deserialize(buffer: Buffer): this {
 		let offset = 0;
-		this._header._doDeserialize(buffer);
-		offset += this._header._size;
+		super.deserialize(buffer);
+		offset += HEADER_SIZE;
 		this._msgNo = buffer.readUInt16LE(offset);
 		offset += 2;
 		this._customerId = buffer.readUInt32LE(offset);
@@ -105,8 +108,8 @@ export class TLoginMessage extends OldServerMessage {
 	override serialize() {
 		const buffer = Buffer.alloc(this._size);
 		let offset = 0;
-		buffer.copy(this._header._doSerialize(), offset);
-		offset += this._header._size;
+		super.serialize().copy(buffer, 0, 0, HEADER_SIZE);
+		offset += HEADER_SIZE;
 		buffer.writeUInt16LE(this._msgNo, offset);
 		offset += 2;
 		buffer.writeUInt32LE(this._customerId, offset);

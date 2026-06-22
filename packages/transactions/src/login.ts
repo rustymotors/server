@@ -1,4 +1,4 @@
-import { OldServerMessage } from "rusty-motors-shared";
+import { MessageNode } from "rusty-motors-shared";
 
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 import {
@@ -64,9 +64,9 @@ export async function login({
 		`[${connectionId}] Sending response(hex): ${outgoingPacket.serialize().toString("hex")}`,
 	);
 
-	const responsePacket = new OldServerMessage();
-	responsePacket._header.sequence = incomingPacket.getSequence();
-	responsePacket._doDeserialize(outgoingPacket.serialize());
+	const responsePacket = new MessageNode();
+	responsePacket.sequence = incomingPacket.getSequence();
+	responsePacket.deserialize(outgoingPacket.serialize());
 
 	return { connectionId, messages: [responsePacket] };
 }

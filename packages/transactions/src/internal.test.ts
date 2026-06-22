@@ -16,14 +16,12 @@ vi.mock("rusty-motors-shared", () => {
     return {
         getServerLogger: vi.fn(() => logger),
         // types/classes that may be imported but are unused in tests
-        MessageNode: class {},
+        MessageNode: class {
+            deserialize(_: Buffer) { /* noop */ }
+        },
         ServerLogger: class {},
         McosEncryption: class {},
-        // SerializedBufferOld removed - use BytableBuffer instead
         State: class {},
-        OldServerMessage: class {
-            _doDeserialize(_: Buffer) { /* noop */ }
-        },
         // state/encryption related functions that internal.ts calls
         fetchStateFromDatabase: vi.fn(() => ({})),
         getEncryption: vi.fn(() => ({

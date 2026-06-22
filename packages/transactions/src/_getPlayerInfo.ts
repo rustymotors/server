@@ -1,4 +1,4 @@
-import { OldServerMessage } from "rusty-motors-shared";
+import { MessageNode } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { PlayerInfoMessage } from "./PlayerInfoMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
@@ -40,11 +40,11 @@ export async function _getPlayerInfo({
 			`[${connectionId}] Sending PlayerInfoMessage: ${playerInfoMessage.toString()}`,
 		);
 
-		const responsePacket = new OldServerMessage();
-		responsePacket._header.sequence = packet.sequenceNumber;
-		responsePacket._header.flags = 8;
+		const responsePacket = new MessageNode();
+		responsePacket.sequence = packet.sequenceNumber;
+		responsePacket.setPayloadEncryption(true);
 
-		responsePacket.setBuffer(playerInfoMessage.serialize());
+		responsePacket.setDataBuffer(playerInfoMessage.serialize());
 
 		return { connectionId: connectionId, messages: [responsePacket] };
 	} catch (error) {

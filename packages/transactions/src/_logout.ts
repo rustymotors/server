@@ -1,4 +1,4 @@
-import { OldServerMessage } from "rusty-motors-shared";
+import { MessageNode } from "rusty-motors-shared";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 import { getServerLogger } from "rusty-motors-shared";
@@ -19,10 +19,10 @@ export async function _logout({
 	const pReply = new GenericReplyMessage();
 	pReply.msgNo = 101;
 	pReply.msgReply = 106;
-	const rPacket = new OldServerMessage();
-	rPacket._header.sequence = packet.sequenceNumber + 1;
-	rPacket._header.flags = 8;
-	rPacket.setBuffer(pReply.serialize());
+	const rPacket = new MessageNode();
+	rPacket.sequence = packet.sequenceNumber + 1;
+	rPacket.setPayloadEncryption(true);
+	rPacket.setDataBuffer(pReply.serialize());
 
 	log.debug(`[${connectionId}] Logout response: ${rPacket.toHexString()}`);
 

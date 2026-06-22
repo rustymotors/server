@@ -1,4 +1,4 @@
-import { OldServerMessage, getServerLogger } from "rusty-motors-shared";
+import { MessageNode, getServerLogger } from "rusty-motors-shared";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
@@ -44,10 +44,10 @@ export async function _repairSinglePart({
     pReply.msgNo = 101; // MC_SUCCESS
     pReply.msgReply = 177; // MC_REPAIR_SINGLE_PART
 
-    const rPacket = new OldServerMessage();
-    rPacket._header.sequence = packet.sequenceNumber;
-    rPacket._header.flags = 8;
-    rPacket.setBuffer(pReply.serialize());
+    const rPacket = new MessageNode();
+    rPacket.sequence = packet.sequenceNumber;
+    rPacket.setPayloadEncryption(true);
+    rPacket.setDataBuffer(pReply.serialize());
 
     return { connectionId, messages: [rPacket] };
 }

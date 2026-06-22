@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { OldServerMessage } from "rusty-motors-shared";
+import { MessageNode } from 'rusty-motors-shared';
 import { getLobbies } from "../src/getLobbies.js";
 import {loggerMock} from "rusty-motors-shared/test"
 
@@ -7,7 +7,7 @@ describe("getLobbies", () => {
 	it("should return a promise", async () => {
 		// arrange
 		const connectionId = "1";
-		const packet = new OldServerMessage();
+		const packet = new MessageNode();
 
 		// act
 		const result = await getLobbies({
