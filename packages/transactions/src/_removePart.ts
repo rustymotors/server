@@ -1,57 +1,48 @@
-import { MessageNode, getServerLogger } from "rusty-motors-shared";
+import {
+    fetchStateFromDatabase,
+    findSessionByConnectionId,
+} from "rusty-motors-shared";
+import { ServerMessage } from "rusty-motors-shared";
+import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
-import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
+import { getServerLogger } from "rusty-motors-shared";
+import { dbRemovePart } from "../../database/src/cache.js";
 
 const defaultLogger = getServerLogger("handlers/_removePart");
 
-/**
- * Handle MC_REMOVE_PART (msgNo 182 / 0x00B6).
- *
- * Sent when the player uninstalls a part from a vehicle (without scrapping
- * it). The part should move from the vehicle's parts list back into the
- * player's inventory. Free uninstall — no cash transaction.
- *
- * Wire shape: GenericRequest (10 bytes) — `data` carries the partId to
- * remove.
- *
- * Stub: parse partId, log, ack with MC_SUCCESS. No state change.
- *
- * Original implementation: MCity/Server/MCParts.cpp:410 (RemovePart).
- *
- * TODO(parts-mgmt): validate the partId is actually installed on a
- *   vehicle owned by the sending persona; reject with MC_DB_ERROR if
- *   not found.
- * TODO(parts-mgmt): refuse to remove the vehicle's root chassis
- *   (legacy guard: parentPartId === 0 means root).
- * TODO(parts-mgmt): remove the part *and its child subtree* (uninstalling
- *   a chassis takes its suspension and brakes with it) — Recons handles
- *   this via removePartSubtree at mco-revival.mjs:1733.
- * TODO(parts-mgmt): clear parentPartId/attachmentPoint and move the
- *   subtree into the player's inventory.
- * TODO(parts-mgmt): persist via the stored proc equivalent and invalidate
- *   the affected vehicle's car-info cache.
- */
 export async function _removePart({
     connectionId,
     packet,
     log = defaultLogger,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
-    const partId =
-        packet.data.byteLength >= 6 ? packet.data.readUInt32LE(2) : 0;
+    const msg = new GenericRequestMessage();
+    msg.deserialize(packet.data);
 
-    log.info("MC_REMOVE_PART received (stub — no inventory move/DB write)", {
-        connectionId,
-        partId,
-    });
+    log.debug(`Received Message: ${msg.toString()}`);
 
-    const pReply = new GenericReplyMessage();
-    pReply.msgNo = 101; // MC_SUCCESS
-    pReply.msgReply = 182; // MC_REMOVE_PART
+    const partId = msg.data.readUInt32LE(0);
 
-    const rPacket = new MessageNode();
-    rPacket.sequence = packet.sequenceNumber;
-    rPacket.setPayloadEncryption(true);
-    rPacket.setDataBuffer(pReply.serialize());
+    const state = fetchStateFromDatabase();
+    const session = findSessionByConnectionId(state, connectionId);
 
-    return { connectionId, messages: [rPacket] };
+    if (!session) {
+        throw Error("Session not found");
+    }
+
+    await dbRemovePart(partId, session.gameId);
+
+    log.debug(`Removed part ${partId} to inventory`);
+
+    const reply = new GenericReplyMessage();
+    reply.msgNo = 101;
+    reply.msgReply = 182;
+
+    const responsePacket = new ServerMessage();
+    responsePacket._header.sequence = packet.sequenceNumber;
+    responsePacket._header.flags = 8;
+
+    responsePacket.setBuffer(reply.serialize());
+
+    return { connectionId, messages: [responsePacket] };
 }

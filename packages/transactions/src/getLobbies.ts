@@ -1,7 +1,7 @@
 import { MessageNode } from 'rusty-motors-shared';
 import { EntryFeePurseMessage, PurseEntry } from './EntryFeePurseMessage.js';
 import { LobbyInfo, LobbyMessage } from './LobbyMessage.js';
-import type { MessageHandlerArgs, MessageHandlerResult } from './handlers.js';
+import type { MessageHandlerArgs, MessageHandlerResult } from './types.js';
 import { getServerLogger } from 'rusty-motors-shared';
 
 const RACES_SIM_TIMETRIAL = 19
@@ -54,6 +54,11 @@ async function _getLobbies({
     lobby1._topDog = 'Drazi Crendraven';
     lobby1._maxNumberPlayers = 8;
     lobby1._defaultNight = 1;
+    lobby1._defaultWeather = 1
+    lobby1._defaultNumberOfLaps = 3
+    lobby1._defaultNumberRounds = 1
+    lobby1._defaultTraffic =true
+    lobby1._defaultDamage = true
 
     log.debug(`[${connectionId}] Sending lobby: ${lobby1.toString()}`);
 

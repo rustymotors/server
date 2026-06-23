@@ -15,6 +15,14 @@ class HeaderShim {
 	set flags(value: number) {
 		this._realObject.flags = value;
 	}
+
+	get sequence(): number {
+		return this._realObject.sequenceNumber;
+	}
+
+	set sequence(value: number) {
+		this._realObject.setSequence(value);
+	}
 }
 
 /**
@@ -95,5 +103,9 @@ export class ServerMessage extends SerializedBuffer {
 
 	get sequenceNumber(): number {
 		return this._sequence;
+	}
+
+	setSequence(value: number): void {
+		this._sequence = value;
 	}
 }

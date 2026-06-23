@@ -77,6 +77,8 @@ export interface IGameDataStore {
         skinId: number,
         tradeInCarId: number,
     ): Promise<number>;
+
+    getPartCatalog(aptId: number, blockFamilyId: number): Promise<number[]>;
 }
 
 /**

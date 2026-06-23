@@ -1,6 +1,6 @@
 import { MessageNode, getServerLogger } from "rusty-motors-shared";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
-import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 
 const defaultLogger = getServerLogger("handlers/_repairSinglePart");
 

@@ -28,7 +28,7 @@ import {
 	MessageNode,
 	updateEncryption,
 } from "rusty-motors-shared";
-import { type MessageHandlerResult, _MSG_STRING } from "./handlers.js";
+import { type MessageHandlerResult, _MSG_STRING } from "./types.js";
 import { getTransactionsHandlerRegistry } from "./handlers/registry.js";
 import { explode } from "pklib-ts"
 
@@ -84,12 +84,11 @@ async function processInput({
 	const handlerEntry = registry.getHandler(currentMessageNo);
 
 	if (handlerEntry) {
-		// Turn this into an OldServerMessage for compatibility
 		const packet = new MessageNode();
 		packet.deserialize(inboundMessage.serialize());
 
 		try {
-			const responsePackets: MessageHandlerResult = await handlerEntry.handler({
+			const responsePackets = await handlerEntry.handler({
 				connectionId,
 				packet,
 			});
@@ -273,7 +272,7 @@ export async function receiveTransactionsData({
  * @param state - The current state of the server.
  * @param log - The logger to use for logging. Defaults to a logger named "transactionServer.decryptMessage".
  * @param connectionId - The ID of the connection associated with the message.
- * @returns The decrypted message as a `MessageNode`.
+ * @returns The decrypted message as a `ServerPacket`.
  * @throws Will throw an error if the message cannot be decrypted.
  */
 function decryptMessage(

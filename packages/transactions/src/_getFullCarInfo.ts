@@ -1,6 +1,6 @@
 import { buildVehiclePartTreeFromDB, type TPart, getVehiclePartTree } from "rusty-motors-database";
-import { getServerLogger, MessageNode } from "rusty-motors-shared";
-import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import { getServerLogger, ServerMessage } from "rusty-motors-shared";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 
 const DAMAGE_SIZE = 2000;
@@ -206,9 +206,23 @@ export async function _getCompleteVehicleInfo({
 
         const parts: PartStruct[] = [];
 
-        const tmpParts: TPart[] = vehicleFromCache.partTree.level1.parts.concat(
-            vehicleFromCache.partTree.level2.parts,
-        );
+        const rootTPart: TPart = {
+            part_id: vehicleFromCache.partId,
+            parent_part_id: null,
+            branded_part_id: vehicleFromCache.brandedPartId,
+            percent_damage: 0,
+            item_wear: 0,
+            attachment_point_id: null,
+            owner_id: vehicleFromCache.ownerID,
+            part_name: null,
+            repair_cost: 0,
+            scrap_value: 0,
+        };
+
+        const tmpParts: TPart[] = [rootTPart,
+            ...vehicleFromCache.partTree.level1.parts,
+            ...vehicleFromCache.partTree.level2.parts,
+        ];
 
         carInfo.noOfParts = tmpParts.length;
 
@@ -228,10 +242,12 @@ export async function _getCompleteVehicleInfo({
 
         carInfo.parts = parts;
 
-        const responsePacket = new MessageNode();
-        responsePacket.sequence = packet.sequenceNumber;
-        responsePacket.setPayloadEncryption(true);
-        responsePacket.setDataBuffer(carInfo.serialize());
+        const responsePacket = new ServerMessage();
+        responsePacket._header.sequence = packet.sequenceNumber;
+        responsePacket._header.flags = 8;
+        responsePacket.setBuffer(carInfo.serialize());
+
+        log.debug(`Serialized CarInfoStruct: ${carInfo.serialize().toString("hex")}`);
 
         return { connectionId, messages: [responsePacket] };
     } catch (error) {

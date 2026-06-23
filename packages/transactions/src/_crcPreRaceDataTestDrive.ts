@@ -1,6 +1,6 @@
-import { MessageNode } from "rusty-motors-shared";
+import { ServerMessage } from "rusty-motors-shared";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
-import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 import { getServerLogger } from "rusty-motors-shared";
 
 const defaultLogger = getServerLogger("handlers/_crcPreRaceDataTestDrive");
@@ -29,11 +29,11 @@ export async function _crcPreRaceDataTestDrive({
     const pReply = new GenericReplyMessage();
     pReply.msgNo = 101; // MC_SUCCESS
     pReply.msgReply = 455; // MC_CRC_PRE_RACE_DATA_TEST_DRIVE
-    const rPacket = new MessageNode();
-    rPacket.sequence = packet.sequenceNumber;
-    rPacket.setPayloadEncryption(true);
+    const rPacket = new ServerMessage();
+    rPacket._header.sequence = packet.sequenceNumber;
+    rPacket._header.flags = 8;
 
-    rPacket.setDataBuffer(pReply.serialize());
+    rPacket.setBuffer(pReply.serialize());
 
     log.debug(`MC_CRC_PRE_RACE_DATA_TEST_DRIVE ack: ${rPacket.toString()}`);
 

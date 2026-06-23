@@ -1,7 +1,7 @@
 import { MessageNode } from "rusty-motors-shared";
 import { GameUrl, GameUrlsMessage } from "./GameUrlsMessage.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
-import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 import { getServerLogger } from "rusty-motors-shared";
 
 const defaultLogger = getServerLogger("handlers/_getGameUrls");
@@ -27,7 +27,11 @@ export async function _getGameUrls({
 	for (let i = 0; i < 67; i++) {
 		const url = new GameUrl();
 		url._urlId = i;
-		url.urlRef = `http://rusty-motors.com/urls?id=${i}`;
+		if (i === 58) {
+			url.urlRef = "http://rusty-motors.com/urls?id=58&apt=%d&bf=%d";
+		} else {
+			url.urlRef = `http://rusty-motors.com/urls?id=${i}`;
+		}
 		gameUrlsMessage.addURL(url);
 	}
 

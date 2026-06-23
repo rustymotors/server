@@ -1,5 +1,5 @@
 import { MessageNode, RaceCreatedMessage } from "rusty-motors-shared";
-import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 import { getServerLogger, CreateRaceMessage } from "rusty-motors-shared";
 
 const defaultLogger = getServerLogger("handlers/_createStandardRace");

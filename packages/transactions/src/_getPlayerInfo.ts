@@ -1,56 +1,56 @@
-import { MessageNode } from "rusty-motors-shared";
+import { ServerMessage } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { PlayerInfoMessage } from "./PlayerInfoMessage.js";
-import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 import { getServerLogger } from "rusty-motors-shared";
 
 const defaultLogger = getServerLogger("handlers/_getPlayerInfo");
 
 export async function _getPlayerInfo({
-	connectionId,
-	packet,
-	log = defaultLogger,
+    connectionId,
+    packet,
+    log = defaultLogger,
 }: MessageHandlerArgs
 
 ): Promise<MessageHandlerResult> {
-	const getPlayerInfoMessage = new GenericRequestMessage();
-	getPlayerInfoMessage.deserialize(packet.data);
+    const getPlayerInfoMessage = new GenericRequestMessage();
+    getPlayerInfoMessage.deserialize(packet.data);
 
-	log.debug(
-		`[${connectionId}] Received GenericRequestMessage: ${getPlayerInfoMessage.toString()}`,
-	);
+    log.debug(
+        `[${connectionId}] Received GenericRequestMessage: ${getPlayerInfoMessage.toString()}`,
+    );
 
-	const playerId = getPlayerInfoMessage.data.readUInt32LE(0);
+    const playerId = getPlayerInfoMessage.data.readUInt32LE(0);
 
-	log.debug(`[${connectionId}] Player ID: ${playerId}`);
+    log.debug(`[${connectionId}] Player ID: ${playerId}`);
 
-	try {
-		const playerInfoMessage = new PlayerInfoMessage();
-		playerInfoMessage._msgNo = 108;
-		playerInfoMessage._playerId = playerId;
-		playerInfoMessage._playerName = "Dr Brown";
-		playerInfoMessage._currentLevel = 1;
-		playerInfoMessage._currentClub = 0;
-		playerInfoMessage._maxInventorySlots = 100;
-		playerInfoMessage._numberOfInventorySlotsUsed = 0;
-		playerInfoMessage._bankBalance = 50;
-		playerInfoMessage._numberOfPointsToNextLevel = 3;
+    try {
+        const playerInfoMessage = new PlayerInfoMessage();
+        playerInfoMessage._msgNo = 108;
+        playerInfoMessage._playerId = playerId;
+        playerInfoMessage._playerName = "Dr Brown";
+        playerInfoMessage._currentLevel = 1;
+        playerInfoMessage._currentClub = 0;
+        playerInfoMessage._maxInventorySlots = 100;
+        playerInfoMessage._numberOfInventorySlotsUsed = 0;
+        playerInfoMessage._bankBalance = 50000;
+        playerInfoMessage._numberOfPointsToNextLevel = 3;
 
-		log.debug(
-			`[${connectionId}] Sending PlayerInfoMessage: ${playerInfoMessage.toString()}`,
-		);
+        log.debug(
+            `[${connectionId}] Sending PlayerInfoMessage: ${playerInfoMessage.toString()}`,
+        );
 
-		const responsePacket = new MessageNode();
-		responsePacket.sequence = packet.sequenceNumber;
-		responsePacket.setPayloadEncryption(true);
+        const responsePacket = new ServerMessage();
+        responsePacket._header.sequence = packet.sequenceNumber;
+        responsePacket._header.flags = 8;
 
-		responsePacket.setDataBuffer(playerInfoMessage.serialize());
+        responsePacket.setBuffer(playerInfoMessage.serialize());
 
-		return { connectionId: connectionId, messages: [responsePacket] };
-	} catch (error) {
-		const err = Error(`[${connectionId}] Error handling getPlayerInfo`, {
-			cause: error,
-		});
-		throw err;
-	}
+        return { connectionId: connectionId, messages: [responsePacket] };
+    } catch (error) {
+        const err = Error(`[${connectionId}] Error handling getPlayerInfo`, {
+            cause: error,
+        });
+        throw err;
+    }
 }

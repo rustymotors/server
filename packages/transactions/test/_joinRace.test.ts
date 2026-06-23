@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { MessageNode, JoinRaceMessage } from 'rusty-motors-shared';
+import { OldServerMessage, JoinRaceMessage } from 'rusty-motors-shared';
 import { _joinRace } from '../src/_joinRace.js';
 import { loggerMock } from 'rusty-motors-shared/test';
 
-function makePacket(): MessageNode {
+function makePacket(): OldServerMessage {
     // JoinRaceMessage.sizeOf = 12: msgNo(2LE) + raceId(4) + vehicleId(4) + powerClass(1) + pad(1)
     const joinMsg = new JoinRaceMessage();
     const payload = joinMsg.serialize();
-    const packet = new MessageNode();
-    packet.setDataBuffer(payload);
+    const packet = new OldServerMessage();
+    packet.setBuffer(payload);
     return packet;
 }
 

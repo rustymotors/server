@@ -7,7 +7,7 @@ import {
 } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { PlayerPhysicalMessage } from "./PlayerPhysicalMessage.js";
-import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 import { getServerLogger } from "rusty-motors-shared";
 
 const defaultLogger = getServerLogger("handlers/_getPlayerPhysical");

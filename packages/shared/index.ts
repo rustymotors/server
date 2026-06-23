@@ -26,6 +26,7 @@ export type {
 export { SerializedBuffer } from './src/SerializedBuffer.js';
 // SerializedBufferOld removed - use BytableBuffer instead
 export { ServerMessage } from './src/ServerMessage.js';
+export { RawMessage } from './src/RawMessage.js';
 // AbstractSerializable and SerializableMixin removed - use Bytable* classes instead
 export { MessageBufferOld } from './src/MessageBufferOld.js';
 export { serializeString } from './src/serializeString.js';

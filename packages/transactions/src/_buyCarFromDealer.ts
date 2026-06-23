@@ -1,5 +1,5 @@
-import { fetchStateFromDatabase, findSessionByConnectionId, MessageNode, databaseProvider } from "rusty-motors-shared";
-import type { MessageHandlerArgs, MessageHandlerResult } from './handlers.js';
+import { fetchStateFromDatabase, findSessionByConnectionId, ServerMessage, databaseProvider } from "rusty-motors-shared";
+import type { MessageHandlerArgs, MessageHandlerResult } from './types.js';
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { addVehicle } from "./_getOwnedVehicles.js";
 
@@ -71,17 +71,19 @@ export async function _buyCarFromDealer({
     replyPacket.msgNo = 103; // GenericReplyMessage
     replyPacket.msgReply = 142; // PurchaseStockCarMessage
     replyPacket.result.writeUInt32LE(101, 0); // MC_SUCCESS
-    replyPacket.data2.writeUInt32LE(newCarId, 0);
+    const dataBuffer = Buffer.alloc(4);
+    dataBuffer.writeUInt32LE(newCarId, 0);
+    replyPacket.setData(dataBuffer);
 
     log.debug(
         `[${connectionId}] Sending GenericReplyMessage: ${replyPacket.toString()}`,
     );
 
-    const responsePacket = new MessageNode();
-    responsePacket.sequence = packet.sequenceNumber;
-    responsePacket.setPayloadEncryption(true);
+    const responsePacket = new ServerMessage();
+    responsePacket._header.sequence = packet.sequenceNumber;
+    responsePacket._header.flags = 8;
 
-    responsePacket.setDataBuffer(replyPacket.serialize());
+    responsePacket.setBuffer(replyPacket.serialize());
 
     log.debug(
         `[${connectionId}] Sending response packet: ${responsePacket.toHexString()}`,

@@ -16,8 +16,8 @@ const {
     return {
         mockPut,
         mockGetSocketQueue: vi.fn(() => ({ put: mockPut })),
-        mockGetChannelMembers: vi.fn<[number], string[]>(),
-        mockFindUserByConnectionId: vi.fn<[string], Promise<number | undefined>>(),
+        mockGetChannelMembers: vi.fn<() => string[]>(),
+        mockFindUserByConnectionId: vi.fn<() => Promise<number | undefined>>(),
         mockUpdateGameServer: vi.fn(),
         mockCreateUserJoinedChannelMessage: vi.fn(async () => mockJoinedMsg as unknown as BytableMessage),
         mockLog,

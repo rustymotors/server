@@ -14,7 +14,7 @@ function makeFrame(opcode: number, commId: number, sender: number, filter: numbe
 
 const mockPut = vi.fn();
 const mockGetSocketQueue = vi.fn(() => ({ put: mockPut }));
-const mockGetConnectionIdByUserId = vi.fn<[number], string | undefined>();
+const mockGetConnectionIdByUserId = vi.fn<() => string | undefined>();
 const mockLog = { debug: vi.fn(), warn: vi.fn(), verbose: vi.fn(), info: vi.fn(), error: vi.fn() };
 
 vi.mock('rusty-motors-shared', async (importOriginal) => {
@@ -59,7 +59,7 @@ describe('handleSendBuddyLong', () => {
         expect(mockGetSocketQueue).toHaveBeenCalledWith(TARGET_CONN, 'send');
         expect(mockPut).toHaveBeenCalledOnce();
 
-        const sent: Buffer = mockPut.mock.calls[0][0].data;
+        const sent: Buffer = mockPut.mock.calls[0]![0].data;
         expect(sent.byteLength).toBe(16);
         expect(sent.readUInt16BE(0)).toBe(0x93);
         expect(sent.readUInt16BE(2)).toBe(16);

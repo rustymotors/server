@@ -1,101 +1,87 @@
-import { BytableBuffer } from "@rustymotors/binary";
+import {
+    BytableBuffer,
+    BytableDword,
+    BytableWord,
+    serialize as serializeFields,
+} from "@rustymotors/binary";
 
-export class PartsAssemblyMessage extends BytableBuffer {
-	_msgNo: number;
-	_ownerId: number;
-	_numberOfParts: number;
-	_partList: Part[];
-	constructor(owerId: number) {
-		super();
-		this._msgNo = 0; // 2 bytes
-		this._ownerId = owerId; // 4 bytes
-		this._numberOfParts = 0; // 1 bytes
-		/** @type {Part[]} */
-		this._partList = []; // 34 bytes each
-	}
-
-	size() {
-		return 7 + this._partList.length * 34;
-	}
-
-	override serialize() {
-		const buffer = Buffer.alloc(this.size());
-		let offset = 0; // offset is 0
-		buffer.writeUInt16LE(this._msgNo, offset);
-		offset += 2; // offset is 2
-		buffer.writeUInt32LE(this._ownerId, offset);
-		offset += 4; // offset is 6
-		buffer.writeUInt8(this._numberOfParts, offset);
-		offset += 1; // offset is 7
-		for (const part of this._partList) {
-			const partBuffer = part.serialize();
-			partBuffer.copy(buffer, offset);
-			offset += partBuffer.length;
-		}
-
-		return buffer;
-	}
+function dwordLE(name: string, value: number): BytableDword {
+    const field = new BytableDword();
+    field.setName(name);
+    const buf = Buffer.alloc(4);
+    buf.writeUInt32LE(value, 0);
+    field.setValue(buf);
+    return field;
 }
 
+function wordLE(name: string, value: number): BytableWord {
+    const field = new BytableWord();
+    field.setName(name);
+    const buf = Buffer.alloc(2);
+    buf.writeUInt16LE(value, 0);
+    field.deserialize(buf);
+    return field;
+}
+
+// Matches C++ struct Part — 26 bytes on the wire.
+// 6×DWORD (24 bytes) + 2×BYTE (2 bytes) = 26 bytes. No padding sent.
 export class Part extends BytableBuffer {
-	_partId: number; // 4 bytes
-	_parentPartId: number; // 4 bytes
-	_brandedPartId: number; // 4 bytes
-	_repairPrice: number; // 4 bytes
-	_junkPrice: number; // 4 bytes
-	_wear: number; // 4 bytes
-	_attachmentPoint: number; // 1 byte
-	_damage: number; // 1 byte
-	_retailPrice: number; // 4 bytes
-	_maxWear: number; // 4 bytes
+    _partId = 0;        // DWORD
+    _parentPartId = 0;  // DWORD
+    _brandedPartId = 0; // DWORD
+    _repairPrice = 0;   // DWORD
+    _junkPrice = 0;     // DWORD
+    _wear = 0;          // DWORD
+    _attachmentPoint = 0; // BYTE
+    _damage = 0;          // BYTE
 
-	constructor() {
-		super();
-		this._partId = 0; // 4 bytes
-		this._parentPartId = 0; // 4 bytes
-		this._brandedPartId = 0; // 4 bytes
-		this._repairPrice = 0; // 4 bytes
-		this._junkPrice = 0; // 4 bytes
-		this._wear = 0; // 4 bytes
-		this._attachmentPoint = 0; // 1 byte
-		this._damage = 0; // 1 byte
-		this._retailPrice = 0; // 4 bytes
-		this._maxWear = 0; // 4 bytes
-		// 33 bytes total
-	}
+    override get serializeSize() {
+        return 26;
+    }
 
-	size() {
-		return 34;
-	}
+    override serialize() {
+        const buf = Buffer.alloc(26);
+        buf.writeUInt32LE(this._partId, 0);
+        buf.writeUInt32LE(this._parentPartId, 4);
+        buf.writeUInt32LE(this._brandedPartId, 8);
+        buf.writeUInt32LE(this._repairPrice, 12);
+        buf.writeUInt32LE(this._junkPrice, 16);
+        buf.writeUInt32LE(this._wear, 20);
+        buf.writeUInt8(this._attachmentPoint, 24);
+        buf.writeUInt8(this._damage, 25);
+        return buf;
+    }
 
-	override serialize() {
-		const buffer = Buffer.alloc(this.size());
-		let offset = 0;
-		buffer.writeUInt32LE(this._partId, offset);
-		offset += 4; // offset is 4
-		buffer.writeUInt32LE(this._parentPartId, offset);
-		offset += 4; // offset is 8
-		buffer.writeUInt32LE(this._brandedPartId, offset);
-		offset += 4; // offset is 12
-		buffer.writeUInt32LE(this._repairPrice, offset);
-		offset += 4; // offset is 16
-		buffer.writeUInt32LE(this._junkPrice, offset);
-		offset += 4; // offset is 20
-		buffer.writeUInt32LE(this._wear, offset);
-		offset += 4; // offset is 24
-		buffer.writeUInt8(this._attachmentPoint, offset);
-		offset += 1; // offset is 25
-		buffer.writeUInt8(this._damage, offset);
-		offset += 1; // offset is 26
-		buffer.writeUInt32LE(this._retailPrice, offset);
-		offset += 4; // offset is 30
-		buffer.writeUInt32LE(this._maxWear, offset);
-		// offset += 4; // offset is 34
+    override toString() {
+        return `Part: partId=${this._partId} parentPartId=${this._parentPartId} brandedPartId=${this._brandedPartId} repairPrice=${this._repairPrice} junkPrice=${this._junkPrice} wear=${this._wear} attachmentPoint=${this._attachmentPoint} damage=${this._damage}`;
+    }
+}
 
-		return buffer;
-	}
+// Matches C++ struct PartAssemblyMsg (MCDefs.h:1196).
+// Header: WORD msgNo + DWORD ownerID + WORD noParts = 8 bytes.
+// Followed by noParts * 26-byte Part records.
+export class PartsAssemblyMessage extends BytableBuffer {
+    _msgNo = 0;
+    _ownerId: number;
+    _numberOfParts = 0;
+    _partList: Part[] = [];
 
-	override toString() {
-		return `Part: partId=${this._partId} parentPartId=${this._parentPartId} brandedPartId=${this._brandedPartId} repairPrice=${this._repairPrice} junkPrice=${this._junkPrice} wear=${this._wear} attachmentPoint=${this._attachmentPoint} damage=${this._damage} retailPrice=${this._retailPrice} maxWear=${this._maxWear}`;
-	}
+    constructor(ownerId: number) {
+        super();
+        this._ownerId = ownerId;
+    }
+
+    override get serializeSize() {
+        return 8 + this._partList.length * 26;
+    }
+
+    override serialize() {
+        const header = serializeFields([
+            wordLE("msgNo", this._msgNo),
+            dwordLE("ownerId", this._ownerId),
+            wordLE("numberOfParts", this._numberOfParts),
+        ]);
+        const parts = Buffer.concat(this._partList.map((p) => p.serialize()));
+        return Buffer.concat([header, parts]);
+    }
 }

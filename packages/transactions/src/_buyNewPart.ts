@@ -4,7 +4,7 @@ import {
 } from "rusty-motors-shared";
 import { MessageNode } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
-import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 import { getServerLogger } from "rusty-motors-shared";
 import { dbBuyNewPart } from "../../database/src/cache.js";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
@@ -40,7 +40,8 @@ export async function _buyNewPart({
 
     const newPartMessage = new GenericReplyMessage()
     newPartMessage.msgNo = 101;
-    newPartMessage.result.writeInt32LE(newPartId)
+    newPartMessage.msgReply = 176
+    newPartMessage.value.writeInt32LE(newPartId)
 
     const responsePacket = new MessageNode();
     responsePacket.sequence = packet.sequenceNumber;

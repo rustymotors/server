@@ -14,8 +14,8 @@ function makeFrame(commId: number, sender: number, filter: number): Buffer {
 
 const mockPut = vi.fn();
 const mockGetSocketQueue = vi.fn(() => ({ put: mockPut }));
-const mockGetChannelMembers = vi.fn<[number], string[]>();
-const mockGetConnectionIdByUserId = vi.fn<[number], string | undefined>();
+const mockGetChannelMembers = vi.fn<() => string[]>();
+const mockGetConnectionIdByUserId = vi.fn<() => string | undefined>();
 const mockLog = { debug: vi.fn(), warn: vi.fn(), verbose: vi.fn(), info: vi.fn(), error: vi.fn() };
 
 vi.mock('rusty-motors-shared', async (importOriginal) => {
@@ -84,7 +84,7 @@ describe('handleSendNotSingleLong', () => {
             log: mockLog as never,
         });
 
-        const sent: Buffer = mockPut.mock.calls[0][0].data;
+        const sent: Buffer = mockPut.mock.calls[0]![0].data;
         expect(sent.byteLength).toBe(16);
         expect(sent.readUInt16BE(0)).toBe(0x97);
         expect(sent.readUInt16BE(2)).toBe(16);

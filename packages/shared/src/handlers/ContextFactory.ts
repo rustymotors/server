@@ -142,6 +142,7 @@ export function createTestContext(
         getVehicleAndParts: async () => null,
         createNewCar: async () => 0,
         purchaseCar: async () => 0,
+        getPartCatalog: async () => [],
     };
 
     const mockAuthStore: IAuthStore = {

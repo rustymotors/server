@@ -3,7 +3,7 @@ import {
     StartRaceMessage,
     StartRaceResultMessage,
 } from "./StartRaceMessages.js";
-import type { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 import { getServerLogger } from "rusty-motors-shared";
 
 const defaultLogger = getServerLogger("handlers/_startRace");

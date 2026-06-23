@@ -96,7 +96,8 @@ export class AuthStore implements IAuthStore {
 
         // Register demo user and initial sessions
         this.registerNewUser("admin", "admin", 654321);
-        this.updateSession(1212555, "5213dee3a6bcdb133373b2d4f3b9962758", 1);
+        this.registerNewUser("molly", "molly", 21188);
+        this.updateSession(21188, "5213dee3a6bcdb133373b2d4f3b9962758", 1);
         this.updateSession(5551212, "d316cd2dd6bf870893dfbaaf17f965884e", 2);
         this.logger.info("Database initialized");
     }
@@ -134,7 +135,7 @@ export class AuthStore implements IAuthStore {
         } catch (error) {
             if (
                 error instanceof Error &&
-                error.message.includes("UNIQUE constraint failed")
+                error.message.includes("violates unique constraint")
             ) {
                 this.logger.warn(`User ${username} already exists`);
                 return;

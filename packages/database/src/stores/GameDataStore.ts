@@ -45,6 +45,9 @@ export class GameDataStore implements IGameDataStore {
     private initSQL() {
         return createSqlTag({
             typeAliases: {
+                catalogPartId: z.object({
+                    branded_part_id: z.number(),
+                }),
                 vehicleWithOwner: z.object({
                     vehicle_id: z.number(),
                     skin_id: z.number(),
@@ -272,7 +275,7 @@ export class GameDataStore implements IGameDataStore {
             },
             async (): Promise<PartEntry[]> => {
                 const partList: PartEntry[] = [];
-                const rawParts = (await pool.many(sql.typeAlias("part")`
+                const rawParts = (await pool.any(sql.typeAlias("part")`
                     SELECT *
                     FROM part p1
                     INNER JOIN part p2 ON p1.part_id = p2.parent_part_id
@@ -428,5 +431,27 @@ export class GameDataStore implements IGameDataStore {
             log.error(`Error purchasing car for player ${playerId}`, { error });
             throw error;
         }
+    }
+
+    async getPartCatalog(aptId: number, blockFamilyId: number): Promise<number[]> {
+        const { pool, sql } = await this.ensureConnection();
+        return Sentry.startSpan(
+            {
+                name: "Get part catalog",
+                op: "db.query",
+                attributes: { db: "postgres" },
+            },
+            async () => {
+                const rows = await pool.any(sql.typeAlias("catalogPartId")`
+                    SELECT bp.branded_part_id
+                    FROM branded_part bp
+                    JOIN part_type pt ON bp.part_type_id = pt.part_type_id
+                    WHERE (${aptId} = -1 OR pt.abstract_part_type_id = ${aptId})
+                    AND (${blockFamilyId} <= 0 OR bp.engine_block_family_id = ${blockFamilyId})
+                    ORDER BY bp.branded_part_id
+                `) as Array<{ branded_part_id: number }>;
+                return rows.map((r) => r.branded_part_id);
+            },
+        );
     }
 }
