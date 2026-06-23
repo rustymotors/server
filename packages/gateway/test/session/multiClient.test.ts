@@ -21,6 +21,9 @@ import { relayEnvelope } from './npsMessages.js';
 import { handleSendSingleLong } from '../../../../packages/lobby/src/handlers/handleSendSingleLong.js';
 import { handleSendNotSingleLong } from '../../../../packages/lobby/src/handlers/handleSendNotSingleLong.js';
 import { handleSendBuddyLong } from '../../../../packages/lobby/src/handlers/handleSendBuddyLong.js';
+// rooms lib handler — exercises the Phase 1 fix (joinChannel in handleOpenCommChannel)
+import { handleOpenCommChannel as roomsHandleOpenCommChannel } from '../../../../libs/@rustymotors/rooms/src/handlers/handleOpenCommChannel.js';
+import { openCommChannelPacket } from './npsMessages.js';
 
 import type { BytableMessage } from '@rustymotors/binary';
 
@@ -232,5 +235,82 @@ describe('SEND_NOT_SINGLE_LONG broadcast via real queues', () => {
         const bobPackets   = await bob.drain(0);
         expect(alicePackets).toHaveLength(0);
         expect(bobPackets).toHaveLength(0);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// Race port relay (ports 9000-9020) — Phase 1 regression
+//
+// Verifies that rooms handleOpenCommChannel populates ChannelMembership so
+// that relay handlers can find race room members via getChannelMembers().
+// ---------------------------------------------------------------------------
+describe('race port relay via rooms handleOpenCommChannel', () => {
+    const RACE_COMM_ID = 9001;
+    const RACE_PORT = 9000;
+
+    function makeRoomsMessage(buf: Buffer): BytableMessage {
+        return { serialize: () => buf, getBody: () => buf, header: { id: buf.readUInt16BE(0) } } as unknown as BytableMessage;
+    }
+
+    it('populates ChannelMembership when clients join via rooms handleOpenCommChannel', async () => {
+        const alice = session.client('alice', RACE_PORT);
+        const bob   = session.client('bob',   RACE_PORT);
+
+        // Both clients send OPEN_COMM_CHANNEL on the race port (same commId)
+        await roomsHandleOpenCommChannel({
+            connectionId: alice.connectionId,
+            message: makeRoomsMessage(openCommChannelPacket(RACE_COMM_ID, USER_A)),
+            log: log as never,
+        });
+        await roomsHandleOpenCommChannel({
+            connectionId: bob.connectionId,
+            message: makeRoomsMessage(openCommChannelPacket(RACE_COMM_ID, USER_B)),
+            log: log as never,
+        });
+
+        // Now relay from Alice to Bob should work
+        const frame = relayEnvelope(0x95, RACE_COMM_ID, USER_A, USER_B, BLOB);
+        await handleSendSingleLong({
+            connectionId: alice.connectionId,
+            message: makeMessage(frame),
+            log: log as never,
+        });
+
+        const bobPackets = await bob.drain();
+        expect(bobPackets).toHaveLength(1);
+        expect(bobPackets[0]!.readUInt16BE(0)).toBe(0x95);
+        expect(bobPackets[0]!.readUInt32BE(4)).toBe(RACE_COMM_ID);
+
+        const alicePackets = await alice.drain(0);
+        expect(alicePackets).toHaveLength(0);
+    });
+
+    it('SEND_NOT_SINGLE_LONG broadcasts to all race room members except sender', async () => {
+        const alice   = session.client('alice',   RACE_PORT);
+        const bob     = session.client('bob',     RACE_PORT);
+        const charlie = session.client('charlie', RACE_PORT);
+
+        for (const [client, userId] of [[alice, USER_A], [bob, USER_B], [charlie, 30]] as const) {
+            await roomsHandleOpenCommChannel({
+                connectionId: client.connectionId,
+                message: makeRoomsMessage(openCommChannelPacket(RACE_COMM_ID, userId)),
+                log: log as never,
+            });
+        }
+
+        // Alice broadcasts, excluding Bob
+        const frame = relayEnvelope(0x97, RACE_COMM_ID, USER_A, USER_B, BLOB);
+        await handleSendNotSingleLong({
+            connectionId: alice.connectionId,
+            message: makeMessage(frame),
+            log: log as never,
+        });
+
+        const charliePackets = await charlie.drain();
+        expect(charliePackets).toHaveLength(1);
+        expect(charliePackets[0]!.readUInt16BE(0)).toBe(0x97);
+
+        expect(await alice.drain(0)).toHaveLength(0);
+        expect(await bob.drain(0)).toHaveLength(0);
     });
 });

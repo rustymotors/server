@@ -3,8 +3,10 @@ import {
     ChannelCreated,
     databaseProvider,
     getServerLogger,
+    joinChannel,
     NPS_MESSAGE_IDS,
     RawMessage,
+    setConnectionUserId,
     UserJoinedChannelMessage,
     type ServerLogger,
 } from 'rusty-motors-shared';
@@ -76,6 +78,9 @@ export async function handleOpenCommChannel({
     const userId = userIdBuf.readInt32BE();
 
     log.debug(`[${connectionId}] NPS_OPEN_COMM_CHANNEL commId=${commId} userId=${userId}`);
+
+    joinChannel(connectionId, commId);
+    setConnectionUserId(connectionId, userId);
 
     const connectionPort = Number.parseInt(connectionId.split(':')[1] ?? '7003');
     const server = getPrimaryRoomServer();
