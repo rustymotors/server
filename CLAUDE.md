@@ -141,7 +141,7 @@ Responses serialized and sent via MessageQueue
 
 **Database Layer** (`packages/database`)
 - **SQLite** (better-sqlite3): Local session cache, login credentials (bcrypt hashed)
-- **PostgreSQL** (Sentry/Sequelize): Persistent game data (vehicles, parts, brands, players)
+- **PostgreSQL** (Slonik/Sequelize): Persistent game data (vehicles, parts, brands, players)
 - Demo user: `admin/admin`
 
 ### Package Organization
@@ -219,7 +219,6 @@ Set `RECORD_SESSIONS=true` environment variable to record all socket traffic to 
 The project uses multiple logging systems:
 - **Roarr**: Primary structured logging
 - **Pino**: Fastify web server logging
-- **Sentry**: Error tracking and monitoring (configured via `SENTRY_DSN`)
 
 ### Testing Strategy
 

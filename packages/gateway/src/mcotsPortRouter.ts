@@ -1,8 +1,4 @@
-import {
-    receiveTransactionsData,
-    UnsupportedMessageCodeError,
-} from "rusty-motors-transactions";
-import * as Sentry from "@sentry/node";
+import { receiveTransactionsData } from "rusty-motors-transactions";
 import { getServerLogger, MessageNode, type ServerLogger, type messageQueueItem, MessageQueue, type TaggedTcpSocket } from "rusty-motors-shared";
 import { bindLogContext } from "@rustymotors/logging";
 import { getSessionRecorder } from './session/SessionRecorderIntegration.js';
@@ -52,7 +48,6 @@ export async function mcotsPortRouter({
                     error: err
                 }
             )
-            Sentry.captureException(err)
         }
     })
 
@@ -120,7 +115,6 @@ export async function mcotsPortRouter({
                 port: socket.localPort,
                 error,
             });
-            Sentry.captureException(error);
             clearPartialBuffer(connectionId);
         }),
     );
@@ -287,10 +281,10 @@ async function processIncomingPackets(
             });
             const initialPacket: MessageNode = parseInitialMessage(packet);
             if (!initialPacket.isValidSignature()) {
-                // Drop the packet entirely. Don't decrypt, don't dispatch,
-                // don't capture to Sentry — invalid framing is not actionable
-                // and would just spam noise. Header context is already in
-                // the "Processing packet" debug log above.
+                // Drop the packet entirely. Don't decrypt, don't dispatch —
+                // invalid framing is not actionable and would just spam
+                // noise. Header context is already in the "Processing
+                // packet" debug log above.
                 log.warn(
                     `Dropping mcots packet with invalid signature`,
                     {
@@ -324,12 +318,6 @@ async function processIncomingPackets(
                     },
 
                 )
-                // UnsupportedMessageCodeError is reported (or filtered out
-                // for non-positive codes) by processInput itself — don't
-                // double-capture here.
-                if (!(error instanceof UnsupportedMessageCodeError)) {
-                    Sentry.captureException(error)
-                }
 
 
             });
@@ -340,8 +328,6 @@ async function processIncomingPackets(
             port,
             cause: error
         });
-        Sentry.captureException(error);
-        
     }
 }
     
@@ -363,7 +349,7 @@ async function routeInitialMessage(
     // Messages may be encrypted, this will be handled by the handler
 
     log.debug(`Routing message for port ${port}: ${initialPacket.msgNo}`);
-    let responses: MessageNode[] = [];
+    let responses: { serialize(): Buffer }[] = [];
 
     switch (port) {
         case 43300:

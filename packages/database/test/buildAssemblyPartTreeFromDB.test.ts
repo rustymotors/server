@@ -10,10 +10,6 @@ vi.mock("../src/DatabaseManager.js", () => ({
     getDatabaseManager: vi.fn(),
 }));
 
-vi.mock("@sentry/node", () => ({
-    startSpan: vi.fn((_opts: unknown, fn: () => unknown) => fn()),
-}));
-
 vi.mock("rusty-motors-shared", () => ({
     getServerLogger: () => ({
         debug: vi.fn(),

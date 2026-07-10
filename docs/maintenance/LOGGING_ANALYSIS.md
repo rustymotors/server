@@ -105,15 +105,7 @@ import type { Logger } from "pino";
 - Hard to debug distributed operations
 - No request tracing
 
-#### 6. Sentry Integration Underutilized ⚠️
-
-**Problem**: Sentry is configured (`instrument.mjs`) but logging doesn't automatically send errors to Sentry
-
-**Current**: Manual `Sentry.captureException()` calls scattered throughout code
-
-**Impact**: Inconsistent error reporting, some errors may not reach Sentry
-
-#### 7. No Log Context/Scoping ⚠️
+#### 6. No Log Context/Scoping ⚠️
 
 **Problem**: No way to add contextual metadata that persists across function calls
 
@@ -268,27 +260,7 @@ const scopedLog = log.withContext({ connectionId: 'abc123', userId: 'user1' });
 scopedLog.info('Processing request'); // Automatically includes connectionId and userId
 ```
 
-#### 3.2 Automatic Sentry Integration
-
-**Effort**: Medium  
-**Value**: High  
-**Action**: Integrate Winston with Sentry transport
-
-**Implementation**:
-
-```typescript
-import * as Sentry from '@sentry/node';
-
-// Add Sentry transport for error level logs
-if (process.env['SENTRY_DSN']) {
-    logger.add(new SentryWinstonTransport({
-        level: 'error',
-        // Configure Sentry options
-    }));
-}
-```
-
-#### 3.3 Log Sampling for High-Volume Logs
+#### 3.2 Log Sampling for High-Volume Logs
 
 **Effort**: Medium  
 **Value**: Medium  
@@ -304,7 +276,7 @@ if (shouldSample(logLevel, sampleRate)) {
 }
 ```
 
-#### 3.4 Performance Metrics Logging
+#### 3.3 Performance Metrics Logging
 
 **Effort**: High  
 **Value**: Medium  
@@ -318,7 +290,7 @@ const timer = log.startTimer();
 timer.done({ message: 'Operation completed', operation: 'processPacket' });
 ```
 
-#### 3.5 Standardize Logger Injection Pattern
+#### 3.4 Standardize Logger Injection Pattern
 
 **Effort**: High  
 **Value**: High  
@@ -362,10 +334,9 @@ export async function processData(
 ### Phase 3: Advanced Features (1-2 weeks)
 
 1. ✅ Logger factory pattern
-2. ✅ Sentry integration
-3. ✅ Log context/scoping
-4. ✅ Performance metrics
-5. ✅ Standardize injection pattern
+2. ✅ Log context/scoping
+3. ✅ Performance metrics
+4. ✅ Standardize injection pattern
 
 ## 12 Factor App Compliance
 
@@ -472,7 +443,7 @@ expect(mockLogger.error).not.toHaveBeenCalled();
 The codebase has a **good foundation** for logging with a centralized Winston-based logger. However, there are **significant opportunities for improvement**:
 
 1. **Immediate**: Replace console.* usage, fix bugs, add JSON format
-2. **Short-term**: Add structured logging, correlation IDs, better Sentry integration
+2. **Short-term**: Add structured logging, correlation IDs
 3. **Long-term**: Context-aware logging, performance metrics, standardized patterns
 
 The logging system is **functional but not optimal** for production use at scale. Implementing these improvements will make the system more maintainable, debuggable, and production-ready.

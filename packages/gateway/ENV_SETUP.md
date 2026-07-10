@@ -11,7 +11,7 @@ Updated to use **Node's built-in `.env` file support** (Node 20.6+) instead of t
    - Enable `--openssl-legacy-provider` for legacy crypto support
    - Load `.env` from project root automatically
 
-2. **`vitest.setup.ts`** - Optional setup for Sentry initialization
+2. **`vitest.setup.ts`** - Test environment setup
 
 ## How It Works
 
@@ -37,7 +37,6 @@ PUBLIC_KEY_FILE=data/pub.key
 # Optional
 EXTERNAL_HOST=localhost
 MCO_LOG_LEVEL=debug
-SENTRY_DSN=...  # Optional, for Sentry integration
 ```
 
 ## Verification

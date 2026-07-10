@@ -347,7 +347,6 @@ This document identifies critical code paths that need test coverage. The codeba
 - ✅ Handler errors are caught and logged
 - ✅ Responses are queued correctly
 - ✅ Multiple responses handled
-- ✅ Sentry integration on errors
 ```
 
 **Risk**: High - Lobby functionality
@@ -492,7 +491,6 @@ The codebase has **inconsistent error handling patterns**:
 - ✅ Verify error handling patterns are intentional
 - ✅ Document when to return empty vs throw
 - ✅ Test error propagation through layers
-- ✅ Test Sentry integration points
 - ✅ Test error logging formats
 ```
 

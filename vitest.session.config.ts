@@ -48,7 +48,6 @@ export default defineConfig({
                 "bin/**/*.ts",
                 "interfaces",
                 "vite.config.ts",
-                "instrument.mjs",
                 "commitlint.config.js",
                 "packages/pklib-ts",
                 "**/coverage/**",

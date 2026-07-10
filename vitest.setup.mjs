@@ -112,17 +112,6 @@ if (!process.env.DATABASE_URL && !process.env.TEST_DATABASE_URL) {
 	}
 }
 
-// Optional Sentry initialization, only if SENTRY_DSN is set.
-(async () => {
-	try {
-		if (process.env.SENTRY_DSN) {
-			await import("./src/instrument.mjs");
-		}
-	} catch (error) {
-		// Silently ignore if instrument.mjs can't be loaded.
-	}
-})();
-
 // Final override: ensure session recording stays disabled for tests.
 process.env.RECORD_SESSIONS = "false";
 

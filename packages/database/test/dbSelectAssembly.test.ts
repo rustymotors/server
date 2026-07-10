@@ -16,10 +16,6 @@ vi.mock("../src/services/database.js", () => {
     };
 });
 
-vi.mock("@sentry/node", () => ({
-    startSpan: vi.fn((_opts: unknown, fn: () => unknown) => fn()),
-}));
-
 import { dbSelectAssembly } from "../src/dbSelectAssembly.js";
 
 beforeEach(() => {
