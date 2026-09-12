@@ -4,7 +4,7 @@ services:
         build:
             context: sslProxy
         ports:
-            - "443:443"
+            - "127.0.0.1:9443:443"
             - "80:80"
         extra_hosts:
             - "host.docker.internal:host-gateway"
@@ -78,4 +78,5 @@ services:
 volumes:
     pgadmin:
     db-data:
-        driver: local    
+        driver: local
+
