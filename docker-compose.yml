@@ -5,7 +5,7 @@ services:
         build:
             context: services/sslProxy
         ports:
-            - "443:443"
+            - "127.0.0.1:9443:443"
             - "80:80"
         restart: always
         extra_hosts:
