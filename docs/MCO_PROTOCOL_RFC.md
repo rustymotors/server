@@ -3,13 +3,14 @@
 ## Cleanroom Reference Document
 
 **Status:** Informational (Cleanroom Specification)
-**Version:** 0.2.0
-**Date:** 2026-01-20
+**Version:** 0.2.1
+**Date:** 2026-09-24
 
 ### Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 0.2.1 | 2026-09-24 | Corrected section 4.3: NPS User Valid Response (0x601) body layout, ban/gag records |
 | 0.2.0 | 2026-01-20 | Added section 4.6: Room/Game Server Protocol (ports 9000-9014, 9500-9508) |
 | 0.1.0 | 2026-01-11 | Initial release |
 
@@ -313,15 +314,47 @@ where:
 
 ### 4.3. NPS User Valid Response (0x601)
 
-Sent by login server upon successful authentication.
+Sent by login server upon successful authentication. All integers are
+big-endian. Each record is preceded by its length; the client reads a record's
+fields and then skips ahead by that length, so the length must equal the
+record's real size.
 
 ```ebnf
 NPS_UserValid =
-    header: NPS_Header ,       (* id = 0x601 *)
+    header: NPS_Header ,             (* id = 0x601 *)
     customer-id: NPS_CUSTOMERID ,
-    persona-count: uint8 ,
-    personas: { NPS_PersonaInfo } ;
+    profile-id: uint32 ,
+    is-cache-hit: uint8 ,
+    ban: NPS_Sized_BanRecord ,
+    gag: NPS_Sized_BanRecord ,
+    key: NPS_Sized_KeyRecord ,
+    unknown-1: uint32 ,              (* purpose unknown; 0 is accepted *)
+    unknown-2: nps-string ;          (* at most 64 bytes; purpose unknown; empty is accepted *)
+
+NPS_Sized_BanRecord = record-length: uint16 , NPS_BanRecord ;
+NPS_BanRecord =
+    unknown: uint32 ,
+    start: uint32 ,
+    end: uint32 ,
+    text-1: nps-string ,             (* at most 64 bytes *)
+    text-2: nps-string ,             (* at most 256 bytes *)
+    text-3: nps-string ;             (* at most 256 bytes *)
+
+NPS_Sized_KeyRecord = record-length: uint16 , NPS_KeyRecord ;
+NPS_KeyRecord =
+    text: nps-string ,               (* at most 32 bytes; purpose unknown; empty is accepted *)
+    value: uint32 ;
+
 ```
+
+A ban or gag record is active when `start` is nonzero and `end` is either zero
+(no expiry) or later than the current time. A record of all zeros is inactive:
+not banned, not gagged. The same record shape is used for both.
+
+A body that is shorter than this, or lacks the length prefixes, makes the
+client read record lengths from the wrong bytes and run past the end of the
+message. Depending on what memory lies beyond it, the login then crashes,
+hangs, or appears to succeed with garbage values.
 
 ### 4.4. NPS Open Comm Channel (0x106)
 
