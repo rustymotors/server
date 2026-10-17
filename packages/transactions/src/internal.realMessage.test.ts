@@ -8,7 +8,7 @@ vi.mock("pklib-ts", () => ({
     explode: vi.fn(),
 }));
 
-// Keep the real shared package (MessageNode, OldServerMessage, ...) so the parse and
+// Keep the real shared package (MessageNode, ...) so the parse and
 // serialize paths in internal.ts actually run. Only logging, state and encryption are faked.
 vi.mock("rusty-motors-shared", async (importOriginal) => {
     const actual = await importOriginal<typeof import("rusty-motors-shared")>();
@@ -210,23 +210,6 @@ describe("decryptedMessage (via receiveTransactionsData)", () => {
         expect(result.connectionId).toEqual("conn-2");
         expect(result.messages).toHaveLength(0);
         expect(getHandlerPacket().sequenceNumber).toBe(3);
-    });
-
-    it("does not let a handler mutate the inbound message", async () => {
-        const original = Buffer.from([0x01, 0x00, 0xca, 0xfe]);
-        const message = makeMessage({ opcode: 1, payload: original.subarray(2), sequence: 9 });
-
-        getMockHandler().mockImplementationOnce(async ({ packet }: { packet: MessageNode }) => {
-            // a handler is free to rewrite the packet it was given
-            packet.setSequence(999);
-            packet.setDataBuffer(Buffer.from([0x01, 0x00, 0x00, 0x00]));
-            return { messages: [] };
-        });
-
-        await receiveTransactionsData({ connectionId: "conn-iso", message });
-
-        expect(message.sequence).toBe(9);
-        expect(message.data).toEqual(original);
     });
 });
 

@@ -19,10 +19,6 @@ vi.mock("rusty-motors-shared", () => {
         MessageNode: class {
             deserialize(_: Buffer) { /* noop */ }
         },
-        // processInput wraps the inbound message in one of these before calling the handler
-        OldServerMessage: class {
-            _doDeserialize(_: Buffer) { return this; }
-        },
         ServerLogger: class {},
         McosEncryption: class {},
         State: class {},
