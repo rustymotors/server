@@ -13,6 +13,7 @@ Newest first. Each entry lists the sections changed and the evidence used.
 
 | Date | Sections | Change | Evidence |
 |------|----------|--------|----------|
+| 2026-10-17 | 11.7.3, 12.3 | Corrected the 0x020E NPS_CHANNEL_CREATED layout: it carries commId, riff name, protocol, 256-byte channelData, channelType and maxReadyPlayers (not just commId and name). Documented its effect (replaces or adds a room entry, making the room findable by name) and recorded the audience (the creator and every client not in the room, per the project owner; the reference server sends it only to the requester) and the traced visibility chain: a pit shows in a client's list only after 0x020E, then a state-4 message (0x021C/0x0224/0x0219), then a non-zero user count (0x0206), with no polling. | `cNPS_RoomInfo::operator=(_NPS_ChannelCreated*)` (`004e4770`), `cNPS_RoomInfoList::add(_NPS_ChannelCreated*)` (`004e58f0`), `commandCallback` (`004ee420`, `004ef30c`..`004ef3a4`), `Lobby_JoinPit`, `selectRoom`, `sendConnectGameServer`. |
 | 2026-10-17 | 12.1, 12.9, new 12.9.1 | Corrected which room-server messages are pushed versus requested: 0x0404 and 0x0229 are replies to the 0x030C and 0x0128 the client sends on every connect; 0x0401 and 0x020D are replies to 0x0302 and 0x010C, and the client blocks (no timeout) until a non-empty 0x0401 arrives; 0x0211 is the reply to 0x0101 (opcode confirmed). Corrected §12.9 item 4: a 0x0109 with non-zero isMaster sets the host id, it is not a redundant hint. Added §12.9.1 describing host determination (0x0227 / 0x0109), the write-only flag at +0x430, and the start-button gate. | `Async_Connect` (`004f1b90`), `sendConnectGameRoomServer` (`004e3750`), `sendGetServerInfo` (`004ec200`), `NPSGetUserList` (`00ad3950`), `commandCallback` (`004ee420`), `Pit_GetHost` (`0089e140`), `AmIHost` (`006927d0`), `SimPit_RaceButtUpdate` (`008a6a60`), `SimPit_NonHostClientsReady` (`008a69a0`). |
 | 2026-10-17 | 11.4.2, 11.6.2, 11.6.4 | Documented the pending-add flag mechanism (`FUN_00ad8a70`: ~20 s wait, grants stored only while pending, unsolicited grants logged as errors and otherwise ignored). Corrected the start-game flow: the client does not wait for a 0x0214 after 0x010A; it completes on the room state set by 0x021C (4) or an empty 0x0402 (8). Downgraded the "send 0x0214 to all non-master clients" requirement as unsupported by the binary. | `FUN_00ad8a70`, `ProcessCommands` (`00adda10`), `cNPS_RoomServer::commandCallback` (`004ee420`, 0x214 case), `StartGameServerInterceptCallback` (`00ad6b50`), `NPSStartGameServer` (`00ad6d40`), `sendStartServer` (`004ec530`). |
 | 2026-10-17 | 12.1, 12.3, 12.6 | Traced room-server discovery: the client gets the room's address from 0x020D (reply to GetServerInfo 0x010C), not from the 0x0214 grant. Corrected the 0x020D/0x0212 entry layout: the second `p` is the IP address, the field at +0x34 is the port, +0x3C is the player count (previously "secondary name", "unknown", "numUsers"). Noted that the client blocks until the lobby has delivered at least one riff before looking a room up. | `cNPS_RoomServer::sendConnectRoomServer` (`004eb700`), `sendConnect` (`004eacc0`), `sendGetServerInfo` (`004ec200`), `cNPS_RoomInfo::operator=(_NPS_RunningServerInfo*)` (`004e4830`). |
@@ -1195,17 +1196,28 @@ Payload:
   [uint32 BE port]        used by the client only for UDP channels; ignored for TCP
 ```
 
-#### 11.7.3 Broadcast: 0x020E NPS_CHANNEL_CREATED
+#### 11.7.3 Announcement: 0x020E NPS_CHANNEL_CREATED
 
-When the server creates a channel, it announces it to lobby-connected clients:
+When the server creates a channel, it announces it to clients with 0x020E.
 
-```
-Payload:
-  [uint32 BE commId]      the commId of the new channel
-  [p channelName]         channel name (p-string: [uint32 BE len+1][bytes][null])
-```
+**CONFIRMED from `cNPS_RoomInfo::operator=(_NPS_ChannelCreated const*)` (`004e4770`), `cNPS_RoomInfoList::add(_NPS_ChannelCreated const*)` (`004e58f0`) and the 0x020E case of `cNPS_RoomServer::commandCallback` (`004ee420`, log string `"NPS_CHANNEL_CREATED: "`).** Deserialized layout (`_NPS_ChannelCreated`):
 
-*Note:* the reference server currently sends a larger struct here (commId, riff, protocol, 256-byte channel data, type, max ready players) and only to the requesting client. Which layout the client reads is not yet verified.
+| Offset | Size | Field | Stored in the client's room entry as |
+|--------|------|-------|--------------------------------------|
+| +0x00 | 4 | commId | entry+0x20 |
+| +0x04 | 32 | riff (name) | entry+0x00 (the name the client looks the room up by) |
+| +0x24 | 4 | protocol | entry+0x2C |
+| +0x28 | 256 | channelData blob | entry+0x54 |
+| +0x128 | 2 | channelType | entry+0x40 |
+| +0x12A | 2 | maxReadyPlayers | entry+0x46 |
+
+The wire layout the reference server sends (`ChannelCreated`) is commId (`l`), riff (`p`), protocol (`l`), channelData (`b` 256), channelType (`s`), maxReadyPlayers (`s`), which matches this deserialized layout field for field. The earlier two-field description (`[commId][p channelName]`) was incomplete.
+
+**Effect:** the client removes any existing room entry with the same commId and adds this one to the room list of the connection that received it. That makes the room findable by name (`sendConnectRoomServer` looks rooms up by name) and counts toward the "list is not empty" waits in §12.1. The library-layer dispatcher (`ProcessCommands`) only logs it. The channelData blob is stored verbatim; the `hostID`, `hostName` and `minNPSracers` values the reference server writes into it were not traced to a reader.
+
+**Audience:** the server MUST send 0x020E to the client that created the room **and** to every connected client that is not in that room (project-owner statement). The room list a client shows is the riff list (the same list 0x0401 fills), and 0x020E is how a new room is added to it live. Clients already in the room do not need it.
+
+**Traced in the binary:** a client can join a room only if an entry for it is already in its room list. That list changes only on pushed messages and is never polled. The entry that 0x020E creates starts in state 1, and the pit list shows a row only once the entry is in state 4 (set by 0x021C, 0x0224 or 0x0219), has a non-zero user count (0x0206), and its blob passes a version check. The state and count setters only log "room not found" if the entry does not exist yet, so the order is 0x020E, then a state-4 message, then a user count. Joining runs `Lobby_JoinPit`, `selectRoom`, then `sendConnectGameServer`, which looks the room up by name and fails with -0x14 if the entry is missing. The reference server currently sends 0x020E only to the requester, and only when `commId > 100`, so it does not meet this audience rule; whether it sends the state-4 and count messages was not checked.
 
 #### 11.7.4 Broadcast: 0x020F NPS_CHANNEL_DELETED
 
@@ -1370,7 +1382,7 @@ Notation: `[n]` = uint32 at word offset n (byte offset n×4); `*(u16*)(+B)` = ui
 | 0x0206 | NPS_CLIENT_COUNT | `[0]` commId, `[1]` count |
 | 0x020C | NPS_USER_JOINED_CHANNEL | `[8]` userId (byte +32), `[9]` commId (byte +36) |
 | 0x020D | NPS_SERVER_INFO | 1 entry × 76 bytes: riff, commId, **IP, port**, userId, numPlayers; see §12.6 |
-| 0x020E | NPS_CHANNEL_CREATED | `[0]` commId, `[1…]` name (p-string) |
+| 0x020E | NPS_CHANNEL_CREATED | `[0]` commId, `[1…]` riff name, then protocol, 256-byte channelData, channelType, maxReadyPlayers; replaces/adds a room entry; see §11.7.3 |
 | 0x020F | NPS_CHANNEL_DELETED | `[0]` commId |
 | 0x0210 | NPS_READY_LIST | `[0]` numReady; N×12 bytes: `[0]` commId, `[1]` userId, `*(u16*)(+8)` isReady, `*(u16*)(+10)` isMaster |
 | 0x0211 | NPS_USER_LIST | `[0]` commId (0=server list), `[1]` numUsers; N×100 bytes; see §12.7 |
