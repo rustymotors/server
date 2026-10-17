@@ -1,4 +1,5 @@
 import type { MessageQueue } from './src/MessageQueue.js';
+export { requireEnv } from './src/requireEnv.js';
 export { SubThread } from './src/SubThread.js';
 export { NetworkMessage } from './src/NetworkMessage.js';
 export { Configuration, getServerConfiguration } from './src/Configuration.js';
