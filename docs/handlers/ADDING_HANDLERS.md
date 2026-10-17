@@ -179,7 +179,6 @@ Here's a complete handler based on `handleOpenCommChannel.ts`:
 import { BytableMessage } from '@rustymotors/binary';
 import {
     getServerLogger,
-    RawMessage,
     Serializable,
     ServerLogger,
     databaseProvider,
