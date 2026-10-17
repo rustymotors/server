@@ -57,8 +57,8 @@ describe('RoomServer', () => {
         server = new RoomServer(1, 'TestServer', '127.0.0.1', 9000);
     });
 
-    it('getRoomByCommId throws an error for unknown commId', () => {
-        expect(() => server.getRoomByCommId(1)).toThrow();
+    it('getRoomByCommId returns undefined for unknown commId', () => {
+        expect(server.getRoomByCommId(9999)).toBeUndefined();
     });
 
     it('getRoomByCommId finds a room by commId', () => {
@@ -76,8 +76,8 @@ describe('PrimaryRoomServer', () => {
         primary = new PrimaryRoomServer('127.0.0.1', 9000);
     });
 
-    it('creates 23 rooms (CTRL, LOBBY, MCCHAT + MCC01-MCC20)', () => {
-        expect(primary.roomList).toHaveLength(23);
+    it('creates 24 rooms (CTRL, ROOM_LOBBY, LOBBY, MCCHAT + MCC01-MCC20)', () => {
+        expect(primary.roomList).toHaveLength(24);
     });
 
     it('has static channels at correct commIds', () => {
