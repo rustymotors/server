@@ -9,7 +9,7 @@ describe('MessageQueue', () => {
 
     it('assigns sequenceNo and processes a single item', async () => {
         vi.useFakeTimers();
-        const cb = vi.fn(async (item: any) => Promise.resolve());
+        const cb = vi.fn(async (_item: unknown) => Promise.resolve());
         const q = new MessageQueue('test', 50, cb);
 
         const item = { payload: 'one' } as any;
@@ -21,7 +21,7 @@ describe('MessageQueue', () => {
         await Promise.resolve();
 
         expect(cb).toHaveBeenCalledTimes(1);
-        const calledArg = cb.mock.calls[0][0];
+        const calledArg = cb.mock.calls[0]![0]! as any;
         expect(calledArg.sequenceNo).toBe(1);
         expect(calledArg.payload).toBe('one');
 
@@ -30,7 +30,7 @@ describe('MessageQueue', () => {
 
     it('processes multiple items in order and increments sequenceNo', async () => {
         vi.useFakeTimers();
-        const cb = vi.fn(async (item: any) => Promise.resolve());
+        const cb = vi.fn(async (_item: unknown) => Promise.resolve());
         const q = new MessageQueue('test', 50, cb);
 
         const a = { payload: 'a' } as any;
@@ -42,8 +42,8 @@ describe('MessageQueue', () => {
         await Promise.resolve();
 
         expect(cb).toHaveBeenCalledTimes(2);
-        const first = cb.mock.calls[0][0];
-        const second = cb.mock.calls[1][0];
+        const first = cb.mock.calls[0]![0]! as any;
+        const second = cb.mock.calls[1]![0]! as any;
         expect(first.sequenceNo).toBe(1);
         expect(second.sequenceNo).toBe(2);
         expect(first.payload).toBe('a');
@@ -54,7 +54,7 @@ describe('MessageQueue', () => {
 
     it('does not process items after exit is called', async () => {
         vi.useFakeTimers();
-        const cb = vi.fn(async (item: any) => Promise.resolve());
+        const cb = vi.fn(async (_item: unknown) => Promise.resolve());
         const q = new MessageQueue('test', 50, cb);
 
         q.exit();

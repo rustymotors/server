@@ -1,4 +1,4 @@
-import { OldServerMessage } from "rusty-motors-shared";
+import { ServerMessage } from "rusty-motors-shared";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 import { getServerLogger } from "rusty-motors-shared";
@@ -29,7 +29,7 @@ export async function _crcPreRaceDataTestDrive({
     const pReply = new GenericReplyMessage();
     pReply.msgNo = 101; // MC_SUCCESS
     pReply.msgReply = 455; // MC_CRC_PRE_RACE_DATA_TEST_DRIVE
-    const rPacket = new OldServerMessage();
+    const rPacket = new ServerMessage();
     rPacket._header.sequence = packet.sequenceNumber;
     rPacket._header.flags = 8;
 

@@ -1,32 +1,30 @@
 import { describe, expect, it } from "vitest";
-import { OldServerMessage } from "./OldServerMessage.js";
+import { MessageNode } from './MessageNode.js';
 
-describe("ServerMessage", () => {
-	describe(".byteLength", () => {
-		it("should have the correct size", () => {
-			// Arrange
-			const testMessage = new OldServerMessage();
-			// Assert
-			// Minimum size is 11 (header) + 10 (minimum body: msgNo + data + data2) = 21
-			expect(testMessage.size()).toBe(21);
+describe("MessageNode (was ServerMessage)", () => {
+	describe(".sizeOf", () => {
+		it("should have the correct minimum size", () => {
+			const m = new MessageNode();
+			// 11 (header) + 4 (default body: Buffer.alloc(4))
+			expect(m.sizeOf).toBe(15);
 		});
 	});
+
 	it("should serialize and deserialize correctly", () => {
-		// Arrange
-		const testMessage = new OldServerMessage();
-		testMessage._header.mcoSig = "MCOX";
-		testMessage._header.sequence = 1;
-		testMessage._header.flags = 3;
-		testMessage._msgNo = 613;
-		// Act
-		const buffer = testMessage.serialize();
-		const result = new OldServerMessage();
-		result._doDeserialize(buffer);
-		result._msgNo = testMessage._msgNo;
-		// Assert
-		expect(result._header.mcoSig).toEqual(testMessage._header.mcoSig);
-		expect(result._header.sequence).toEqual(testMessage._header.sequence);
-		expect(result._header.flags).toEqual(testMessage._header.flags);
-		expect(result._msgNo).toEqual(testMessage._msgNo);
+		const m = new MessageNode();
+		m.setSignature("MCOX");
+		m.sequence = 1;
+		m.setPayloadEncryption(true);  // flag bit 0x08
+		m.setPayloadCompression(true); // flag bit 0x02  => flags = 0x0a
+		m.msgNo = 613;
+
+		const buffer = m.serialize();
+		const result = new MessageNode();
+		result.deserialize(buffer);
+
+		expect(result.signature).toEqual(m.signature);
+		expect(result.sequence).toEqual(m.sequence);
+		expect(result.flags).toEqual(m.flags);
+		expect(result.msgNo).toEqual(m.msgNo);
 	});
 });

@@ -342,7 +342,7 @@ export class MessageNode implements MCOTSMessage {
     /**
      * @deprecated
      */
-    _doDeserialize() {}
+    _doDeserialize(_buffer?: Buffer) {}
 
     /**
      * @deprecated

@@ -12,13 +12,6 @@ import { BytableDword } from './BytableDword.js';
 import { BytableHeader } from './BytableHeader.js';
 import { BytableWord } from './BytableWord.js';
 import { BytableObject } from './types.js';
-import {RawMessage} from 'rusty-motors-shared'
-
-// Type for RawMessage-like objects to avoid circular dependency with rusty-motors-shared
-interface SerializableMessage {
-    serialize(): Buffer;
-}
-
 // Simple logger fallback to avoid circular dependency
 function logError(name: string, msg: string, meta?: any): void {
     console.error(`[${name}]`, msg, meta || '');
@@ -186,7 +179,7 @@ export class BytableMessage extends Bytable {
         ]);
     }
 
-    static FromRawMessage(raw: RawMessage) {
+    static FromRawMessage(raw: { serialize(): Buffer }) {
         const packetResult = new BytableMessage();
         packetResult.setSerializeOrder([{ name: 'data', field: 'Buffer' }]);
         packetResult.setVersion(0);

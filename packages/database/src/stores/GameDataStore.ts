@@ -16,7 +16,6 @@
 
 import { createPool, type DatabasePool, createSqlTag } from "slonik";
 import { z } from "zod";
-import * as Sentry from "@sentry/node";
 import { getServerLogger } from "rusty-motors-shared";
 import type {
     IGameDataStore,
@@ -45,9 +44,6 @@ export class GameDataStore implements IGameDataStore {
     private initSQL() {
         return createSqlTag({
             typeAliases: {
-                catalogPartId: z.object({
-                    branded_part_id: z.number(),
-                }),
                 vehicleWithOwner: z.object({
                     vehicle_id: z.number(),
                     skin_id: z.number(),
@@ -172,144 +168,115 @@ export class GameDataStore implements IGameDataStore {
 
     async getOwnedVehiclesForPerson(personId: number): Promise<OwnedVehicle[]> {
         const { pool, sql } = await this.ensureConnection();
-        return Sentry.startSpan(
-            {
-                name: "Get owned vehicles for person",
-                op: "db.query",
-                attributes: {
-                    db: "postgres",
-                },
-            },
-            async () => {
-                const cars: OwnedVehicle[] = [];
-                const parts = await pool.any(sql.typeAlias("part")`
-                    SELECT p.part_id, p.branded_part_id, p.attachment_point_id,
-                           p.owner_id, p.part_name, p.repair_cost, p.scrap_value
-                    FROM public.part p
-                    INNER JOIN public.vehicle v ON v.vehicle_id = p.part_id
-                    WHERE p.owner_id = ${personId}
-                `);
-                for (const part of parts as Array<{
-                    part_id: number;
-                    branded_part_id: number;
-                    attachment_point_id: number;
-                    owner_id: number;
-                    part_name: string | null;
-                    repair_cost: number;
-                    scrap_value: number;
-                }>) {
-                    cars.push({
-                        partId: part.part_id,
-                        parentPartId: null,
-                        brandedPartId: part.branded_part_id,
-                        percentDamage: 0,
-                        itemWear: 0,
-                        attachmentPointId: part.attachment_point_id,
-                        ownerId: part.owner_id,
-                        partName: part.part_name ?? "",
-                        repairCost: part.repair_cost,
-                        scrapValue: part.scrap_value,
-                    });
-                }
-                return cars;
-            },
-        );
+        const cars: OwnedVehicle[] = [];
+        const parts = await pool.any(sql.typeAlias("part")`
+            SELECT p.part_id, p.branded_part_id, p.attachment_point_id,
+                   p.owner_id, p.part_name, p.repair_cost, p.scrap_value
+            FROM public.part p
+            INNER JOIN public.vehicle v ON v.vehicle_id = p.part_id
+            WHERE p.owner_id = ${personId}
+        `);
+        for (const part of parts as Array<{
+            part_id: number;
+            branded_part_id: number;
+            attachment_point_id: number;
+            owner_id: number;
+            part_name: string | null;
+            repair_cost: number;
+            scrap_value: number;
+        }>) {
+            cars.push({
+                partId: part.part_id,
+                parentPartId: null,
+                brandedPartId: part.branded_part_id,
+                percentDamage: 0,
+                itemWear: 0,
+                attachmentPointId: part.attachment_point_id,
+                ownerId: part.owner_id,
+                partName: part.part_name ?? "",
+                repairCost: part.repair_cost,
+                scrapValue: part.scrap_value,
+            });
+        }
+        return cars;
     }
 
     async getVehicleAndParts(vehicleId: number): Promise<VehicleRecord | null> {
         const { pool, sql } = await this.ensureConnection();
 
-        const rawVehicleRecord = await Sentry.startSpan(
-            {
-                name: "Get vehicle and parts",
-                op: "db.query",
-                attributes: {
-                    db: "postgres",
-                },
-            },
-            async (): Promise<VehicleRecord> => {
-                const vehicle = (await pool.one(sql.typeAlias("vehicleWithOwner")`
-                    SELECT v.*, p.owner_id
-                    FROM public.vehicle v
-                    INNER JOIN public.part p ON p.part_id = v.vehicle_id
-                    WHERE v.vehicle_id = ${vehicleId}
-                `)) as {
-                    vehicle_id: number;
-                    skin_id: number;
-                    flags: number;
-                    class: number;
-                    info_setting: number;
-                    damage_info: number;
-                    owner_id: number;
-                };
+        const rawVehicleRecord = await (async (): Promise<VehicleRecord> => {
+            const vehicle = (await pool.one(sql.typeAlias("vehicleWithOwner")`
+                SELECT v.*, p.owner_id
+                FROM public.vehicle v
+                INNER JOIN public.part p ON p.part_id = v.vehicle_id
+                WHERE v.vehicle_id = ${vehicleId}
+            `)) as {
+                vehicle_id: number;
+                skin_id: number;
+                flags: number;
+                class: number;
+                info_setting: number;
+                damage_info: number;
+                owner_id: number;
+            };
 
-                if (!vehicle) {
-                    log.error(`Vehicle with id ${vehicleId} not found`);
-                    throw new Error(`Vehicle with id ${vehicleId} not found`);
-                }
+            if (!vehicle) {
+                log.error(`Vehicle with id ${vehicleId} not found`);
+                throw new Error(`Vehicle with id ${vehicleId} not found`);
+            }
 
-                return {
-                    vehicleId: vehicle.vehicle_id,
-                    skinId: vehicle.skin_id,
-                    flags: vehicle.flags,
-                    class: vehicle.class,
-                    infoSetting: vehicle.info_setting,
-                    damageInfo: vehicle.damage_info,
-                    ownerId: vehicle.owner_id,
-                    parts: [],
-                };
-            },
-        );
+            return {
+                vehicleId: vehicle.vehicle_id,
+                skinId: vehicle.skin_id,
+                flags: vehicle.flags,
+                class: vehicle.class,
+                infoSetting: vehicle.info_setting,
+                damageInfo: vehicle.damage_info,
+                ownerId: vehicle.owner_id,
+                parts: [],
+            };
+        })();
 
         if (!rawVehicleRecord) {
             return null;
         }
 
-        const parts = await Sentry.startSpan(
-            {
-                name: "Get vehicle parts",
-                op: "db.query",
-                attributes: {
-                    db: "postgres",
-                },
-            },
-            async (): Promise<PartEntry[]> => {
-                const partList: PartEntry[] = [];
-                const rawParts = (await pool.any(sql.typeAlias("part")`
-                    SELECT *
-                    FROM part p1
-                    INNER JOIN part p2 ON p1.part_id = p2.parent_part_id
-                    WHERE p1.part_id = ${vehicleId} OR p1.parent_part_id = ${vehicleId}
-                `)) as Array<{
-                    part_id: number;
-                    parent_part_id: number;
-                    branded_part_id: number;
-                    percent_damage: number;
-                    item_wear: number;
-                    attachment_point_id: number;
-                    owner_id: number;
-                    part_name: string | null;
-                    repair_cost: number;
-                    scrap_value: number;
-                }>;
+        const parts = await (async (): Promise<PartEntry[]> => {
+            const partList: PartEntry[] = [];
+            const rawParts = (await pool.many(sql.typeAlias("part")`
+                SELECT *
+                FROM part p1
+                INNER JOIN part p2 ON p1.part_id = p2.parent_part_id
+                WHERE p1.part_id = ${vehicleId} OR p1.parent_part_id = ${vehicleId}
+            `)) as Array<{
+                part_id: number;
+                parent_part_id: number;
+                branded_part_id: number;
+                percent_damage: number;
+                item_wear: number;
+                attachment_point_id: number;
+                owner_id: number;
+                part_name: string | null;
+                repair_cost: number;
+                scrap_value: number;
+            }>;
 
-                for (const rawPart of rawParts) {
-                    partList.push({
-                        partId: rawPart.part_id,
-                        parentPartId: rawPart.parent_part_id,
-                        brandedPartId: rawPart.branded_part_id,
-                        percentDamage: rawPart.percent_damage,
-                        itemWear: rawPart.item_wear,
-                        attachmentPointId: rawPart.attachment_point_id,
-                        ownerId: rawPart.owner_id,
-                        partName: rawPart.part_name ?? "",
-                        repairCost: rawPart.repair_cost,
-                        scrapValue: rawPart.scrap_value,
-                    });
-                }
-                return partList;
-            },
-        );
+            for (const rawPart of rawParts) {
+                partList.push({
+                    partId: rawPart.part_id,
+                    parentPartId: rawPart.parent_part_id,
+                    brandedPartId: rawPart.branded_part_id,
+                    percentDamage: rawPart.percent_damage,
+                    itemWear: rawPart.item_wear,
+                    attachmentPointId: rawPart.attachment_point_id,
+                    ownerId: rawPart.owner_id,
+                    partName: rawPart.part_name ?? "",
+                    repairCost: rawPart.repair_cost,
+                    scrapValue: rawPart.scrap_value,
+                });
+            }
+            return partList;
+        })();
 
         rawVehicleRecord.parts = parts;
         return rawVehicleRecord;
@@ -323,20 +290,9 @@ export class GameDataStore implements IGameDataStore {
         const { pool, sql } = await this.ensureConnection();
 
         // Check if skin exists
-        const skinExists = await Sentry.startSpan(
-            {
-                name: "skinExists",
-                op: "db.query",
-                attributes: {
-                    db: "postgres",
-                },
-            },
-            async () => {
-                return pool.exists(sql.typeAlias("id")`
-                    SELECT 1 FROM pt_skin WHERE skin_id = ${skinId}
-                `);
-            },
-        );
+        const skinExists = await pool.exists(sql.typeAlias("id")`
+            SELECT 1 FROM pt_skin WHERE skin_id = ${skinId}
+        `);
 
         if (!skinExists) {
             log.error("skin does not exist");
@@ -344,24 +300,15 @@ export class GameDataStore implements IGameDataStore {
         }
 
         // Check if branded part is a vehicle (abstract_part_type_id === 101)
-        const abstractPartTypeId = await Sentry.startSpan(
-            {
-                name: "GetAbstractPartTypeIDForBrandedPartID",
-                op: "db.query",
-                attributes: {
-                    db: "postgres",
-                },
-            },
-            async () => {
-                const result = (await pool.one(sql.typeAlias("abstractPartType")`
-                    SELECT pt.abstract_part_type_id
-                    FROM branded_part bp
-                    INNER JOIN part_type pt ON bp.part_type_id = pt.part_type_id
-                    WHERE bp.branded_part_id = ${brandedPartId}
-                `)) as { abstract_part_type_id: number };
-                return result.abstract_part_type_id;
-            },
-        );
+        const abstractPartTypeId = await (async () => {
+            const result = (await pool.one(sql.typeAlias("abstractPartType")`
+                SELECT pt.abstract_part_type_id
+                FROM branded_part bp
+                INNER JOIN part_type pt ON bp.part_type_id = pt.part_type_id
+                WHERE bp.branded_part_id = ${brandedPartId}
+            `)) as { abstract_part_type_id: number };
+            return result.abstract_part_type_id;
+        })();
 
         if (abstractPartTypeId !== 101) {
             log.error("branded part is not a vehicle", {
@@ -431,27 +378,5 @@ export class GameDataStore implements IGameDataStore {
             log.error(`Error purchasing car for player ${playerId}`, { error });
             throw error;
         }
-    }
-
-    async getPartCatalog(aptId: number, blockFamilyId: number): Promise<number[]> {
-        const { pool, sql } = await this.ensureConnection();
-        return Sentry.startSpan(
-            {
-                name: "Get part catalog",
-                op: "db.query",
-                attributes: { db: "postgres" },
-            },
-            async () => {
-                const rows = await pool.any(sql.typeAlias("catalogPartId")`
-                    SELECT bp.branded_part_id
-                    FROM branded_part bp
-                    JOIN part_type pt ON bp.part_type_id = pt.part_type_id
-                    WHERE (${aptId} = -1 OR pt.abstract_part_type_id = ${aptId})
-                    AND (${blockFamilyId} <= 0 OR bp.engine_block_family_id = ${blockFamilyId})
-                    ORDER BY bp.branded_part_id
-                `) as Array<{ branded_part_id: number }>;
-                return rows.map((r) => r.branded_part_id);
-            },
-        );
     }
 }

@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import * as Sentry from '@sentry/node';
 import { Gateway, initializeServiceRegistry } from 'rusty-motors-gateway';
 import {
     getServerLogger,
@@ -103,7 +102,6 @@ function main() {
 
 main();
 function captureAndLogErrorAndSetNotZeroExitCode(err: unknown, coreLogger: ServerLogger) {
-    Sentry.captureException(err);
     coreLogger.error("Error in core server", { err });
     process.exitCode = 1;
     return;

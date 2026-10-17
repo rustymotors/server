@@ -16,7 +16,6 @@
 
 import { getServerLogger, getSocketQueue, type ServerLogger } from 'rusty-motors-shared';
 import type { BytableMessage, BytableBuffer } from '@rustymotors/binary';
-import * as Sentry from '@sentry/node';
 import { getLobbyHandlerRegistry } from './handlers/registry.js';
 
 /**
@@ -64,7 +63,7 @@ export async function receiveLobbyData({
         });
         const sendQueue = getSocketQueue(connectionId, 'send');
 
-        result.messages.forEach((response) =>
+        result.messages.forEach((response: { serialize(): Buffer }) =>
             sendQueue.put({
                 sequenceNo: -1,
                 data: response.serialize(),
@@ -78,7 +77,6 @@ export async function receiveLobbyData({
         log.error(`Error handling lobby data: ${(error as Error).message}`);
         const err = Error(`Error handling lobby data: ${String(error)}`);
         err.cause = error;
-        Sentry.captureException(err);
         throw err;
     }
 }

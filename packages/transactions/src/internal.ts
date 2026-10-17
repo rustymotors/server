@@ -15,7 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { getServerLogger, type MessageNode, type ServerLogger } from "rusty-motors-shared";
-import * as Sentry from "@sentry/node"
 
 import type {
 	McosEncryption,
@@ -28,7 +27,7 @@ import {
 	updateEncryption,
 } from "rusty-motors-shared";
 import { OldServerMessage } from "rusty-motors-shared";
-import { type MessageHandlerResult, _MSG_STRING } from "./types.js";
+import { type MessageHandlerResult, _MSG_STRING } from "./handlers.js";
 import { getTransactionsHandlerRegistry } from "./handlers/registry.js";
 import {
 	ServerPacket,
@@ -43,8 +42,8 @@ import { explode } from "pklib-ts"
  * check and decryption but no handler is registered for its opcode.
  *
  * Carries the numeric `messageCode` so upstream catch sites can recognize
- * the case (e.g. to avoid double-reporting to Sentry — `processInput` already
- * captures positive codes itself).
+ * the case (e.g. to avoid double-logging — `processInput` already
+ * logs positive codes itself).
  */
 export class UnsupportedMessageCodeError extends Error {
 	readonly messageCode: number;
@@ -112,25 +111,16 @@ async function processInput({
 		currentMessageString,
 	);
 
-	// Surface real-looking unknown opcodes to Sentry so we can prioritize the
+	// Log real-looking unknown opcodes so we can prioritize the
 	// ones clients are actually sending. Filter out non-positive codes — those
 	// almost always come from corrupt/garbage buffer reads (signed int16
 	// returning a negative or zero value), not real protocol traffic.
 	if (currentMessageNo > 0) {
-		const body = inboundMessage.getBody().serialize();
-		const decryptedHex = body.toString("hex");
-		Sentry.captureException(err, {
-			tags: {
-				messageCode: String(currentMessageNo),
-				messageName: currentMessageString,
-				errorType: "UnsupportedMessageCode",
-			},
-			extra: {
-				connectionId,
-				sequence: inboundMessage.getSequence(),
-				bodyByteLength: body.byteLength,
-				decryptedHex,
-			},
+		log.error(`${err.message}`, {
+			connectionId,
+			messageCode: String(currentMessageNo),
+			messageName: currentMessageString,
+			sequence: inboundMessage.getSequence(),
 		});
 	}
 
@@ -311,7 +301,6 @@ function decryptMessage(
             connectionId,
             error
         });
-        Sentry.captureException(error)
 		const err = Error(`[${connectionId}] Unable to decrypt message`, {
 			cause: error,
 		});

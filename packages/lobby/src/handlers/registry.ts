@@ -22,7 +22,7 @@
  * processing a specific message type.
  */
 
-import { MessageHandlerRegistry, NPS_MESSAGE_IDS } from 'rusty-motors-shared';
+import { NPS_MESSAGE_IDS } from 'rusty-motors-shared';
 import type { BytableMessage, BytableBuffer } from '@rustymotors/binary';
 import type { ServerLogger } from 'rusty-motors-shared';
 
@@ -49,16 +49,36 @@ export interface LobbyHandlerResult {
     messages: BytableBuffer[];
 }
 
+// Handlers use the old single-arg style with varied return shapes; typed as any to avoid constraints.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type LobbyHandlerFn = (args: any) => Promise<any>;
+
+interface LobbyHandlerEntry {
+    opCode: number;
+    name: string;
+    handler: LobbyHandlerFn;
+}
+
+class LobbyRegistry {
+    private readonly handlers = new Map<number, LobbyHandlerEntry>();
+
+    register(entry: LobbyHandlerEntry): this {
+        this.handlers.set(entry.opCode, entry);
+        return this;
+    }
+
+    getHandler(opCode: number): LobbyHandlerEntry | undefined {
+        return this.handlers.get(opCode);
+    }
+}
+
 /**
  * Creates and returns a configured lobby handler registry.
  *
- * @returns A MessageHandlerRegistry configured with all lobby handlers
+ * @returns A LobbyRegistry configured with all lobby handlers
  */
-export function createLobbyHandlerRegistry(): MessageHandlerRegistry<
-    LobbyHandlerArgs,
-    LobbyHandlerResult
-> {
-    const registry = new MessageHandlerRegistry<LobbyHandlerArgs, LobbyHandlerResult>('lobby');
+export function createLobbyHandlerRegistry(): LobbyRegistry {
+    const registry = new LobbyRegistry();
 
     // User login request
     registry.register({
@@ -102,17 +122,14 @@ export function createLobbyHandlerRegistry(): MessageHandlerRegistry<
  * Singleton instance of the lobby handler registry.
  * Lazily initialized on first access.
  */
-let lobbyRegistryInstance: MessageHandlerRegistry<LobbyHandlerArgs, LobbyHandlerResult> | null = null;
+let lobbyRegistryInstance: LobbyRegistry | null = null;
 
 /**
  * Gets the singleton lobby handler registry instance.
  *
  * @returns The lobby handler registry
  */
-export function getLobbyHandlerRegistry(): MessageHandlerRegistry<
-    LobbyHandlerArgs,
-    LobbyHandlerResult
-> {
+export function getLobbyHandlerRegistry(): LobbyRegistry {
     if (!lobbyRegistryInstance) {
         lobbyRegistryInstance = createLobbyHandlerRegistry();
     }

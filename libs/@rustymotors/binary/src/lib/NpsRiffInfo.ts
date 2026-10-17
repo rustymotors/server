@@ -61,7 +61,7 @@ export class NpsRiffInfo extends BytableStructure {
         );
     }
 
-    override serialize(): Buffer {
+    override serialize(): Buffer<ArrayBuffer> {
         const parts: Buffer[] = [];
 
         parts.push(this.packString(this.riffName_));
@@ -141,7 +141,7 @@ export class NpsRiffListMessage extends BytableMessage {
         return this.header_.serializeSize + 8 + riffsSize; // 8 = structSize(4) + numRiffs(4)
     }
 
-    override serialize(): Buffer {
+    override serialize(): Buffer<ArrayBuffer> {
         this.header_.setMessageLength(this.serializeSize);
 
         const listHeader = Buffer.alloc(8);

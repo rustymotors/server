@@ -1,14 +1,12 @@
 import {
     LegacyMessage,
-    NPSMessage,
     type ServerLogger,
 } from 'rusty-motors-shared';
+import { BytableMessage } from '@rustymotors/binary';
 import { BytableBuffer } from '@rustymotors/binary';
 import { createGameProfile } from 'rusty-motors-nps';
 import { getPersonaByPersonaId } from '../getPersonasByPersonaId.js';
 import { personaToString } from '../internal.js';
-import * as Sentry from '@sentry/node';
-
 import { getServerLogger } from 'rusty-motors-shared';
 
 const defaultLogger = getServerLogger('PersonaServer');
@@ -26,8 +24,8 @@ export async function getPersonaInfo({
     messages: BytableBuffer[];
 }> {
     log.debug('getPersonaInfo...');
-    const requestPacket = new NPSMessage();
-    requestPacket._doDeserialize(message.serialize());
+    const requestPacket = new BytableMessage(1);
+    requestPacket.deserialize(message.serialize());
 
     log.debug(
         `LegacyMsg request object from getPersonaInfo ${requestPacket.toString()}`,
@@ -70,7 +68,6 @@ export async function getPersonaInfo({
         });
     } catch (error) {
         log.error(`Error fetching persions for ${personaId}`);
-        Sentry.captureException(error);
         responsePacket._header.id = 0x612; // no persona
         outboundMessage.setValue(responsePacket._doSerialize());
     }

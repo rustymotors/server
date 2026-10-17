@@ -1,6 +1,7 @@
 import { BytableMessage } from "@rustymotors/binary";
 import {
     getServerLogger,
+    leaveChannel,
     type ServerLogger,
 } from "rusty-motors-shared";
 
@@ -30,9 +31,9 @@ export async function handleCloseCommChannel({
         const requestedCommId =
             incomingRequest.getFieldValueByName('commId') ?? -1;
 
-        log.debug(
-            `[${connectionId}] Requested we close channel ${(requestedCommId as Buffer).readInt32BE()}`,
-        );
+        const commId = (requestedCommId as Buffer).readInt32BE();
+        log.debug(`[${connectionId}] Requested we close channel ${commId}`);
+        leaveChannel(connectionId, commId);
 
         // TODO: Actually have servers
 

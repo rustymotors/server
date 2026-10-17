@@ -1,6 +1,7 @@
 import {
     type ServerLogger,
     getServerLogger,
+    setConnectionUserId,
     UserInfoMessage,
     diffObj,
     databaseProvider,
@@ -15,7 +16,7 @@ export async function _setMyUserData({
     connectionId: string;
     message: BytableMessage;
     log?: ServerLogger;
-}) {
+}): Promise<{ connectionId: string; messages: BytableMessage[] }> {
     try {
         log.debug(`Handling NPS_SET_MY_USER_DATA`, {
             connectionId,
@@ -28,6 +29,7 @@ export async function _setMyUserData({
         incomingMessage.deserialize(message.serialize());
 
         const userId = incomingMessage.userInfo.userId;
+        setConnectionUserId(connectionId, userId);
 
         log.debug(`User ID: ${userId}`, {
             connectionId,
@@ -83,7 +85,7 @@ export async function _setMyUserData({
 
         return {
             connectionId,
-            messages: [outboundMessage],
+            messages: [outboundMessage as unknown as BytableMessage],
         };
     } catch (error) {
         const err = Error(

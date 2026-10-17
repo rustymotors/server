@@ -18,7 +18,6 @@ import type {
 	ServiceResponse,
 } from "rusty-motors-shared";
 import { handleLoginData } from "./handleLoginData.js";
-import { BufferSerializer, type GamePacket } from "rusty-motors-protocol";
 import { getServerLogger } from "rusty-motors-shared";
 import type { BytableMessage } from "@rustymotors/binary";
 
@@ -52,11 +51,8 @@ export async function receiveLoginData({
 			`[${connectionId}] Exiting login module ${response.messages.length} messages`,
 		);
 
-		// @ts-ignore-next-line - This is a temporary workaround for the old serialization format
-		response.messages = GamePacketArrayToBufferSerializerArray(response.messages);
-
-		// @ts-ignore-next-line - This is a temporary workaround for the old serialization format
-		return response;
+		// biome-ignore lint/suspicious/noExplicitAny: BytableMessage[] satisfies Serializable[] at runtime
+		return response as any;
 	} catch (error) {
 		const err = new Error(
 			`[${connectionId}] Error in login service: ${(error as Error).message}`,
@@ -64,17 +60,5 @@ export async function receiveLoginData({
 		);
 		throw err;
 	}
-}
-
-function GamePacketArrayToBufferSerializerArray(
-	packets: GamePacket[],
-): BufferSerializer[] {
-	const bufferSerializers: BufferSerializer[] = [];
-	for (const packet of packets) {
-		const bufferSerializer = new BufferSerializer();
-		bufferSerializer.deserialize(packet.serialize());
-		bufferSerializers.push(bufferSerializer);
-	}
-	return bufferSerializers;
 }
 

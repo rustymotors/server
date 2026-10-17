@@ -60,7 +60,7 @@ export class Bytable extends BytableBase implements BytableObject {
 	}
 }
 
-export function validateBuffer(buf: DataView<ArrayBufferLike> | ArrayBufferLike, direction: string) {
+export function validateBuffer(buf: DataView<ArrayBufferLike> | ArrayBufferLike | Buffer, direction: string) {
 	if (typeof buf === 'undefined') {
 		throw new Error(`Cannot ${direction} undefined buffer`);
 	}

@@ -34,7 +34,7 @@ export class ArcadeCarMessage extends BytableBuffer {
 		this._carList = []; // 8 bytes each
 	}
 
-	override size() {
+	size() {
 		return 5 + this._carList.length * 8;
 	}
 
@@ -79,7 +79,7 @@ export class ArcadeCarInfo extends BytableBuffer {
 		this._lobbyId = 0; // 4 bytes
 	}
 
-	override size() {
+	size() {
 		return 8;
 	}
 

@@ -1,6 +1,4 @@
-import { GamePacket } from 'rusty-motors-protocol';
 import { type BytableMessage, createRawMessage } from '@rustymotors/binary';
-import * as Sentry from '@sentry/node';
 import {
     getServerLogger,
     type messageQueueItem,
@@ -10,6 +8,7 @@ import {
     getSocketQueue,
     addSocketPair,
     resolveMessageId,
+    leaveAllChannels,
 } from 'rusty-motors-shared';
 import { bindLogContext } from '@rustymotors/logging';
 import { messageStats } from './GatewayServer.js';
@@ -150,6 +149,7 @@ export async function npsPortRouter({
                     `Auto-saved on disconnect`,
                 );
             }
+            leaveAllChannels(taggedSocket.connectionId);
             const baseId = taggedSocket.connectionId.split(':')[0];
             log.info(`[${baseId}] Disconnected on port ${taggedSocket.localPort}`);
             receiveQueue.exit();
@@ -161,6 +161,7 @@ export async function npsPortRouter({
         bindLogContext((error) => {
             if (error.message.includes('ECONNRESET')) {
                 log.debug(`[${connectionId}] Connection reset by client`);
+                leaveAllChannels(taggedSocket.connectionId);
                 // Still save the session on reset - client likes to RST instead of FIN
                 const recorder = getSessionRecorder();
                 if (recorder?.isRecordingEnabled()) {
@@ -256,63 +257,6 @@ export async function processSocketData(
     }
 }
 
-/**
- * Splits data into packets based on a separator.
- */
-function splitDataIntoPackets(
-    data: Buffer,
-    separator: Buffer,
-    log: ServerLogger,
-    id: string,
-): Buffer[] {
-    const packetsArray = data.toString('hex').split(separator.toString('hex'));
-    const packetCount = packetsArray.length;
-    let packets: Buffer[];
-
-    if (packetCount > 1) {
-        log.debug(`[${id}] ${packetCount} packets detected, splitting`);
-        packets = packetsArray.map((packet: string) => {
-            if (packet.length > 0) {
-                return Buffer.concat([
-                    Buffer.from([0x11, 0x01]),
-                    Buffer.from(packet, 'hex'),
-                ]);
-            }
-            return Buffer.alloc(0);
-        });
-        packets = removeEmptyEntries(packets);
-    } else {
-        packets = packetsArray.map((packet: string) => {
-            return Buffer.from(packet, 'hex');
-        });
-    }
-    return packets;
-
-    function removeEmptyEntries(packets: Buffer<ArrayBufferLike>[]) {
-        packets = packets.filter((packet: Buffer | undefined) => {
-            return packet && packet.byteLength > 2;
-        });
-        return packets;
-    }
-}
-
-/**
- * Handles packet routing by routing an initial message and sending a response
- * through a socket while logging any errors.
- */
-function handlePacketRouting(
-    id: string,
-    port: number,
-    initialPacket: BytableMessage,
-    log: ServerLogger = getServerLogger('gateway'),
-): void {
-    // routeInitialMessage is async but we don't await it (fire-and-forget)
-    // Add catch handler to prevent unhandled promise rejections
-    // Errors are already caught and logged inside routeInitialMessage
-    routeInitialMessage(id, port, initialPacket, log).catch((error) => {
-        log.error(`[${id}] Unhandled error in routeInitialMessage promise: ${String(error)}`);
-    });
-}
 
 function handleSocketError(
     error: unknown,
@@ -327,7 +271,6 @@ function handleSocketError(
     if (error instanceof RangeError) {
         log.warn(`[${id}] Error parsing initial nps message: ${error}`);
     } else {
-        Sentry.captureException(error);
         log.error(`[${id}] Error handling data: ${error}`);
     }
 }
@@ -337,7 +280,7 @@ function handleSocketError(
  */
 function parseInitialMessage(
     data: Buffer,
-    log: ServerLogger = getServerLogger('gateway'),
+    _log: ServerLogger = getServerLogger('gateway'),
 ): BytableMessage {
     try {
         const message = createRawMessage();
@@ -392,10 +335,8 @@ async function routeInitialMessage(
         const serviceName = registry.getServiceName(port) ?? 'unknown';
 
         if (!handler) {
-            const packet = new GamePacket();
-            packet.deserialize(initialPacket.serialize());
             log.warn(
-                `[${id}] No handler found for port ${port}: ${packet.serialize().toString('hex')}`,
+                `[${id}] No handler found for port ${port}: ${initialPacket.serialize().toString('hex')}`,
             );
             return;
         }
@@ -412,7 +353,6 @@ async function routeInitialMessage(
 
             responses = result.messages as Serializable[];
         } catch (error) {
-            Sentry.captureException(error);
             log.error(`Error handling ${serviceName} packet`, {
                 connectionId: id,
                 port,
@@ -442,6 +382,5 @@ async function routeInitialMessage(
             port,
             error: error instanceof Error ? error.message : String(error),
         });
-        Sentry.captureException(error);
     }
 }

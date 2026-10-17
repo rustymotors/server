@@ -34,7 +34,7 @@ export class EntryFeePurseMessage extends BytableBuffer {
 		this._purseEntries = []; // 8 bytes each
 	}
 
-	override size() {
+	size() {
 		return 5 + this._purseEntries.length * 8;
 	}
 
@@ -79,7 +79,7 @@ export class PurseEntry extends BytableBuffer {
 		this._purse = 0;
 	}
 
-	override size() {
+	size() {
 		return 8;
 	}
 

@@ -1,5 +1,5 @@
-import { buildVehiclePartTreeFromDB, type TPart, getVehiclePartTree, vehiclePartTreeToJSON } from "rusty-motors-database";
-import { getServerLogger, OldServerMessage } from "rusty-motors-shared";
+import { buildVehiclePartTreeFromDB, type TPart, getVehiclePartTree } from "rusty-motors-database";
+import { getServerLogger, ServerMessage } from "rusty-motors-shared";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 
@@ -242,7 +242,7 @@ export async function _getCompleteVehicleInfo({
 
         carInfo.parts = parts;
 
-        const responsePacket = new OldServerMessage();
+        const responsePacket = new ServerMessage();
         responsePacket._header.sequence = packet.sequenceNumber;
         responsePacket._header.flags = 8;
         responsePacket.setBuffer(carInfo.serialize());

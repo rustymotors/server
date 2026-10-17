@@ -7,7 +7,7 @@ import {
 	getLenString,
 	getLenBlob,
 	getShortBool,
-} from "../src/utils/pureGet";
+} from "../src/utils/pureGet.js";
 
 describe("getWord", () => {
 	it("returns the word at the specified offset in little-endian format", () => {

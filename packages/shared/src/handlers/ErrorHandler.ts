@@ -1,16 +1,14 @@
 /**
  * Error handling utilities for message handlers.
  *
- * Provides consistent error wrapping, logging, and Sentry integration
- * for all handlers across the MCOS server.
+ * Provides consistent error wrapping and logging for all handlers across the MCOS server.
  */
 
-import * as Sentry from '@sentry/node';
 import type { HandlerContext, HandlerResult } from './HandlerTypes.js';
 import { HandlerError } from './HandlerTypes.js';
 
 /**
- * Wraps an error with handler context information and reports to Sentry.
+ * Wraps an error with handler context information and logs it.
  *
  * @param connectionId - The connection where the error occurred
  * @param handlerName - Name of the handler that failed
@@ -40,18 +38,6 @@ export function wrapHandlerError(
         connectionId,
         cause
     );
-
-    // Report to Sentry with context
-    Sentry.withScope((scope) => {
-        scope.setTag('handler', handlerName);
-        scope.setTag('connectionId', connectionId);
-        scope.setContext('handler_context', {
-            handlerName,
-            connectionId,
-            originalMessage: message,
-        });
-        Sentry.captureException(handlerError);
-    });
 
     return handlerError;
 }

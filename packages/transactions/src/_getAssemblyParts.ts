@@ -2,7 +2,7 @@ import {
     fetchStateFromDatabase,
     findSessionByConnectionId,
 } from "rusty-motors-shared";
-import { OldServerMessage } from "rusty-motors-shared";
+import { ServerMessage } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { PartsAssemblyMessage, Part } from "./PartsAssemblyMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
@@ -80,7 +80,7 @@ export async function _getAssemblyParts({
 
     log.debug(`Returning ${parts.length} assembly parts for part ${vehicleId}`);
 
-    const responsePacket = new OldServerMessage();
+    const responsePacket = new ServerMessage();
     responsePacket._header.sequence = packet.sequenceNumber;
     responsePacket._header.flags = 8;
 

@@ -70,7 +70,7 @@ export async function processEncryptedGameCommand(
 
 	if (typeof processor === "undefined") {
 		const err = `No processor found for message ID: ${decryptedMessage.header.getId()}`;
-		defaultLogger.fatal(err);
+		defaultLogger.error(err);
 		throw Error(err);
 	}
 

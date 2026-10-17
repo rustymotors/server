@@ -7,7 +7,8 @@ export const loggerMock: ServerLogger = {
 	info: vi.fn(),
 	verbose: vi.fn(),
 	debug: vi.fn(),
-	trace: vi.fn()
+	trace: vi.fn(),
+	child: vi.fn().mockReturnThis(),
 }
 
 export const databaseManagerMock: DatabaseManager = {

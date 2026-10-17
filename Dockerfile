@@ -1,7 +1,8 @@
-FROM node:25
-
+FROM node:24.18.1
 WORKDIR /app
+
+RUN npm install --global tsx
 
 ENV NODE_OPTIONS=--openssl-legacy-provider
 
-CMD ["npx", "tsx", "--import", "./src/instrument.mjs", "src/nps_server.ts"]
+CMD ["npx", "tsx", "src/nps_server.ts"]

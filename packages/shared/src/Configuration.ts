@@ -1,5 +1,4 @@
-import type { ServerLogger } from "@rustymotors/logging";
-import { getServerLogger } from "../getServerLogger.js";
+import { type ServerLogger, getServerLogger } from "@rustymotors/logging";
 
 /**
  * @module shared/Configuration

@@ -1,5 +1,5 @@
 import { type BytableMessage, BytableBuffer } from "@rustymotors/binary";
-import { getServerLogger, RawMessage, type ServerLogger } from "rusty-motors-shared";
+import { getServerLogger, type ServerLogger } from "rusty-motors-shared";
 
 export async function handleTrackingPing({
 	connectionId,
@@ -15,12 +15,6 @@ export async function handleTrackingPing({
     log.debug("npsTrackingPing", {
         connectionId
     })
-    const response = new RawMessage()
-    response.id = 0x217
-    response.length = 4
-
-    const responsePacket = new BytableBuffer()
-    responsePacket.deserialize(response.serialize())
 
 	return {
 		connectionId,

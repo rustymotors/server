@@ -9,7 +9,6 @@ import {
 	handleReceiveEmailMessage,
 } from "./inGameEmails.js";
 import { bufferToHexString } from "./toHexString.js";
-import * as Sentry from "@sentry/node";
 import { getServerLogger } from "rusty-motors-shared";
 
 const defaultLogger = getServerLogger("chat");
@@ -45,7 +44,6 @@ async function receiveChatData({
 			cause: error,
 		});
 		defaultLogger.error(err.message);
-		Sentry.captureException(err);
 		return {
 			connectionId,
 			messages: [],

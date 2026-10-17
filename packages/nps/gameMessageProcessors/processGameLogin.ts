@@ -1,6 +1,5 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
-import * as Sentry from "@sentry/node";
 import { configurationProvider } from "rusty-motors-shared";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SessionKey } from "../messageStructs/SessionKey.js";
@@ -109,103 +108,79 @@ export async function processGameLogin(
 	message: GameMessage,
 	socketCallback: GameSocketCallback,
 ): Promise<void> {
-	Sentry.startSpan(
-		{
-			name: "processLogin",
-			op: "processLogin",
-		},
-		() => {
-			defaultLogger.debug("processGameLogin called");
+	defaultLogger.debug("processGameLogin called");
 
-			defaultLogger.info(`Login: ${message.toString()}`);
+	defaultLogger.info(`Login: ${message.toString()}`);
 
-			// Unpack the message
-			try {
-				const { sessionKey, contextToken } = unpackUserLoginMessage(
-					message.getData(),
-				);
+	// Unpack the message
+	try {
+		const { sessionKey, contextToken } = unpackUserLoginMessage(
+			message.getData(),
+		);
 
-				// Log the context token
-				defaultLogger.info(`Context token: ${contextToken}`);
+		// Log the context token
+		defaultLogger.info(`Context token: ${contextToken}`);
 
-				// Log the session key
-				defaultLogger.info(`Session key: ${sessionKey}`);
+		// Log the session key
+		defaultLogger.info(`Session key: ${sessionKey}`);
 
-				// Look up the customer id
-				const user = getToken(contextToken);
+		// Look up the customer id
+		const user = getToken(contextToken);
 
-				// If the user is not found, return an error
-				if (user === undefined) {
-					defaultLogger.error(`User not found for context token: ${contextToken}`);
+		// If the user is not found, return an error
+		if (user === undefined) {
+			defaultLogger.error(`User not found for context token: ${contextToken}`);
 
-					// Create a new message - Not found
-					const response = new GameMessage(0);
-					response.header.setId(0x602);
+			// Create a new message - Not found
+			const response = new GameMessage(0);
+			response.header.setId(0x602);
 
-					// Send the message - twice
-					Sentry.startSpan(
-						{
-							name: "socketCallback",
-							op: "socketCallback",
-						},
-						() => {
-							socketCallback([response.serialize()]);
-						},
-					);
-					Sentry.startSpan(
-						{
-							name: "socketCallback",
-							op: "socketCallback",
-						},
-						() => {
-							socketCallback([response.serialize()]);
-						},
-					);
+			// Send the message - twice
+			socketCallback([response.serialize()]);
+			socketCallback([response.serialize()]);
 
-					return;
-				}
+			return;
+		}
 
-				// Log the user
-				defaultLogger.info(`User: ${user.customerId}`);
+		// Log the user
+		defaultLogger.info(`User: ${user.customerId}`);
 
-				// Create a new message - Login ACK
-				const loginACK = new GameMessage(0);
-				loginACK.header.setId(0x601);
+		// Create a new message - Login ACK
+		const loginACK = new GameMessage(0);
+		loginACK.header.setId(0x601);
 
-				// Send the ack
-				socketCallback([loginACK.serialize()]);
+		// Send the ack
+		socketCallback([loginACK.serialize()]);
 
-				// Update the user status
-				userStatus.setCustomerId(user.customerId);
-				userStatus.setPersonaId(0);
-				userStatus.ban.set({
-					initiator: "Molly",
-					startComment: "Because I said so",
-				});
-				userStatus.setSessionKey(SessionKey.fromKeyString(sessionKey));
+		// Update the user status
+		userStatus.setCustomerId(user.customerId);
+		userStatus.setPersonaId(0);
+		userStatus.ban.set({
+			initiator: "Molly",
+			startComment: "Because I said so",
+		});
+		userStatus.setSessionKey(SessionKey.fromKeyString(sessionKey));
 
-				UserStatusManager.addUserStatus(userStatus);
-				// Create a new message - UserStatus
-				const userStatusMessage = new GameMessage(257);
-				userStatusMessage.header.setId(0x601);
+		UserStatusManager.addUserStatus(userStatus);
+		// Create a new message - UserStatus
+		const userStatusMessage = new GameMessage(257);
+		userStatusMessage.header.setId(0x601);
 
-				userStatusMessage.setData(userStatus);
+		userStatusMessage.setData(userStatus);
 
-				// Log the message
-				defaultLogger.info(`UserStatus: ${userStatusMessage.toString()}`);
+		// Log the message
+		defaultLogger.info(`UserStatus: ${userStatusMessage.toString()}`);
 
-				// Send the message
-				socketCallback([userStatusMessage.serialize()]);
-				socketCallback([userStatusMessage.serialize()]);
+		// Send the message
+		socketCallback([userStatusMessage.serialize()]);
+		socketCallback([userStatusMessage.serialize()]);
 
-				return;
-			} catch (e) {
-				defaultLogger.error('Error processing game login', {
-					error: e instanceof Error ? e.message : String(e),
-					stack: e instanceof Error ? e.stack : undefined,
-				});
-			}
-		},
-	);
+		return;
+	} catch (e) {
+		defaultLogger.error('Error processing game login', {
+			error: e instanceof Error ? e.message : String(e),
+			stack: e instanceof Error ? e.stack : undefined,
+		});
+	}
 	return Promise.resolve();
 }

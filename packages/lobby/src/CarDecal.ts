@@ -53,10 +53,10 @@ export class CarDecal extends Bytable {
 	}
 
 	override deserialize(buffer: Buffer): void {
-		this.backgroundImage_ = buffer.subarray(0, 1);
-		this.forgroundImage_ = buffer.subarray(1, 2);
-		this.color0_ = buffer.subarray(2, 3);
-		this.color1_ = buffer.subarray(3, 4);
+		this.backgroundImage_ = Buffer.from(buffer.subarray(0, 1));
+		this.forgroundImage_ = Buffer.from(buffer.subarray(1, 2));
+		this.color0_ = Buffer.from(buffer.subarray(2, 3));
+		this.color1_ = Buffer.from(buffer.subarray(3, 4));
 	}
 
 	override toString(): string {

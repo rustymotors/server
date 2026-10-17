@@ -2,7 +2,7 @@ import {
     fetchStateFromDatabase,
     findSessionByConnectionId,
 } from "rusty-motors-shared";
-import { OldServerMessage } from "rusty-motors-shared";
+import { ServerMessage } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
@@ -40,7 +40,7 @@ export async function _installPart({
     reply.msgNo = 101;
     reply.msgReply = 181;
 
-    const responsePacket = new OldServerMessage();
+    const responsePacket = new ServerMessage();
     responsePacket._header.sequence = packet.sequenceNumber;
     responsePacket._header.flags = 8;
 

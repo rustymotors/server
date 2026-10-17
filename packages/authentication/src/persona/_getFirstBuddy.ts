@@ -1,4 +1,5 @@
-import { NPSMessage, type LegacyMessage } from "rusty-motors-shared";
+import { type LegacyMessage } from "rusty-motors-shared";
+import { BytableMessage } from "@rustymotors/binary";
 import { BytableBuffer } from "@rustymotors/binary";
 import { BuddyCount, BuddyInfoMessage, BuddyList } from "./BuddyInfoMessage.js";
 import { getServerLogger, type ServerLogger } from "rusty-motors-shared";
@@ -17,9 +18,8 @@ export async function _getFirstBuddy({
 	connectionId: string;
 	messages: BytableBuffer[];
 }> {
-	// This message is a versioned nps message
-	const incomingMessage = new NPSMessage();
-	incomingMessage._doDeserialize(message._doSerialize());
+	const incomingMessage = new BytableMessage(1);
+	incomingMessage.deserialize(message._doSerialize());
 
 	log.debug(
 		`in _getFirstBuddy, incomingMessage: ${incomingMessage

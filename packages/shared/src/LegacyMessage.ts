@@ -65,14 +65,14 @@ export class LegacyMessage extends BytableMessage {
 	/**
 	 * @deprecated Use deserialize() instead
 	 */
-	_doDeserialize(buffer: Buffer): this {
+	override _doDeserialize(buffer: Buffer): this {
 		return this.deserialize(buffer);
 	}
 
 	/**
 	 * @deprecated Use serialize() instead
 	 */
-	_doSerialize(): Buffer {
+	override _doSerialize(): Buffer {
 		return this.serialize();
 	}
 
@@ -124,7 +124,7 @@ export class LegacyMessage extends BytableMessage {
 		})}`;
 	}
 
-	toHexString(): string {
+	override toHexString(): string {
 		return this.serialize().toString("hex");
 	}
 }

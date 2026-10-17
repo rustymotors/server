@@ -1,10 +1,9 @@
-import { OldServerMessage } from "rusty-motors-shared";
+import { MessageNode } from "rusty-motors-shared";
 
 import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 import {
 	LoginCompletePayload,
 	LoginPayload,
-	ServerPacket,
 } from "rusty-motors-protocol";
 import { getServerLogger } from "rusty-motors-shared";
 
@@ -19,22 +18,16 @@ export async function login({
 	packet,
 	log = defaultLogger,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
-	// Normalize the packet
-	const incomingPacket = new ServerPacket();
-	incomingPacket.deserialize(packet.serialize());
-
 	log.debug(
-		`[${connectionId}] Received LoginMessage: ${incomingPacket.toString()}`,
+		`[${connectionId}] Received LoginMessage: ${packet.toString()}`,
 	);
 
-	// Read the inbound packet
 	const loginMessage = new LoginPayload();
 	loginMessage.deserialize(packet.data);
 	log.debug(
-		`[${connectionId}] Received LoginMessage: ${loginMessage.toString()}`,
+		`[${connectionId}] Parsed LoginMessage: ${loginMessage.toString()}`,
 	);
 
-	// Create new response packet
 	const response = new LoginCompletePayload();
 	response.setMessageId(213);
 	response.serverTime = Math.floor(Date.now() / 1000);
@@ -49,24 +42,16 @@ export async function login({
 		`[${connectionId}] Sending LoginCompleteMessage: ${response.toString()}`,
 	);
 
-	// Send response packet
+	const responsePacket = new MessageNode();
+	responsePacket.sequence = packet.sequenceNumber;
+	responsePacket.setDataBuffer(response.serialize());
+	responsePacket.setPayloadEncryption(true);
+	responsePacket.setSignature("TOMC");
 
-	// Normalize the packet
-
-	const outgoingPacket = ServerPacket.copy(incomingPacket, response.serialize());
-	outgoingPacket.setSequence(incomingPacket.getSequence());
-	outgoingPacket.setPayloadEncryption(true);
-	outgoingPacket.setSignature("TOMC");
-
-	log.debug(`[${connectionId}] Sending response: ${outgoingPacket.toString()}`);
-
+	log.debug(`[${connectionId}] Sending response: ${responsePacket.toString()}`);
 	log.debug(
-		`[${connectionId}] Sending response(hex): ${outgoingPacket.serialize().toString("hex")}`,
+		`[${connectionId}] Sending response(hex): ${responsePacket.serialize().toString("hex")}`,
 	);
-
-	const responsePacket = new OldServerMessage();
-	responsePacket._header.sequence = incomingPacket.getSequence();
-	responsePacket._doDeserialize(outgoingPacket.serialize());
 
 	return { connectionId, messages: [responsePacket] };
 }

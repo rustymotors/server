@@ -23,7 +23,7 @@ export class MessageHeader extends BytableBuffer {
 		return this._size;
 	}
 
-	override size() {
+	size() {
 		return this._size;
 	}
 

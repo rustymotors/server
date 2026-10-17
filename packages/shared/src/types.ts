@@ -6,6 +6,7 @@ import type { Socket as TcpSocket } from 'node:net';
 import type { Socket as UdpSocket } from 'node:dgram';
 import type { BytableBuffer } from '@rustymotors/binary';
 import type { ServerLogger as LoggingServerLogger, LogLevel as LoggingLogLevel } from '@rustymotors/logging';
+import type { UserInfo } from './UserData.js';
 
 /**
  * @deprecated Import from '@rustymotors/logging' instead.
@@ -37,22 +38,19 @@ export interface DatabaseManager {
         arg2: string,
         arg3: string,
     ) => Promise<void>;
-    fetchSessionKeyByCustomerId: (arg0: number) => Promise<SessionKeys>;
+    fetchSessionKeyByCustomerId: (arg0: number) => Promise<ConnectionRecord>;
 }
 
 export interface DatabaseManager {
-    updateGameServer: (
-        commId: number,
-        gameServer: IRunningServerInfo,
-    ) => Promise<void>;
+    updateGameServer: (commId: number, gameServer: IRunningServerInfo) => Promise<void>;
     getGameServers: () => Promise<IRunningServerInfo[]>;
     updateUser: (user: { userId: number; userInfo: UserInfo }) => Promise<void>;
-    getUser: typeof getUser;
-    updateConnection: typeof updateConnection;
-    findUserByConnectionId: typeof findUserByConnectionId;
-    fetchSessionKeyByCustomerId: typeof fetchSessionKeyByCustomerId;
-    updateSessionKey: typeof updateSessionKey;
-    fetchSessionKeyByConnectionId: typeof fetchSessionKeyByConnectionId;
+    getUser: (userId: number) => Promise<UserInfo | undefined>;
+    updateConnection: (connectionId: string, userId: number) => Promise<void>;
+    findUserByConnectionId: (connectionId: string) => Promise<number | undefined>;
+    fetchSessionKeyByCustomerId: (customerId: number) => Promise<ConnectionRecord>;
+    updateSessionKey: (customerId: number, sessionKey: string, contextId: string, connectionId: string) => Promise<void>;
+    fetchSessionKeyByConnectionId: (connectionId: string) => Promise<ConnectionRecord>;
 }
 
 /**
@@ -66,10 +64,6 @@ export interface ConnectionRecord {
     contextId: string;
 }
 
-interface SessionKeys {
-    sessionKey: string;
-    sKey: string;
-}
 
 export interface GameMessageOpCode {
     name: string;

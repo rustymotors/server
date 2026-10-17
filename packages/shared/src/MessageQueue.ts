@@ -1,7 +1,6 @@
 import type { messageQueueItem } from 'rusty-motors-shared';
 
 export class MessageQueue {
-    private _name: string;
     private _queue: messageQueueItem[];
     private _processItemCb: (item: messageQueueItem) => Promise<void>;
     private _tickInterval: number;
@@ -9,11 +8,10 @@ export class MessageQueue {
     private _counter: number;
 
     constructor(
-        name: string,
+        _name: string,
         interval: number,
         callback: (messageQueueItem: messageQueueItem) => Promise<void>,
     ) {
-        this._name = name;
         this._queue = [];
         this._processItemCb = callback;
         this._tickInterval = interval;

@@ -18,10 +18,7 @@
 	"author": "",
 	"license": "AGPL-3.0",
 	"dependencies": {
-		"@rustymotors/binary": "file:libs/@rustymotors/binary",
-		"@sentry/cli": "^3.4.1",
-		"@sentry/node": "^10.52.0",
-		"@sentry/profiling-node": "^10.52.0",
+		"@rustymotors/binary": "*",
 		"@vitest/ui": "^4.1.5",
 		"short-unique-id": "^5.3.2",
 		"winston-daily-rotate-file": "^5.0.0"

@@ -1,5 +1,5 @@
 import type { Serializable, NPSMessage } from './types.js';
-import { RawMessageHeader } from './RawMessage.js';
+import { RawMessageHeader } from './RawMessageHeader.js';
 import {
     align4,
     checkMinLength,

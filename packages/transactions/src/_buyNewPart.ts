@@ -2,7 +2,7 @@ import {
     fetchStateFromDatabase,
     findSessionByConnectionId,
 } from "rusty-motors-shared";
-import { OldServerMessage } from "rusty-motors-shared";
+import { MessageNode } from "rusty-motors-shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 import { getServerLogger } from "rusty-motors-shared";
@@ -43,13 +43,13 @@ export async function _buyNewPart({
     newPartMessage.msgReply = 176
     newPartMessage.value.writeInt32LE(newPartId)
 
-    const responsePacket = new OldServerMessage();
-    responsePacket._header.sequence = packet.sequenceNumber;
-    responsePacket._header.flags = 8;
+    const responsePacket = new MessageNode();
+    responsePacket.sequence = packet.sequenceNumber;
+    responsePacket.setPayloadEncryption(true);
 
     log.debug(newPartMessage.toString())
 
-    responsePacket.setBuffer(newPartMessage.serialize());
+    responsePacket.setDataBuffer(newPartMessage.serialize());
 
     return { connectionId, messages: [responsePacket] };
 }

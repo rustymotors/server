@@ -3,8 +3,10 @@ import {
     ChannelCreated,
     databaseProvider,
     getServerLogger,
+    joinChannel,
+    getChannelMembers,
+    getSocketQueue,
     NPS_MESSAGE_IDS,
-    RawMessage,
     type Serializable,
 } from 'rusty-motors-shared';
 import { ServerLogger } from '@rustymotors/logging';
@@ -59,14 +61,28 @@ export async function handleOpenCommChannel({
             incomingRequest.getFieldValueByName("userId") as Buffer
         ).readInt32BE();
 
+        // Record this connection as a member of the channel.
+        // Push USER_JOINED_CHANNEL to everyone already in the channel before
+        // adding the joiner, so they don't receive their own join event.
+        const existingMembers = getChannelMembers(requestedCommId);
+        joinChannel(connectionId, requestedCommId);
+
         const userJoinedMessage = await createUserJoinedChannelMessage(userId, requestedCommId, log, connectionId);
+
+        // Notify existing members of the new arrival.
+        for (const memberId of existingMembers) {
+            try {
+                const sendQueue = getSocketQueue(memberId, 'send');
+                sendQueue.put({ sequenceNo: -1, data: userJoinedMessage.serialize() });
+            } catch {
+                // Member's queue may already be gone; skip silently.
+            }
+        }
 
 
         if (requestedCommId > 100) {
 
 
-            const channelCreatedMessage = new RawMessage();
-            channelCreatedMessage.id = 0x20e
             const channelCreatedBody = new ChannelCreated();
             channelCreatedBody.commId = requestedCommId;
             channelCreatedBody.riff = requestedRiffName.toString();
@@ -77,13 +93,7 @@ export async function handleOpenCommChannel({
             channelCreatedBody.maxReadyPlayers = 1;
             channelCreatedBody.channelData.minNPSracers = 0
 
-            channelCreatedMessage.data = channelCreatedBody.serialize();
-            const channelCreatedBytable = new BytableMessage();
-            channelCreatedBytable.setSerializeOrder([
-                { name: 'data', field: 'Buffer' },
-            ]);
-            channelCreatedBytable.setVersion(0);
-            channelCreatedBytable.deserialize(channelCreatedMessage.serialize());
+            const channelCreatedBytable = createBytableMessage(0x20e, channelCreatedBody);
 
             responsePackets.push(channelCreatedBytable)
 
@@ -119,10 +129,12 @@ export async function handleOpenCommChannel({
     }
 }
 
-export function createRawMessage(msgCode: number, body: Serializable) {
-    const message = new RawMessage();
-    message.id = msgCode;
-    message.data = body.serialize();
+export function createBytableMessage(msgCode: number, body: Serializable): BytableMessage {
+    const message = new BytableMessage();
+    message.setSerializeOrder([{ name: 'data', field: 'Buffer' }]);
+    message.setVersion(0);
+    message.header.setId(msgCode);
+    message.setFieldValueByName('data', body.serialize());
     return message;
 }
 

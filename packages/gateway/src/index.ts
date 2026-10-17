@@ -19,7 +19,6 @@ import type { RemoteInfo, Socket as UdpSocket } from "node:dgram";
 import { randomUUID } from "node:crypto";
 import { tagSocket } from "./socketUtility.js";
 import { getPortRouter } from "./portRouters.js";
-import * as Sentry from "@sentry/node";
 import {
     getServerLogger,
     type ServerLogger,
@@ -33,12 +32,6 @@ import {
 import { socketErrorHandler } from "./socketErrorHandler.js";
 import { getSessionRecorder } from "./session/SessionRecorderIntegration.js";
 
-const ALLOWED_IPS = [
-    "98.231.127.157", // Mark's IP for testing
-    "10.10.5.1", // Local IP for testing
-    "181.169.157.11", // Ziimbiian's IP for testing
-    "79.242.19.80", // Lacnr's IP for testing
-];
 
 /**
  * Handle incoming TCP connections
@@ -118,7 +111,6 @@ export function onSocketConnection({
         const portRouter = getPortRouter(localPort);
         portRouter({ taggedSocket: socketWithId, log }).catch(
             function onSocketError(error) {
-                Sentry.captureException(error);
                 log.error("Error in port router", { err: error });
             },
         );
