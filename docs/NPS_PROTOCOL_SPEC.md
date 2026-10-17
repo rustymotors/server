@@ -13,6 +13,7 @@ Newest first. Each entry lists the sections changed and the evidence used.
 
 | Date | Sections | Change | Evidence |
 |------|----------|--------|----------|
+| 2026-10-17 | 11.4.2, 11.6.4, 12.1 | Corrected the grant port: the client ignores it for TCP channels and uses it only for UDP; removed "client MUST connect to the granted port" and the "client opens a new connection on the granted port" step. Documented that the lobby dispatcher accepts 0x0213/0x0214/0x0215 only while an add-channel request is pending, and flagged the "unsolicited 0x0214 to non-master clients" requirement as unresolved. Marked room-server discovery (12.1 steps 1-2) as unverified. | `cNPSAPI::NPSAddCommChannel` (`00ad7690`); `ProcessCommands` (`00adda10`, cases 0x213-0x215). |
 | 2026-10-17 | 11.1, 11.4, 11.7, 12.1 | Reframed AddCommChannel (0x0106) as the client adding an existing channel to its own channel list (not a server-side create, and distinct from a channel join); channels are created server-side. Removed the "commId=0 creates a channel / server MUST allocate" requirements and diagram. Documented client behavior: grant commId is authoritative, 0x0215 is treated as success, the grant port is used only for UDP and ignored for TCP, non-zero already-open commId fails locally with -5, and any other reply is a denial. Marked the 0x020E payload layout as unverified. Reworded 0x0106 from "join" to "add to the client's channel list" (the client only adds the entry after a 0x0214/0x0215 grant); "join" is kept for the server-side user-in-channel events (0x0203, 0x020C). Left open: the contradictory "connect to the granted port" text in 11.4.2 and 12.1 steps 1-2. | `cNPSAPI::NPSAddCommChannel` (`00ad7690`); design intent from the project owner (creates happen server-side). |
 | 2026-10-17 | 11.1, 12.4, 12.9 | Corrected opcode 0x010C: it is GetServerInfo, not GetReadyList. GetReadyList is 0x010E only; removed the "alt" row and the 0x010C references in the ready-state flow. Removed the duplicate 0x010C row in 11.1. | `cNPSAPI::NPSGetServerInfo` (`00ad3870`) sends 0x10C and `cNPSAPI::NPSGetReadyList` (`00ad2e20`) sends 0x10E, both via vtable slot +100 with a 4-byte payload. |
 | 2026-06-28 | all | Initial draft. | Binary analysis of `MCity_d.exe`. |
@@ -1037,11 +1038,13 @@ Parsed by `FUN_00bbff00` (opcode 0x214) → reads 8 bytes into native struct.
 
 ```
 Payload (8 bytes):
-  [uint32 BE commId]    server-assigned or confirmed channel ID
-  [uint32 BE port]      port the client should use for the room/game server TCP connection
+  [uint32 BE commId]    the channel being granted; the client stores this as the channel's commId
+  [uint32 BE port]      only used for UDP channels (protocol 0x2c / 0x37), where it is the UDP port the client connects to
 ```
 
-The client MUST connect to `(LobbyServerIP, port)` upon receiving 0x0214.
+**CONFIRMED from `cNPSAPI::NPSAddCommChannel` (`00ad7690`):** for TCP channels (protocol 0x21 / 0x42) the client reads the port and ignores it. The channel is added to the client's list on its existing connection to that server; no new connection is opened by this call. The server SHOULD still send a sensible value (the port of the connection the request arrived on is what the reference server sends).
+
+**CONFIRMED from `ProcessCommands` (`00adda10`, the lobby-connection command dispatcher):** 0x0213, 0x0214 and 0x0215 are accepted only while the client has an add-channel request pending on that server connection. Otherwise the client logs `"ERROR: Received a channel Grant/Deny when the server wasn't expecting it"` and drops the message. A grant MUST therefore be sent only as the reply to a request that expects one.
 
 #### 11.4.3 Response: 0x0213 NPS_CHANNEL_DENIED
 
@@ -1154,7 +1157,7 @@ Master Client        Lobby Server        Room Server         All Clients
 Server MUST requirements for this flow:
 1. Server MUST respond to 0x0309 with 0x0402 containing at least one entry with a reachable hostname.
 2. Server MUST respond to the master's 0x010A with 0x0214 `[commId][gameServerPort]` on the **lobby** connection.
-3. Server MUST send 0x0214 `[commId][gameServerPort]` to **all non-master lobby clients** connected to the same race channel, so they can connect to the game server. Confirmed: non-master clients (FUN_00828d00 / FUN_004e6f30) connect using the room server's hostname and need the port from a 0x0214.
+3. Server MUST send 0x0214 `[commId][gameServerPort]` to **all non-master lobby clients** connected to the same race channel, so they can connect to the game server. Confirmed: non-master clients (FUN_00828d00 / FUN_004e6f30) connect using the room server's hostname and need the port from a 0x0214. **Caveat (unresolved):** on the lobby connection `ProcessCommands` (`00adda10`) rejects a 0x0214 that arrives while no add-channel request is pending (see §11.4.2), so an unsolicited 0x0214 to non-master clients on that connection would be logged as an error and dropped. Whether these clients receive it on the room connection instead, or have a request pending, has not been traced.
 4. Room server MUST broadcast 0x021C `[commId]` to all clients in the race channel.
 5. Room server MUST broadcast 0x0108 S→C to all channel members immediately after receiving 0x0108 C→S from the race master. Confirmed from `FUN_004ee420` case 0x0108 — all clients receive and log it; it is a required start notification even though clients take no direct action on receipt (the actual game-connect trigger is 0x021C).
 6. All clients (not just master) receive 0x021C and MUST connect to the game server.
@@ -1321,8 +1324,8 @@ The room server is a separate TCP endpoint from the lobby. It manages real-time 
 
 ### 12.1 Connection Lifecycle
 
-1. **Lobby sends 0x0214 NPS_CHANNEL_GRANTED** — payload `"ll"` = `[uint32 commId][uint32 port]`. The `port` field is the room server TCP port.
-2. **Client opens new TCP connection** to the server (same host as lobby) on the received port.
+1. **Client obtains the room server's address** — *not yet verified.* The 0x0214 grant does not carry a connection target for TCP (see §11.4.2). The reference server answers GetServerInfo (0x010C) with 0x020D, which carries an IP and port per channel; that is the likely discovery path, but the client code that consumes it has not been traced.
+2. **Client opens a TCP connection** to that address.
 3. **Handshake** (raw, pre-TOMC) — identical to lobby handshake (Section 10): client sends 0x0100, server replies 0x0120.
 4. **TOMC framing** — all subsequent messages on both directions use TOMC framing (Section 4).
 5. **Server MUST send 0x020D NPS_SERVER_INFO** — one entry (76 bytes) describing the room server itself.
