@@ -59,6 +59,8 @@ export default defineConfig({
         exclude: [
             "packages/pklib-ts",
             "**/.claude/**",
+            // compiled output; stale copies of tests would run against old code
+            "**/dist/**",
             ...configDefaults.exclude
             // Note: session tests are NOT excluded here
         ],
