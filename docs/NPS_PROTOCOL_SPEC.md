@@ -13,6 +13,7 @@ Newest first. Each entry lists the sections changed and the evidence used.
 
 | Date | Sections | Change | Evidence |
 |------|----------|--------|----------|
+| 2026-10-17 | 11.1, 11.4, 11.7, 12.1 | Reframed AddCommChannel (0x0106) as the client adding an existing channel to its own channel list (not a server-side create, and distinct from a channel join); channels are created server-side. Removed the "commId=0 creates a channel / server MUST allocate" requirements and diagram. Documented client behavior: grant commId is authoritative, 0x0215 is treated as success, the grant port is used only for UDP and ignored for TCP, non-zero already-open commId fails locally with -5, and any other reply is a denial. Marked the 0x020E payload layout as unverified. Reworded 0x0106 from "join" to "add to the client's channel list" (the client only adds the entry after a 0x0214/0x0215 grant); "join" is kept for the server-side user-in-channel events (0x0203, 0x020C). Left open: the contradictory "connect to the granted port" text in 11.4.2 and 12.1 steps 1-2. | `cNPSAPI::NPSAddCommChannel` (`00ad7690`); design intent from the project owner (creates happen server-side). |
 | 2026-10-17 | 11.1, 12.4, 12.9 | Corrected opcode 0x010C: it is GetServerInfo, not GetReadyList. GetReadyList is 0x010E only; removed the "alt" row and the 0x010C references in the ready-state flow. Removed the duplicate 0x010C row in 11.1. | `cNPSAPI::NPSGetServerInfo` (`00ad3870`) sends 0x10C and `cNPSAPI::NPSGetReadyList` (`00ad2e20`) sends 0x10E, both via vtable slot +100 with a 4-byte payload. |
 | 2026-06-28 | all | Initial draft. | Binary analysis of `MCity_d.exe`. |
 
@@ -918,7 +919,7 @@ All messages after handshake are wrapped in TOMC frames (Section 4).
 | 0x010F | GetServerList         | none                                                 |
 | 0x0302 | GetRIFFList           | none                                                 |
 | 0x030C | GetMiniRIFFList       | none                                                 |
-| 0x0106 | AddCommChannel        | See §11.4 (commId=0 creates new channel; see §11.7)  |
+| 0x0106 | AddCommChannel        | See §11.4 (client adds an existing channel to its list; channels are created server-side, see §11.7) |
 | 0x0101 | GetUserList           | `[uint32 BE commId]`                                 |
 | 0x0207 | HeartbeatResponse     | none (ack to server 0x0217)                          |
 | 0x0217 | SetTimeoutRate        | none                                                 |
@@ -986,7 +987,7 @@ The server SHOULD send 0x0217 at 30-second intervals. The client MUST respond wi
 
 ### 11.4 Operation: AddCommChannel (0x0106 → 0x0214 / 0x0213)
 
-Client sends 0x0106 to join a channel (server slot, RIFF/room, or other logical channel). Server responds with 0x0214 GRANTED or 0x0213 DENIED.
+Client sends 0x0106 to add a channel (server slot, RIFF/room, or other logical channel) to its own channel list. The client builds its local channel entry, sends the request, and only after a grant (0x0214/0x0215) does it add the entry to its list. Server responds with 0x0214 GRANTED or 0x0213 DENIED.
 
 #### 11.4.1 Request: 0x0106 AddCommChannel
 
@@ -998,7 +999,7 @@ The `p` format encodes a null-terminated string as `[uint32 BE (strlen+1)][bytes
 
 | # | Format | Size       | Field              | Source / Default value                                |
 |---|--------|------------|--------------------|-------------------------------------------------------|
-| 1 | `l`    | 4          | **commId**         | NPSArg[2]; 0 = server assigns a new ID               |
+| 1 | `l`    | 4          | **commId**         | NPSArg[2]; ID of an existing channel (see §11.7)      |
 | 2 | `p`    | 4+len+1    | **channelName**    | NPSArg+4 string (max 30 chars); default `"CTRL"`      |
 | 3 | `l`    | 4          | correlation_1      | Client-side callback ptr; **server must ignore**       |
 | 4 | `l`    | 4          | correlation_2      | Client-side callback ctx; **server must ignore**       |
@@ -1024,8 +1025,8 @@ The `p` format encodes a null-terminated string as `[uint32 BE (strlen+1)][bytes
 **Confirmed from:** `FUN_00ad97e0` (channel state init), `FUN_00ad9b80` (defaults), `FUN_00ad8850` (wire area prep), `FUN_00bbdfe0` (serializer), `FUN_00bc30f0` (outer encoder).
 
 **For a private server, only fields 1, 2, 5, 6, and 7 are needed:**
-- Field 1 (`commId` = 0): server assigns a new channel ID; non-zero joins an existing channel
-- Field 2 (`channelName`): which RIFF/room the client wants to join
+- Field 1 (`commId`): the ID of an existing channel the client is adding to its list. Channels are created server-side and announced to clients (§11.7), so a client should always already hold a non-zero ID
+- Field 2 (`channelName`): which RIFF/room the client wants to add
 - Field 6 (`protocol`): whether to set up a TCP or UDP data path
 - Field 7 (`userId`): identify which connected user is making the request
 - Field 5 (`clientPort`): client's listening port (relevant for UDP channels)
@@ -1161,48 +1162,44 @@ Server MUST requirements for this flow:
 
 ---
 
-### 11.7 Operation: CreateCommChannel (Race/Room Creation via 0x0106 commId=0 → 0x0214 + 0x020E broadcast)
+### 11.7 Channel Lifecycle (server-side creation, announcement, deletion)
 
-**CONFIRMED from RE of `FUN_00ad7690` (NPSAddCommChannel, vtable[2]):**
+AddCommChannel (0x0106) means "add this existing channel to my list"; it is not a create, and it is not a server-side channel join. Channels are created by the server, which assigns the commId and announces it to clients; a client only ever opens an ID it has already been given. The server MUST NOT rely on a client sending `commId=0` to request a new channel.
 
-When the client creates a new race/room, it uses the same 0x0106 AddCommChannel opcode as joining, but sets `commId=0`. The client code logs:
+**CONFIRMED from RE of `cNPSAPI::NPSAddCommChannel` (`00ad7690`, vtable[2]):**
+- If a non-zero commId is already open on the server connection, the client fails locally with `NPS_ERR_CHANNEL_ALREADY_OPEN` (-5) and sends nothing.
+- If the commId is 0, the client logs `"addcom: CommId 0, Id will be retreived from server"` and sends the request unchanged. This looks like a generic library fallback; no caller in the game was found that uses it. Because the client stores the first dword of whatever 0x0214/0x0215 it receives as the channel's commId, a server that grants commId 0 makes the client hold channel 0 without complaint.
+- The client takes the commId from the grant (0x0214 or 0x0215) and returns it as the call result; the grant is authoritative.
+- 0x0214 and 0x0215 are both treated as success. Any other reply is treated as denial ("Access Denied"); the first dword of that reply becomes the error code (-1 maps to -0x17).
+- The port in the grant is used only for UDP protocols (0x2c, 0x37), where it is passed to `ConnectUDPSocket`. For TCP protocols (0x21, 0x42) it is read and ignored: the channel is added to the existing connection to that server, and the call fails with `-6` ("Server Not Connected") if there is none.
 
-```
-"CommId 0, Id will be retrieved from server"
-```
+#### 11.7.1 Request: 0x0106 AddCommChannel
 
-This instructs the server to allocate a new channel ID rather than joining an existing one.
-
-#### 11.7.1 Request: 0x0106 AddCommChannel (Create variant)
-
-Same format as §11.4.1, but with:
-- Field 1 (`commId`) = **0** — server MUST assign a new unique commId
-- Field 2 (`channelName`) = race/room name chosen by client
-- Field 21 (`blob`, 256 bytes) = **Race Config Blob** — encodes all race parameters (see §11.7.6)
+Same format as §11.4.1. Field 1 (`commId`) is the existing channel being added. Field 21 (`blob`, 256 bytes) carries the race configuration when the sender has one (see §11.7.6).
 
 #### 11.7.2 Response: 0x0214 NPS_CHANNEL_GRANTED
 
 ```
 Payload:
-  [uint32 BE newCommId]   server-assigned channel ID (MUST be non-zero)
-  [uint32 BE port]        room server TCP port
+  [uint32 BE commId]      the channel being granted (the client stores this value as the commId)
+  [uint32 BE port]        used by the client only for UDP channels; ignored for TCP
 ```
-
-Server MUST assign a unique non-zero commId and return it. Client stores this as the race commId for all subsequent operations.
 
 #### 11.7.3 Broadcast: 0x020E NPS_CHANNEL_CREATED
 
-Server MUST broadcast to all lobby-connected clients after granting the new channel:
+When the server creates a channel, it announces it to lobby-connected clients:
 
 ```
 Payload:
-  [uint32 BE commId]      the newly assigned commId
+  [uint32 BE commId]      the commId of the new channel
   [p channelName]         channel name (p-string: [uint32 BE len+1][bytes][null])
 ```
 
+*Note:* the reference server currently sends a larger struct here (commId, riff, protocol, 256-byte channel data, type, max ready players) and only to the requesting client. Which layout the client reads is not yet verified.
+
 #### 11.7.4 Broadcast: 0x020F NPS_CHANNEL_DELETED
 
-When a channel is closed (race ended, room disbanded, or connection dropped), server MUST broadcast:
+When a channel is closed (race ended, room disbanded, or connection dropped), the server broadcasts:
 
 ```
 Payload:
@@ -1212,33 +1209,32 @@ Payload:
 #### 11.7.5 Full Sequence
 
 ```
-Creating Client      Lobby Server        All Other Clients
-      │                   │                      │
-      │── 0x0106 ─────────▶│  commId=0, name      │
-      │   (Create race)    │                      │
-      │                    │                      │
-      │◀── 0x0214 ─────────│  [newCommId][port]   │
-      │    (Channel OK)    │                      │
-      │                    │── 0x020E ────────────▶│
-      │                    │   [newCommId][name]   │
-      │                    │                      │
-      ... race proceeds, client connects to room server at port ...
-      │                    │                      │
-      │── 0x0105 ─────────▶│  (CloseCommChannel)  │
-      │                    │                      │
-      │                    │── 0x020F ────────────▶│
-      │                    │   [commId]            │
+Server               Lobby Clients         Adding Client
+   │                      │                      │
+   │ (creates channel,    │                      │
+   │  assigns commId)     │                      │
+   │── 0x020E ───────────▶│                      │
+   │   [commId][name]     │                      │
+   │                      │                      │
+   │◀── 0x0106 ───────────┼──────────────────────│  commId = existing channel
+   │── 0x0214 ────────────┼─────────────────────▶│  [commId][port]
+   │                      │                      │
+   ... session proceeds ...
+   │                      │                      │
+   │◀── 0x0105 ───────────┼──────────────────────│  (CloseCommChannel)
+   │── 0x020F ───────────▶│                      │
+   │   [commId]           │                      │
 ```
 
-Server MUST requirements:
-1. When `commId=0` in 0x0106, server MUST allocate a new unique channel ID.
-2. Server MUST respond 0x0214 with the new commId and room server port.
-3. Server MUST broadcast 0x020E to all clients after channel creation.
-4. Server MUST broadcast 0x020F when channel is closed or deleted.
-5. Server MUST NOT assign commId=0 — all assigned IDs MUST be non-zero.
-6. Server MUST read and store the 256-byte Race Config Blob (§11.7.6) to know race type and parameters.
+Server requirements:
+1. The server MUST create channels itself and assign unique, non-zero commIds.
+2. The server MUST respond to 0x0106 for a known channel with 0x0214 (or 0x0215) carrying that channel's commId.
+3. The server MUST announce new channels with 0x020E.
+4. The server MUST announce channel deletion with 0x020F.
+5. The server MUST NOT use commId 0 for a channel it expects clients to treat as distinct (the client accepts a grant of 0 and stores it as channel 0).
+6. The server SHOULD read and store the 256-byte Race Config Blob (§11.7.6) from field 21 to know race type and parameters.
 
-#### 11.7.6 Race Config Blob Layout (field 21 of 0x0106 Create variant)
+#### 11.7.6 Race Config Blob Layout (field 21 of 0x0106)
 
 **CONFIRMED from RE of `FUN_0089e510`** (packs all race globals into the 204-byte RIFF config struct, which is then zero-padded to 256 bytes and copied into `NPSArg[+0x50]`) and **`FUN_0082b0c0`** (stores UI selections into race globals `DAT_01408cXX`).
 
@@ -1331,7 +1327,7 @@ The room server is a separate TCP endpoint from the lobby. It manages real-time 
 4. **TOMC framing** — all subsequent messages on both directions use TOMC framing (Section 4).
 5. **Server MUST send 0x020D NPS_SERVER_INFO** — one entry (76 bytes) describing the room server itself.
 6. **Server MUST send 0x0401 NPS_RIFF_LIST** — initial list of available rooms.
-7. **Client joins a channel** — sends 0x0106 AddCommChannel (same format as lobby, Section 11.4).
+7. **Client adds a channel** — sends 0x0106 AddCommChannel (same format as lobby, Section 11.4).
 8. **Server responds 0x0214 NPS_CHANNEL_GRANTED** (or 0x0213 NPS_CHANNEL_DENIED).
 9. **Server MUST send 0x0211 NPS_USER_LIST** — current occupants of the joined channel. Confirmed from `FUN_004ee420` case 0x0211: client populates its user list from this message; if omitted the joining client sees an empty room.
 10. **Server MUST send 0x0227 NPS_CHANNEL_MASTER** — identifies the current race master. Confirmed from `FUN_004ee420` case 0x0227: client stores master userId at `game_state+0x188` and sets isMaster flag. MUST be sent after the user list.
