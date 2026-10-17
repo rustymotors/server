@@ -3,13 +3,14 @@
 ## Cleanroom Reference Document
 
 **Status:** Informational (Cleanroom Specification)
-**Version:** 0.2.0
-**Date:** 2026-01-20
+**Version:** 0.3.0
+**Date:** 2026-09-30
 
 ### Changelog
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 0.3.0 | 2026-09-30 | Rewrote 4.3 (0x601) from client binary; added login exchange and sub-message rules to 4.2/4.3; header validation note in 4.1; fixed 6.2 |
 | 0.2.0 | 2026-01-20 | Added section 4.6: Room/Game Server Protocol (ports 9000-9014, 9500-9508) |
 | 0.1.0 | 2026-01-11 | Initial release |
 
@@ -265,7 +266,32 @@ Two header versions have been observed:
 Version 0 appears to be used for simple/legacy messages, while version 257 
 is the standard format for most NPS communication.
 
+**Client validation:** on the login server connection (8226) the client reads
+only Message ID and Message Length from the wire, then `length - 4` more bytes.
+When it unmarshals a version-257 message it copies Message Version and Checksum
+but compares neither. Only ID and Length need to be correct. (See
+`NPS_PROTOCOL_SPEC.md` §3.1 for the binary references.)
+
 ### 4.2. NPS Login Request (0x501)
+
+Sent by the client to the login server (`LoginServerPort`, 8226) with a
+version-257 header. Client class: `NPS_AAILogin`. Before sending it, the client
+gets an auth ticket over HTTP and generates its own 32-byte session key, which
+it sends encrypted inside this message. The client keeps that key; nothing in
+the response replaces it (see 4.3).
+
+**Exchange:** after sending 0x501 the client performs two reads:
+
+1. An "ACK" read (30 s timeout). Any complete, correctly framed message
+   satisfies it; its ID is not inspected.
+2. The response read (120 s timeout). Only this message is parsed (4.3).
+
+A server MUST therefore send two messages. Sending the 0x601 twice works.
+Sending only one makes the second read time out.
+
+The payload layout below has not been re-verified against the client. The
+binary-derived notes in `NPS_PROTOCOL_SPEC.md` §6.1 put the customer ID at
+payload offset 0, which conflicts with this diagram.
 
 A User Login Request is formatted as follows:
 
@@ -313,15 +339,64 @@ where:
 
 ### 4.3. NPS User Valid Response (0x601)
 
-Sent by login server upon successful authentication.
+Sent by the login server on success, as the second of the two messages in 4.2.
+Client class: `GLDP_UserStatus`. It carries no persona data; personas come
+later, from `LoginServerPort + 2` (8228).
 
 ```ebnf
 NPS_UserValid =
-    header: NPS_Header ,       (* id = 0x601 *)
-    customer-id: NPS_CUSTOMERID ,
-    persona-count: uint8 ,
-    personas: { NPS_PersonaInfo } ;
+    header: NPS_Header ,             (* id = 0x601, version 257 *)
+    customer-id: NPS_CUSTOMERID ,    (* the only value the client uses *)
+    unused-1: uint32 ,               (* stored, never read *)
+    unused-2: uint8 ,                (* bool; stored, never read *)
+    ban: NPS_SubMessage(NPS_UserAction) ,
+    gag: NPS_SubMessage(NPS_UserAction) ,
+    session-key: NPS_SubMessage(NPS_SessionKey) ,   (* parsed, then discarded *)
+    unused-3: uint32 ,               (* stored, never read *)
+    metrics-id: NPS_String ;         (* max 0x40 bytes *)
+
+NPS_UserAction =
+    unused: uint32 ,
+    active: int32 ,                  (* 0 = not in effect *)
+    expiry: int32 ,                  (* time_t; 0 = permanent *)
+    text-1: NPS_String ,             (* max 0x40 *)
+    text-2: NPS_String ,             (* max 0x100 *)
+    text-3: NPS_String ;             (* max 0x100 *)
+
+NPS_SessionKey =
+    key: NPS_String ,                (* max 0x20 *)
+    unused: int32 ;
+
+NPS_String          = length: uint16 , bytes: { BYTE } ;   (* no terminator *)
+NPS_SubMessage(T)   = length: uint16 , body: T ;          (* length = encoded size of T *)
 ```
+
+**Ban and gag:** the client sets its ban and gag flags from these two
+sub-messages. An action is in effect when `active != 0` and either
+`expiry == 0` or the current time is before `expiry`.
+
+**Sub-message length MUST be exact.** The client always parses the nested
+object from the bytes after the length, whatever the length says, and only then
+advances by `length`. A length of 0 is NOT an empty field: the nested parse
+still reads the following bytes, and the outer parse then reads them again. To
+send a blank sub-object, encode every field as zero/empty and set `length` to
+that size: 18 for `NPS_UserAction`, 6 for `NPS_SessionKey`. A mismatched
+length can make the client read a non-zero `active` and a future `expiry` from
+unrelated bytes and flag the user as banned or gagged.
+
+**Minimal valid payload** (customer ID `C`, no ban, no gag, blank key), 63
+bytes, total length 75:
+
+```
+C(4) 00000000 00  0012 00*18  0012 00*18  0006 00*6  00000000  0000
+```
+
+**Session key:** the response cannot change the client's session key or
+disable encryption. The client stores the key it generated before 0x501.
+
+**Other responses** (header only, no payload): 0x602 user not found, 0x610 not
+authorized, 0x623 auth denied (restricted access), 0x626 user banned, 0x637 CRC
+mismatch. Any other ID is treated as a generic error.
 
 ### 4.4. NPS Open Comm Channel (0x106)
 
@@ -1048,8 +1123,11 @@ Client                    Login Server              MCOTS
   |                            |                      |
   |---NPS_USER_LOGIN (0x501)-->|                      |
   |                            |                      |
+  |<--(any message: "ACK")-----|                      |
   |<--NPS_USER_VALID (0x601)---|                      |
-  |   (personas, shard list)   |                      |
+  |   (customer ID, ban, gag)  |                      |
+  |                            |                      |
+  |---(TCP Connect 8228)------>|  persona maps/select |
   |                            |                      |
   |---(TCP Connect 43300)------|--------------------->|
   |                            |                      |
