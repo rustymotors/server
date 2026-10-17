@@ -1,6 +1,4 @@
-import type { BytableMessage } from '@rustymotors/binary';
-import { BytableBuffer } from '@rustymotors/binary';
-import { RawMessage } from 'rusty-motors-shared';
+import { BytableBuffer, BytableMessage } from '@rustymotors/binary';
 import type { ServerLogger } from 'rusty-motors-shared';
 
 export async function handleTrackingPing({
@@ -10,9 +8,9 @@ export async function handleTrackingPing({
     message: BytableMessage;
     log?: ServerLogger;
 }): Promise<{ connectionId: string; messages: BytableBuffer[] }> {
-    const response = new RawMessage();
-    response.id = 0x217;
-    response.length = 4;
+    // Header only (version 0): id 0x217, length 4, no payload
+    const response = new BytableMessage(0);
+    response.header.setId(0x217);
     const packet = new BytableBuffer();
     packet.deserialize(response.serialize());
     return { connectionId, messages: [packet] };
