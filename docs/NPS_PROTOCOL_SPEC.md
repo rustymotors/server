@@ -3,6 +3,18 @@
 **Status:** DRAFT (reverse-engineered from MCity_d.exe; all formats verified from binary analysis)  
 **Source of truth:** `MCity_d.exe` (debug client build)  
 **Date:** 2026-06-28
+**Last revised:** 2026-10-17
+
+---
+
+## Revision History
+
+Newest first. Each entry lists the sections changed and the evidence used.
+
+| Date | Sections | Change | Evidence |
+|------|----------|--------|----------|
+| 2026-10-17 | 11.1, 12.4, 12.9 | Corrected opcode 0x010C: it is GetServerInfo, not GetReadyList. GetReadyList is 0x010E only; removed the "alt" row and the 0x010C references in the ready-state flow. Removed the duplicate 0x010C row in 11.1. | `cNPSAPI::NPSGetServerInfo` (`00ad3870`) sends 0x10C and `cNPSAPI::NPSGetReadyList` (`00ad2e20`) sends 0x10E, both via vtable slot +100 with a 4-byte payload. |
+| 2026-06-28 | all | Initial draft. | Binary analysis of `MCity_d.exe`. |
 
 ---
 
@@ -931,7 +943,6 @@ All messages after handshake are wrapped in TOMC frames (Section 4).
 | 0x011D | NPSTerminateGameServer| `[uint32 BE commId]` — vtable[18] NPSTerminateGameServer |
 | 0x0103 | SetMyUserData         | `[b 64-byte blob]` — vtable[20] NPSSetMyUserData     |
 | 0x0126 | GetUserInfo           | `[uint32 BE userId]` — vtable[22] NPSGetUserInfo     |
-| 0x010C | GetServerInfo         | `[uint32 BE commId]` — vtable[35] NPSGetServerInfo   |
 
 ### 11.2 Server → Client Messages
 
@@ -1399,9 +1410,9 @@ Confirmed from NPS encoder dispatch `FUN_00bbf850` and body-encoder analysis. Fo
 | 0x0107 | GetCommChannelCount | `"l"` | `[uint32 BE commId]` — vtable[13] NPSGetCommChannelCount |
 | 0x0108 | StartGame (C→S) | `"ls"` | `[l commId][s field1]` |
 | 0x010A | SendChannelMsg (room) | `"lp"` | `[l commId][p message]` — **room server only**; see §11.6.1 for the lobby variant (different wire format) |
-| 0x010C | GetReadyList | `"l"` | `[uint32 BE commId]` |
+| 0x010C | GetServerInfo | `"l"` | `[uint32 BE commId]` — `cNPSAPI::NPSGetServerInfo` (`00ad3870`) |
 | 0x010D | GetSlotList | `"ll"` | `[l commId][l field1]` |
-| 0x010E | GetReadyList (alt) | `"l"` | `[uint32 BE commId]` |
+| 0x010E | GetReadyList | `"l"` | `[uint32 BE commId]` — `cNPSAPI::NPSGetReadyList` (`00ad2e20`) |
 | 0x010F | RemoveSlot | `"l"` | `[uint32 BE commId]` |
 | 0x0111 | SetHeartbeatTimeout | raw | `[uint32 BE timeout_ms]` — sent raw via NPSSendCommand (not format encoder); vtable[43] |
 | 0x0112 | GetHeartbeatTimeout | raw | none — sent raw via NPSSendCommand; vtable[44] |
@@ -1539,7 +1550,7 @@ Client                    Room Server              Other Clients
   │    [commId][userId]        │   [isReady][isMaster]  │
   │    [isReady][isMaster]     │                        │
   │                            │                        │
-  │── 0x010C GetReadyList ────▶│  (format "l" commId)   │
+  │── 0x010E GetReadyList ────▶│  (format "l" commId)   │
   │◀── 0x0210 NPS_READY_LIST ──│                        │
   │    [numReady]              │                        │
   │    N×[commId][userId]      │                        │
@@ -1548,7 +1559,7 @@ Client                    Room Server              Other Clients
 
 Server MUST requirements for the ready-state flow:
 1. Server MUST broadcast 0x0109 NPS_READY_FOR_GAME to ALL users in the channel whenever any user's ready state changes (client sends 0x011F). Confirmed: `FUN_004ee420` case 0x0109 updates both the individual user's ready flag and the local isMaster flag.
-2. Server MUST send 0x0210 NPS_READY_LIST (full snapshot) in response to 0x010C (GetReadyList) or 0x010E (GetReadyList alt).
+2. Server MUST send 0x0210 NPS_READY_LIST (full snapshot) in response to 0x010E (GetReadyList).
 3. Server MUST send 0x0227 NPS_CHANNEL_MASTER when the channel master changes. Additionally, server MUST send 0x0227 when a new client joins an existing channel (so they learn who the master is). Confirmed: `FUN_004ee420` case 0x0227 stores `masterId` at `game_state+0x188` and sets the local isMaster flag if the incoming masterId matches the local userId.
 4. The `isMaster` field in 0x0109 (uint16 at byte offset +10 of the deserialized struct) is a redundant per-message hint; 0x0227 is the authoritative master notification.
 
