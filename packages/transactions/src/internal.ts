@@ -26,7 +26,6 @@ import {
 	getEncryption,
 	updateEncryption,
 } from "rusty-motors-shared";
-import { OldServerMessage } from "rusty-motors-shared";
 import { type MessageHandlerResult, _MSG_STRING } from "./handlers.js";
 import { getTransactionsHandlerRegistry } from "./handlers/registry.js";
 import {
@@ -87,14 +86,10 @@ async function processInput({
 	const handlerEntry = registry.getHandler(currentMessageNo);
 
 	if (handlerEntry) {
-		// Turn this into an OldServerMessage for compatibility
-		const packet = new OldServerMessage();
-		packet._doDeserialize(inboundMessage.serialize());
-
 		try {
 			const responsePackets = await handlerEntry.handler({
 				connectionId,
-				packet,
+				packet: inboundMessage,
 			});
 			return responsePackets;
 		} catch (error) {
