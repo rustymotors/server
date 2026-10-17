@@ -13,6 +13,7 @@ Newest first. Each entry lists the sections changed and the evidence used.
 
 | Date | Sections | Change | Evidence |
 |------|----------|--------|----------|
+| 2026-10-17 | 12.1, 12.9, new 12.9.1 | Corrected which room-server messages are pushed versus requested: 0x0404 and 0x0229 are replies to the 0x030C and 0x0128 the client sends on every connect; 0x0401 and 0x020D are replies to 0x0302 and 0x010C, and the client blocks (no timeout) until a non-empty 0x0401 arrives; 0x0211 is the reply to 0x0101 (opcode confirmed). Corrected §12.9 item 4: a 0x0109 with non-zero isMaster sets the host id, it is not a redundant hint. Added §12.9.1 describing host determination (0x0227 / 0x0109), the write-only flag at +0x430, and the start-button gate. | `Async_Connect` (`004f1b90`), `sendConnectGameRoomServer` (`004e3750`), `sendGetServerInfo` (`004ec200`), `NPSGetUserList` (`00ad3950`), `commandCallback` (`004ee420`), `Pit_GetHost` (`0089e140`), `AmIHost` (`006927d0`), `SimPit_RaceButtUpdate` (`008a6a60`), `SimPit_NonHostClientsReady` (`008a69a0`). |
 | 2026-10-17 | 11.4.2, 11.6.2, 11.6.4 | Documented the pending-add flag mechanism (`FUN_00ad8a70`: ~20 s wait, grants stored only while pending, unsolicited grants logged as errors and otherwise ignored). Corrected the start-game flow: the client does not wait for a 0x0214 after 0x010A; it completes on the room state set by 0x021C (4) or an empty 0x0402 (8). Downgraded the "send 0x0214 to all non-master clients" requirement as unsupported by the binary. | `FUN_00ad8a70`, `ProcessCommands` (`00adda10`), `cNPS_RoomServer::commandCallback` (`004ee420`, 0x214 case), `StartGameServerInterceptCallback` (`00ad6b50`), `NPSStartGameServer` (`00ad6d40`), `sendStartServer` (`004ec530`). |
 | 2026-10-17 | 12.1, 12.3, 12.6 | Traced room-server discovery: the client gets the room's address from 0x020D (reply to GetServerInfo 0x010C), not from the 0x0214 grant. Corrected the 0x020D/0x0212 entry layout: the second `p` is the IP address, the field at +0x34 is the port, +0x3C is the player count (previously "secondary name", "unknown", "numUsers"). Noted that the client blocks until the lobby has delivered at least one riff before looking a room up. | `cNPS_RoomServer::sendConnectRoomServer` (`004eb700`), `sendConnect` (`004eacc0`), `sendGetServerInfo` (`004ec200`), `cNPS_RoomInfo::operator=(_NPS_RunningServerInfo*)` (`004e4830`). |
 | 2026-10-17 | 11.4.2, 11.6.4, 12.1 | Corrected the grant port: the client ignores it for TCP channels and uses it only for UDP; removed "client MUST connect to the granted port" and the "client opens a new connection on the granted port" step. Documented that the lobby dispatcher accepts 0x0213/0x0214/0x0215 only while an add-channel request is pending, and flagged the "unsolicited 0x0214 to non-master clients" requirement as unresolved. Marked room-server discovery (12.1 steps 1-2) as unverified. | `cNPSAPI::NPSAddCommChannel` (`00ad7690`); `ProcessCommands` (`00adda10`, cases 0x213-0x215). |
@@ -1334,12 +1335,12 @@ The room server is a separate TCP endpoint from the lobby. It manages real-time 
 2. **Client opens a TCP connection** by calling `sendConnect` (`004eacc0`) with the **IP string and port from that 0x020D** as host and port.
 3. **Handshake** (raw, pre-TOMC) — identical to lobby handshake (Section 10): client sends 0x0100, server replies 0x0120.
 4. **TOMC framing** — all subsequent messages on both directions use TOMC framing (Section 4).
-5. **Server MUST send 0x020D NPS_SERVER_INFO** — one entry (76 bytes) describing the room server itself.
-6. **Server MUST send 0x0401 NPS_RIFF_LIST** — initial list of available rooms.
+5. **Client requests the mini lists.** `Async_Connect` (`004f1b90`) queues 0x030C (mini riff list, no payload) and 0x0128 (mini user list, 4-byte payload) on every successful connect, without waiting. The server MUST reply with 0x0404 NPS_MINI_RIFF_LIST and 0x0229 NPS_MINI_USER_LIST. These are replies to client requests, not unsolicited pushes.
+6. **Client requests the big riff list and server info when it needs them.** After a GameRoomServer connects, `sendConnectGameRoomServer` (`004e3750`) sends 0x0302 and then **blocks, with no timeout, until a 0x0401 NPS_RIFF_LIST with at least one riff arrives**; the server MUST answer 0x0302 with at least one riff. `sendGetServerInfo` (`004ec200`) sends 0x010C and blocks (no timeout) until the 0x020D reply fills the room's info (§12.6).
 7. **Client adds a channel** — sends 0x0106 AddCommChannel (same format as lobby, Section 11.4).
 8. **Server responds 0x0214 NPS_CHANNEL_GRANTED** (or 0x0213 NPS_CHANNEL_DENIED).
-9. **Server MUST send 0x0211 NPS_USER_LIST** — current occupants of the joined channel. Confirmed from `FUN_004ee420` case 0x0211: client populates its user list from this message; if omitted the joining client sees an empty room.
-10. **Server MUST send 0x0227 NPS_CHANNEL_MASTER** — identifies the current race master. Confirmed from `FUN_004ee420` case 0x0227: client stores master userId at `game_state+0x188` and sets isMaster flag. MUST be sent after the user list.
+9. **Client requests the user list with 0x0101** (`cNPSAPI::NPSGetUserList`, `00ad3950`, 4-byte commId payload; sent for a room by `cNPS_Room`). The server MUST reply with 0x0211 NPS_USER_LIST. Confirmed from `FUN_004ee420` case 0x0211: a reply with commId 0 replaces the client's server-wide user list; a non-zero commId fills that room's list if it is the client's room. Nothing was found that makes the client rely on an unsolicited 0x0211 after the grant.
+10. **Server MUST send 0x0227 NPS_CHANNEL_MASTER (or a 0x0109 with a non-zero isMaster) so the client knows the host.** This one is push-only: the client never requests it. See §12.9.1 for what each message does and what the client does with the result. Confirmed from `FUN_004ee420` case 0x0227.
 11. **Server MUST send 0x0203 NPS_USER_JOINED to existing channel members** and **0x020C NPS_USER_JOINED_CHANNEL to all members** when a new user joins. Confirmed from `FUN_004ee420` cases 0x0203/0x020C.
 12. **Normal operation** — ready-state exchange (0x011F / 0x0109 / 0x0210), game start (0x0108), user presence (0x0203 / 0x0202).
 13. **Disconnect** — server sends 0x0201 NPS_FORCE_LOGOFF or 0x02A0 NPS_SERVER_DISCONNECTED on teardown.
@@ -1572,7 +1573,26 @@ Server MUST requirements for the ready-state flow:
 1. Server MUST broadcast 0x0109 NPS_READY_FOR_GAME to ALL users in the channel whenever any user's ready state changes (client sends 0x011F). Confirmed: `FUN_004ee420` case 0x0109 updates both the individual user's ready flag and the local isMaster flag.
 2. Server MUST send 0x0210 NPS_READY_LIST (full snapshot) in response to 0x010E (GetReadyList).
 3. Server MUST send 0x0227 NPS_CHANNEL_MASTER when the channel master changes. Additionally, server MUST send 0x0227 when a new client joins an existing channel (so they learn who the master is). Confirmed: `FUN_004ee420` case 0x0227 stores `masterId` at `game_state+0x188` and sets the local isMaster flag if the incoming masterId matches the local userId.
-4. The `isMaster` field in 0x0109 (uint16 at byte offset +10 of the deserialized struct) is a redundant per-message hint; 0x0227 is the authoritative master notification.
+4. The `isMaster` field in 0x0109 (uint16 at byte offset +10 of the deserialized struct) is **not** just a hint: a 0x0109 with a non-zero `isMaster` for user U sets the client's host id to U, exactly as a 0x0227 naming U would (see §12.9.1). A 0x0109 with `isMaster` = 0 clears the local is-master flag but leaves the host id unchanged.
+
+#### 12.9.1 Host (master) determination and the start gate
+
+*Source: `cNPS_RoomServer::commandCallback` (`004ee420`) cases 0x0109 and 0x0227 (agent trace; the opcode-to-block mapping is by payload layout and log string, not by reading the case labels), `Pit_GetHost` (`0089e140`), `cConnQ::AmIHost` (`006927d0`), `SimPit_RaceButtUpdate` (`008a6a60`), `SimPit_NonHostClientsReady` (`008a69a0`).*
+
+Two server messages set the host:
+
+| Message | Effect |
+|---------|--------|
+| 0x0227 `[commId][masterId]` | Sets the host id (`RoomServer+0x188`) to `masterId`; also updates the room list entry. Sets the local is-master flag only if `masterId` equals the local user. |
+| 0x0109 `[commId][userId]…[isMaster u16 at +10]` | If `isMaster` ≠ 0: sets the host id to `userId` with **no check against the local user**. If `isMaster` = 0: clears the flag and leaves the host id. Also updates `userId`'s ready flag. |
+
+Both act only if `commId` equals the client's current room and that room is connected or connecting. Nothing else makes a client the host: the riff `channelOwnerId` (0x020E, 0x0401, 0x0404), 0x020C and the ready-list entries do not (ready-list entries count only because they are re-dispatched as 0x0109).
+
+The local-master flag at `RoomServer+0x430` is written but never read. What the UI uses is the host id:
+- `Pit_GetHost` returns the host id; `cConnQ::AmIHost` is true when the local persona id equals it. If the host id is 0 the client reports "Room has no host".
+- `SimPit_RaceButtUpdate` (the start/race button): for a non-host the button is always enabled; for the host it is enabled only when `SimPit_NonHostClientsReady` returns true, which requires the player count to be within the race's min/max, the room's user list count to equal the connection-queue count, and `numReady + 1 >= count` (the host counts as ready).
+
+A server that never sends 0x0227 or an `isMaster` 0x0109 leaves every client without a host, so nobody can start a race. *Unverified: that the persona id compared in `AmIHost` is the same id as the user id in the 0x0227 check; the 0x020C handler and `GameServer`'s own `commandCallback` (`004e29f0`) were not traced.*
 
 ### 12.10 Game Start Flow
 
