@@ -6,6 +6,7 @@ import {
     type ServerLogger,
 } from 'rusty-motors-shared';
 import { getPrimaryRoomServer } from '../index.js';
+import { createNpsReply } from '../lib/createNpsReply.js';
 
 export async function handleGetReadyList({
     connectionId,
@@ -30,9 +31,5 @@ export async function handleGetReadyList({
         }
     }
 
-    const packet = new BytableMessage(0);
-    packet.header.setId(0x210);
-    packet.setFieldValueByName('data', readyList.serialize());
-
-    return { connectionId, messages: [packet] };
+    return { connectionId, messages: [createNpsReply(0x210, readyList.serialize())] };
 }

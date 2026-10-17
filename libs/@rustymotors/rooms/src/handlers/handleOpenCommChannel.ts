@@ -5,12 +5,12 @@ import {
     getServerLogger,
     joinChannel,
     NPS_MESSAGE_IDS,
-    RawMessage,
     setConnectionUserId,
     UserJoinedChannelMessage,
     type ServerLogger,
 } from 'rusty-motors-shared';
 import { getPrimaryRoomServer } from '../index.js';
+import { createNpsReply } from '../lib/createNpsReply.js';
 import { User } from '../lib/User.js';
 
 function createChannelGrantedPacket(commId: number, port: number): BytableMessage {
@@ -118,10 +118,7 @@ export async function handleOpenCommChannel({
         channelCreated.channelType = 3;
         channelCreated.maxReadyPlayers = 1;
         channelCreated.channelData.minNPSracers = 0;
-        const createdRaw = new RawMessage();
-        createdRaw.id = 0x20e;
-        createdRaw.data = channelCreated.serialize();
-        responses.push(BytableMessage.FromRawMessage(createdRaw));
+        responses.push(createNpsReply(0x20e, channelCreated.serialize()));
     }
 
     responses.push(createChannelGrantedPacket(commId, connectionPort));
@@ -135,10 +132,7 @@ export async function handleOpenCommChannel({
             roomUser.userData,
             roomUser.personaId,
         );
-        const raw = new RawMessage();
-        raw.id = NPS_MESSAGE_IDS.USER_JOINED_CHANNEL;
-        raw.data = joined.serialize();
-        responses.push(BytableMessage.FromRawMessage(raw));
+        responses.push(createNpsReply(NPS_MESSAGE_IDS.USER_JOINED_CHANNEL, joined.serialize()));
     }
 
     return { connectionId, messages: responses };
