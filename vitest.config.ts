@@ -27,6 +27,8 @@ export default defineConfig({
 			"**/dist/**",
 			"**/cypress/**",
 			"**/.{idea,git,cache,output,temp}/**",
+			// Agent worktrees and local tooling live here; their test copies collide on ports
+			"**/.claude/**",
 			"**/session/sessionReplay.test.ts",
 			"**/session/integration.example.test.ts",
 			"**/session/SessionRecorder.test.ts",
