@@ -15,14 +15,14 @@ services:
             - "5432:5432"
         volumes:
             - db-data:/var/lib/postgresql/data
-        # TODO: #1182 remove before prod https://github.com/drazisil/mco-server/issues/1008
+        # Dev-only credentials, kept on purpose. Use real ones for any deployment.
         environment:
             POSTGRES_PASSWORD: "password"
             POSTGRES_DB: "mcos"
         restart: unless-stopped
     pgadmin:
         image: dpage/pgadmin4:6.18
-        # TODO: #1182 remove these before prod https://github.com/drazisil/mco-server/issues/1008
+        # Dev-only credentials, kept on purpose. Use real ones for any deployment.
         environment:
             PGADMIN_DEFAULT_EMAIL: "admin@pgadmin.com"
             PGADMIN_DEFAULT_PASSWORD: "password"
