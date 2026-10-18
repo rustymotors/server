@@ -34,9 +34,6 @@ export async function processGetProfileInfo(
 	if (profiles) {
 		outMessage.header.setId(0x607);
 		for (const profile of profiles) {
-			// Log the profile
-			defaultLogger.info(`GetProfileInfo: ${profile.toString()}`); // TODO: Remove this line
-
 			list.addProfile(profile);
 		}
 	} else {
