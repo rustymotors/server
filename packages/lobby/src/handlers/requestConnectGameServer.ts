@@ -18,11 +18,16 @@ import {
     setConnectionUserId,
     databaseProvider,
     type ISessionStore,
+    NoResultsError,
 } from "rusty-motors-shared";
 import { getServerLogger } from "rusty-motors-shared";
 import { BytableMessage, BytableBuffer } from "@rustymotors/binary";
 
+// Error replies the client's NPSConnectToServer recognizes for a failed
+// lobby login. It has no code for an unknown persona; NPS_REFUSED is its
+// generic "server won't let us in".
 const NPS_INVALID_KEY = 0x22a;
+const NPS_REFUSED = 0x213;
 
 /**
  * Convert to zero padded hex
@@ -78,8 +83,17 @@ class PacketProcessor {
                 personaId: inboundMessage._userId,
             });
         } catch (error) {
-            // TODO: parse error and return approprate code
-            const outboundMessage = createLegacyErrorPacket(NPS_INVALID_KEY);
+            this.log.warn(
+                error instanceof NoResultsError
+                    ? "Unknown persona in lobby login"
+                    : "Unable to look up persona in lobby login",
+                {
+                    connectionId: this.connectionId,
+                    personaId: inboundMessage._userId,
+                    error,
+                },
+            );
+            const outboundMessage = createLegacyErrorPacket(NPS_REFUSED);
 
             return {
                 connectionId: this.connectionId,
@@ -108,7 +122,6 @@ class PacketProcessor {
                     customerId,
                     err,
                 });
-                // TODO: parse error and return approprate code
 
                 const outboundMessage =
                     createLegacyErrorPacket(NPS_INVALID_KEY);
