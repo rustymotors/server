@@ -35,6 +35,18 @@ describe("parsePacket", () => {
         expect(parsePacket(Buffer.from("GET / HTTP/1.1\r\n")).protocol).toBe("HTTP");
     });
 
+    it("detects an HTTP response", () => {
+        expect(parsePacket(Buffer.from("HTTP/1.1 200 OK\r\n")).protocol).toBe("HTTP");
+    });
+
+    it("detects MCOTS by the TOMC marker and checks its length", () => {
+        // length 4 (LE) + "TOMC" + 2 more bytes = 6 bytes total counted, buffer is 8
+        const parsed = parsePacket("0600544f4d4301ff");
+        expect(parsed.protocol).toBe("MCOTS");
+        expect(parsed.mcots).toEqual({ length: 6, complete: true });
+        expect(parsePacket("0900544f4d4301ff").mcots?.complete).toBe(false);
+    });
+
     it("calls a buffer whose length field does not match unknown", () => {
         expect(parsePacket("01000099aabb").protocol).toBe("Unknown");
     });

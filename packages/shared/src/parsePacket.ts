@@ -1,6 +1,6 @@
 import { NPS_MESSAGE_IDS } from "./constants/NPSMessageIds.js";
 
-export type PacketProtocol = "HTTP" | "NPS" | "Unknown";
+export type PacketProtocol = "HTTP" | "NPS" | "MCOTS" | "Unknown";
 
 export interface ParsedPacket {
     protocol: PacketProtocol;
@@ -13,6 +13,13 @@ export interface ParsedPacket {
         /** The length field from the header (it includes the 4-byte header). */
         length: number;
         body: Buffer;
+    };
+    /** Present when `protocol` is "MCOTS". */
+    mcots?: {
+        /** The little-endian u16 at offset 0; it does not count its own 2 bytes. */
+        length: number;
+        /** True when `length + 2` equals the buffer; false when it holds a partial or several messages. */
+        complete: boolean;
     };
 }
 
@@ -39,14 +46,23 @@ export function hexToBuffer(text: string): Buffer {
 /**
  * Identify a payload as HTTP, NPS or unknown, and for NPS read the header.
  *
- * A buffer is NPS when its big-endian u16 at offset 2 equals the buffer
- * length. The reference client's header is [u16 BE id][u16 BE length].
+ * - HTTP: starts with a request method or "HTTP/1.x".
+ * - NPS: the big-endian u16 at offset 2 equals the buffer length
+ *   (header is [u16 BE id][u16 BE length]).
+ * - MCOTS: the ASCII bytes "TOMC" at offset 2, after a little-endian u16
+ *   length. A recorded buffer can hold more than one message, so a length
+ *   that does not match is reported, not rejected.
  */
 export function parsePacket(input: string | Buffer): ParsedPacket {
     const payload = typeof input === "string" ? hexToBuffer(input) : input;
 
-    if (/^(GET|POST|HEAD|PUT|DELETE|OPTIONS|PATCH|CONNECT|TRACE) /.test(payload.toString("ascii", 0, 8))) {
+    if (/^(GET|POST|HEAD|PUT|DELETE|OPTIONS|PATCH|CONNECT|TRACE) |^HTTP\/1\.[01] /.test(payload.toString("ascii", 0, 9))) {
         return { protocol: "HTTP", payload };
+    }
+
+    if (payload.length >= 6 && payload.toString("ascii", 2, 6) === "TOMC") {
+        const length = payload.readUInt16LE(0);
+        return { protocol: "MCOTS", payload, mcots: { length, complete: length + 2 === payload.length } };
     }
 
     if (payload.length >= 4 && payload.readUInt16BE(2) === payload.length) {
@@ -77,6 +93,12 @@ export function formatParsedPacket(parsed: ParsedPacket): string[] {
             `NPS message id: 0x${messageId.toString(16).padStart(4, "0")} (${messageId}) ${names.length > 0 ? names.join(" / ") : "not in NPS_MESSAGE_IDS"}`,
             `NPS length field: ${length}`,
             `NPS body (${body.length} bytes, hex): ${body.toString("hex")}`,
+        );
+    }
+    if (parsed.mcots) {
+        const { length, complete } = parsed.mcots;
+        lines.push(
+            `MCOTS length field: ${length} (${complete ? "matches the buffer" : `buffer is ${parsed.payload.length} bytes, so it holds a partial or several messages`})`,
         );
     }
     return lines;
