@@ -3,6 +3,24 @@
 **Status:** DRAFT (reverse-engineered from MCity_d.exe; all formats verified from binary analysis)  
 **Source of truth:** `MCity_d.exe` (debug client build)  
 **Date:** 2026-06-28
+**Last revised:** 2026-10-17
+
+---
+
+## Revision History
+
+Newest first. Each entry lists the sections changed and the evidence used.
+
+| Date | Sections | Change | Evidence |
+|------|----------|--------|----------|
+| 2026-10-17 | 11.7.3, 12.3 | Corrected the 0x020E NPS_CHANNEL_CREATED layout: it carries commId, riff name, protocol, 256-byte channelData, channelType and maxReadyPlayers (not just commId and name). Documented its effect (replaces or adds a room entry, making the room findable by name) and recorded the audience (the creator and every client not in the room, per the project owner; the reference server sends it only to the requester) and the traced visibility chain: a pit shows in a client's list only after 0x020E, then a state-4 message (0x021C/0x0224/0x0219), then a non-zero user count (0x0206), with no polling. | `cNPS_RoomInfo::operator=(_NPS_ChannelCreated*)` (`004e4770`), `cNPS_RoomInfoList::add(_NPS_ChannelCreated*)` (`004e58f0`), `commandCallback` (`004ee420`, `004ef30c`..`004ef3a4`), `Lobby_JoinPit`, `selectRoom`, `sendConnectGameServer`. |
+| 2026-10-17 | 12.1, 12.9, new 12.9.1 | Corrected which room-server messages are pushed versus requested: 0x0404 and 0x0229 are replies to the 0x030C and 0x0128 the client sends on every connect; 0x0401 and 0x020D are replies to 0x0302 and 0x010C, and the client blocks (no timeout) until a non-empty 0x0401 arrives; 0x0211 is the reply to 0x0101 (opcode confirmed). Corrected §12.9 item 4: a 0x0109 with non-zero isMaster sets the host id, it is not a redundant hint. Added §12.9.1 describing host determination (0x0227 / 0x0109), the write-only flag at +0x430, and the start-button gate. | `Async_Connect` (`004f1b90`), `sendConnectGameRoomServer` (`004e3750`), `sendGetServerInfo` (`004ec200`), `NPSGetUserList` (`00ad3950`), `commandCallback` (`004ee420`), `Pit_GetHost` (`0089e140`), `AmIHost` (`006927d0`), `SimPit_RaceButtUpdate` (`008a6a60`), `SimPit_NonHostClientsReady` (`008a69a0`). |
+| 2026-10-17 | 11.4.2, 11.6.2, 11.6.4 | Documented the pending-add flag mechanism (`FUN_00ad8a70`: ~20 s wait, grants stored only while pending, unsolicited grants logged as errors and otherwise ignored). Corrected the start-game flow: the client does not wait for a 0x0214 after 0x010A; it completes on the room state set by 0x021C (4) or an empty 0x0402 (8). Downgraded the "send 0x0214 to all non-master clients" requirement as unsupported by the binary. | `FUN_00ad8a70`, `ProcessCommands` (`00adda10`), `cNPS_RoomServer::commandCallback` (`004ee420`, 0x214 case), `StartGameServerInterceptCallback` (`00ad6b50`), `NPSStartGameServer` (`00ad6d40`), `sendStartServer` (`004ec530`). |
+| 2026-10-17 | 12.1, 12.3, 12.6 | Traced room-server discovery: the client gets the room's address from 0x020D (reply to GetServerInfo 0x010C), not from the 0x0214 grant. Corrected the 0x020D/0x0212 entry layout: the second `p` is the IP address, the field at +0x34 is the port, +0x3C is the player count (previously "secondary name", "unknown", "numUsers"). Noted that the client blocks until the lobby has delivered at least one riff before looking a room up. | `cNPS_RoomServer::sendConnectRoomServer` (`004eb700`), `sendConnect` (`004eacc0`), `sendGetServerInfo` (`004ec200`), `cNPS_RoomInfo::operator=(_NPS_RunningServerInfo*)` (`004e4830`). |
+| 2026-10-17 | 11.4.2, 11.6.4, 12.1 | Corrected the grant port: the client ignores it for TCP channels and uses it only for UDP; removed "client MUST connect to the granted port" and the "client opens a new connection on the granted port" step. Documented that the lobby dispatcher accepts 0x0213/0x0214/0x0215 only while an add-channel request is pending, and flagged the "unsolicited 0x0214 to non-master clients" requirement as unresolved. Marked room-server discovery (12.1 steps 1-2) as unverified. | `cNPSAPI::NPSAddCommChannel` (`00ad7690`); `ProcessCommands` (`00adda10`, cases 0x213-0x215). |
+| 2026-10-17 | 11.1, 11.4, 11.7, 12.1 | Reframed AddCommChannel (0x0106) as the client adding an existing channel to its own channel list (not a server-side create, and distinct from a channel join); channels are created server-side. Removed the "commId=0 creates a channel / server MUST allocate" requirements and diagram. Documented client behavior: grant commId is authoritative, 0x0215 is treated as success, the grant port is used only for UDP and ignored for TCP, non-zero already-open commId fails locally with -5, and any other reply is a denial. Marked the 0x020E payload layout as unverified. Reworded 0x0106 from "join" to "add to the client's channel list" (the client only adds the entry after a 0x0214/0x0215 grant); "join" is kept for the server-side user-in-channel events (0x0203, 0x020C). Left open: the contradictory "connect to the granted port" text in 11.4.2 and 12.1 steps 1-2. | `cNPSAPI::NPSAddCommChannel` (`00ad7690`); design intent from the project owner (creates happen server-side). |
+| 2026-10-17 | 11.1, 12.4, 12.9 | Corrected opcode 0x010C: it is GetServerInfo, not GetReadyList. GetReadyList is 0x010E only; removed the "alt" row and the 0x010C references in the ready-state flow. Removed the duplicate 0x010C row in 11.1. | `cNPSAPI::NPSGetServerInfo` (`00ad3870`) sends 0x10C and `cNPSAPI::NPSGetReadyList` (`00ad2e20`) sends 0x10E, both via vtable slot +100 with a 4-byte payload. |
+| 2026-06-28 | all | Initial draft. | Binary analysis of `MCity_d.exe`. |
 
 ---
 
@@ -906,7 +924,7 @@ All messages after handshake are wrapped in TOMC frames (Section 4).
 | 0x010F | GetServerList         | none                                                 |
 | 0x0302 | GetRIFFList           | none                                                 |
 | 0x030C | GetMiniRIFFList       | none                                                 |
-| 0x0106 | AddCommChannel        | See §11.4 (commId=0 creates new channel; see §11.7)  |
+| 0x0106 | AddCommChannel        | See §11.4 (client adds an existing channel to its list; channels are created server-side, see §11.7) |
 | 0x0101 | GetUserList           | `[uint32 BE commId]`                                 |
 | 0x0207 | HeartbeatResponse     | none (ack to server 0x0217)                          |
 | 0x0217 | SetTimeoutRate        | none                                                 |
@@ -931,7 +949,6 @@ All messages after handshake are wrapped in TOMC frames (Section 4).
 | 0x011D | NPSTerminateGameServer| `[uint32 BE commId]` — vtable[18] NPSTerminateGameServer |
 | 0x0103 | SetMyUserData         | `[b 64-byte blob]` — vtable[20] NPSSetMyUserData     |
 | 0x0126 | GetUserInfo           | `[uint32 BE userId]` — vtable[22] NPSGetUserInfo     |
-| 0x010C | GetServerInfo         | `[uint32 BE commId]` — vtable[35] NPSGetServerInfo   |
 
 ### 11.2 Server → Client Messages
 
@@ -975,7 +992,7 @@ The server SHOULD send 0x0217 at 30-second intervals. The client MUST respond wi
 
 ### 11.4 Operation: AddCommChannel (0x0106 → 0x0214 / 0x0213)
 
-Client sends 0x0106 to join a channel (server slot, RIFF/room, or other logical channel). Server responds with 0x0214 GRANTED or 0x0213 DENIED.
+Client sends 0x0106 to add a channel (server slot, RIFF/room, or other logical channel) to its own channel list. The client builds its local channel entry, sends the request, and only after a grant (0x0214/0x0215) does it add the entry to its list. Server responds with 0x0214 GRANTED or 0x0213 DENIED.
 
 #### 11.4.1 Request: 0x0106 AddCommChannel
 
@@ -987,7 +1004,7 @@ The `p` format encodes a null-terminated string as `[uint32 BE (strlen+1)][bytes
 
 | # | Format | Size       | Field              | Source / Default value                                |
 |---|--------|------------|--------------------|-------------------------------------------------------|
-| 1 | `l`    | 4          | **commId**         | NPSArg[2]; 0 = server assigns a new ID               |
+| 1 | `l`    | 4          | **commId**         | NPSArg[2]; ID of an existing channel (see §11.7)      |
 | 2 | `p`    | 4+len+1    | **channelName**    | NPSArg+4 string (max 30 chars); default `"CTRL"`      |
 | 3 | `l`    | 4          | correlation_1      | Client-side callback ptr; **server must ignore**       |
 | 4 | `l`    | 4          | correlation_2      | Client-side callback ctx; **server must ignore**       |
@@ -1013,8 +1030,8 @@ The `p` format encodes a null-terminated string as `[uint32 BE (strlen+1)][bytes
 **Confirmed from:** `FUN_00ad97e0` (channel state init), `FUN_00ad9b80` (defaults), `FUN_00ad8850` (wire area prep), `FUN_00bbdfe0` (serializer), `FUN_00bc30f0` (outer encoder).
 
 **For a private server, only fields 1, 2, 5, 6, and 7 are needed:**
-- Field 1 (`commId` = 0): server assigns a new channel ID; non-zero joins an existing channel
-- Field 2 (`channelName`): which RIFF/room the client wants to join
+- Field 1 (`commId`): the ID of an existing channel the client is adding to its list. Channels are created server-side and announced to clients (§11.7), so a client should always already hold a non-zero ID
+- Field 2 (`channelName`): which RIFF/room the client wants to add
 - Field 6 (`protocol`): whether to set up a TCP or UDP data path
 - Field 7 (`userId`): identify which connected user is making the request
 - Field 5 (`clientPort`): client's listening port (relevant for UDP channels)
@@ -1025,11 +1042,15 @@ Parsed by `FUN_00bbff00` (opcode 0x214) → reads 8 bytes into native struct.
 
 ```
 Payload (8 bytes):
-  [uint32 BE commId]    server-assigned or confirmed channel ID
-  [uint32 BE port]      port the client should use for the room/game server TCP connection
+  [uint32 BE commId]    the channel being granted; the client stores this as the channel's commId
+  [uint32 BE port]      only used for UDP channels (protocol 0x2c / 0x37), where it is the UDP port the client connects to
 ```
 
-The client MUST connect to `(LobbyServerIP, port)` upon receiving 0x0214.
+**CONFIRMED from `cNPSAPI::NPSAddCommChannel` (`00ad7690`):** for TCP channels (protocol 0x21 / 0x42) the client reads the port and ignores it. The channel is added to the client's list on its existing connection to that server; no new connection is opened by this call. The server SHOULD still send a sensible value (the port of the connection the request arrived on is what the reference server sends).
+
+**CONFIRMED from `ProcessCommands` (`00adda10`, the library-layer command dispatcher) and the add-channel wait `FUN_00ad8a70`:** while `NPSAddCommChannel` waits for its reply it sets a per-server "pending add" flag (`cServerData+0x194` = 1, reply flag `+0x190` = 0, stored reply `+0x18c` = 0) and polls up to about 20 seconds (81 polls of 250 ms; timeout = -2). 0x0213, 0x0214 and 0x0215 are stored as the reply only while that flag is set and no reply has yet been stored. Otherwise the library logs `"ERROR: Received a channel Grant/Deny when the server wasn't expecting it"` and does not store the message. The message is still forwarded to the application layer (`cNPS_RoomServer::commandCallback`, `004ee420`), where the 0x0214 case only writes a log line (`"NPS_CHANNEL_GRANTED "` plus the commId) and changes no state.
+
+A grant therefore has an effect only as the reply to a 0x0106 that is waiting for it. A 0x0214 sent at any other time is logged as an error and otherwise ignored.
 
 #### 11.4.3 Response: 0x0213 NPS_CHANNEL_DENIED
 
@@ -1098,6 +1119,8 @@ Payload (8 bytes):
 
 **Confirmed from:** `FUN_00adda10` case 0x214 log string `"NPS_CHANNEL_GRANTED commId=%d port=%d"`.
 
+**Correction (2026-10-17):** that log line is the *library-layer* handling of any 0x0214, and the grant is only stored while an add-channel request is waiting (§11.4.2). The start-game call chain does not wait for it: `NPSStartGameServer` (`00ad6d40`) sends 0x0309; the 0x0402 reply is consumed by `StartGameServerInterceptCallback` (`00ad6b50`), which sends 0x010A and returns; `cNPS_RoomServer::sendStartServer` (`004ec530`) then polls the room's state until it becomes 4 (set by 0x021C) or 8 (set by an empty 0x0402). A 0x0214 reply to 0x010A is therefore not required by the client and, if sent, is logged as unexpected.
+
 #### 11.6.3 Broadcast: 0x021C NPS_GAME_SERVER_STARTED
 
 After the game server is ready, the **room server MUST** broadcast 0x021C to all clients in the race channel:
@@ -1142,7 +1165,7 @@ Master Client        Lobby Server        Room Server         All Clients
 Server MUST requirements for this flow:
 1. Server MUST respond to 0x0309 with 0x0402 containing at least one entry with a reachable hostname.
 2. Server MUST respond to the master's 0x010A with 0x0214 `[commId][gameServerPort]` on the **lobby** connection.
-3. Server MUST send 0x0214 `[commId][gameServerPort]` to **all non-master lobby clients** connected to the same race channel, so they can connect to the game server. Confirmed: non-master clients (FUN_00828d00 / FUN_004e6f30) connect using the room server's hostname and need the port from a 0x0214.
+3. Server MUST send 0x0214 `[commId][gameServerPort]` to **all non-master lobby clients** connected to the same race channel, so they can connect to the game server. Confirmed: non-master clients (FUN_00828d00 / FUN_004e6f30) connect using the room server's hostname and need the port from a 0x0214. **Caveat:** a 0x0214 that arrives while no add-channel request is pending is logged as an error and not stored, and the application-layer handler only logs it (see §11.4.2). Nothing in the client code traced so far consumes an unsolicited 0x0214, so this requirement is not supported by the binary; the broadcast that actually starts the game is 0x021C (item 4). The sentence above that attributes the need for the port to `FUN_00828d00` / `FUN_004e6f30` has not been re-verified.
 4. Room server MUST broadcast 0x021C `[commId]` to all clients in the race channel.
 5. Room server MUST broadcast 0x0108 S→C to all channel members immediately after receiving 0x0108 C→S from the race master. Confirmed from `FUN_004ee420` case 0x0108 — all clients receive and log it; it is a required start notification even though clients take no direct action on receipt (the actual game-connect trigger is 0x021C).
 6. All clients (not just master) receive 0x021C and MUST connect to the game server.
@@ -1150,48 +1173,55 @@ Server MUST requirements for this flow:
 
 ---
 
-### 11.7 Operation: CreateCommChannel (Race/Room Creation via 0x0106 commId=0 → 0x0214 + 0x020E broadcast)
+### 11.7 Channel Lifecycle (server-side creation, announcement, deletion)
 
-**CONFIRMED from RE of `FUN_00ad7690` (NPSAddCommChannel, vtable[2]):**
+AddCommChannel (0x0106) means "add this existing channel to my list"; it is not a create, and it is not a server-side channel join. Channels are created by the server, which assigns the commId and announces it to clients; a client only ever opens an ID it has already been given. The server MUST NOT rely on a client sending `commId=0` to request a new channel.
 
-When the client creates a new race/room, it uses the same 0x0106 AddCommChannel opcode as joining, but sets `commId=0`. The client code logs:
+**CONFIRMED from RE of `cNPSAPI::NPSAddCommChannel` (`00ad7690`, vtable[2]):**
+- If a non-zero commId is already open on the server connection, the client fails locally with `NPS_ERR_CHANNEL_ALREADY_OPEN` (-5) and sends nothing.
+- If the commId is 0, the client logs `"addcom: CommId 0, Id will be retreived from server"` and sends the request unchanged. This looks like a generic library fallback; no caller in the game was found that uses it. Because the client stores the first dword of whatever 0x0214/0x0215 it receives as the channel's commId, a server that grants commId 0 makes the client hold channel 0 without complaint.
+- The client takes the commId from the grant (0x0214 or 0x0215) and returns it as the call result; the grant is authoritative.
+- 0x0214 and 0x0215 are both treated as success. Any other reply is treated as denial ("Access Denied"); the first dword of that reply becomes the error code (-1 maps to -0x17).
+- The port in the grant is used only for UDP protocols (0x2c, 0x37), where it is passed to `ConnectUDPSocket`. For TCP protocols (0x21, 0x42) it is read and ignored: the channel is added to the existing connection to that server, and the call fails with `-6` ("Server Not Connected") if there is none.
 
-```
-"CommId 0, Id will be retrieved from server"
-```
+#### 11.7.1 Request: 0x0106 AddCommChannel
 
-This instructs the server to allocate a new channel ID rather than joining an existing one.
-
-#### 11.7.1 Request: 0x0106 AddCommChannel (Create variant)
-
-Same format as §11.4.1, but with:
-- Field 1 (`commId`) = **0** — server MUST assign a new unique commId
-- Field 2 (`channelName`) = race/room name chosen by client
-- Field 21 (`blob`, 256 bytes) = **Race Config Blob** — encodes all race parameters (see §11.7.6)
+Same format as §11.4.1. Field 1 (`commId`) is the existing channel being added. Field 21 (`blob`, 256 bytes) carries the race configuration when the sender has one (see §11.7.6).
 
 #### 11.7.2 Response: 0x0214 NPS_CHANNEL_GRANTED
 
 ```
 Payload:
-  [uint32 BE newCommId]   server-assigned channel ID (MUST be non-zero)
-  [uint32 BE port]        room server TCP port
+  [uint32 BE commId]      the channel being granted (the client stores this value as the commId)
+  [uint32 BE port]        used by the client only for UDP channels; ignored for TCP
 ```
 
-Server MUST assign a unique non-zero commId and return it. Client stores this as the race commId for all subsequent operations.
+#### 11.7.3 Announcement: 0x020E NPS_CHANNEL_CREATED
 
-#### 11.7.3 Broadcast: 0x020E NPS_CHANNEL_CREATED
+When the server creates a channel, it announces it to clients with 0x020E.
 
-Server MUST broadcast to all lobby-connected clients after granting the new channel:
+**CONFIRMED from `cNPS_RoomInfo::operator=(_NPS_ChannelCreated const*)` (`004e4770`), `cNPS_RoomInfoList::add(_NPS_ChannelCreated const*)` (`004e58f0`) and the 0x020E case of `cNPS_RoomServer::commandCallback` (`004ee420`, log string `"NPS_CHANNEL_CREATED: "`).** Deserialized layout (`_NPS_ChannelCreated`):
 
-```
-Payload:
-  [uint32 BE commId]      the newly assigned commId
-  [p channelName]         channel name (p-string: [uint32 BE len+1][bytes][null])
-```
+| Offset | Size | Field | Stored in the client's room entry as |
+|--------|------|-------|--------------------------------------|
+| +0x00 | 4 | commId | entry+0x20 |
+| +0x04 | 32 | riff (name) | entry+0x00 (the name the client looks the room up by) |
+| +0x24 | 4 | protocol | entry+0x2C |
+| +0x28 | 256 | channelData blob | entry+0x54 |
+| +0x128 | 2 | channelType | entry+0x40 |
+| +0x12A | 2 | maxReadyPlayers | entry+0x46 |
+
+The wire layout the reference server sends (`ChannelCreated`) is commId (`l`), riff (`p`), protocol (`l`), channelData (`b` 256), channelType (`s`), maxReadyPlayers (`s`), which matches this deserialized layout field for field. The earlier two-field description (`[commId][p channelName]`) was incomplete.
+
+**Effect:** the client removes any existing room entry with the same commId and adds this one to the room list of the connection that received it. That makes the room findable by name (`sendConnectRoomServer` looks rooms up by name) and counts toward the "list is not empty" waits in §12.1. The library-layer dispatcher (`ProcessCommands`) only logs it. The channelData blob is stored verbatim; the `hostID`, `hostName` and `minNPSracers` values the reference server writes into it were not traced to a reader.
+
+**Audience:** the server MUST send 0x020E to the client that created the room **and** to every connected client that is not in that room (project-owner statement). The room list a client shows is the riff list (the same list 0x0401 fills), and 0x020E is how a new room is added to it live. Clients already in the room do not need it.
+
+**Traced in the binary:** a client can join a room only if an entry for it is already in its room list. That list changes only on pushed messages and is never polled. The entry that 0x020E creates starts in state 1, and the pit list shows a row only once the entry is in state 4 (set by 0x021C, 0x0224 or 0x0219), has a non-zero user count (0x0206), and its blob passes a version check. The state and count setters only log "room not found" if the entry does not exist yet, so the order is 0x020E, then a state-4 message, then a user count. Joining runs `Lobby_JoinPit`, `selectRoom`, then `sendConnectGameServer`, which looks the room up by name and fails with -0x14 if the entry is missing. The reference server currently sends 0x020E only to the requester, and only when `commId > 100`, so it does not meet this audience rule; whether it sends the state-4 and count messages was not checked.
 
 #### 11.7.4 Broadcast: 0x020F NPS_CHANNEL_DELETED
 
-When a channel is closed (race ended, room disbanded, or connection dropped), server MUST broadcast:
+When a channel is closed (race ended, room disbanded, or connection dropped), the server broadcasts:
 
 ```
 Payload:
@@ -1201,33 +1231,32 @@ Payload:
 #### 11.7.5 Full Sequence
 
 ```
-Creating Client      Lobby Server        All Other Clients
-      │                   │                      │
-      │── 0x0106 ─────────▶│  commId=0, name      │
-      │   (Create race)    │                      │
-      │                    │                      │
-      │◀── 0x0214 ─────────│  [newCommId][port]   │
-      │    (Channel OK)    │                      │
-      │                    │── 0x020E ────────────▶│
-      │                    │   [newCommId][name]   │
-      │                    │                      │
-      ... race proceeds, client connects to room server at port ...
-      │                    │                      │
-      │── 0x0105 ─────────▶│  (CloseCommChannel)  │
-      │                    │                      │
-      │                    │── 0x020F ────────────▶│
-      │                    │   [commId]            │
+Server               Lobby Clients         Adding Client
+   │                      │                      │
+   │ (creates channel,    │                      │
+   │  assigns commId)     │                      │
+   │── 0x020E ───────────▶│                      │
+   │   [commId][name]     │                      │
+   │                      │                      │
+   │◀── 0x0106 ───────────┼──────────────────────│  commId = existing channel
+   │── 0x0214 ────────────┼─────────────────────▶│  [commId][port]
+   │                      │                      │
+   ... session proceeds ...
+   │                      │                      │
+   │◀── 0x0105 ───────────┼──────────────────────│  (CloseCommChannel)
+   │── 0x020F ───────────▶│                      │
+   │   [commId]           │                      │
 ```
 
-Server MUST requirements:
-1. When `commId=0` in 0x0106, server MUST allocate a new unique channel ID.
-2. Server MUST respond 0x0214 with the new commId and room server port.
-3. Server MUST broadcast 0x020E to all clients after channel creation.
-4. Server MUST broadcast 0x020F when channel is closed or deleted.
-5. Server MUST NOT assign commId=0 — all assigned IDs MUST be non-zero.
-6. Server MUST read and store the 256-byte Race Config Blob (§11.7.6) to know race type and parameters.
+Server requirements:
+1. The server MUST create channels itself and assign unique, non-zero commIds.
+2. The server MUST respond to 0x0106 for a known channel with 0x0214 (or 0x0215) carrying that channel's commId.
+3. The server MUST announce new channels with 0x020E.
+4. The server MUST announce channel deletion with 0x020F.
+5. The server MUST NOT use commId 0 for a channel it expects clients to treat as distinct (the client accepts a grant of 0 and stores it as channel 0).
+6. The server SHOULD read and store the 256-byte Race Config Blob (§11.7.6) from field 21 to know race type and parameters.
 
-#### 11.7.6 Race Config Blob Layout (field 21 of 0x0106 Create variant)
+#### 11.7.6 Race Config Blob Layout (field 21 of 0x0106)
 
 **CONFIRMED from RE of `FUN_0089e510`** (packs all race globals into the 204-byte RIFF config struct, which is then zero-padded to 256 bytes and copied into `NPSArg[+0x50]`) and **`FUN_0082b0c0`** (stores UI selections into race globals `DAT_01408cXX`).
 
@@ -1314,16 +1343,16 @@ The room server is a separate TCP endpoint from the lobby. It manages real-time 
 
 ### 12.1 Connection Lifecycle
 
-1. **Lobby sends 0x0214 NPS_CHANNEL_GRANTED** — payload `"ll"` = `[uint32 commId][uint32 port]`. The `port` field is the room server TCP port.
-2. **Client opens new TCP connection** to the server (same host as lobby) on the received port.
+1. **Client obtains the room server's address from 0x020D.** The 0x0214 grant does not carry a connection target for TCP (see §11.4.2). Instead, `cNPS_RoomServer::sendConnectRoomServer` (`004eb700`) waits until the primary (lobby) server has delivered at least one riff (0x0401 or 0x0404), looks the room up by name, and, if no running-server info is cached for it, sends GetServerInfo (0x010C, payload = the room's commId) and waits for the 0x020D reply (see §12.6 for its layout).
+2. **Client opens a TCP connection** by calling `sendConnect` (`004eacc0`) with the **IP string and port from that 0x020D** as host and port.
 3. **Handshake** (raw, pre-TOMC) — identical to lobby handshake (Section 10): client sends 0x0100, server replies 0x0120.
 4. **TOMC framing** — all subsequent messages on both directions use TOMC framing (Section 4).
-5. **Server MUST send 0x020D NPS_SERVER_INFO** — one entry (76 bytes) describing the room server itself.
-6. **Server MUST send 0x0401 NPS_RIFF_LIST** — initial list of available rooms.
-7. **Client joins a channel** — sends 0x0106 AddCommChannel (same format as lobby, Section 11.4).
+5. **Client requests the mini lists.** `Async_Connect` (`004f1b90`) queues 0x030C (mini riff list, no payload) and 0x0128 (mini user list, 4-byte payload) on every successful connect, without waiting. The server MUST reply with 0x0404 NPS_MINI_RIFF_LIST and 0x0229 NPS_MINI_USER_LIST. These are replies to client requests, not unsolicited pushes.
+6. **Client requests the big riff list and server info when it needs them.** After a GameRoomServer connects, `sendConnectGameRoomServer` (`004e3750`) sends 0x0302 and then **blocks, with no timeout, until a 0x0401 NPS_RIFF_LIST with at least one riff arrives**; the server MUST answer 0x0302 with at least one riff. `sendGetServerInfo` (`004ec200`) sends 0x010C and blocks (no timeout) until the 0x020D reply fills the room's info (§12.6).
+7. **Client adds a channel** — sends 0x0106 AddCommChannel (same format as lobby, Section 11.4).
 8. **Server responds 0x0214 NPS_CHANNEL_GRANTED** (or 0x0213 NPS_CHANNEL_DENIED).
-9. **Server MUST send 0x0211 NPS_USER_LIST** — current occupants of the joined channel. Confirmed from `FUN_004ee420` case 0x0211: client populates its user list from this message; if omitted the joining client sees an empty room.
-10. **Server MUST send 0x0227 NPS_CHANNEL_MASTER** — identifies the current race master. Confirmed from `FUN_004ee420` case 0x0227: client stores master userId at `game_state+0x188` and sets isMaster flag. MUST be sent after the user list.
+9. **Client requests the user list with 0x0101** (`cNPSAPI::NPSGetUserList`, `00ad3950`, 4-byte commId payload; sent for a room by `cNPS_Room`). The server MUST reply with 0x0211 NPS_USER_LIST. Confirmed from `FUN_004ee420` case 0x0211: a reply with commId 0 replaces the client's server-wide user list; a non-zero commId fills that room's list if it is the client's room. Nothing was found that makes the client rely on an unsolicited 0x0211 after the grant.
+10. **Server MUST send 0x0227 NPS_CHANNEL_MASTER (or a 0x0109 with a non-zero isMaster) so the client knows the host.** This one is push-only: the client never requests it. See §12.9.1 for what each message does and what the client does with the result. Confirmed from `FUN_004ee420` case 0x0227.
 11. **Server MUST send 0x0203 NPS_USER_JOINED to existing channel members** and **0x020C NPS_USER_JOINED_CHANNEL to all members** when a new user joins. Confirmed from `FUN_004ee420` cases 0x0203/0x020C.
 12. **Normal operation** — ready-state exchange (0x011F / 0x0109 / 0x0210), game start (0x0108), user presence (0x0203 / 0x0202).
 13. **Disconnect** — server sends 0x0201 NPS_FORCE_LOGOFF or 0x02A0 NPS_SERVER_DISCONNECTED on teardown.
@@ -1352,8 +1381,8 @@ Notation: `[n]` = uint32 at word offset n (byte offset n×4); `*(u16*)(+B)` = ui
 | 0x0204 | NPS_USER_INFO | `[0]` userId, `[1…]` name; bit `(byte)[0x15]>>3&1` = dataValid; `*(u16*)(+0x5d)` = level |
 | 0x0206 | NPS_CLIENT_COUNT | `[0]` commId, `[1]` count |
 | 0x020C | NPS_USER_JOINED_CHANNEL | `[8]` userId (byte +32), `[9]` commId (byte +36) |
-| 0x020D | NPS_SERVER_INFO | `[8]` commId (byte +32); 1 entry × 76 bytes; see §12.6 |
-| 0x020E | NPS_CHANNEL_CREATED | `[0]` commId, `[1…]` name (p-string) |
+| 0x020D | NPS_SERVER_INFO | 1 entry × 76 bytes: riff, commId, **IP, port**, userId, numPlayers; see §12.6 |
+| 0x020E | NPS_CHANNEL_CREATED | `[0]` commId, `[1…]` riff name, then protocol, 256-byte channelData, channelType, maxReadyPlayers; replaces/adds a room entry; see §11.7.3 |
 | 0x020F | NPS_CHANNEL_DELETED | `[0]` commId |
 | 0x0210 | NPS_READY_LIST | `[0]` numReady; N×12 bytes: `[0]` commId, `[1]` userId, `*(u16*)(+8)` isReady, `*(u16*)(+10)` isMaster |
 | 0x0211 | NPS_USER_LIST | `[0]` commId (0=server list), `[1]` numUsers; N×100 bytes; see §12.7 |
@@ -1399,9 +1428,9 @@ Confirmed from NPS encoder dispatch `FUN_00bbf850` and body-encoder analysis. Fo
 | 0x0107 | GetCommChannelCount | `"l"` | `[uint32 BE commId]` — vtable[13] NPSGetCommChannelCount |
 | 0x0108 | StartGame (C→S) | `"ls"` | `[l commId][s field1]` |
 | 0x010A | SendChannelMsg (room) | `"lp"` | `[l commId][p message]` — **room server only**; see §11.6.1 for the lobby variant (different wire format) |
-| 0x010C | GetReadyList | `"l"` | `[uint32 BE commId]` |
+| 0x010C | GetServerInfo | `"l"` | `[uint32 BE commId]` — `cNPSAPI::NPSGetServerInfo` (`00ad3870`) |
 | 0x010D | GetSlotList | `"ll"` | `[l commId][l field1]` |
-| 0x010E | GetReadyList (alt) | `"l"` | `[uint32 BE commId]` |
+| 0x010E | GetReadyList | `"l"` | `[uint32 BE commId]` — `cNPSAPI::NPSGetReadyList` (`00ad2e20`) |
 | 0x010F | RemoveSlot | `"l"` | `[uint32 BE commId]` |
 | 0x0111 | SetHeartbeatTimeout | raw | `[uint32 BE timeout_ms]` — sent raw via NPSSendCommand (not format encoder); vtable[43] |
 | 0x0112 | GetHeartbeatTimeout | raw | none — sent raw via NPSSendCommand; vtable[44] |
@@ -1451,27 +1480,33 @@ Client                        Room Server
 
 ### 12.6 Server Info / Server List Entry (76 bytes each)
 
-Stride: **0x4C = 76 bytes** per entry. Used by 0x020D NPS_SERVER_INFO and 0x0212 NPS_SERVER_LIST.
+Stride: **0x4C = 76 bytes** per entry. Used by 0x020D NPS_SERVER_INFO (sent in reply to GetServerInfo 0x010C). 0x0212 NPS_SERVER_LIST uses the same stride; the client's dispatcher only logs its entries, so its field meanings are unverified.
 
 Wire format per entry: `"plplll"`:
 
 | Field | Format | Description |
 |-------|--------|-------------|
-| name | `p` | Server/channel name (p-string) |
+| riff | `p` | Room/channel name (the client looks rooms up by this name) |
 | commId | `l` | Channel communication ID |
-| name2 | `p` | Secondary name (often same as name) |
-| field_0x34 | `l` | Unknown field (server MAY set to zero) |
-| field_0x38 | `l` | Unknown field (client ignores; server MAY set to zero) |
-| numUsers | `l` | Current user count |
+| ipAddress | `p` | IP address or host name the client connects to |
+| port | `l` | TCP port the client connects to |
+| userId | `l` | User ID (purpose not confirmed; the reference server sends 0 or a fixed ID) |
+| numPlayers | `l` | Current player count |
 
-Deserialized layout (confirmed from `FUN_004e4830` field copies):
+**CONFIRMED from `cNPS_RoomInfo::operator=(_NPS_RunningServerInfo const *)` (`004e4830`) and `cNPS_RoomServer::sendConnectRoomServer` (`004eb700`).** Deserialized layout (`_NPS_RunningServerInfo`):
 
-| Byte Offset | Field |
-|-------------|-------|
-| +0x20 | commId |
-| +0x24 | name string source |
-| +0x34 | field_0x34 |
-| +0x3C | numUsers / capacity |
+| Byte Offset | Field | Used by the client as |
+|-------------|-------|-----------------------|
+| +0x00 | `char riff[32]` | Room name |
+| +0x20 | commId | Room commId |
+| +0x24 | `char ipAddress[16]` | Host passed to `sendConnect` |
+| +0x34 | port | Port passed to `sendConnect` |
+| +0x38 | userId | Not copied into the cached room info |
+| +0x3C | numPlayers | Cached as the room's player count |
+
+*Earlier revisions of this section called the second `p` a "secondary name" and the +0x34 field "unknown"; the binary shows they are the IP address and the port.*
+
+*Note:* the reference server appends `\n` to the riff and IP strings it sends. The client copies the IP string verbatim into the host passed to `sendConnect`; whether the trailing newline is harmless has not been verified.
 
 ### 12.7 User List Entry (100 bytes each)
 
@@ -1539,7 +1574,7 @@ Client                    Room Server              Other Clients
   │    [commId][userId]        │   [isReady][isMaster]  │
   │    [isReady][isMaster]     │                        │
   │                            │                        │
-  │── 0x010C GetReadyList ────▶│  (format "l" commId)   │
+  │── 0x010E GetReadyList ────▶│  (format "l" commId)   │
   │◀── 0x0210 NPS_READY_LIST ──│                        │
   │    [numReady]              │                        │
   │    N×[commId][userId]      │                        │
@@ -1548,9 +1583,28 @@ Client                    Room Server              Other Clients
 
 Server MUST requirements for the ready-state flow:
 1. Server MUST broadcast 0x0109 NPS_READY_FOR_GAME to ALL users in the channel whenever any user's ready state changes (client sends 0x011F). Confirmed: `FUN_004ee420` case 0x0109 updates both the individual user's ready flag and the local isMaster flag.
-2. Server MUST send 0x0210 NPS_READY_LIST (full snapshot) in response to 0x010C (GetReadyList) or 0x010E (GetReadyList alt).
+2. Server MUST send 0x0210 NPS_READY_LIST (full snapshot) in response to 0x010E (GetReadyList).
 3. Server MUST send 0x0227 NPS_CHANNEL_MASTER when the channel master changes. Additionally, server MUST send 0x0227 when a new client joins an existing channel (so they learn who the master is). Confirmed: `FUN_004ee420` case 0x0227 stores `masterId` at `game_state+0x188` and sets the local isMaster flag if the incoming masterId matches the local userId.
-4. The `isMaster` field in 0x0109 (uint16 at byte offset +10 of the deserialized struct) is a redundant per-message hint; 0x0227 is the authoritative master notification.
+4. The `isMaster` field in 0x0109 (uint16 at byte offset +10 of the deserialized struct) is **not** just a hint: a 0x0109 with a non-zero `isMaster` for user U sets the client's host id to U, exactly as a 0x0227 naming U would (see §12.9.1). A 0x0109 with `isMaster` = 0 clears the local is-master flag but leaves the host id unchanged.
+
+#### 12.9.1 Host (master) determination and the start gate
+
+*Source: `cNPS_RoomServer::commandCallback` (`004ee420`) cases 0x0109 and 0x0227 (agent trace; the opcode-to-block mapping is by payload layout and log string, not by reading the case labels), `Pit_GetHost` (`0089e140`), `cConnQ::AmIHost` (`006927d0`), `SimPit_RaceButtUpdate` (`008a6a60`), `SimPit_NonHostClientsReady` (`008a69a0`).*
+
+Two server messages set the host:
+
+| Message | Effect |
+|---------|--------|
+| 0x0227 `[commId][masterId]` | Sets the host id (`RoomServer+0x188`) to `masterId`; also updates the room list entry. Sets the local is-master flag only if `masterId` equals the local user. |
+| 0x0109 `[commId][userId]…[isMaster u16 at +10]` | If `isMaster` ≠ 0: sets the host id to `userId` with **no check against the local user**. If `isMaster` = 0: clears the flag and leaves the host id. Also updates `userId`'s ready flag. |
+
+Both act only if `commId` equals the client's current room and that room is connected or connecting. Nothing else makes a client the host: the riff `channelOwnerId` (0x020E, 0x0401, 0x0404), 0x020C and the ready-list entries do not (ready-list entries count only because they are re-dispatched as 0x0109).
+
+The local-master flag at `RoomServer+0x430` is written but never read. What the UI uses is the host id:
+- `Pit_GetHost` returns the host id; `cConnQ::AmIHost` is true when the local persona id equals it. If the host id is 0 the client reports "Room has no host".
+- `SimPit_RaceButtUpdate` (the start/race button): for a non-host the button is always enabled; for the host it is enabled only when `SimPit_NonHostClientsReady` returns true, which requires the player count to be within the race's min/max, the room's user list count to equal the connection-queue count, and `numReady + 1 >= count` (the host counts as ready).
+
+A server that never sends 0x0227 or an `isMaster` 0x0109 leaves every client without a host, so nobody can start a race. *Unverified: that the persona id compared in `AmIHost` is the same id as the user id in the 0x0227 check; the 0x020C handler and `GameServer`'s own `commandCallback` (`004e29f0`) were not traced.*
 
 ### 12.10 Game Start Flow
 

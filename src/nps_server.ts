@@ -21,6 +21,7 @@ import {
     getServerConfiguration,
     ServerLogger,
     databaseProvider,
+    requireEnv,
 } from 'rusty-motors-shared';
 import { createDatabaseServices } from 'rusty-motors-database';
 
@@ -30,13 +31,8 @@ function main() {
         verifyLegacyCipherSupport();
 
         // Initialize database services from environment (12-factor app pattern)
-        const databaseUrl = process.env['DATABASE_URL'];
+        const { DATABASE_URL: databaseUrl } = requireEnv(['DATABASE_URL']);
         const sqlitePath = process.env['SQLITE_PATH'] ?? 'data/lotus.db';
-
-        if (!databaseUrl) {
-            coreLogger.error('DATABASE_URL environment variable is required');
-            process.exit(1);
-        }
 
         // Create and register injectable database services
         const dbServices = createDatabaseServices({
